@@ -1,0 +1,11 @@
+.idea
+*.iml
+*.ipr
+*.iws
+node_modules
+logs/*.log
+npm-debug.log
+coverage
+.nyc_output
+dist
+coverage

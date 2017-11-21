@@ -21,7 +21,7 @@ class EthereumTransactionSender extends AbstractJob {
 
         this.ethereum = new EthereumService();
 
-        this.sendFromAddress = config.get('multivest.contracts.ico.ethereum.fromAddress');
+        this.sendFromAddress = config.get('multivest.blockchain.ethereum.senderAddress');
 
         jobExecutor.define(this.jobId, async (job, done) => {
             logger.info(`${this.jobTitle}: executing job`);
@@ -47,10 +47,16 @@ class EthereumTransactionSender extends AbstractJob {
         for (const transaction of transactions) {
             logger.info(`${this.jobTitle}: send transaction`, transaction);
 
+            let senderAddress = transaction.from;
+
+            if (!senderAddress) {
+                senderAddress = this.sendFromAddress;
+            }
+
 // eslint-disable-next-line no-await-in-loop
             const txCount = await this.database.getTransactionsCountByAddress(
                 EthereumService.getId(),
-                this.sendFromAddress,
+                senderAddress,
             );
 
             let txHash;
@@ -58,7 +64,7 @@ class EthereumTransactionSender extends AbstractJob {
             try {
 // eslint-disable-next-line no-await-in-loop
                 txHash = await this.ethereum.sendTransaction(
-                    transaction.from,
+                    senderAddress,
                     transaction.to,
                     transaction.value,
                     transaction.extra.data,

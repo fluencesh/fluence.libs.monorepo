@@ -13,11 +13,13 @@ class EthereumTxMiningListener extends AbstractBlockchainListener {
         return JOB_ID;
     }
 
-    constructor(executor) {
+    constructor(pluginManager, executor) {
         super(executor, JOB_ID, 'Ethereum Tx Mined Block Listener',
             new EthereumService(),
-            config.get('blockchain.ethereum.listener.sinceBlock'),
-            config.get('blockchain.ethereum.listener.minConfirmations'));
+            config.get('multivest.blockchain.ethereum.listener.sinceBlock'),
+            config.get('multivest.blockchain.ethereum.listener.minConfirmations'));
+
+        this.pluginManager = pluginManager;
     }
 
     async processBlock(block) {

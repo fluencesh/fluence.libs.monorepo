@@ -14,12 +14,14 @@ class EthereumTransactionSender extends AbstractJob {
         return JOB_ID;
     }
 
-    constructor(jobExecutor) {
+    constructor(pluginManager, jobExecutor) {
         super(jobExecutor, JOB_ID, 'Ethereum Transaction Sender');
+
+        this.pluginManager = pluginManager;
 
         this.ethereum = new EthereumService();
 
-        this.sendFromAddress = config.get('contracts.ico.ethereum.fromAddress');
+        this.sendFromAddress = config.get('multivest.contracts.ico.ethereum.fromAddress');
 
         jobExecutor.define(this.jobId, async (job, done) => {
             logger.info(`${this.jobTitle}: executing job`);

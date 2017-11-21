@@ -1,9 +1,8 @@
 const config = 'config';
 const bitcoin = 'bitcoinjs-lib';
 const Client = 'bitcoin-core';
-const logger = 'winston';
 
-const { AbstractBlockchain, MultivestError } = require('@applicature/multivest.core');
+const { AbstractBlockchain } = require('@applicature/multivest.core');
 
 class BitcoinService extends AbstractBlockchain {
     constructor(fake) {
@@ -23,6 +22,7 @@ class BitcoinService extends AbstractBlockchain {
         return hdNode.derive(0).derive(index).getAddress().toString();
     }
 
+// eslint-disable-next-line class-methods-use-this
     isValidAddress(address) {
         try {
             bitcoin.Address.fromBase58Check(address);
@@ -51,14 +51,14 @@ class BitcoinService extends AbstractBlockchain {
     }
 
     sendTransaction(from, to, amount, fee) {
-        return this.client.sendTransaction(from, to, amount);
+        return this.client.sendTransaction(from, to, amount, fee);
     }
 
     sendRawTransaction(txHex) {
         return this.client.sendRawTransaction(txHex);
     }
 
-    getBalance(address, minConf=1) {
+    getBalance(address, minConf = 1) {
         return this.client.getBalance(address, minConf);
     }
 }

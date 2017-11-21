@@ -15,13 +15,17 @@ class BitcoinTxMiningListener extends AbstractBlockchainListener {
         return JOB_ID;
     }
 
-    constructor(executor, database) {
+    constructor(pluginManager, executor) {
         super(executor, JOB_ID, 'Bitcoin Tx Mined Block Listener',
             new BitcoinService(),
-            config.get('blockchain.bitcoin.listener.sinceBlock'),
-            config.get('blockchain.bitcoin.listener.minConfirmations'));
+            config.get('multivest.blockchain.bitcoin.listener.sinceBlock'),
+            config.get('multivest.blockchain.bitcoin.listener.minConfirmations'));
 
-        this.database = database;
+        this.pluginManager = pluginManager;
+
+        // @TODO: set database
+
+        this.database = null; // database;
     }
 
     async processBlock(block) {

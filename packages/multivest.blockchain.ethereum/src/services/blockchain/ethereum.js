@@ -9,7 +9,7 @@ class EthereumService extends AbstractBlockchain {
         super();
 
         if (!!fake === false) {
-            this.clientProvider = new Web3.providers.HttpProvider(config.get('blockchain.ethereum.providers.native.url'));
+            this.clientProvider = new Web3.providers.HttpProvider(config.get('multivest.blockchain.ethereum.providers.native.url'));
 
             this.client = new Web3(this.clientProvider);
         }
@@ -23,7 +23,7 @@ class EthereumService extends AbstractBlockchain {
 
 // eslint-disable-next-line class-methods-use-this
     getHDAddress(index) {
-        const masterPublicKey = config.get('blockchain.ethereum.hd.masterPublicKey');
+        const masterPublicKey = config.get('multivest.blockchain.ethereum.hd.masterPublicKey');
 
         const wallet = EthereumBip44.fromPublicSeed(masterPublicKey);
 

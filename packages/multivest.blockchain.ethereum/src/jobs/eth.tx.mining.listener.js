@@ -6,9 +6,15 @@ const { TxStatus } = require('@applicature/multivest.mongodb.ico');
 
 const EthereumService = require('../services/blockchain/ethereum');
 
+const JOB_ID = 'eth.tx.mining.listener';
+
 class EthereumTxMiningListener extends AbstractBlockchainListener {
+    static getId() {
+        return JOB_ID;
+    }
+
     constructor(executor) {
-        super(executor, 'eth.tx.mining.listener', 'Ethereum Tx Mined Block Listener',
+        super(executor, JOB_ID, 'Ethereum Tx Mined Block Listener',
             new EthereumService(),
             config.get('blockchain.ethereum.listener.sinceBlock'),
             config.get('blockchain.ethereum.listener.minConfirmations'));

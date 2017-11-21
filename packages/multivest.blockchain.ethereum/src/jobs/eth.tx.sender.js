@@ -5,6 +5,8 @@ const { AbstractJob } = require('@applicature/multivest.core');
 
 const { TxStatus } = require('@applicature/multivest.mongodb.ico');
 
+const EthereumConstant = require('../services/constants/ethereum.constant');
+
 const EthereumService = require('../services/blockchain/ethereum');
 
 const JOB_ID = 'eth.tx.sender';
@@ -37,9 +39,13 @@ class EthereumTransactionSender extends AbstractJob {
         });
     }
 
+    async init() {
+        this.dao = await this.pluginManager.get('mongodb').getDao();
+    }
+
     async execute() {
-        const transactions = await this.database.getTransactionsByStatus(
-            EthereumService.getId(),
+        const transactions = await this.dao.transactions.listByStatus(
+            EthereumConstant.ETHEREUM,
             TxStatus.CREATED,
         );
 
@@ -54,8 +60,8 @@ class EthereumTransactionSender extends AbstractJob {
             }
 
 // eslint-disable-next-line no-await-in-loop
-            const txCount = await this.database.getTransactionsCountByAddress(
-                EthereumService.getId(),
+            const txCount = await this.dao.transactions.getCountByAddress(
+                EthereumConstant.ETHEREUM,
                 senderAddress,
             );
 
@@ -86,7 +92,7 @@ class EthereumTransactionSender extends AbstractJob {
             });
 
 // eslint-disable-next-line no-underscore-dangle,no-await-in-loop
-            await this.database.setTransactionHashAndStatus(transaction._id, txHash, TxStatus.SENT);
+            await this.dao.transactions.setHashAndStatus(transaction._id, txHash, TxStatus.SENT);
         }
     }
 }

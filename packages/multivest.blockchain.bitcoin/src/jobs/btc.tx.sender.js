@@ -8,9 +8,15 @@ const { BitcoinConstant } = require('../services/constants/bitcoin.constant');
 
 const BitcoinService = require('../services/blockchain/bitcoin');
 
+const JOB_ID = 'btc.tx.sender';
+
 class BitcoinTransactionSender extends AbstractJob {
+    static getId() {
+        return JOB_ID;
+    }
+
     constructor(jobExecutor, sendFromAddress) {
-        super(jobExecutor, 'btc.tx.sender', 'Bitcoin Transaction Sender');
+        super(jobExecutor, JOB_ID, 'Bitcoin Transaction Sender');
 
         this.bitcoin = new BitcoinService();
 

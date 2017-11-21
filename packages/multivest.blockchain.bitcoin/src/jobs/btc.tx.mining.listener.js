@@ -8,9 +8,15 @@ const { BitcoinConstant } = require('../services/constants/bitcoin.constant');
 
 const BitcoinService = require('../services/blockchain/bitcoin');
 
+const JOB_ID = 'btc.tx.mining.listener';
+
 class BitcoinTxMiningListener extends AbstractBlockchainListener {
+    static getId() {
+        return JOB_ID;
+    }
+
     constructor(executor, database) {
-        super(executor, 'btc.tx.mining.listener', 'Bitcoin Tx Mined Block Listener',
+        super(executor, JOB_ID, 'Bitcoin Tx Mined Block Listener',
             new BitcoinService(),
             config.get('blockchain.bitcoin.listener.sinceBlock'),
             config.get('blockchain.bitcoin.listener.minConfirmations'));

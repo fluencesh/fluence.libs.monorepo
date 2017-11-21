@@ -7,6 +7,8 @@ const EthereumTransactionSender = require('./src/jobs/eth.tx.sender');
 
 const ContractERC20 = require('./src/services/contracts/erc20.contract');
 
+const EthereumConstant = require('./src/services/constants/ethereum.constant');
+
 module.exports = {
     Plugin,
 
@@ -18,4 +20,7 @@ module.exports = {
 
     // contracts
     ContractERC20,
+
+    // constants
+    EthereumConstant,
 };

@@ -1,6 +1,6 @@
-const config = 'config';
-const bitcoin = 'bitcoinjs-lib';
-const Client = 'bitcoin-core';
+const config = require('config');
+const bitcoin = require('bitcoinjs-lib');
+const Client = require('bitcoin-core');
 
 const { AbstractBlockchain } = require('@applicature/multivest.core');
 

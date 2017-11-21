@@ -9,11 +9,11 @@ class BitcoinService extends AbstractBlockchain {
         super();
 
         if (!!fake === false) {
-            this.client = new Client(config.get('blockchain.bitcoin.providers.native'));
+            this.client = new Client(config.get('multivest.blockchain.bitcoin.providers.native'));
         }
 
-        this.network = bitcoin.networks[config.get('blockchain.bitcoin.network')];
-        this.masterPublicKey = config.get('blockchain.bitcoin.hd.masterPublicKey');
+        this.network = bitcoin.networks[config.get('multivest.blockchain.bitcoin.network')];
+        this.masterPublicKey = config.get('multivest.blockchain.bitcoin.hd.masterPublicKey');
     }
 
     getHDAddress(index) {

@@ -8,7 +8,7 @@ const { BitcoinConstant } = require('../services/constants/bitcoin.constant');
 
 const BitcoinService = require('../services/blockchain/bitcoin');
 
-export default class BitcoinTransactionSender extends AbstractJob {
+class BitcoinTransactionSender extends AbstractJob {
     constructor(jobExecutor, sendFromAddress) {
         super(jobExecutor, 'btc.tx.sender', 'Bitcoin Transaction Sender');
 
@@ -76,4 +76,4 @@ export default class BitcoinTransactionSender extends AbstractJob {
     }
 }
 
-module.exports = EthereumTransactionSender;
+module.exports = BitcoinTransactionSender;

@@ -15,17 +15,14 @@ class BitcoinTransactionSender extends AbstractJob {
         return JOB_ID;
     }
 
-    constructor(jobExecutor, sendFromAddress) {
+    constructor(pluginManager, jobExecutor) {
         super(jobExecutor, JOB_ID, 'Bitcoin Transaction Sender');
+
+        this.pluginManager = pluginManager;
 
         this.bitcoin = new BitcoinService();
 
-        if (!sendFromAddress) {
-            this.sendFromAddress = config.get('blockchain.bitcoin.sendFromAddress');
-        }
-        else {
-            this.sendFromAddress = sendFromAddress;
-        }
+        this.sendFromAddress = config.get('multivest.blockchain.bitcoin.sendFromAddress');
 
         jobExecutor.define(this.jobId, async (job, done) => {
             logger.info(`${this.jobTitle}: executing job`);

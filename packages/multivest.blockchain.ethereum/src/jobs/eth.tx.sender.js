@@ -7,7 +7,7 @@ const { TxStatus } = require('@applicature/multivest.mongodb.ico');
 
 const EthereumService = require('../services/blockchain/ethereum');
 
-export default class EthereumTransactionSender extends AbstractJob {
+class EthereumTransactionSender extends AbstractJob {
     constructor(jobExecutor) {
         super(jobExecutor, 'eth.tx.sender', 'Ethereum Transaction Sender');
 

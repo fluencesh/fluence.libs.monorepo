@@ -1,0 +1,62 @@
+const config = require('config');
+const logger = require('winston');
+
+const { AbstractBlockchainListener } = require('@applicature/multivest.core');
+const { TxStatus } = require('@applicature/multivest.mongodb.ico');
+
+const { BitcoinConstant } = require('../services/constants/bitcoin.constant');
+
+const BitcoinService = require('../services/blockchain/bitcoin');
+
+class BitcoinTxMiningListener extends AbstractBlockchainListener {
+    constructor(executor, database) {
+        super(executor, 'btc.tx.mining.listener', 'Bitcoin Tx Mined Block Listener',
+            new BitcoinService(),
+            config.get('blockchain.bitcoin.listener.sinceBlock'),
+            config.get('blockchain.bitcoin.listener.minConfirmations'));
+    }
+
+    async processBlock(block) {
+        const txMapping = {};
+
+// eslint-disable-next-line no-restricted-syntax
+        for (const tx of block.tx) {
+            txMapping[tx.hash] = tx;
+        }
+
+        if (block.tx.length === 0) {
+            return;
+        }
+
+        const transactions = await this.database.getTransactionsByStatus(
+            BitcoinConstant.BITCOIN, TxStatus.SENT);
+
+// eslint-disable-next-line no-restricted-syntax
+        for (const transaction of transactions) {
+// eslint-disable-next-line no-prototype-builtins
+            if (txMapping.hasOwnProperty(transaction.txHash)) {
+                const tx = txMapping[transaction.txHash];
+
+                logger.info(`${this.jobTitle}: setting transaction mined block`, {
+                    txHash: tx.hash,
+                    block: {
+                        hash: block.hash,
+                        number: block.height,
+                        timestamp: block.time,
+                    },
+                });
+
+// eslint-disable-next-line no-await-in-loop
+                this.database.setTransactionMinedBlock(
+                    BitcoinConstant.BITCOIN,
+                    tx.hash,
+                    block.hash,
+                    block.height,
+                    block.time,
+                );
+            }
+        }
+    }
+}
+
+module.exports = BitcoinTxMiningListener;

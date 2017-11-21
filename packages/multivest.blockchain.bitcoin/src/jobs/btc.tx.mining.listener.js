@@ -16,7 +16,7 @@ class BitcoinTxMiningListener extends AbstractBlockchainListener {
     }
 
     constructor(pluginManager, executor) {
-        super(executor, JOB_ID, 'Bitcoin Tx Mined Block Listener',
+        super(pluginManager, executor, JOB_ID, 'Bitcoin Tx Mined Block Listener',
             new BitcoinService(),
             config.get('multivest.blockchain.bitcoin.listener.sinceBlock'),
             config.get('multivest.blockchain.bitcoin.listener.minConfirmations'));

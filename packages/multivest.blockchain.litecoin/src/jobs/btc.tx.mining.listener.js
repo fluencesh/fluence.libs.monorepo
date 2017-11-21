@@ -14,6 +14,8 @@ class BitcoinTxMiningListener extends AbstractBlockchainListener {
             new BitcoinService(),
             config.get('blockchain.bitcoin.listener.sinceBlock'),
             config.get('blockchain.bitcoin.listener.minConfirmations'));
+
+        this.database = database;
     }
 
     async processBlock(block) {

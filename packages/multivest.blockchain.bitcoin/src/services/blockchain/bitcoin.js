@@ -41,7 +41,7 @@ class BitcoinService extends AbstractBlockchain {
     async getBlockByHeight(blockHeight) {
         const blockHash = await this.client.getBlockHash(blockHeight);
 
-        return await this.client.getBlockByHash(blockHash, { extension: 'json' });
+        return this.client.getBlockByHash(blockHash, { extension: 'json' });
     }
 
     async getTransactionByHash(txHash) {

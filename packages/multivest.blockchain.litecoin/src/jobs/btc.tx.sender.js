@@ -19,7 +19,7 @@ class BitcoinTransactionSender extends AbstractJob {
 
         this.pluginManager = pluginManager;
 
-        this.bitcoin = new BitcoinService();
+        this.blockchain = new BitcoinService();
 
         this.sendFromAddress = config.get('multivest.blockchain.bitcoin.sendFromAddress');
 
@@ -39,7 +39,7 @@ class BitcoinTransactionSender extends AbstractJob {
 
     async execute() {
         const transactions = await this.database.getTransactionsByStatus(
-            this.bitcoin.getNetworkId(),
+            this.blockchain.getNetworkId(),
             TxStatus.CREATED,
         );
 

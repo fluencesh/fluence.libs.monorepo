@@ -39,7 +39,7 @@ class BitcoinTxMiningListener extends AbstractBlockchainListener {
         }
 
         const transactions = await this.database.getTransactionsByStatus(
-            this.blockchain.getNetworkId, TxStatus.SENT);
+            this.blockchain.getNetworkId(), TxStatus.SENT);
 
 // eslint-disable-next-line no-restricted-syntax
         for (const transaction of transactions) {

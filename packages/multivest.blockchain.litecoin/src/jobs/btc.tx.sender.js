@@ -4,7 +4,6 @@ const logger = require('winston');
 const { AbstractJob } = require('@applicature/multivest.core');
 
 const { TxStatus } = require('@applicature/multivest.mongodb.ico');
-const { BitcoinConstant } = require('../services/constants/bitcoin.constant');
 
 const BitcoinService = require('../services/blockchain/bitcoin');
 
@@ -40,7 +39,7 @@ class BitcoinTransactionSender extends AbstractJob {
 
     async execute() {
         const transactions = await this.database.getTransactionsByStatus(
-            BitcoinConstant.BITCOIN,
+            this.bitcoin.getNetworkId(),
             TxStatus.CREATED,
         );
 

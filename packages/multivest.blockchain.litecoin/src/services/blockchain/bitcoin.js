@@ -1,7 +1,7 @@
 const config = require('config');
 const bitcoin = require('bitcoinjs-lib');
 const Client = require('bitcoin-core');
-
+const { NetworkConstant } = require('../constants/bitcoin.constant');
 const { AbstractBlockchain } = require('@applicature/multivest.core');
 
 class BitcoinService extends AbstractBlockchain {
@@ -42,6 +42,10 @@ class BitcoinService extends AbstractBlockchain {
         const blockHash = await this.client.getBlockHash(blockHeight);
 
         return this.client.getBlockByHash(blockHash, { extension: 'json' });
+    }
+
+    getNetworkId () {
+        return NetworkConstant;
     }
 
     async getTransactionByHash(txHash) {

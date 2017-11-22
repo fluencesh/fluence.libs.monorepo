@@ -4,8 +4,6 @@ const logger = require('winston');
 const { AbstractBlockchainListener } = require('@applicature/multivest.core');
 const { TxStatus } = require('@applicature/multivest.mongodb.ico');
 
-const { BitcoinConstant } = require('../services/constants/bitcoin.constant');
-
 const BitcoinService = require('../services/blockchain/bitcoin');
 
 const JOB_ID = 'btc.tx.mining.listener';
@@ -41,7 +39,7 @@ class BitcoinTxMiningListener extends AbstractBlockchainListener {
         }
 
         const transactions = await this.database.getTransactionsByStatus(
-            BitcoinConstant.BITCOIN, TxStatus.SENT);
+            this.blockchain.getNetworkId, TxStatus.SENT);
 
 // eslint-disable-next-line no-restricted-syntax
         for (const transaction of transactions) {
@@ -60,7 +58,7 @@ class BitcoinTxMiningListener extends AbstractBlockchainListener {
 
 // eslint-disable-next-line no-await-in-loop
                 this.database.setTransactionMinedBlock(
-                    BitcoinConstant.BITCOIN,
+                    this.blockchain.getNetworkId(),
                     tx.hash,
                     block.hash,
                     block.height,

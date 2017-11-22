@@ -41,7 +41,7 @@ class BitcoinService extends AbstractBlockchain {
     async getBlockByHeight(blockHeight) {
         const blockHash = await this.client.getBlockHash(blockHeight);
 
-        return this.client.getBlockByHash(blockHash, { extension: 'json' });
+        return await this.client.getBlockByHash(blockHash, { extension: 'json' });
     }
 
     async getTransactionByHash(txHash) {
@@ -60,6 +60,16 @@ class BitcoinService extends AbstractBlockchain {
 
     getBalance(address, minConf = 1) {
         return this.client.getBalance(address, minConf);
+    }
+
+// eslint-disable-next-line class-methods-use-this
+    getBlockNumber(block) {
+        return block.height;
+    }
+
+// eslint-disable-next-line class-methods-use-this
+    getBlockTimestamp(block) {
+        return block.time;
     }
 }
 

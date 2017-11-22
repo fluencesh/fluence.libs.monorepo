@@ -2,12 +2,12 @@
 
 const assert = require('assert');
 
-const BlockchainBitcoinPlugin = require('../src/plugin.blockchain.bitcoin');
+const BlockchainLitecoinPlugin = require('../src/plugin.blockchain.litecoin');
 
 // eslint-disable-next-line no-undef
-describe('plugin.blockchain.bitcoin', () => {
+describe('plugin.blockchain.litecoin', () => {
 // eslint-disable-next-line no-undef
     it('register plugin', () => {
-        const plugin = new BlockchainBitcoinPlugin();
+        const plugin = new BlockchainLitecoinPlugin();
     });
 });

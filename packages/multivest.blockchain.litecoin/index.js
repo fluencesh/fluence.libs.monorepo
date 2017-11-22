@@ -1,21 +1,21 @@
-const Plugin = require('./src/plugin.blockchain.bitcoin');
+const Plugin = require('./src/plugin.blockchain.litecoin');
 
-const BitcoinService = require('./src/services/blockchain/bitcoin');
+const LitecoinService = require('./src/services/blockchain/litecoin');
 
-const BitcoinTxMiningListener = require('./src/jobs/btc.tx.mining.listener');
-const BitcoinTransactionSender = require('./src/jobs/btc.tx.sender');
+const LitecoinTxMiningListener = require('./src/jobs/ltc.tx.mining.listener');
+const LitecoinTransactionSender = require('./src/jobs/ltc.tx.sender');
 
-const BitcoinConstant = require('./src/services/constants/bitcoin.constant');
+const LitecoinConstant = require('./src/services/constants/litecoin.constant');
 
 module.exports = {
     Plugin,
 
-    BitcoinService,
+    LitecoinService,
 
     // jobs
-    BitcoinTxMiningListener,
-    BitcoinTransactionSender,
+    LitecoinTxMiningListener,
+    LitecoinTransactionSender,
 
     // constants
-    BitcoinConstant,
+    LitecoinConstant,
 };

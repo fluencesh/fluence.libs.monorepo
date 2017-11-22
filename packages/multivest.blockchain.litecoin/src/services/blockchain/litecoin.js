@@ -1,0 +1,20 @@
+const config = require('config');
+const bitecoin = require('bitcoinjs-lib');
+const Client = require('bitcoin-core');
+
+const { BitcoinService } = require('@applicature/multivest.blockchain.bitcoin');
+
+class LitecoinService extends BitcoinService {
+    constructor(fake) {
+        super();
+
+        if (!!fake === false) {
+            this.client = new Client(config.get('multivest.blockchain.litecoin.providers.native'));
+        }
+
+        this.network = bitecoin.networks[config.get('multivest.blockchain.litecoin.network')];
+        this.masterPublicKey = config.get('multivest.blockchain.litecoin.hd.masterPublicKey');
+    }
+}
+
+module.exports = LitecoinService;

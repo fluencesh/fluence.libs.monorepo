@@ -5,8 +5,6 @@ const { AbstractJob } = require('@applicature/multivest.core');
 
 const { TxStatus } = require('@applicature/multivest.mongodb.ico');
 
-const EthereumConstant = require('../services/constants/ethereum.constant');
-
 const EthereumService = require('../services/blockchain/ethereum');
 
 const JOB_ID = 'eth.tx.sender';
@@ -21,7 +19,7 @@ class EthereumTransactionSender extends AbstractJob {
 
         this.pluginManager = pluginManager;
 
-        this.ethereum = new EthereumService();
+        this.blockchain = new EthereumService();
 
         this.sendFromAddress = config.get('multivest.blockchain.ethereum.senderAddress');
 
@@ -44,8 +42,8 @@ class EthereumTransactionSender extends AbstractJob {
     }
 
     async execute() {
-        const transactions = await this.dao.transactions.listByStatus(
-            EthereumConstant.ETHEREUM,
+        const transactions = await this.dao.transactions.listByNetworkAndStatus(
+            this.blockchain.getNetworkId(),
             TxStatus.CREATED,
         );
 
@@ -61,7 +59,7 @@ class EthereumTransactionSender extends AbstractJob {
 
 // eslint-disable-next-line no-await-in-loop
             const txCount = await this.dao.transactions.getCountByAddress(
-                EthereumConstant.ETHEREUM,
+                this.blockchain.getNetworkId(),
                 senderAddress,
             );
 
@@ -69,7 +67,7 @@ class EthereumTransactionSender extends AbstractJob {
 
             try {
 // eslint-disable-next-line no-await-in-loop
-                txHash = await this.ethereum.sendTransaction(
+                txHash = await this.blockchain.sendTransaction(
                     senderAddress,
                     transaction.to,
                     transaction.value,

@@ -34,8 +34,8 @@ class EthereumTxMiningListener extends AbstractBlockchainListener {
             return;
         }
 
-        const transactions = await this.database.getTransactionsByStatus(
-            EthereumService.getId(), TxStatus.SENT);
+        const transactions = await this.dao.transactions.listByNetworkAndStatus(
+            this.blockchain.getNetworkId(), TxStatus.SENT);
 
 // eslint-disable-next-line no-restricted-syntax
         for (const transaction of transactions) {
@@ -43,7 +43,7 @@ class EthereumTxMiningListener extends AbstractBlockchainListener {
             if (txMapping.hasOwnProperty(transaction.txHash)) {
                 const tx = txMapping[transaction.txHash];
 
-                logger.info('ETH Listener: setting ethereum transaction mined block', {
+                logger.info(`${this.blockchain.getNetworkId()}: setting ethereum transaction mined block`, {
                     txHash: tx.hash,
                     block: {
                         hash: block.hash,
@@ -53,8 +53,8 @@ class EthereumTxMiningListener extends AbstractBlockchainListener {
                 });
 
 // eslint-disable-next-line no-await-in-loop
-                await this.database.setTransactionMinedBlock(
-                    EthereumService.getId(),
+                await this.dao.transactions.setMinedBlock(
+                    this.blockchain.getNetworkId(),
                     tx.hash,
                     block.hash,
                     block.number,

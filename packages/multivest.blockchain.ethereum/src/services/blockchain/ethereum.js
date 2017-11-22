@@ -4,6 +4,8 @@ const Web3 = require('web3');
 
 const { AbstractBlockchain, MultivestError } = require('@applicature/multivest.core');
 
+const EthereumConstant = require('../constants/ethereum.constant');
+
 class EthereumService extends AbstractBlockchain {
     constructor(fake) {
         super();
@@ -13,6 +15,11 @@ class EthereumService extends AbstractBlockchain {
 
             this.client = new Web3(this.clientProvider);
         }
+    }
+
+// eslint-disable-next-line class-methods-use-this
+    getNetworkId() {
+        return EthereumConstant.ETHEREUM;
     }
 
     getContract(abi, address) {
@@ -99,6 +106,16 @@ class EthereumService extends AbstractBlockchain {
             to,
             data,
         });
+    }
+
+// eslint-disable-next-line class-methods-use-this
+    getBlockNumber(block) {
+        return block.number;
+    }
+
+// eslint-disable-next-line class-methods-use-this
+    getBlockTimestamp(block) {
+        return block.timestamp;
     }
 }
 

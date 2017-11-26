@@ -1,13 +1,13 @@
 const config = require('config');
 const logger = require('winston');
 
-const { BitcoinTransactionSender } = require('@applicature/multivest.blockchain.bitcoin');
+const { CompatibleBitcoinTransactionSender } = require('@applicature/multivest.blockchain.bitcoin');
 
 const LitecoinService = require('../services/blockchain/litecoin');
 
 const JOB_ID = 'ltc.tx.sender';
 
-class LitecoinTransactionSender extends BitcoinTransactionSender {
+class LitecoinTransactionSender extends CompatibleBitcoinTransactionSender {
     static getId() {
         return JOB_ID;
     }

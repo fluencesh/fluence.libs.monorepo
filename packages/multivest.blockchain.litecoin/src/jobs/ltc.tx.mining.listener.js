@@ -1,11 +1,11 @@
 const config = require('config');
-const { BitcoinTxMiningListener } = require('@applicature/multivest.blockchain.bitcoin');
+const { CompatibleBitcoinTxMiningListener } = require('@applicature/multivest.blockchain.bitcoin');
 
 const LitecoinService = require('../services/blockchain/litecoin');
 
 const JOB_ID = 'ltc.tx.mining.listener';
 
-class LitecoinTxMiningListener extends BitcoinTxMiningListener {
+class LitecoinTxMiningListener extends CompatibleBitcoinTxMiningListener {
     static getId() {
         return JOB_ID;
     }

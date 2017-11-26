@@ -1,4 +1,5 @@
 const config = require('config');
+
 const { CompatibleBitcoinTxMiningListener } = require('@applicature/multivest.blockchain.bitcoin');
 
 const LitecoinService = require('../services/blockchain/litecoin');

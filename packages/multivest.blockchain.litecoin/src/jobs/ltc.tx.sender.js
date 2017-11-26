@@ -1,5 +1,4 @@
 const config = require('config');
-const logger = require('winston');
 
 const { CompatibleBitcoinTransactionSender } = require('@applicature/multivest.blockchain.bitcoin');
 
@@ -13,26 +12,12 @@ class LitecoinTransactionSender extends CompatibleBitcoinTransactionSender {
     }
 
     constructor(pluginManager, jobExecutor) {
-        super(jobExecutor, JOB_ID, 'Litecoin Transaction Sender');
-
-        this.pluginManager = pluginManager;
-
-        this.blockchain = new LitecoinService();
-
-        this.sendFromAddress = config.get('multivest.blockchain.litecoin.sendFromAddress');
-
-        jobExecutor.define(this.jobId, async (job, done) => {
-            logger.info(`${this.jobTitle}: executing job`);
-
-            try {
-                await this.execute();
-            }
-            catch (err) {
-                logger.error(`${this.jobTitle} failed to execute`, err);
-
-                done(err);
-            }
-        });
+        super(
+            pluginManager,
+            new LitecoinService(), jobExecutor,
+            JOB_ID, 'Litecoin Transaction Sender',
+            config.get('multivest.blockchain.litecoin.sendFromAddress'),
+        );
     }
 }
 

@@ -4,7 +4,6 @@ const logger = require('winston');
 const { AbstractJob } = require('@applicature/multivest.core');
 
 const { TxStatus } = require('@applicature/multivest.mongodb.ico');
-const { BitcoinConstant } = require('../services/constants/bitcoin.constant');
 
 const BitcoinService = require('../services/blockchain/bitcoin');
 
@@ -42,9 +41,13 @@ class BitcoinTransactionSender extends AbstractJob {
         });
     }
 
+    async init() {
+        this.dao = await this.pluginManager.get('mongodb').getDao();
+    }
+
     async execute() {
-        const transactions = await this.database.getTransactionsByStatus(
-            BitcoinConstant.BITCOIN,
+        const transactions = await this.dao.transactions.listByNetworkAndStatus(
+            this.blockchain.getNetworkId(),
             TxStatus.CREATED,
         );
 
@@ -52,14 +55,19 @@ class BitcoinTransactionSender extends AbstractJob {
         for (const transaction of transactions) {
             logger.info(`${this.jobTitle}: send transaction`, transaction);
 
+            let senderAddress = transaction.from;
+
+            if (!senderAddress) {
+                senderAddress = this.sendFromAddress;
+            }
+
 // eslint-disable-next-line no-await-in-loop
             let txHash;
 
             try {
 // eslint-disable-next-line no-await-in-loop
                 txHash = await this.bitcoin.sendTransaction(
-
-                    transaction.from,
+                    senderAddress,
                     transaction.to,
                     transaction.value,
                     transaction.fee,
@@ -78,7 +86,7 @@ class BitcoinTransactionSender extends AbstractJob {
             });
 
 // eslint-disable-next-line no-underscore-dangle,no-await-in-loop
-            await this.database.setTransactionHashAndStatus(transaction._id, txHash, TxStatus.SENT);
+            await this.dao.transactions.setHashAndStatus(transaction._id, txHash, TxStatus.SENT);
         }
     }
 }

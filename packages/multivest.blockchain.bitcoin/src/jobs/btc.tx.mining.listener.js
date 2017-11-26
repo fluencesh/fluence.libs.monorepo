@@ -22,10 +22,6 @@ class BitcoinTxMiningListener extends AbstractBlockchainListener {
             config.get('multivest.blockchain.bitcoin.listener.minConfirmations'));
 
         this.pluginManager = pluginManager;
-
-        // @TODO: set database
-
-        this.database = null; // database;
     }
 
     async processBlock(block) {
@@ -40,8 +36,8 @@ class BitcoinTxMiningListener extends AbstractBlockchainListener {
             return;
         }
 
-        const transactions = await this.database.getTransactionsByStatus(
-            BitcoinConstant.BITCOIN, TxStatus.SENT);
+        const transactions = await this.dao.transactions.listByNetworkAndStatus(
+            this.blockchain.getNetworkId(), TxStatus.SENT);
 
 // eslint-disable-next-line no-restricted-syntax
         for (const transaction of transactions) {
@@ -49,7 +45,7 @@ class BitcoinTxMiningListener extends AbstractBlockchainListener {
             if (txMapping.hasOwnProperty(transaction.txHash)) {
                 const tx = txMapping[transaction.txHash];
 
-                logger.info(`${this.jobTitle}: setting transaction mined block`, {
+                logger.info(`${this.blockchain.getNetworkId()}: setting transaction mined block`, {
                     txHash: tx.hash,
                     block: {
                         hash: block.hash,
@@ -59,8 +55,8 @@ class BitcoinTxMiningListener extends AbstractBlockchainListener {
                 });
 
 // eslint-disable-next-line no-await-in-loop
-                this.database.setTransactionMinedBlock(
-                    BitcoinConstant.BITCOIN,
+                await this.dao.transactions.setMinedBlock(
+                    this.blockchain.getNetworkId(),
                     tx.hash,
                     block.hash,
                     block.height,

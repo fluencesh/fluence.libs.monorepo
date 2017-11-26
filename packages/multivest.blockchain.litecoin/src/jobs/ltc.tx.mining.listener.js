@@ -6,6 +6,10 @@ const LitecoinService = require('../services/blockchain/litecoin');
 const JOB_ID = 'ltc.tx.mining.listener';
 
 class LitecoinTxMiningListener extends BitcoinTxMiningListener {
+    static getId() {
+        return JOB_ID;
+    }
+
     constructor(pluginManager, executor) {
         super(pluginManager, executor, JOB_ID, 'Litecoin Tx Mined Block Listener',
             new LitecoinService(),

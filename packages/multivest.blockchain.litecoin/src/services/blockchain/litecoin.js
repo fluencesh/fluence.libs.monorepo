@@ -2,6 +2,8 @@ const config = require('config');
 const bitecoin = require('bitcoinjs-lib');
 const Client = require('bitcoin-core');
 
+const LitecoinConstant = require('../constants/litecoin.constant')
+
 const { BitcoinService } = require('@applicature/multivest.blockchain.bitcoin');
 
 class LitecoinService extends BitcoinService {
@@ -14,6 +16,11 @@ class LitecoinService extends BitcoinService {
 
         this.network = bitecoin.networks[config.get('multivest.blockchain.litecoin.network')];
         this.masterPublicKey = config.get('multivest.blockchain.litecoin.hd.masterPublicKey');
+    }
+
+// eslint-disable-next-line class-methods-use-this
+    getNetworkId() {
+        return LitecoinConstant.LITECOIN;
     }
 }
 

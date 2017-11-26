@@ -1,3 +1,3 @@
 const LITECOIN = 'LITECOIN';
 
-module.exports = LITECOIN;
+module.exports = { LITECOIN };

@@ -30,6 +30,8 @@ class EthereumTransactionSender extends AbstractJob {
                 await this.execute();
 
                 logger.info(`${this.jobTitle}: executed`);
+
+                done();
             }
             catch (err) {
                 logger.error(`${this.jobTitle} failed to execute`, err);

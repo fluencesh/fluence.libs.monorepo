@@ -4,8 +4,6 @@ const logger = require('winston');
 const { AbstractBlockchainListener } = require('@applicature/multivest.core');
 const { TxStatus } = require('@applicature/multivest.mongodb.ico');
 
-const { BitcoinConstant } = require('../services/constants/bitcoin.constant');
-
 const BitcoinService = require('../services/blockchain/bitcoin');
 
 const JOB_ID = 'btc.tx.mining.listener';

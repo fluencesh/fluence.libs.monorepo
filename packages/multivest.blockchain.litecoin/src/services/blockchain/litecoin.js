@@ -2,7 +2,7 @@ const config = require('config');
 const bitecoin = require('bitcoinjs-lib');
 const Client = require('bitcoin-core');
 
-const LitecoinConstant = require('../constants/litecoin.constant')
+const LitecoinConstant = require('../constants/litecoin.constant');
 
 const { BitcoinService } = require('@applicature/multivest.blockchain.bitcoin');
 

@@ -1,7 +1,7 @@
 const { AbstractPlugin } = require('@applicature/multivest.core');
 
-const LitecoinTxMiningListener = require('./jobs/btc.tx.mining.listener');
-const LitecoinTransactionSender = require('./jobs/btc.tx.sender');
+const LitecoinTxMiningListener = require('./jobs/ltc.tx.mining.listener');
+const LitecoinTransactionSender = require('./jobs/ltc.tx.sender');
 
 class LitecoinBlockchainPlugin extends AbstractPlugin {
     constructor(pluginManager) {

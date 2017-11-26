@@ -29,6 +29,10 @@ class BitcoinTransactionSender extends AbstractJob {
 
             try {
                 await this.execute();
+
+                logger.info(`${this.jobTitle}: executed`);
+
+                done();
             }
             catch (err) {
                 logger.error(`${this.jobTitle} failed to execute`, err);

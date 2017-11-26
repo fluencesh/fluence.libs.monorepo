@@ -4,6 +4,8 @@ const Client = require('bitcoin-core');
 
 const { AbstractBlockchain } = require('@applicature/multivest.core');
 
+const BlockchainConstant = require('../constants/bitcoin.constant');
+
 class BitcoinService extends AbstractBlockchain {
     constructor(fake) {
         super();
@@ -14,6 +16,12 @@ class BitcoinService extends AbstractBlockchain {
 
         this.network = bitcoin.networks[config.get('multivest.blockchain.bitcoin.network')];
         this.masterPublicKey = config.get('multivest.blockchain.bitcoin.hd.masterPublicKey');
+    }
+
+
+// eslint-disable-next-line class-methods-use-this
+    getNetworkId() {
+        return BlockchainConstant.BITCOIN;
     }
 
     getHDAddress(index) {

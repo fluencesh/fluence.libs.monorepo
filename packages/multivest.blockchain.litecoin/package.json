@@ -25,8 +25,8 @@
     "url": "git@bitbucket.com:applicature/multivest.blockchain.litecoin.git"
   },
   "dependencies": {
-    "@applicature/multivest.core": "git+ssh://git@bitbucket.org/applicature/multivest.plugin-manager.git",
     "@applicature/multivest.blockchain.bitcoin": "git+ssh://git@bitbucket.org/applicature/multivest.blockchain.bitcoin.git",
+    "@applicature/multivest.core": "git+ssh://git@bitbucket.org/applicature/multivest.plugin-manager.git",
     "@applicature/multivest.mongodb.ico": "git+ssh://git@bitbucket.org/applicature/multivest.mongodb.ico.git",
     "bignumber.js": "^4.1.0",
     "bitcoin-core": "^1.2.0",

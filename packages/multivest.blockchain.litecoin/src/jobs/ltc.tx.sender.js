@@ -3,8 +3,6 @@ const logger = require('winston');
 
 const { BitcoinTransactionSender } = require('@applicature/multivest.blockchain.bitcoin');
 
-const { TxStatus } = require('@applicature/multivest.mongodb.ico');
-
 const LitecoinService = require('../services/blockchain/litecoin');
 
 const JOB_ID = 'ltc.tx.sender';

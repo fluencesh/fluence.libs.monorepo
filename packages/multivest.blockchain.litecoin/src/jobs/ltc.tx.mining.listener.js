@@ -1,7 +1,5 @@
 const config = require('config');
-const logger = require('winston');
 const { BitcoinTxMiningListener } = require('@applicature/multivest.blockchain.bitcoin');
-const { TxStatus } = require('@applicature/multivest.mongodb.ico');
 
 const LitecoinService = require('../services/blockchain/litecoin');
 
@@ -15,10 +13,6 @@ class LitecoinTxMiningListener extends BitcoinTxMiningListener {
             config.get('multivest.blockchain.litecoin.listener.minConfirmations'));
 
         this.pluginManager = pluginManager;
-
-        // @TODO: set database
-
-        this.database = null; // database;
     }
 }
 

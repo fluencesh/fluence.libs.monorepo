@@ -14,7 +14,7 @@ class LitecoinService extends BitcoinService {
             this.client = new Client(config.get('multivest.blockchain.litecoin.providers.native'));
         }
 
-        this.network = bitecoin.networks[config.get('multivest.blockchain.litecoin.network')];
+        this.network = bitecoin.networks.litecoin;
         this.masterPublicKey = config.get('multivest.blockchain.litecoin.hd.masterPublicKey');
     }
 

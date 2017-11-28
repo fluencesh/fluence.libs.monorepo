@@ -1,5 +1,6 @@
 const config = require('config');
 const EthereumBip44 = require('ethereum-bip44');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const Web3 = require('web3');
 
 const { AbstractBlockchain, MultivestError } = require('@applicature/multivest.core');

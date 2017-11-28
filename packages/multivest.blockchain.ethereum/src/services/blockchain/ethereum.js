@@ -22,6 +22,11 @@ class EthereumService extends AbstractBlockchain {
         return EthereumConstant.ETHEREUM;
     }
 
+// eslint-disable-next-line class-methods-use-this
+    getSymbol() {
+        return 'ETH';
+    }
+
     getContract(abi, address) {
         const contract = new this.client.eth.Contract(abi, address);
 

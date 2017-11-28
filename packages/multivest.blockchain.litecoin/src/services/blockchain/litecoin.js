@@ -22,6 +22,11 @@ class LitecoinService extends BitcoinService {
     getNetworkId() {
         return LitecoinConstant.LITECOIN;
     }
+
+// eslint-disable-next-line class-methods-use-this
+    getSymbol() {
+        return 'LTC';
+    }
 }
 
 module.exports = LitecoinService;

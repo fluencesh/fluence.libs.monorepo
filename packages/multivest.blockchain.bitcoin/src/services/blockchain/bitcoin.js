@@ -24,6 +24,11 @@ class BitcoinService extends AbstractBlockchain {
         return BlockchainConstant.BITCOIN;
     }
 
+// eslint-disable-next-line class-methods-use-this
+    getSymbol() {
+        return 'BTC';
+    }
+
     getHDAddress(index) {
         const hdNode = bitcoin.HDNode.fromBase58(this.masterPublicKey, this.network);
 

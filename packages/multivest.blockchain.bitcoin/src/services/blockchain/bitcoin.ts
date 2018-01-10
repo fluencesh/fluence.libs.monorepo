@@ -1,12 +1,20 @@
-const config = require('config');
-const bitcoin = require('bitcoinjs-lib');
-const Client = require('bitcoin-core');
+// const config = require('config');
+// const bitcoin = require('bitcoinjs-lib');
+// const Client = require('bitcoin-core');
 
-const { AbstractBlockchain } = require('@applicature/multivest.core');
+// const { AbstractBlockchain } = require('@applicature/multivest.core');
 
-const BlockchainConstant = require('../constants/bitcoin.constant');
+// const BlockchainConstant = require('../constants/bitcoin.constant');
+import * as config from 'config';
+import { Client } from 'bitcoin-core';
+import * as bitcoin from 'bitcoinjs-lib';
+import { BlockchainService } from '@applicature/multivest.core';
 
-class BitcoinService extends AbstractBlockchain {
+export class BitcoinService extends BlockchainService {
+    private client: Client;
+    private network: bitcoin.Network;
+    private masterPublicKey: string
+
     constructor(fake) {
         super();
 
@@ -14,13 +22,15 @@ class BitcoinService extends AbstractBlockchain {
             this.client = new Client(config.get('multivest.blockchain.bitcoin.providers.native'));
         }
 
-        this.network = bitcoin.networks[config.get('multivest.blockchain.bitcoin.network')];
+        this.network = bitcoin.networks[
+            config.get('multivest.blockchain.bitcoin.network') as 'bitcoin' | 'litecoin' | 'testnet'
+        ];
         this.masterPublicKey = config.get('multivest.blockchain.bitcoin.hd.masterPublicKey');
     }
 
 
 // eslint-disable-next-line class-methods-use-this
-    getNetworkId() {
+    getBlockchainId() {
         return BlockchainConstant.BITCOIN;
     }
 
@@ -74,16 +84,4 @@ class BitcoinService extends AbstractBlockchain {
     getBalance(address, minConf = 1) {
         return this.client.getBalance(address, minConf);
     }
-
-// eslint-disable-next-line class-methods-use-this
-    getBlockNumber(block) {
-        return block.height;
-    }
-
-// eslint-disable-next-line class-methods-use-this
-    getBlockTimestamp(block) {
-        return block.time;
-    }
 }
-
-module.exports = BitcoinService;

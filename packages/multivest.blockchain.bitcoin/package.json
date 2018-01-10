@@ -25,8 +25,9 @@
     "url": "git@bitbucket.com:applicature/multivest.blockchain.bitcoin.git"
   },
   "dependencies": {
-    "@applicature/multivest.core": "git+ssh://git@bitbucket.org/applicature/multivest.plugin-manager.git",
-    "@applicature/multivest.mongodb.ico": "git+ssh://git@bitbucket.org/applicature/multivest.mongodb.ico.git",
+    "@applicature/multivest.core": "git+ssh://git@bitbucket.org/applicature/multivest.plugin-manager.git#typescriptification",
+    "@applicature/multivest.mongodb.ico": "git+ssh://git@bitbucket.org/applicature/multivest.mongodb.ico.git#typescriptification",
+    "agenda": "^1.0.3",
     "bignumber.js": "^4.1.0",
     "bitcoin-core": "^1.2.0",
     "bitcoinjs-lib": "^3.3.0",
@@ -35,6 +36,12 @@
     "winston": "^2.1.1"
   },
   "devDependencies": {
+    "@types/agenda": "^1.0.1",
+    "@types/bitcoinjs-lib": "^3.3.1",
+    "@types/config": "0.0.33",
+    "@types/mongodb": "^2.2.18",
+    "@types/node": "^8.5.2",
+    "@types/winston": "^2.3.7",
     "assert": "^1.4.1",
     "chai": "^4.0.2",
     "chai-subset": "^1.5.0",
@@ -52,10 +59,10 @@
     "lodash.clone": "^4.5.0",
     "mocha": "^3.4.2",
     "nodemon": "^1.11.0",
+    "nsp": "^3.1.0",
     "nyc": "^11.0.2",
     "should": "^10.0.0",
     "supertest": "^1.2.0",
-    "supertest-as-promised": "^4.0.2",
-    "nsp": "^3.1.0"
+    "supertest-as-promised": "^4.0.2"
   }
 }

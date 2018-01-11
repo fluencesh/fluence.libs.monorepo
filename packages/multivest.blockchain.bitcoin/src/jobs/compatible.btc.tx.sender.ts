@@ -1,13 +1,8 @@
-// const logger = require('winston');
-
-// const { AbstractJob } = require('@applicature/multivest.core');
-
-// const { TxStatus } = require('@applicature/multivest.mongodb.ico');
 import * as config from 'config';
 import * as logger from 'winston';
 import * as Agenda from 'agenda';
-import { Dao, Job, Hashtable, PluginManager } from '@applicature/multivest.core';
-import { IcoCompositeDao, TransactionDao, TransactionStatus } from '@applicature/multivest.mongodb.ico';
+import { Dao, Job, Hashtable, PluginManager, Scheme } from '@applicature/multivest.core';
+import { IcoCompositeDao, TransactionDao } from '@applicature/multivest.mongodb.ico';
 import { BitcoinService } from '../services/blockchain/bitcoin';
 
 
@@ -19,24 +14,7 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
         private blockchainService: BitcoinService, 
         private sendFromAddress: string
     ) {
-        super(pluginManager, pluginManager.getExecutor());
-
-        this.jobExecutor.define(this.getJobId(), async (job, done) => {
-            logger.info(`${this.getJobId()}: executing job`);
-
-            try {
-                await this.execute();
-
-                logger.info(`${this.getJobId()}: executed`);
-
-                done();
-            }
-            catch (err) {
-                logger.error(`${this.getJobId()} failed to execute`, err);
-
-                done(err);
-            }
-        });
+        super(pluginManager);
     }
 
     async init() {
@@ -47,7 +25,7 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
         const transactionDao = this.daos.transactions as TransactionDao;
         const transactions = await transactionDao.listByNetworkAndStatus(
             this.blockchainService.getBlockchainId(),
-            TransactionStatus.Created
+            Scheme.TransactionStatus.Created
         );
 
         for (const transaction of transactions) {
@@ -55,18 +33,18 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
 
 
 
-            if (!transaction.tx.from[0].address) {
-                transaction.tx.from[0].address = this.sendFromAddress;
+            if (!transaction.ref.from[0].address) {
+                transaction.ref.from[0].address = this.sendFromAddress;
             }
 
             let txHash;
 
             try {
                 txHash = await this.blockchainService.sendTransaction({
-                    hash: transaction.tx.hash,
-                    from: transaction.tx.from,
-                    to: transaction.tx.to,
-                    fee: transaction.tx.fee
+                    hash: transaction.ref.hash,
+                    from: transaction.ref.from,
+                    to: transaction.ref.to,
+                    fee: transaction.ref.fee
                 });
             }
             catch (error) {
@@ -79,11 +57,10 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
                 txHash,
             });
 
-            //@TODO: add _id
             await transactionDao.setHashAndStatus(
-                transaction.uniqId, 
+                transaction._id, 
                 txHash, 
-                TransactionStatus.Sent
+                Scheme.TransactionStatus.Sent
             );
         }
     }

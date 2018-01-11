@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@applicature/multivest.core": "***REMOVED***.plugin-manager.git#typescriptification",
+    "@applicature/multivest.blockchain": "***REMOVED***.blockchain.git",
     "@applicature/multivest.mongodb.ico": "***REMOVED***.mongodb.ico.git#typescriptification",
     "agenda": "^1.0.3",
     "bignumber.js": "^4.1.0",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@types/agenda": "^1.0.1",
     "@types/bitcoinjs-lib": "^3.3.1",
+    "@types/bluebird": "^3.5.19",
     "@types/config": "0.0.33",
     "@types/mongodb": "^2.2.18",
     "@types/node": "^8.5.2",

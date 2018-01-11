@@ -2,7 +2,8 @@
 import * as config from 'config';
 import { Client } from 'bitcoin-core';
 import * as bitcoin from 'bitcoinjs-lib';
-import { BlockchainService, Transaction } from '@applicature/multivest.core';
+import { Transaction } from '@applicature/multivest.core';
+import { BlockchainService } from '@applicature/multivest.blockchain';
 import { BITCOIN } from '../constants';
 
 export class BitcoinService extends BlockchainService {

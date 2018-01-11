@@ -1,24 +1,19 @@
-// const config = require('config');
-// const bitcoin = require('bitcoinjs-lib');
-// const Client = require('bitcoin-core');
 
-// const { AbstractBlockchain } = require('@applicature/multivest.core');
-
-// const BlockchainConstant = require('../constants/bitcoin.constant');
 import * as config from 'config';
 import { Client } from 'bitcoin-core';
 import * as bitcoin from 'bitcoinjs-lib';
-import { BlockchainService } from '@applicature/multivest.core';
+import { BlockchainService, Transaction } from '@applicature/multivest.core';
+import { BITCOIN } from '../constants';
 
 export class BitcoinService extends BlockchainService {
     private client: Client;
     private network: bitcoin.Network;
     private masterPublicKey: string
 
-    constructor(fake) {
+    constructor(fake?: boolean) {
         super();
 
-        if (!!fake === false) {
+        if (!fake) {
             this.client = new Client(config.get('multivest.blockchain.bitcoin.providers.native'));
         }
 
@@ -28,27 +23,23 @@ export class BitcoinService extends BlockchainService {
         this.masterPublicKey = config.get('multivest.blockchain.bitcoin.hd.masterPublicKey');
     }
 
-
-// eslint-disable-next-line class-methods-use-this
     getBlockchainId() {
-        return BlockchainConstant.BITCOIN;
+        return BITCOIN;
     }
 
-// eslint-disable-next-line class-methods-use-this
     getSymbol() {
         return 'BTC';
     }
 
-    getHDAddress(index) {
+    getHDAddress(index: number) {
         const hdNode = bitcoin.HDNode.fromBase58(this.masterPublicKey, this.network);
 
         return hdNode.derive(0).derive(index).getAddress().toString();
     }
 
-// eslint-disable-next-line class-methods-use-this
-    isValidAddress(address) {
+    isValidAddress(address: string) {
         try {
-            bitcoin.Address.fromBase58Check(address);
+            bitcoin.address.fromBase58Check(address);
         }
         catch (e) {
             return false;
@@ -61,27 +52,33 @@ export class BitcoinService extends BlockchainService {
         return this.client.getBlockCount();
     }
 
-    async getBlockByHeight(blockHeight) {
+    async getBlockByHeight(blockHeight: number) {
         const blockHash = await this.client.getBlockHash(blockHeight);
 
         return this.client.getBlockByHash(blockHash, { extension: 'json' });
     }
 
-    async getTransactionByHash(txHash) {
+    async getTransactionByHash(txHash: string) {
         const tx = await this.client.getTransactionByHash(txHash, { extension: 'json', summary: true });
 
         return tx;
     }
 
-    sendTransaction(from, to, amount, fee) {
-        return this.client.sendTransaction(from, to, amount, fee);
+    //@TODO: edit Transaction 
+    sendTransaction(tx: Transaction) {
+        return this.client.sendTransaction(
+            tx.from, 
+            tx.to,
+            tx.amount, 
+            tx.fee
+        );
     }
 
-    sendRawTransaction(txHex) {
+    sendRawTransaction(txHex: string) {
         return this.client.sendRawTransaction(txHex);
     }
 
-    getBalance(address, minConf = 1) {
+    getBalance(address: string, minConf = 1) {
         return this.client.getBalance(address, minConf);
     }
 }

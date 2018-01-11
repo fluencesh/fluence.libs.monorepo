@@ -1,4 +1,6 @@
 declare module 'bitcoin-core' {
+    import { Promise } from 'bluebird';
+
     export class Client {
         public agentOptions: any;
         public auth: { user: string; pass: string; };
@@ -12,13 +14,13 @@ declare module 'bitcoin-core' {
 
         constructor(options: ClientOptions);
 
-        public getBlockCount(): number;
-        public getBlockHash(height: number): string;
-        public getBlockByHash(hash: string, options?: any): any;
-        public getTransactionByHash(hash: string, options?: any): any;
-        public sendTransaction(from: string, to: string, amount: number, fee: number): any;
-        public sendRawTransaction(txHex: string): any;
-        public getBalance(address: string, minConf: number): number;
+        public getBlockCount(): Promise<number>;
+        public getBlockHash(height: number): Promise<string>;
+        public getBlockByHash(hash: string, options?: any): Promise<{}>;
+        public getTransactionByHash(hash: string, options?: any): Promise<{}>;
+        public sendTransaction(from: string, to: string, amount: number, fee: number): Promise<string>;
+        public sendRawTransaction(txHex: string): Promise<string>;
+        public getBalance(address: string, minConf: number): Promise<number>;
     }
 
     export interface ClientOptions {

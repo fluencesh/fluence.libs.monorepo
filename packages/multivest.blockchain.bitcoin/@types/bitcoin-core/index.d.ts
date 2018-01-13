@@ -16,12 +16,14 @@ declare module 'bitcoin-core' {
 
         public getBlockCount(): Promise<number>;
         public getBlockHash(height: number): Promise<string>;
-        public getBlockByHash(hash: string, options?: any): Promise<{}>;
-        public getTransactionByHash(hash: string, options?: any): Promise<{}>;
-        public sendTransaction(from: string, to: string, amount: number, fee: number): Promise<string>;
+        public getBlockByHash(hash: string, options: { extension: Extension }): Promise<Block>;
+        public getTransactionByHash(hash: string, options?: any): Promise<Transaction>;
+        public sendToAddress(to: string, amount: string, comment?: string, commentTo?: string): Promise<string>;
         public sendRawTransaction(txHex: string): Promise<string>;
         public getBalance(address: string, minConf: number): Promise<number>;
     }
+
+    export type Extension = 'bin' | 'hex' | 'json';
 
     export interface ClientOptions {
         agentOptions: any;
@@ -35,6 +37,53 @@ declare module 'bitcoin-core' {
         timeout?: number;
         username: number;
         version: string;
+    }
+
+    export interface Block {
+        hash: string;
+        confirmations: number;
+        strippedsize: number;
+        size: number;
+        weight: number;
+        height: number;
+        version: number;
+        versionHex: string;
+        merkleroot: string;
+        tx: string[];
+        time: number;
+        mediantime: number;
+        nonce: number;
+        bits: string;
+        difficulty: number;
+        chainwork: string;
+        previousblockhash?: string;
+        nextblockhash?: string;
+    }
+
+    export interface Transaction {
+        amount : number;
+        fee : number;
+        confirmations : number;
+        blockhash : string;
+        blockindex : number;
+        blocktime : number;
+        txid : string;
+        walletconflicts : any[];
+        time : number;
+        timereceived : number;
+        'bip125-replaceable': 'yes' | 'no' | 'unknown';
+        details : InputOutput[];
+        hex : string;
+    }
+
+    export interface InputOutput {
+        involvesWatchonly?: true;
+        account: string;
+        address: string;
+        category: 'send' | 'receive';
+        amount: number;
+        vout: number;
+        fee?: number;
     }
 
     export enum NetworkPorts {

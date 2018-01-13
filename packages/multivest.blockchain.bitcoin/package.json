@@ -55,6 +55,9 @@
     "eslint-plugin-node": "^5.0.0",
     "eslint-plugin-react": "^7.0.1",
     "eslint-watch": "^3.1.0",
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^2.6.3",
+    "gulp-typescript": "^3.2.3",
     "husky": "^0.13.4",
     "istanbul": "^0.4.5",
     "lodash.clone": "^4.5.0",
@@ -64,6 +67,7 @@
     "nyc": "^11.0.2",
     "should": "^10.0.0",
     "supertest": "^1.2.0",
-    "supertest-as-promised": "^4.0.2"
+    "supertest-as-promised": "^4.0.2",
+    "typescript": "^2.6.2"
   }
 }

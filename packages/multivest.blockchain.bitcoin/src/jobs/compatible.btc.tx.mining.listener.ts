@@ -1,7 +1,7 @@
 import * as logger from 'winston';
-import { Block, Scheme, Hashtable, Transaction } from '@applicature/multivest.core';
-import { BlockchainListener } from '@applicature/multivest.blockchain';
-import { TransactionDao } from '@applicature/multivest.mongodb.ico';
+import { Hashtable } from '@applicature/multivest.core';
+import { Block, BlockchainListener, Transaction } from '@applicature/multivest.blockchain';
+import { TransactionDao, Scheme } from '@applicature/multivest.mongodb.ico';
 
 export abstract class CompatibleBitcoinTxMiningListener extends BlockchainListener {
 

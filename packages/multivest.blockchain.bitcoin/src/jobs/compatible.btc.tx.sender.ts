@@ -1,9 +1,9 @@
 import * as config from 'config';
 import * as logger from 'winston';
 import * as Agenda from 'agenda';
-import { Dao, Job, Hashtable, PluginManager, Scheme } from '@applicature/multivest.core';
-import { IcoCompositeDao, TransactionDao } from '@applicature/multivest.mongodb.ico';
-import { BitcoinService } from '../services/blockchain/bitcoin';
+import { Dao, Job, Hashtable, PluginManager } from '@applicature/multivest.core';
+import { IcoCompositeDao, TransactionDao, Scheme } from '@applicature/multivest.mongodb.ico';
+import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';
 
 
 export abstract class CompatibleBitcoinTransactionSender extends Job {
@@ -11,7 +11,7 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
 
     constructor(
         pluginManager: PluginManager, 
-        private blockchainService: BitcoinService, 
+        private blockchainService: BitcoinBlockchainService, 
         private sendFromAddress: string
     ) {
         super(pluginManager);
@@ -58,7 +58,7 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
             });
 
             await transactionDao.setHashAndStatus(
-                transaction._id, 
+                transaction.id, 
                 txHash, 
                 Scheme.TransactionStatus.Sent
             );

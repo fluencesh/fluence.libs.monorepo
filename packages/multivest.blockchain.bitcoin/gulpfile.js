@@ -8,9 +8,15 @@ const index = ts.createProject({
     module: "commonjs"
 });
 
-gulp.task('build', ['typescript', 'index']);
+gulp.task('clean', () => {
+    return gulp.src([
+            './dist/*',
+            './node_modules/web3/*.d.ts'
+        ])
+        .pipe(cl());      
+});
 
-gulp.task('typescript', () => {
+gulp.task('build', () => {
     return gulp.src([
             'src/**/*.ts'
         ])
@@ -18,12 +24,4 @@ gulp.task('typescript', () => {
         .pipe(tsp())
         .pipe(sm.write('.'))
         .pipe(gulp.dest('./dist'));      
-});
-
-gulp.task('index', () => {
-    return gulp.src([
-            './index.ts'
-        ])
-        .pipe(index())
-        .pipe(gulp.dest('./'));      
 });

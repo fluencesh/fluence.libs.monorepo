@@ -11,6 +11,7 @@
     "yarn": ">=0.20.3"
   },
   "scripts": {
+    "build": "gulp build",
     "lint": "esw *.js src config --color",
     "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --ui bdd --reporter spec --colors ./tests/ --recursive",
     "test:watch": "npm test -- --watch",

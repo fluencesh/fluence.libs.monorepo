@@ -1,15 +1,16 @@
 
-import * as config from 'config';
-import { Client, Block as OriginalBlock, Transaction as OriginalTransaction } from 'bitcoin-core';
-import * as bitcoin from 'bitcoinjs-lib';
+import { BlockchainService } from '@applicature-restricted/multivest.blockchain';
+import { Block, Recipient, Sender, Transaction } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
-import { Block, BlockchainService, Transaction, Sender, Recipient } from '@applicature/multivest.blockchain';
+import { Block as OriginalBlock, Client, Transaction as OriginalTransaction } from 'bitcoin-core';
+import * as bitcoin from 'bitcoinjs-lib';
+import * as config from 'config';
 import { BITCOIN } from './model';
 
 export class BitcoinBlockchainService extends BlockchainService {
     private client: Client;
     private network: bitcoin.Network;
-    private masterPublicKey: string
+    private masterPublicKey: string;
 
     constructor(fake?: boolean) {
         super();
@@ -24,21 +25,21 @@ export class BitcoinBlockchainService extends BlockchainService {
         this.masterPublicKey = config.get('multivest.blockchain.bitcoin.hd.masterPublicKey');
     }
 
-    getBlockchainId() {
+    public getBlockchainId() {
         return BITCOIN;
     }
 
-    getSymbol() {
+    public getSymbol() {
         return 'BTC';
     }
 
-    getHDAddress(index: number) {
+    public getHDAddress(index: number) {
         const hdNode = bitcoin.HDNode.fromBase58(this.masterPublicKey, this.network);
 
         return hdNode.derive(0).derive(index).getAddress().toString();
     }
 
-    isValidAddress(address: string) {
+    public isValidAddress(address: string) {
         try {
             bitcoin.address.fromBase58Check(address);
         }
@@ -49,81 +50,81 @@ export class BitcoinBlockchainService extends BlockchainService {
         return true;
     }
 
-    async getBlockHeight() {
+    public async getBlockHeight() {
         return this.client.getBlockCount();
     }
 
-    parseBlock(block: OriginalBlock): Block {
+    public parseBlock(block: OriginalBlock): Block {
         const totalFee = block.tx.reduce(
-            (prev, curr) => prev.plus(curr), 
+            (prev, curr) => prev.plus(curr),
             new BigNumber(0)
         );
 
         return {
-            height: block.height,
-            hash: block.hash,
-            parentHash: block.previousblockhash,
             difficulty: block.difficulty,
+            fee: totalFee,
+            hash: block.hash,
+            height: block.height,
+            network: String(this.network),
             nonce: block.nonce,
+            parentHash: block.previousblockhash,
             size: block.size,
             time: block.time,
-            network: String(this.network),
-            fee: totalFee,
             transactions: null
         };
     }
 
-    parseTransaction(transaction: OriginalTransaction): Transaction {
-        const senders: Sender[] = [];
-        const recipients: Recipient[] = [];
+    public parseTransaction(transaction: OriginalTransaction): Transaction {
+        const senders: Array<Sender> = [];
+        const recipients: Array<Recipient> = [];
 
-        transaction.details.forEach(item => {
+        transaction.details.forEach((item) => {
             if (item.category === 'send') {
-                senders.push({ 
-                    address: item.address 
+                senders.push({
+                    address: item.address,
                 });
             }
             else {
                 recipients.push({
                    address: item.address,
-                   amount: new BigNumber(item.amount).toString()
+                   amount: new BigNumber(item.amount)
                 });
             }
         });
 
         return {
-            hash: transaction.txid,
             blockHash: transaction.blockhash,
             blockHeight: transaction.blockindex,
-            fee: transaction.fee,
+            fee: new BigNumber(transaction.fee),
             from: senders,
-            to: recipients            
-        }
+            hash: transaction.txid,
+            to: recipients,
+        };
     }
 
-    async getBlockByHeight(blockHeight: number) {
+    public async getBlockByHeight(blockHeight: number) {
         const blockHash = await this.client.getBlockHash(blockHeight);
         const block = await this.client.getBlockByHash(blockHash, { extension: 'json' });
         return this.parseBlock(block);
     }
 
-    async getTransactionByHash(txHash: string) {
+    public async getTransactionByHash(txHash: string) {
         const tx = await this.client.getTransactionByHash(txHash, { extension: 'json', summary: true });
         return this.parseTransaction(tx);
     }
 
-    async sendTransaction(transaction: Partial<Transaction>) {
-        return this.client.sendToAddress( 
-            transaction.to[0].address,
-            transaction.to[0].amount
+    public async sendTransaction(transaction: Partial<Transaction>) {
+        return this.client.sendToAddress(
+            transaction.to[0].address.toString(),
+            transaction.to[0].amount.toString()
         );
     }
 
-    sendRawTransaction(txHex: string) {
+    public sendRawTransaction(txHex: string) {
         return this.client.sendRawTransaction(txHex);
     }
 
-    async getBalance(address: string, minConf = 1) {
+    public async getBalance(address: string, minConf = 1) {
         return new BigNumber(
             await this.client.getBalance(address, minConf)
         );

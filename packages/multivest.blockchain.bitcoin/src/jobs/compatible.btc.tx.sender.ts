@@ -1,27 +1,26 @@
+import { Dao, Hashtable, Job, PluginManager } from '@applicature/multivest.core';
+import { IcoCompositeDao, Scheme, TransactionDao } from '@applicature/multivest.mongodb.ico';
+import * as Agenda from 'agenda';
 import * as config from 'config';
 import * as logger from 'winston';
-import * as Agenda from 'agenda';
-import { Dao, Job, Hashtable, PluginManager } from '@applicature/multivest.core';
-import { IcoCompositeDao, TransactionDao, Scheme } from '@applicature/multivest.mongodb.ico';
 import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';
-
 
 export abstract class CompatibleBitcoinTransactionSender extends Job {
     private daos: Hashtable<IcoCompositeDao>;
 
     constructor(
-        pluginManager: PluginManager, 
-        private blockchainService: BitcoinBlockchainService, 
+        pluginManager: PluginManager,
+        private blockchainService: BitcoinBlockchainService,
         private sendFromAddress: string
     ) {
         super(pluginManager);
     }
 
-    async init() {
+    public async init() {
         this.daos = await this.pluginManager.get('mongodb').getDaos() as Hashtable<IcoCompositeDao>;
     }
 
-    async execute() {
+    public async execute() {
         const transactionDao = this.daos.transactions as TransactionDao;
         const transactions = await transactionDao.listByNetworkAndStatus(
             this.blockchainService.getBlockchainId(),
@@ -41,10 +40,10 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
 
             try {
                 txHash = await this.blockchainService.sendTransaction({
-                    hash: transaction.ref.hash,
+                    fee: transaction.ref.fee,
                     from: transaction.ref.from,
+                    hash: transaction.ref.hash,
                     to: transaction.ref.to,
-                    fee: transaction.ref.fee
                 });
             }
             catch (error) {
@@ -58,8 +57,8 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
             });
 
             await transactionDao.setHashAndStatus(
-                transaction.id, 
-                txHash, 
+                transaction.id,
+                txHash,
                 Scheme.TransactionStatus.Sent
             );
         }

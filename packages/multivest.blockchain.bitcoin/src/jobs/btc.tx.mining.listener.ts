@@ -1,13 +1,9 @@
-import * as config from 'config';
 import { PluginManager } from '@applicature/multivest.core';
-import { CompatibleBitcoinTxMiningListener } from './compatible.btc.tx.mining.listener';
+import * as config from 'config';
 import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';
+import { CompatibleBitcoinTxMiningListener } from './compatible.btc.tx.mining.listener';
 
 export class BitcoinTxMiningListener extends CompatibleBitcoinTxMiningListener {
-    getJobId() {
-        return 'btc.tx.mining.listener';
-    }
-
     constructor(pluginManager: PluginManager) {
         super(
             pluginManager,
@@ -16,4 +12,9 @@ export class BitcoinTxMiningListener extends CompatibleBitcoinTxMiningListener {
             config.get('multivest.blockchain.bitcoin.listener.minConfirmations')
         );
     }
+
+    public getJobId() {
+        return 'btc.tx.mining.listener';
+    }
+
 }

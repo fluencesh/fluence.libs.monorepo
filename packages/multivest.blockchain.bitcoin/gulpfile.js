@@ -5,10 +5,6 @@ const cl = require('gulp-clean');
 const lint = require('gulp-tslint');
 
 const tsp = ts.createProject('tsconfig.json');
-const index = ts.createProject({
-    target: "es6",
-    module: "commonjs"
-});
 
 gulp.task('clean', () => {
     return gulp.src([

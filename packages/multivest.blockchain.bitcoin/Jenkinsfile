@@ -1,0 +1,187 @@
+import hudson.tasks.test.AbstractTestResultAction
+import hudson.tasks.junit.CaseResult
+
+properties properties: [
+    [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', numToKeepStr: '10']],
+]
+
+def buildSucceeded = true
+def failed = 0
+def npmPublishFailed = false
+
+@NonCPS
+def getTestSummary = { ->
+    def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
+    def summary = ""
+
+    if (testResultAction != null) {
+        total = testResultAction.getTotalCount()
+        failed = testResultAction.getFailCount()
+        skipped = testResultAction.getSkipCount()
+
+        summary = "Passed: " + (total - failed - skipped)
+        summary = summary + (", Failed: " + failed)
+        summary = summary + (", Skipped: " + skipped)
+    } else {
+        summary = "No tests found"
+    }
+    return summary
+}
+
+@NonCPS
+def getFailedTests = { ->
+    def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
+    def failedTestsString = "```"
+
+    if (testResultAction != null) {
+        def failedTests = testResultAction.getFailedTests()
+        
+        if (failedTests.size() > 9) {
+            failedTests = failedTests.subList(0, 8)
+        }
+
+        for(CaseResult cr : failedTests) {
+            failedTestsString = failedTestsString + "${cr.getDisplayName()}:\n${cr.getErrorStackTrace()}\n\n"
+        }
+        failedTestsString = failedTestsString + "```"
+    }
+    return failedTestsString.replaceAll("\\n", "\\\\n")
+}
+
+def slack = {
+    def buildStatus = buildSucceeded ? "succeeded" : "failed"
+    def buildColor = buildSucceeded ? "good" : "bad"
+    def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
+    def author = sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
+    def lastCommitMessage = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+    def branch = sh(returnStdout: true, script: 'git log -n 1 --pretty=%D HEAD').trim().split(' ')[1]
+    def testSummary = getTestSummary()
+
+    def failedMessage = ""
+    if (failed > 0) {
+        failedTests = getFailedTests()
+        failedMessage = """
+            {
+                title: "Failed tests",
+                color: "${buildColor}",
+                text: "${failedTests}",
+                "mrkdwn_in": ["text"],
+            },
+        """
+    }
+
+    def npmPublishMessage = ""
+    if (npmPublishFailed) {
+        npmPublishMessage = """
+            {
+                title: "npm publish failed",
+                color: "bad"
+            },
+        """
+    }
+    
+    slackSend(
+        message: "",
+        channel: '#dev-multivestcore-ci',
+        attachments: """[ 
+            {
+                title: "${env.JOB_NAME}, build #${env.BUILD_NUMBER}",
+                author_name: "${author}",
+                text: "Build ${buildStatus}",
+                color: "${buildColor}",
+                title_link: "${env.BUILD_URL}",
+                "mrkdwn_in": ["fields"],
+                fields: [
+                    {
+                        title: "Branch",
+                        value: "${branch}",
+                        short: true
+                    },
+                    {
+                        title: "Test results",
+                        value: "${testSummary}",
+                        short: true
+                    },
+                    {
+                        title: "Last commit",
+                        value: "${lastCommitMessage}",
+                        short: true
+                    },
+                ]
+            },
+            ${failedMessage}
+            ${npmPublishMessage}
+        ]"""
+    )
+}
+
+node {
+    def buildNumber = env.BUILD_NUMBER
+    def workspace = env.WORKSPACE
+    def buildUrl = env.BUILD_URL
+
+    // PRINT ENVIRONMENT TO JOB
+    echo "workspace directory is $workspace"
+    echo "build URL is $buildUrl"
+    echo "build Number is $buildNumber"
+
+    nodejs(configId: '661cf31b-bdac-4946-bf6d-251593378980', nodeJSInstallationName: 'Node 8.x') {
+        sh 'node --version'
+        sh 'npm --version'
+
+        try {
+            stage('Checkout') {
+                checkout scm
+            }
+
+            stage('Build') {
+              sh "npm install"
+              sh "npm run build"
+            }
+
+            stage('Test') {
+                try {
+                    sh "npm run test:ci"
+                } catch (e) {
+                    junit 'coverage/junit.xml'
+                    throw e
+                }
+            }
+
+            stage('Report Junit results') {
+                step([$class: 'JUnitResultArchiver', testResults: 'coverage/junit.xml'])
+            }
+            
+            stage('Report Cobertura results') {
+                step([
+                    $class: 'CoberturaPublisher',
+                    autoUpdateHealth: false,
+                    autoUpdateStability: false,
+                    coberturaReportFile: 'coverage/cobertura-coverage.xml',
+                    failUnhealthy: false,
+                    failUnstable: false,
+                    maxNumberOfBuilds: 0,
+                    onlyStable: false,
+                    sourceEncoding: 'ASCII',
+                    zoomCoverageChart: false
+                ])
+            }
+
+            stage('Publish NPM snapshot') {
+                try {
+                    sh "npm publish"
+                } catch (e) {
+                    npmPublishFailed = true
+                }
+            }
+
+            buildSucceeded = true
+
+        } catch (e) {
+            buildSucceeded = false
+            throw e
+        } finally {
+            slack()
+        }
+    }
+}

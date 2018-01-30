@@ -1,6 +1,8 @@
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
 const sm = require('gulp-sourcemaps');
+const cl = require('gulp-clean');
+const lint = require('gulp-tslint');
 
 const tsp = ts.createProject('tsconfig.json');
 const index = ts.createProject({
@@ -25,3 +27,13 @@ gulp.task('build', () => {
         .pipe(sm.write('.'))
         .pipe(gulp.dest('./dist'));      
 });
+
+gulp.task('lint', () =>
+    gulp.src([
+            './src/**/*.ts'
+        ])
+        .pipe(lint({
+            formatter: 'stylish'
+        }))
+        .pipe(lint.report())
+);

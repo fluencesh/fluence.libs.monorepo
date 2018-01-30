@@ -3,11 +3,11 @@ import { BitcoinTxMiningListener } from './jobs/btc.tx.mining.listener';
 import { BitcoinTransactionSender } from './jobs/btc.tx.sender';
 
 class BitcoinBlockchainPlugin extends Plugin<void> {
-    getPluginId() {
+    public getPluginId() {
         return 'blockchain.bitcoin';
     }
 
-    init() {
+    public init() {
         this.registerJob(BitcoinTxMiningListener);
         this.registerJob(BitcoinTransactionSender);
     }

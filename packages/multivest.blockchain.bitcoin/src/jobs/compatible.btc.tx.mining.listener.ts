@@ -1,13 +1,12 @@
+import { BlockchainListener } from '@applicature-restricted/multivest.blockchain';
+import { Block, Hashtable, Transaction } from '@applicature/multivest.core';
+import { Scheme, TransactionDao } from '@applicature/multivest.mongodb.ico';
 import * as logger from 'winston';
-import { Hashtable } from '@applicature/multivest.core';
-import { Block, BlockchainListener, Transaction } from '@applicature/multivest.blockchain';
-import { TransactionDao, Scheme } from '@applicature/multivest.mongodb.ico';
 
 export abstract class CompatibleBitcoinTxMiningListener extends BlockchainListener {
-
-    async processBlock(block: Block) {
+    public async processBlock(block: Block) {
         const txMapping: Hashtable<Transaction> = {};
-        const transactionDao = this.daos.transactions as TransactionDao;
+        const transactionDao = this.pluginManager.getDao('transactions') as TransactionDao;
 
         for (const tx of block.transactions) {
             txMapping[tx.hash] = tx;
@@ -18,7 +17,7 @@ export abstract class CompatibleBitcoinTxMiningListener extends BlockchainListen
         }
 
         const transactions = await transactionDao.listByNetworkAndStatus(
-            this.blockchainService.getBlockchainId(), 
+            this.blockchainService.getBlockchainId(),
             Scheme.TransactionStatus.Sent
         );
 
@@ -27,12 +26,12 @@ export abstract class CompatibleBitcoinTxMiningListener extends BlockchainListen
                 const tx = txMapping[transaction.ref.hash];
 
                 logger.info(`${this.blockchainService.getBlockchainId()}: setting transaction mined block`, {
-                    txHash: tx.hash,
                     block: {
                         hash: block.hash,
                         number: block.height,
                         timestamp: block.time,
                     },
+                    txHash: tx.hash,
                 });
 
                 await transactionDao.setMinedBlock(
@@ -40,7 +39,7 @@ export abstract class CompatibleBitcoinTxMiningListener extends BlockchainListen
                     tx.hash,
                     block.hash,
                     block.height,
-                    block.time,
+                    block.time
                 );
             }
         }

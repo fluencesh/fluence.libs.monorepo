@@ -1,31 +1,30 @@
-const EthereumService = require('../blockchain/ethereum');
-
+import { EthereumBlockchainService } from '../blockchain/ethereum';
+// tslint:disable-next-line:no-var-requires
 const abi = require('../../abi/erc20.json');
 
-class Erc20Contract {
-    constructor(address) {
-        this.ethereumService = new EthereumService();
+export class Erc20Contract {
+    private ethereumService: EthereumBlockchainService;
+    private contract: any;
 
+    constructor(address: string) {
+        this.ethereumService = new EthereumBlockchainService();
         this.contract = this.ethereumService.getContract(abi, address);
     }
 
-    async getDecimals() {
+    public async getDecimals() {
         const result = await this.contract.methods.decimals().call();
-
         return result.valueOf();
     }
 
-    async getBalance(address) {
+    public async getBalance(address: string) {
         const result = await this.contract.methods.balanceOf(address).call();
 
         return result.valueOf();
     }
 
-    async getTotalSupply() {
+    public async getTotalSupply() {
         const result = await this.contract.methods.totalSupply().call();
 
         return result.valueOf();
     }
 }
-
-module.exports = Erc20Contract;

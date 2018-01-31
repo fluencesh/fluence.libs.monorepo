@@ -1,26 +1,11 @@
-const Plugin = require('./src/plugin.blockchain.ethereum');
-
-const EthereumService = require('./src/services/blockchain/ethereum');
-
-const EthereumTxMiningListener = require('./src/jobs/eth.tx.mining.listener');
-const EthereumTransactionSender = require('./src/jobs/eth.tx.sender');
-
-const ContractERC20 = require('./src/services/contracts/erc20.contract');
-
-const EthereumConstant = require('./src/services/constants/ethereum.constant');
-
-module.exports = {
-    Plugin,
-
-    EthereumService,
-
-    // jobs
-    EthereumTxMiningListener,
-    EthereumTransactionSender,
-
-    // contracts
-    ContractERC20,
-
-    // constants
-    EthereumConstant,
-};
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(require("./dist/jobs/eth.tx.mining.listener"));
+__export(require("./dist/jobs/eth.tx.sender"));
+__export(require("./dist/services/blockchain/ethereum"));
+__export(require("./dist/services/blockchain/model"));
+__export(require("./dist/services/contracts/erc20.contract"));
+__export(require("./dist/plugin.blockchain.ethereum"));

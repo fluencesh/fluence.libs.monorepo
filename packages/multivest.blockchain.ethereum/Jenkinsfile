@@ -53,7 +53,7 @@ def slack = {
     def buildColor = buildSucceeded ? "good" : "bad"
     def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
     def author = sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
-    def lastCommitMessage = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+    def lastCommitMessage = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim().replaceAll("\\n", "\\\\n")
     def branch = sh(returnStdout: true, script: 'git log -n 1 --pretty=%D HEAD').trim().split(' ')[1]
     def testSummary = getTestSummary()
 

@@ -5,12 +5,8 @@
         "noImplicitAny": true,
         "removeComments": true,
         "sourceMap": true,
-        "outDir": "./dist",
-        "mapRoot": "./dist",
         "declaration": true,
-        "typeRoots": [
-            "node_modules/@types",
-            "@types"
-        ]
+        "sourceRoot": "",
+        "outDir": "./dist"
     }
 }

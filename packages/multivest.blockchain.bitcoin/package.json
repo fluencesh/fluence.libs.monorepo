@@ -17,7 +17,7 @@
     "test": "jest test/unit",
     "test:integration": "jest test/integration",
     "test:coverage": "jest test/unit --coverage --collectCoverageFrom=*/**/*.ts",
-    "test:ci": "jest test/unit --coverage --testResultsProcessor ./node_modules/jest-junit --collectCoverageFrom=*/**/*.ts"
+    "test:ci": "jest test/unit --coverage --testResultsProcessor ./node_modules/jest-junit --collectCoverageFrom=*/**/*.ts",
     "test:security": "nsp check"
   },
   "repository": {

@@ -6,30 +6,20 @@ const lint = require('gulp-tslint');
 
 const tsp = ts.createProject('tsconfig.json');
 
-gulp.task('clean', () => {
-    return gulp.src([
-            './dist/*',
-            './node_modules/web3/*.d.ts'
-        ])
-        .pipe(cl());      
-});
-
-gulp.task('build', () => {
-    return gulp.src([
+gulp.task('build', () => 
+    gulp.src([
             'src/**/*.ts'
         ])
         .pipe(sm.init())
         .pipe(tsp())
         .pipe(sm.write('.'))
-        .pipe(gulp.dest('./dist'));      
-});
+        .pipe(gulp.dest('./dist'))
+);
 
-gulp.task('lint', () =>
-    gulp.src([
-            './src/**/*.ts'
+gulp.task('clean', () => 
+        gulp.src([
+            './dist/*',
+            './node_modules/web3/*.d.ts'
         ])
-        .pipe(lint({
-            formatter: 'stylish'
-        }))
-        .pipe(lint.report())
+        .pipe(cl())
 );

@@ -6,7 +6,7 @@ import * as logger from 'winston';
 import { MultivestError } from '@applicature/multivest.core';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
 
-class Contract {
+export class Contract {
     private ethereumService: EthereumBlockchainService;
     private contract: Web3.Contract<any>;
 
@@ -23,8 +23,8 @@ class Contract {
         const hash = EthereumAbi.soliditySHA3(types, values);
 
         const sig = await this.ethereumService.sign(
-            `0x${hash.toString('hex')}`,
-            this.signerAddress
+            this.signerAddress,
+            `0x${hash.toString('hex')}`
         );
 
         const res = EthereumUtil.fromRpcSig(sig);

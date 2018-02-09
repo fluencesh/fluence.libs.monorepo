@@ -1,0 +1,13 @@
+{
+    "multivest": {
+        "blockchain": {
+            "ethereum": {
+                "providers": {
+                    "native": {
+                        "url": "http://localhost:8545"
+                    }
+                }
+            }
+        }
+    }
+}

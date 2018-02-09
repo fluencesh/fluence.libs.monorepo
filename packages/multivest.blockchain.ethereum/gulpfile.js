@@ -16,14 +16,14 @@ gulp.task('typescript', () =>
         .pipe(sm.init())
         .pipe(tsp())
         .pipe(sm.write('.'))
-        .pipe(gulp.dest('./dist'))
+        .pipe(gulp.dest('.'))
 );
 
 gulp.task('static', () => {
     return gulp.src([ 
             'src/abi/erc20.json'
         ]) 
-        .pipe(gulp.dest('./dist/abi'));
+        .pipe(gulp.dest('./dist/src/abi'));
 });
 
 gulp.task('clean', () =>

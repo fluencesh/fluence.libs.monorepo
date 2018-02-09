@@ -101,6 +101,10 @@ export class EthereumBlockchainService extends BlockchainService {
         });
     }
 
+    public async sign(address: string, data: string) {
+        return this.client.eth.sign(address, data);
+    }
+
     public async getBalance(address: string, minConf: number) {
         if (minConf && minConf > 0) {
             throw new MultivestError('minConf is not supported');

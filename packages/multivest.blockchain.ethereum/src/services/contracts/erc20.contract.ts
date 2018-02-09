@@ -1,6 +1,6 @@
 import { EthereumBlockchainService } from '../blockchain/ethereum';
 // tslint:disable-next-line:no-var-requires
-const abi = require('../../abi/erc20.json');
+const abi = require(__dirname + '/../../abi/erc20.json');
 
 export class Erc20Contract {
     private ethereumService: EthereumBlockchainService;

@@ -12,18 +12,18 @@ export class Erc20Contract {
     }
 
     public async getDecimals() {
-        const result = await this.contract.methods.decimals().call();
+        const result = await this.contract.decimals.call();
         return result.valueOf();
     }
 
     public async getBalance(address: string) {
-        const result = await this.contract.methods.balanceOf(address).call();
+        const result = await this.contract.balanceOf.call(address);
 
         return result.valueOf();
     }
 
     public async getTotalSupply() {
-        const result = await this.contract.methods.totalSupply().call();
+        const result = await this.contract.totalSupply.call();
 
         return result.valueOf();
     }

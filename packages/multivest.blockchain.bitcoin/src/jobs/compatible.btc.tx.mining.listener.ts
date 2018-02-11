@@ -6,7 +6,7 @@ import * as logger from 'winston';
 export abstract class CompatibleBitcoinTxMiningListener extends BlockchainListener {
     public async processBlock(block: Block) {
         const txMapping: Hashtable<Transaction> = {};
-        const transactionDao = this.pluginManager.getDao('transactions') as TransactionDao;
+        const transactionDao = await this.pluginManager.get('mongodb').getDao('transactions') as TransactionDao;
 
         for (const tx of block.transactions) {
             txMapping[tx.hash] = tx;

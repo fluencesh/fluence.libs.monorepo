@@ -1,6 +1,6 @@
 {
   "name": "@applicature-restricted/multivest.blockchain.bitcoin",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "license": "UNLICENSED",
   "description": "Bitcoin Blockchain Plugin",
@@ -10,14 +10,15 @@
     "npm": ">=2.15.11",
     "yarn": ">=0.20.3"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "gulp clean && gulp build",
     "lint": "tslint '{src/**/*.ts,test/**/*.ts}'",
     "precommit": "npm run lint ; npm run test:coverage ; npm run test:security",
-    "test": "jest test/unit",
-    "test:integration": "jest test/integration",
-    "test:coverage": "jest test/unit --coverage --collectCoverageFrom=*/**/*.ts",
-    "test:ci": "jest test/unit --coverage --testResultsProcessor ./node_modules/jest-junit --collectCoverageFrom=*/**/*.ts",
+    "test": "jest",
+    "test:coverage": "jest --coverage --collectCoverageFrom=*/**/*.ts",
+    "test:ci": "jest --coverage --testResultsProcessor ./node_modules/jest-junit --collectCoverageFrom=*/**/*.ts",
     "test:security": "nsp check"
   },
   "repository": {
@@ -66,9 +67,7 @@
   },
   "files": [
     "dist/",
-    "src/",
-    "index.d.ts",
-    "index.js"
+    "src/"
   ],
   "jest": {
     "transform": {
@@ -78,10 +77,13 @@
     "moduleFileExtensions": [
       "ts",
       "tsx",
-      "js"
+      "js",
+      "json",
+      "node"
     ],
     "coveragePathIgnorePatterns": [
-      "<rootDir>/.*?\\.d\\.ts$"
+      "<rootDir>/.*?\\.d\\.ts$",
+      "<rootDir>/.*?\\.mock\\.ts$"
     ],
     "coverageReporters": [
       "json",

@@ -2,7 +2,8 @@
 import { BlockchainService } from '@applicature-restricted/multivest.blockchain';
 import { Block, Recipient, Sender, Transaction } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
-import { Block as OriginalBlock, Client, Transaction as OriginalTransaction } from 'bitcoin-core';
+import * as Client from 'bitcoin-core';
+import { Block as OriginalBlock, Transaction as OriginalTransaction } from 'bitcoin-core';
 import * as bitcoin from 'bitcoinjs-lib';
 import * as config from 'config';
 import { BITCOIN } from './model';

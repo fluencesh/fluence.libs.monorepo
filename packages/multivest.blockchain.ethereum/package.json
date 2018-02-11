@@ -1,6 +1,6 @@
 {
   "name": "@applicature-restricted/multivest.blockchain.ethereum",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "private": false,
   "license": "UNLICENSED",
   "description": "Ethereum Blockchain Plugin",
@@ -30,7 +30,7 @@
     "registry": "https://artifacts-dev.zubko.biz/repository/applicature-restricted/"
   },
   "dependencies": {
-    "@applicature-restricted/multivest.blockchain": "^0.1.6",
+    "@applicature-restricted/multivest.blockchain": "^0.1.16",
     "@applicature/multivest.core": "^0.1.8",
     "@applicature/multivest.mongodb.ico": "^0.1.1",
     "bignumber.js": "^4.1.0",

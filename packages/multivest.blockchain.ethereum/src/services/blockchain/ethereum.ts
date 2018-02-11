@@ -1,5 +1,5 @@
 import { BlockchainService } from '@applicature-restricted/multivest.blockchain';
-import { MultivestError } from '@applicature/multivest.core';
+import { MultivestError, PluginManager } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
 import * as config from 'config';
 import EthereumBip44 from 'ethereum-bip44';
@@ -9,15 +9,20 @@ import { ETHEREUM, EthereumTransaction } from './model';
 export class EthereumBlockchainService extends BlockchainService {
     private client: Web3;
 
-    constructor(fake?: boolean) {
-        super();
+    constructor(pluginManager: PluginManager, register: boolean, fake: boolean) {
+        super(pluginManager, register);
 
         if (!fake) {
             const clientProvider = new Web3.providers.HttpProvider(
                 config.get('multivest.blockchain.ethereum.providers.native.url')
             );
+
             this.client = new Web3(clientProvider);
         }
+    }
+
+    public getServiceId() {
+        return 'blockchain.ethereum';
     }
 
     public getBlockchainId() {

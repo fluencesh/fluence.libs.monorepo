@@ -6,20 +6,29 @@ const lint = require('gulp-tslint');
 
 const tsp = ts.createProject('tsconfig.json');
 
-gulp.task('build', () => 
+gulp.task('build', ['typescript', 'static']);
+
+gulp.task('typescript', () =>
     gulp.src([
-            'src/**/*.ts'
-        ])
+            './src/**/*.ts',
+            './index.ts'
+        ], {base: './'})
         .pipe(sm.init())
         .pipe(tsp())
         .pipe(sm.write('.'))
-        .pipe(gulp.dest('./dist'))
+        .pipe(gulp.dest('.'))
 );
 
-gulp.task('clean', () => 
+gulp.task('static', () => {
+    return gulp.src([ 
+            'src/abi/erc20.json'
+        ]) 
+        .pipe(gulp.dest('./dist/src/abi'));
+});
+
+gulp.task('clean', () =>
         gulp.src([
-            './dist/*',
-            './node_modules/web3/*.d.ts'
+            './dist/*'
         ])
         .pipe(cl())
 );

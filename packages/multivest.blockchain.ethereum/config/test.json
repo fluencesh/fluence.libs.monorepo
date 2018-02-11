@@ -6,7 +6,8 @@
                     "native": {
                         "url": "http://localhost:8545"
                     }
-                }
+                },
+                "senderPrivateAddress": "0x"
             }
         }
     }

@@ -2,41 +2,46 @@ import * as EthereumAbi from 'ethereumjs-abi';
 import * as EthereumUtil from 'ethereumjs-util';
 import * as Web3 from 'web3';
 import * as logger from 'winston';
+import * as config from 'config';
 
 import { MultivestError } from '@applicature/multivest.core';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
+import has = Reflect.has;
 
 export class Contract {
     private ethereumService: EthereumBlockchainService;
     private contract: Web3.Contract<any>;
+    private signerAddress: string;
 
     constructor(
         abi: Array<Web3.AbiDefinition>,
         private address: string,
-        private signerAddress: string
+        private signerPrivateKey: string
     ) {
         this.ethereumService = new EthereumBlockchainService();
         this.contract = this.ethereumService.getContract(abi, address);
+
+        this.signerPrivateKey = signerPrivateKey || config.get('multivest.blockchain.ethereum.senderPrivateAddress');
+
+        this.signerAddress = EthereumUtil.privateToAddress(this.signerPrivateKey).toString('hex');
     }
 
     public async generateData(methodId: string, types: any, values: any) {
         const hash = EthereumAbi.soliditySHA3(types, values);
 
-        const sig = await this.ethereumService.sign(
-            this.signerAddress,
-            `0x${hash.toString('hex')}`
-        );
-
-        const res = EthereumUtil.fromRpcSig(sig);
+        // remove 0x from beginning
+        const privateKey = Buffer.from(this.signerPrivateKey.substr(2), 'hex');
 
         const prefix = Buffer.from('\x19Ethereum Signed Message:\n');
         const prefixedMsg = EthereumUtil.sha3(
             Buffer.concat([prefix, Buffer.from(String(hash.length)), hash])
         );
 
+        const res = EthereumUtil.ecsign(prefixedMsg, privateKey);
+
         const pubKey = EthereumUtil.ecrecover(prefixedMsg, res.v, res.r, res.s);
         const addrBuf = EthereumUtil.pubToAddress(pubKey);
-        const recoveredAddress = EthereumUtil.bufferToHex(addrBuf);
+        const recoveredAddress = addrBuf.toString('hex');
 
         if (this.signerAddress !== recoveredAddress) {
             // @TODO: log it

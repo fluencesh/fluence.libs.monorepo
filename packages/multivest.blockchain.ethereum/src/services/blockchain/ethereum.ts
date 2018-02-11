@@ -5,19 +5,24 @@ import * as config from 'config';
 import EthereumBip44 from 'ethereum-bip44';
 import * as Web3 from 'web3';
 import { ETHEREUM, EthereumTransaction } from './model';
+import * as EthereumTx from 'ethereumjs-tx';
 
 export class EthereumBlockchainService extends BlockchainService {
     private client: Web3;
+    private chainId: string;
+    private signerPrivateKey: string;
 
-    constructor(pluginManager: PluginManager, register: boolean, fake: boolean) {
-        super(pluginManager, register);
-
+    constructor(fake, signerPrivateKey) {
         if (!fake) {
             const clientProvider = new Web3.providers.HttpProvider(
                 config.get('multivest.blockchain.ethereum.providers.native.url')
             );
 
             this.client = new Web3(clientProvider);
+
+            this.chainId = config.get('multivest.blockchain.ethereum.chainId');
+
+            this.signerPrivateKey = signerPrivateKey || config.get('multivest.blockchain.ethereum.senderPrivateAddress');
         }
     }
 
@@ -69,28 +74,29 @@ export class EthereumBlockchainService extends BlockchainService {
     }
 
     public async sendTransaction(data: Partial<EthereumTransaction>) {
-        return new Promise<string>((resolve, reject) => {
-            try {
-                this.client.eth.sendTransaction({
-                    data: data.input,
-                    from: data.from[0].address,
-                    gas: data.gas,
-                    gasPrice: data.gasPrice,
-                    nonce: data.nonce,
-                    to: data.to[0].address,
-                    value: data.to[0].amount,
-                }, (error, txHash) => {
-                    if (error) {
-                        reject(error);
-                    }
-                    else {
-                        resolve(txHash);
-                    }
-                });
-            }
-            catch (error) {
-                reject(error);
-            }
+        return new Promise<string>(async (resolve, reject) => {
+            const txParams = {
+                nonce: `0x${data.nonce.toString(16)}`,
+                gasPrice: `0x${new BigNumber(data.gasPrice).toString(16)}`,
+                gasLimit: `0x${new BigNumber(data.gas).toString(16)}`,
+
+                to: data.to[0].address,
+                value: `0x${data.to[0].amount.toString(16)}`,
+
+                data: data.input,
+
+                chainId: this.chainId,
+            };
+
+            const tx = new EthereumTx(txParams);
+
+            tx.sign(Buffer.from(this.signerPrivateKey.substr(2), 'hex'));
+
+            const serializedTx = tx.serialize();
+
+            await this.sendRawTransaction(serializedTx);
+
+            return tx.hash();
         });
     }
 

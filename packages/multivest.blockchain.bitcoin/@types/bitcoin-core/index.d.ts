@@ -1,3 +1,5 @@
+import {Client} from "bitcoin-core";
+
 declare module 'bitcoin-core' {
     import { Promise } from 'bluebird';
 
@@ -8,9 +10,9 @@ declare module 'bitcoin-core' {
         public headers: any;
         public host: string;
         public password: string;
-        public port: NetworkPorts | number; 
+        public port: NetworkPorts | number;
         public timout: number;
-        public ssl: SSL; 
+        public ssl: SSL;
 
         constructor(options: ClientOptions);
 
@@ -22,6 +24,8 @@ declare module 'bitcoin-core' {
         public sendRawTransaction(txHex: string): Promise<string>;
         public getBalance(address: string, minConf: number): Promise<number>;
     }
+
+    export = Client;
 
     export type Extension = 'bin' | 'hex' | 'json';
 

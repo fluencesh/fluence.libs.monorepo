@@ -5,8 +5,19 @@
         "noImplicitAny": true,
         "removeComments": true,
         "sourceMap": true,
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "mapRoot": "./dist",
         "declaration": true,
-        "sourceRoot": "",
-        "outDir": "./dist"
+        "baseUrl": "./",
+        "paths": {
+            "web3": [
+                "@types/web3/index.d.ts"
+            ]
+        },
+        "typeRoots": [
+            "./node_modules/@types",
+            "./@types"
+        ]
     }
 }

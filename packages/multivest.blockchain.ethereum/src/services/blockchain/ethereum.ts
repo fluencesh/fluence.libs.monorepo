@@ -13,6 +13,8 @@ export class EthereumBlockchainService extends BlockchainService {
     private signerPrivateKey: string;
 
     constructor(fake, signerPrivateKey) {
+        super();
+
         if (!fake) {
             const clientProvider = new Web3.providers.HttpProvider(
                 config.get('multivest.blockchain.ethereum.providers.native.url')

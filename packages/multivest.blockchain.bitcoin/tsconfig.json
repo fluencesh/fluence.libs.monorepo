@@ -9,6 +9,7 @@
         "outDir": "./dist",
         "mapRoot": "./dist",
         "declaration": true,
+        "skipLibCheck": true,
         "baseUrl": "./",
         "paths": {
             "web3": [

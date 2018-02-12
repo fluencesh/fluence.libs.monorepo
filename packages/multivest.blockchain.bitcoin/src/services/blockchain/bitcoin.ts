@@ -57,7 +57,7 @@ export class BitcoinBlockchainService extends BlockchainService {
 
     public parseBlock(block: OriginalBlock): Block {
         const totalFee = block.tx.reduce(
-            (prev, curr) => prev.plus(curr),
+            (prev: BigNumber, curr: string) => prev.plus(curr),
             new BigNumber(0)
         );
 
@@ -79,7 +79,7 @@ export class BitcoinBlockchainService extends BlockchainService {
         const senders: Array<Sender> = [];
         const recipients: Array<Recipient> = [];
 
-        transaction.details.forEach((item) => {
+        transaction.details.forEach((item: any) => {
             if (item.category === 'send') {
                 senders.push({
                     address: item.address,

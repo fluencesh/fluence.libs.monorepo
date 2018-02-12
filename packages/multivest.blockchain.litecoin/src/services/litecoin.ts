@@ -5,7 +5,7 @@ import * as config from 'config';
 import { BlockchainService } from '@applicature-restricted/multivest.blockchain';
 import { BitcoinBlockchainService } from '@applicature-restricted/multivest.blockchain.bitcoin';
 
-export class LitecoinService extends BitcoinBlockchainService {
+export class LitecoinBlockchainService extends BitcoinBlockchainService {
     // private client: Client;
     // private network: any;
     // private masterPublicKey: string;

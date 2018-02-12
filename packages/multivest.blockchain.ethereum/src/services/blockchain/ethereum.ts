@@ -3,16 +3,16 @@ import { MultivestError, PluginManager } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
 import * as config from 'config';
 import EthereumBip44 from 'ethereum-bip44';
+import * as EthereumTx from 'ethereumjs-tx';
 import * as Web3 from 'web3';
 import { ETHEREUM, EthereumTransaction } from './model';
-import * as EthereumTx from 'ethereumjs-tx';
 
 export class EthereumBlockchainService extends BlockchainService {
     private client: Web3;
     private chainId: string;
     private signerPrivateKey: string;
 
-    constructor(fake, signerPrivateKey) {
+    constructor(fake?: boolean, signerPrivateKey?: string) {
         super();
 
         if (!fake) {
@@ -24,7 +24,8 @@ export class EthereumBlockchainService extends BlockchainService {
 
             this.chainId = config.get('multivest.blockchain.ethereum.chainId');
 
-            this.signerPrivateKey = signerPrivateKey || config.get('multivest.blockchain.ethereum.senderPrivateAddress');
+            this.signerPrivateKey =
+                signerPrivateKey || config.get('multivest.blockchain.ethereum.senderPrivateAddress');
         }
     }
 

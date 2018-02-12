@@ -1,7 +1,7 @@
 {
-  "name": "@applicature/multivest.blockchain.litecoin",
+  "name": "@applicature-restricted/multivest.blockchain.litecoin",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "license": "UNLICENSED",
   "description": "Litecoin Blockchain Plugin",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -10,14 +10,15 @@
     "npm": ">=2.15.11",
     "yarn": ">=0.20.3"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "lint": "esw *.js src config --color",
-    "precommit": "npm run lint ; npm run test ; npm run test:security",
-    "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --ui bdd --reporter spec --colors ./tests/ --recursive",
-    "test:watch": "npm test -- --watch",
-    "test:coverage": "cross-env NODE_ENV=test ./node_modules/.bin/istanbul cover _mocha -- --ui bdd --reporter spec --colors ./tests --recursive",
-    "test:check-coverage": "npm run test:coverage && istanbul check-coverage",
-    "report-coverage": "nyc --reporter=lcov --reporter=text-lcov npm run test",
+    "build": "gulp clean && gulp build",
+    "lint": "tslint '{src/**/*.ts,test/**/*.ts}'",
+    "precommit": "npm run lint ; npm run test:coverage ; npm run test:security",
+    "test": "jest",
+    "test:coverage": "jest --coverage --collectCoverageFrom=*/**/*.ts",
+    "test:ci": "jest --coverage --testResultsProcessor ./node_modules/jest-junit --collectCoverageFrom=*/**/*.ts",
     "test:security": "nsp check"
   },
   "repository": {
@@ -25,9 +26,10 @@
     "url": "git@bitbucket.com:applicature/multivest.blockchain.litecoin.git"
   },
   "dependencies": {
-    "@applicature/multivest.blockchain.bitcoin": "git+ssh://git@bitbucket.org/applicature/multivest.blockchain.bitcoin.git",
-    "@applicature/multivest.core": "git+ssh://git@bitbucket.org/applicature/multivest.plugin-manager.git",
-    "@applicature/multivest.mongodb.ico": "git+ssh://git@bitbucket.org/applicature/multivest.mongodb.ico.git",
+    "@applicature-restricted/multivest.blockchain": "^0.1.20",
+    "@applicature-restricted/multivest.blockchain.bitcoin": "^0.1.4",
+    "@applicature/multivest.core": "^0.1.12",
+    "@applicature/multivest.mongodb.ico": "^0.1.12",
     "bignumber.js": "^4.1.0",
     "bitcoin-core": "^1.2.0",
     "bitcoinjs-lib": "^3.3.0",
@@ -36,27 +38,52 @@
     "winston": "^2.1.1"
   },
   "devDependencies": {
-    "assert": "^1.4.1",
-    "chai": "^4.0.2",
-    "chai-subset": "^1.5.0",
-    "cross-env": "^5.0.3",
-    "eslint": "^3.19.0",
-    "eslint-config-airbnb": "^15.0.1",
-    "eslint-config-airbnb-base": "^11.2.0",
-    "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-jsx-a11y": "^5.0.3",
-    "eslint-plugin-node": "^5.0.0",
-    "eslint-plugin-react": "^7.0.1",
-    "eslint-watch": "^3.1.0",
-    "husky": "^0.13.4",
-    "istanbul": "^0.4.5",
-    "lodash.clone": "^4.5.0",
-    "mocha": "^3.4.2",
-    "nodemon": "^1.11.0",
-    "nyc": "^11.0.2",
-    "should": "^10.0.0",
-    "supertest": "^1.2.0",
-    "supertest-as-promised": "^4.0.2",
-    "nsp": "^3.1.0"
+    "@types/config": "0.0.33",
+    "@types/jest": "^22.0.1",
+    "@types/node": "^8.5.2",
+    "@types/winston": "^2.3.7",
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.4.0",
+    "gulp-sourcemaps": "^2.6.3",
+    "gulp-tslint": "^8.1.2",
+    "gulp-typescript": "^3.2.3",
+    "husky": "^0.14.3",
+    "jest": "^21.2.1",
+    "jest-junit": "^3.4.1",
+    "nsp": "^3.1.0",
+    "source-map-support": "^0.5.0",
+    "ts-jest": "^21.2.4",
+    "ts-node": "^4.1.0",
+    "tslint": "^5.9.1",
+    "typescript": "^2.6.2"
+  },
+  "files": [
+    "dist/",
+    "src/"
+  ],
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/.*?\\.d\\.ts$",
+      "<rootDir>/.*?\\.mock\\.ts$"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover",
+      "cobertura"
+    ]
+  },
+  "jest-junit": {
+    "output": "./coverage/junit.xml"
   }
 }

@@ -1,6 +1,0 @@
-dist
-node_modules
-shared
-coverage
-.nyc_output
-logs/*.log

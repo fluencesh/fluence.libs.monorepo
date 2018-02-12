@@ -1,8 +1,8 @@
+import * as config from 'config';
 import * as EthereumAbi from 'ethereumjs-abi';
 import * as EthereumUtil from 'ethereumjs-util';
 import * as Web3 from 'web3';
 import * as logger from 'winston';
-import * as config from 'config';
 
 import { MultivestError } from '@applicature/multivest.core';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
@@ -13,11 +13,7 @@ export class Contract {
     private contract: Web3.Contract<any>;
     private signerAddress: string;
 
-    constructor(
-        abi: Array<Web3.AbiDefinition>,
-        private address: string,
-        private signerPrivateKey: string
-    ) {
+    constructor(abi: Array<Web3.AbiDefinition>, private address: string, private signerPrivateKey: string) {
         this.ethereumService = new EthereumBlockchainService();
         this.contract = this.ethereumService.getContract(abi, address);
 
@@ -33,9 +29,7 @@ export class Contract {
         const privateKey = Buffer.from(this.signerPrivateKey.substr(2), 'hex');
 
         const prefix = Buffer.from('\x19Ethereum Signed Message:\n');
-        const prefixedMsg = EthereumUtil.sha3(
-            Buffer.concat([prefix, Buffer.from(String(hash.length)), hash])
-        );
+        const prefixedMsg = EthereumUtil.sha3(Buffer.concat([prefix, Buffer.from(String(hash.length)), hash]));
 
         const res = EthereumUtil.ecsign(prefixedMsg, privateKey);
 
@@ -63,10 +57,7 @@ export class Contract {
             })
         );
 
-        const data = EthereumAbi.simpleEncode(
-            `${methodId}(${methodArgTypes.join(',')})`,
-            ...methodArgValues
-        );
+        const data = EthereumAbi.simpleEncode(`${methodId}(${methodArgTypes.join(',')})`, ...methodArgValues);
 
         return data.toString('hex');
     }

@@ -3,13 +3,13 @@ import * as config from 'config';
 import { CompatibleBitcoinTxMiningListener } from '@applicature-restricted/multivest.blockchain.bitcoin';
 import { PluginManager } from '@applicature/multivest.core';
 
-import { LitecoinService } from '../services/litecoin';
+import { LitecoinBlockchainService } from '../services/litecoin';
 
 const JOB_ID = 'ltc.tx.mining.listener';
 
 export class LitecoinTxMiningListener extends CompatibleBitcoinTxMiningListener {
     constructor(pluginManager: PluginManager) {
-        const service = new LitecoinService();
+        const service = new LitecoinBlockchainService();
         super(
             pluginManager,
             service,

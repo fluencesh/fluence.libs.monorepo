@@ -56,14 +56,8 @@ export class BitcoinBlockchainService extends BlockchainService {
     }
 
     public parseBlock(block: OriginalBlock): Block {
-        const totalFee = block.tx.reduce(
-            (prev: BigNumber, curr: string) => prev.plus(curr),
-            new BigNumber(0)
-        );
-
         return {
             difficulty: block.difficulty,
-            fee: totalFee,
             hash: block.hash,
             height: block.height,
             network: String(this.network),
@@ -71,8 +65,24 @@ export class BitcoinBlockchainService extends BlockchainService {
             parentHash: block.previousblockhash,
             size: block.size,
             time: block.time,
-            transactions: null
+            transactions: block.tx.map(this.convertTransaction),
         };
+    }
+
+    public convertTransaction(tx: any): Transaction {
+        const senders: Array<Sender> = [];
+        const recipients: Array<Recipient> = [];
+        tx.vout.forEach((vout: any) => {
+            if (vout.scriptPubKey && vout.scriptPubKey.addresses && vout.scriptPubKey.addresses[0]) {
+                recipients.push({ address: vout.scriptPubKey.addresses[0], amount: vout.value });
+            }
+        });
+        const result: Transaction = {
+            from: senders,
+            hash: tx.hash,
+            to: recipients,
+        };
+        return result;
     }
 
     public parseTransaction(transaction: OriginalTransaction): Transaction {

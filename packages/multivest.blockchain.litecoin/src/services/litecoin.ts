@@ -23,6 +23,14 @@ export class LitecoinBlockchainService extends BitcoinBlockchainService {
         }
 
         this.network = bitcoin.networks[config.get('multivest.blockchain.litecoin.network')];
+
+        if (config.get('multivest.blockchain.litecoin.network') === 'litecoin_testnet') {
+            this.network.bip32 = {
+                private: 0x0436ef7d,
+                public: 0x0436f6e1,
+            };
+        }
+
         this.masterPublicKey = config.get('multivest.blockchain.litecoin.hd.masterPublicKey');
     }
 

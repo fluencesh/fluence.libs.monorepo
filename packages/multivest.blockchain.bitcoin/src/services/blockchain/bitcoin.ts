@@ -74,7 +74,10 @@ export class BitcoinBlockchainService extends BlockchainService {
         const recipients: Array<Recipient> = [];
         tx.vout.forEach((vout: any) => {
             if (vout.scriptPubKey && vout.scriptPubKey.addresses && vout.scriptPubKey.addresses[0]) {
-                recipients.push({ address: vout.scriptPubKey.addresses[0], amount: vout.value });
+                recipients.push({
+                    address: vout.scriptPubKey.addresses[0],
+                    amount: new BigNumber(100000000).times(vout.value),
+                });
             }
         });
         const result: Transaction = {

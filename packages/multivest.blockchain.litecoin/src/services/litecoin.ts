@@ -34,6 +34,14 @@ export class LitecoinBlockchainService extends BitcoinBlockchainService {
         this.masterPublicKey = config.get('multivest.blockchain.litecoin.hd.masterPublicKey');
     }
 
+    public getHDAddress(index: number) {
+        const hdNode = bitcoin.HDNode.fromBase58(this.masterPublicKey, bitcoin.networks.bitcoin);
+
+        hdNode.keyPair.network = bitcoin.networks.litecoin;
+
+        return hdNode.derive(0).derive(index).getAddress().toString();
+    }
+
     public getBlockchainId() {
         return 'LITECOIN';
     }

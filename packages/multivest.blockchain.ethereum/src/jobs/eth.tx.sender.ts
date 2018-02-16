@@ -55,6 +55,18 @@ export class EthereumTransactionSender extends Job {
 
             if (!senderAddress[0].address) {
                 senderAddress[0].address = this.sendFromAddress;
+
+                // @TODO: save address to db
+
+                await transactionDao.update(
+                    {
+                        blockchain: this.blockchainService.getBlockchainId(),
+                        uniqId: transaction.uniqId
+                    },
+                    {
+                        'ref.from': senderAddress
+                    }
+                );
             }
 
             const txCount = await transactionDao.getCountByAddress(
@@ -66,10 +78,9 @@ export class EthereumTransactionSender extends Job {
 
             try {
                 txHash = await this.blockchainService.sendTransaction(
-                    {
-                        ...transaction.ref,
-                        from: senderAddress
-                    }
+                    Object.assign(transaction.ref, {
+                        nonce: txCount - 1
+                    })
                 );
             }
             catch (error) {
@@ -85,12 +96,11 @@ export class EthereumTransactionSender extends Job {
 
             await transactionDao.update(
                 {
+                    blockchain: this.blockchainService.getBlockchainId(),
                     uniqId: transaction.uniqId
                 },
                 {
-                    ref: {
-                        hash: txHash
-                    },
+                    'ref.hash': txHash,
                     status: Scheme.TransactionStatus.Sent
                 }
             );

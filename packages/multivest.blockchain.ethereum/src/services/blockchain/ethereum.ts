@@ -1,5 +1,5 @@
 import { BlockchainService } from '@applicature-restricted/multivest.blockchain';
-import { MultivestError, PluginManager } from '@applicature/multivest.core';
+import { Block, MultivestError, PluginManager, Transaction } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
 import * as config from 'config';
 import EthereumBip44 from 'ethereum-bip44';
@@ -68,8 +68,9 @@ export class EthereumBlockchainService extends BlockchainService {
         });
     }
 
-    public async getBlockByHeight(blockHeight: number) {
-        return this.client.eth.getBlock(blockHeight, true) as any;
+    public async getBlockByHeight(blockHeight: number): Promise<Block> {
+        const block = this.client.eth.getBlock(blockHeight, true);
+        return this.convertBlock(block);
     }
 
     public async getTransactionByHash(txHash: string) {
@@ -133,5 +134,30 @@ export class EthereumBlockchainService extends BlockchainService {
             from,
             to,
         });
+    }
+
+    private convertBlock(block: Web3.BlockWithTransactionData): Block {
+        return {
+            height: block.number,
+            hash: block.hash,
+            parentHash: block.parentHash,
+            difficulty: block.difficulty.toNumber(),
+            nonce: block.nonce,
+            network: this.getBlockchainId(),
+            size: block.size,
+            time: block.timestamp,
+            transactions: block.transactions.map(this.convertTransaction),
+        };
+    }
+
+    private convertTransaction(tx: Web3.Transaction): Transaction {
+        return {
+            hash: tx.hash,
+            blockHash: tx.blockHash,
+            blockHeight: tx.blockNumber,
+            fee: tx.gasPrice.times(tx.gas),
+            from: [{ address: tx.from }],
+            to: [{ address: tx.to, amount: tx.value }],
+        };
     }
 }

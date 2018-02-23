@@ -78,34 +78,40 @@ export class EthereumBlockchainService extends BlockchainService {
     }
 
     public async sendTransaction(data: Partial<EthereumTransaction>) {
-        return new Promise<string>(async (resolve, reject) => {
-            const txParams = {
-                nonce: `0x${data.nonce.toString(16)}`,
-                gasPrice: `0x${new BigNumber(data.gasPrice).toString(16)}`,
-                gasLimit: `0x${new BigNumber(data.gas).toString(16)}`,
+        const txParams = {
+            nonce: `0x${data.nonce.toString(16)}`,
+            gasPrice: `0x${new BigNumber(data.gasPrice).toString(16)}`,
+            gasLimit: `0x${new BigNumber(data.gas).toString(16)}`,
 
-                to: data.to[0].address,
-                value: `0x${data.to[0].amount.toString(16)}`,
+            to: data.to[0].address,
+            value: `0x${data.to[0].amount.toString(16)}`,
 
-                data: data.input,
+            data: data.input,
 
-                chainId: this.chainId,
-            };
+            chainId: this.chainId,
+        };
 
-            const tx = new EthereumTx(txParams);
+        const tx = new EthereumTx(txParams);
 
-            tx.sign(Buffer.from(this.signerPrivateKey.substr(2), 'hex'));
+        tx.sign(Buffer.from(this.signerPrivateKey.substr(2), 'hex'));
 
-            const serializedTx = tx.serialize();
+        const serializedTx = tx.serialize();
 
-            await this.sendRawTransaction(serializedTx);
+        await this.sendRawTransaction('0x' + serializedTx.toString('hex'));
 
-            return tx.hash();
-        });
+        return tx.hash();
     }
 
-    public async sendRawTransaction(txHex: string) {
-        return this.client.eth.sendRawTransaction(txHex);
+    public async sendRawTransaction(txHex: string): Promise<string> {
+        return new Promise((resolve: (value: string) => void, reject) => {
+            this.client.eth.sendRawTransaction(txHex, (err: any, hash: string) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(hash);
+                }
+            });
+        });
     }
 
     public async call(from: string, to: string, data: string) {

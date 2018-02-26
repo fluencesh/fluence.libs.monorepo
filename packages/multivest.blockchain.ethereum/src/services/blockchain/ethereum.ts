@@ -83,12 +83,12 @@ export class EthereumBlockchainService extends BlockchainService {
             gasPrice: `0x${new BigNumber(data.gasPrice).toString(16)}`,
             gasLimit: `0x${new BigNumber(data.gas).toString(16)}`,
 
-            to: data.to[0].address,
+            to: data.to[0].address.toLowerCase(),
             value: `0x${data.to[0].amount.toString(16)}`,
 
             data: data.input,
 
-            chainId: this.chainId,
+            chainId: parseInt(this.chainId, 10),
         };
 
         const tx = new EthereumTx(txParams);

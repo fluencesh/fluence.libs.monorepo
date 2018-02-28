@@ -99,7 +99,7 @@ export class EthereumBlockchainService extends BlockchainService {
 
         await this.sendRawTransaction('0x' + serializedTx.toString('hex'));
 
-        return tx.hash().toString('hex');
+        return `0x${tx.hash().toString('hex')}`;
     }
 
     public async sendRawTransaction(txHex: string): Promise<string> {

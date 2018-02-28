@@ -69,9 +69,10 @@ export class EthereumTransactionSender extends Job {
                 );
             }
 
-            const txCount = await transactionDao.getCountByAddress(
+            const txCount = await transactionDao.getCountByAddressExcludingStatus(
                 this.blockchainService.getBlockchainId(),
-                senderAddress[0].address
+                senderAddress[0].address,
+                Scheme.TransactionStatus.Created
             );
 
             let txHash;

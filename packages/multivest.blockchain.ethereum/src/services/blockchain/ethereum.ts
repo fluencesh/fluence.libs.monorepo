@@ -1,3 +1,5 @@
+import logger from 'winston';
+
 import { BlockchainService } from '@applicature-restricted/multivest.blockchain';
 import { Block, MultivestError, PluginManager, Transaction } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
@@ -78,6 +80,18 @@ export class EthereumBlockchainService extends BlockchainService {
     }
 
     public async sendTransaction(data: Partial<EthereumTransaction>) {
+        const networkNonce = await this.client.eth.getTransactionCount(data.from[0].address);
+
+        if (data.nonce !== networkNonce) {
+            logger.error('EthereumService: Wrong count of nonces in network', {
+                address: data.from[0].address,
+                nonce: data.nonce,
+                networkNonce
+            });
+
+            data.nonce = networkNonce;
+        }
+
         const txParams = {
             nonce: `0x${data.nonce.toString(16)}`,
             gasPrice: `0x${new BigNumber(data.gasPrice).toString(16)}`,

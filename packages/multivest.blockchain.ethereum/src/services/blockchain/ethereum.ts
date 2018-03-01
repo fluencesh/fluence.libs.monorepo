@@ -105,6 +105,8 @@ export class EthereumBlockchainService extends BlockchainService {
             chainId: parseInt(this.chainId, 10),
         };
 
+        logger.info('EthereumService: sending tx params', txParams);
+
         const tx = new EthereumTx(txParams);
 
         tx.sign(Buffer.from(this.signerPrivateKey.substr(2), 'hex'));

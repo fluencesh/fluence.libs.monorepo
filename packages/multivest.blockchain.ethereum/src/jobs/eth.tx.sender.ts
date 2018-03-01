@@ -14,23 +14,6 @@ export class EthereumTransactionSender extends Job {
         super(pluginManager);
         this.blockchainService = new EthereumBlockchainService();
         this.sendFromAddress = config.get('multivest.blockchain.ethereum.senderAddress');
-
-        this.jobExecutor.define(this.getJobId(), async (job, done) => {
-            logger.info(`${this.getJobId()}: executing job`);
-
-            try {
-                await this.execute();
-
-                logger.info(`${this.getJobId()}: executed`);
-
-                done();
-            }
-            catch (err) {
-                logger.error(`${this.getJobId()} failed to execute`, err);
-
-                done(err);
-            }
-        });
     }
 
     public getJobId() {
@@ -38,7 +21,11 @@ export class EthereumTransactionSender extends Job {
     }
 
     public async init() {
+        logger.info('EthereumTransactionSender.init called');
+
         this.dao = await this.pluginManager.get('mongodb').getDaos();
+
+        logger.info('EthereumTransactionSender.init ended');
     }
 
     public async execute() {

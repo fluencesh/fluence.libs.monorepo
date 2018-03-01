@@ -16,8 +16,6 @@ export class EthereumTxMiningListener extends BlockchainListener {
             config.get('multivest.blockchain.ethereum.listener.sinceBlock'),
             config.get('multivest.blockchain.ethereum.listener.minConfirmations')
         );
-
-        this.transactionDao = pluginManager.getDao('transactions') as TransactionDao;
     }
 
     public getJobId() {
@@ -25,6 +23,10 @@ export class EthereumTxMiningListener extends BlockchainListener {
     }
 
     public async processBlock(block: Block) {
+        if (!this.transactionDao) {
+            this.transactionDao = await this.pluginManager.get('mongodb').getDao('transactions') as TransactionDao;
+        }
+
         const txMapping: Hashtable<EthereumTransaction> = {};
 
         for (const tx of block.transactions) {

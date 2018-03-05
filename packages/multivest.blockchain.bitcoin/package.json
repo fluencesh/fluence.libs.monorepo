@@ -16,9 +16,10 @@
     "build": "gulp clean && gulp build",
     "lint": "tslint '{src/**/*.ts,test/**/*.ts}'",
     "precommit": "npm run lint ; npm run test:coverage ; npm run test:security",
-    "test": "jest",
-    "test:coverage": "jest --coverage --collectCoverageFrom=*/**/*.ts",
-    "test:ci": "jest --coverage --testResultsProcessor ./node_modules/jest-junit --collectCoverageFrom=*/**/*.ts",
+    "test": "jest test/unit",
+    "test:integration": "jest test/integration",
+    "test:coverage": "jest test/unit --coverage --collectCoverageFrom=*/**/*.ts",
+    "test:ci": "jest test/unit --coverage --testResultsProcessor ./node_modules/jest-junit --collectCoverageFrom=*/**/*.ts",
     "test:security": "nsp check"
   },
   "repository": {

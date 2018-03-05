@@ -1,0 +1,20 @@
+{
+  "multivest": {
+    "blockchain": {
+      "bitcoin": {
+        "providers": {
+          "native": {
+            "host": "94.130.216.246",
+            "network": "testnet",
+            "username": "test",
+            "password": "test"
+          }
+        },
+        "network": "testnet",
+        "hd": {
+          "masterPublicKey": "tpubDAenfwNu5GyCJWv8oqRAckdKMSUoZjgVF5p8WvQwHQeXjDhAHmGrPa4a4y2Fn7HF2nfCLefJanHV3ny1UY25MRVogizB2zRUdAo7Tr9XAjm"
+        }
+      }
+    }
+  }
+}

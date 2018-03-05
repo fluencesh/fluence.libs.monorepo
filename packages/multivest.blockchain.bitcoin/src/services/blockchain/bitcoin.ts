@@ -8,8 +8,11 @@ import * as bitcoin from 'bitcoinjs-lib';
 import * as config from 'config';
 import { BITCOIN } from './model';
 
+type NetworkName = 'bitcoin' | 'litecoin' | 'testnet';
+
 export class BitcoinBlockchainService extends BlockchainService {
     private client: Client;
+    private networkName: NetworkName;
     private network: bitcoin.Network;
     private masterPublicKey: string;
 
@@ -20,9 +23,8 @@ export class BitcoinBlockchainService extends BlockchainService {
             this.client = new Client(config.get('multivest.blockchain.bitcoin.providers.native'));
         }
 
-        this.network = bitcoin.networks[
-            config.get('multivest.blockchain.bitcoin.network') as 'bitcoin' | 'litecoin' | 'testnet'
-        ];
+        this.networkName = config.get('multivest.blockchain.bitcoin.network') as NetworkName;
+        this.network = bitcoin.networks[this.networkName];
         this.masterPublicKey = config.get('multivest.blockchain.bitcoin.hd.masterPublicKey');
     }
 
@@ -58,18 +60,19 @@ export class BitcoinBlockchainService extends BlockchainService {
     public parseBlock(block: OriginalBlock): Block {
         return {
             difficulty: block.difficulty,
+            fee: null,
             hash: block.hash,
             height: block.height,
-            network: String(this.network),
+            network: this.networkName,
             nonce: block.nonce,
             parentHash: block.previousblockhash,
             size: block.size,
             time: block.time,
-            transactions: block.tx.map(this.convertTransaction),
+            transactions: block.tx.map((tx: any) => this.convertTransaction(block, tx)),
         };
     }
 
-    public convertTransaction(tx: any): Transaction {
+    public convertTransaction(block: OriginalBlock, tx: any): Transaction {
         const senders: Array<Sender> = [];
         const recipients: Array<Recipient> = [];
         tx.vout.forEach((vout: any) => {
@@ -81,6 +84,10 @@ export class BitcoinBlockchainService extends BlockchainService {
             }
         });
         const result: Transaction = {
+            blockHash: block.hash,
+            blockHeight: block.height,
+            blockTime: block.time,
+            fee: null,
             from: senders,
             hash: tx.hash,
             to: recipients,

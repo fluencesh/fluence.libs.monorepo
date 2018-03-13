@@ -9,6 +9,7 @@ BitcoinjsTestnets.register(bitcoin.networks);
 
 import { BlockchainService } from '@applicature-restricted/multivest.blockchain';
 import { BitcoinBlockchainService } from '@applicature-restricted/multivest.blockchain.bitcoin';
+import {MultivestError} from '@applicature/multivest.core';
 
 export class LitecoinBlockchainService extends BitcoinBlockchainService {
     // private client: Client;
@@ -35,7 +36,17 @@ export class LitecoinBlockchainService extends BitcoinBlockchainService {
     }
 
     public getHDAddress(index: number) {
-        const hdNode = bitcoin.HDNode.fromBase58(this.masterPublicKey, bitcoin.networks.bitcoin);
+        let hdNode;
+
+        if (this.masterPublicKey.startsWith('Ltub')) {
+            hdNode = bitcoin.HDNode.fromBase58(this.masterPublicKey, bitcoin.networks.litecoin);
+        }
+        else if (this.masterPublicKey.startsWith('xpub')) {
+            hdNode = bitcoin.HDNode.fromBase58(this.masterPublicKey, bitcoin.networks.bitcoin);
+        }
+        else {
+            throw new MultivestError('UNKNOWN_LITECOIN_FORMAT');
+        }
 
         hdNode.keyPair.network = bitcoin.networks.litecoin;
 

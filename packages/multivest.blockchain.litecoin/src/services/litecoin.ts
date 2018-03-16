@@ -44,6 +44,9 @@ export class LitecoinBlockchainService extends BitcoinBlockchainService {
         else if (this.masterPublicKey.startsWith('xpub')) {
             hdNode = bitcoin.HDNode.fromBase58(this.masterPublicKey, bitcoin.networks.bitcoin);
         }
+        else if (this.masterPublicKey.startsWith('ttub')) {
+            hdNode = bitcoin.HDNode.fromBase58(this.masterPublicKey, bitcoin.networks.litecoin_testnet);
+        }
         else {
             throw new MultivestError('UNKNOWN_LITECOIN_FORMAT');
         }

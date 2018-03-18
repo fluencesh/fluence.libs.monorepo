@@ -16,23 +16,24 @@ export class LitecoinBlockchainService extends BitcoinBlockchainService {
     // private network: any;
     // private masterPublicKey: string;
 
-    constructor(fake?: boolean) {
+    constructor(fake?: boolean, networkName?: string, masterPublicKey?: string) {
         super();
 
         if (!!fake === false) {
             this.client = new Client(config.get('multivest.blockchain.litecoin.providers.native'));
         }
 
-        this.network = bitcoin.networks[config.get('multivest.blockchain.litecoin.network')];
+        networkName = networkName || config.get('multivest.blockchain.litecoin.network');
+        this.network = bitcoin.networks[networkName];
 
-        if (config.get('multivest.blockchain.litecoin.network') === 'litecoin_testnet') {
+        if (networkName === 'litecoin_testnet') {
             this.network.bip32 = {
                 private: 0x0436ef7d,
                 public: 0x0436f6e1,
             };
         }
 
-        this.masterPublicKey = config.get('multivest.blockchain.litecoin.hd.masterPublicKey');
+        this.masterPublicKey = masterPublicKey || config.get('multivest.blockchain.litecoin.hd.masterPublicKey');
     }
 
     public getHDAddress(index: number) {
@@ -43,6 +44,7 @@ export class LitecoinBlockchainService extends BitcoinBlockchainService {
         }
         else if (this.masterPublicKey.startsWith('xpub')) {
             hdNode = bitcoin.HDNode.fromBase58(this.masterPublicKey, bitcoin.networks.bitcoin);
+            hdNode.keyPair.network = bitcoin.networks.litecoin;
         }
         else if (this.masterPublicKey.startsWith('ttub')) {
             hdNode = bitcoin.HDNode.fromBase58(this.masterPublicKey, bitcoin.networks.litecoin_testnet);
@@ -50,8 +52,6 @@ export class LitecoinBlockchainService extends BitcoinBlockchainService {
         else {
             throw new MultivestError('UNKNOWN_LITECOIN_FORMAT');
         }
-
-        hdNode.keyPair.network = bitcoin.networks.litecoin;
 
         return hdNode.derive(0).derive(index).getAddress().toString();
     }

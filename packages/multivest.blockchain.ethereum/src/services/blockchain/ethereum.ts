@@ -88,8 +88,6 @@ export class EthereumBlockchainService extends BlockchainService {
                 nonce: data.nonce,
                 networkNonce
             });
-
-            data.nonce = networkNonce;
         }
 
         const txParams = {

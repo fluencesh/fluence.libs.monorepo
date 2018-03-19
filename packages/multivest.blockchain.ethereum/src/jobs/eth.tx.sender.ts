@@ -67,7 +67,7 @@ export class EthereumTransactionSender extends Job {
             try {
                 txHash = await this.blockchainService.sendTransaction(
                     Object.assign(transaction.ref, {
-                        nonce: txCount - 1
+                        nonce: txCount
                     })
                 );
             }

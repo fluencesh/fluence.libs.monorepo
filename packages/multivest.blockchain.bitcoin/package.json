@@ -67,6 +67,7 @@
     "typescript": "^2.6.2"
   },
   "files": [
+    "@types/",
     "dist/",
     "src/"
   ],

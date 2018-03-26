@@ -1,6 +1,4 @@
 import { Plugin } from '@applicature/multivest.core';
-import { EthereumTxMiningListener } from './jobs/eth.tx.mining.listener';
-import { EthereumTransactionSender } from './jobs/eth.tx.sender';
 
 class EthereumBlockchainPlugin extends Plugin<any> {
     public getPluginId() {
@@ -8,8 +6,7 @@ class EthereumBlockchainPlugin extends Plugin<any> {
     }
 
     public init() {
-        this.registerJob(EthereumTxMiningListener);
-        this.registerJob(EthereumTransactionSender);
+
     }
 }
 

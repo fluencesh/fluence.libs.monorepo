@@ -1,0 +1,8 @@
+{
+  "multivest": {
+    "mongodb": {
+      "url": "mongodb://mongodb/multivest",
+      "options": null
+    }
+  }
+}

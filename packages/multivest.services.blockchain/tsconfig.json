@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "sourceMap": true,
+        "declaration": true,
+        "outDir": "./dist",
+        "skipLibCheck": true,
+        "typeRoots": [
+            "node_modules/@types",
+            "node_modules/@applicature/multivest.mongodb/@types"
+        ]
+    }
+}

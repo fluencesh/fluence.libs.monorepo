@@ -1,0 +1,101 @@
+{
+  "name": "@applicature/multivest.services.blockchain",
+  "version": "0.1.25",
+  "private": false,
+  "license": "UNLICENSED",
+  "description": "MongoDB Blockchain Plugin",
+  "author": "Andrew Zubko <andrew@applicature.com>",
+  "engines": {
+    "node": ">=4.8.0",
+    "npm": ">=2.15.11",
+    "yarn": ">=0.20.3"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "gulp clean && gulp build",
+    "lint": "tslint '{src/**/*.ts,test/**/*.ts}'",
+    "precommit": "npm run lint ; npm run test:coverage ; npm run test:security",
+    "test": "jest test/unit",
+    "test:integration": "jest test/integration",
+    "test:coverage": "jest test/unit --coverage --collectCoverageFrom=*/**/*.ts",
+    "test:ci": "jest test/unit --coverage --testResultsProcessor ./node_modules/jest-junit --collectCoverageFrom=*/**/*.ts",
+    "test:security": "nsp check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.com:applicature/multivest.mongodb.blockchain.git"
+  },
+  "publishConfig": {
+    "registry": "https://artifacts-dev.zubko.biz/repository/applicature-npm/"
+  },
+  "dependencies": {
+    "@applicature-restricted/multivest.blockchain": "^0.2.16",
+    "@applicature/multivest.core": "^0.1.20",
+    "@applicature/multivest.mongodb": "^0.1.11",
+    "agenda": "^1.0.3",
+    "axios": "^0.18.0",
+    "config": "^1.29.2",
+    "faker": "^4.1.0",
+    "lodash": "^4.17.5",
+    "mongodb": "^2.2.28",
+    "uuid": "^3.2.1",
+    "winston": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/agenda": "^1.0.1",
+    "@types/config": "0.0.33",
+    "@types/faker": "^4.1.2",
+    "@types/jest": "^22.1.0",
+    "@types/lodash": "^4.14.104",
+    "@types/mongodb": "^2.2.18",
+    "@types/node": "^8.5.2",
+    "@types/uuid": "^3.4.3",
+    "@types/winston": "^2.3.7",
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.4.0",
+    "gulp-sourcemaps": "^2.6.3",
+    "gulp-tslint": "^8.1.2",
+    "gulp-typescript": "^3.2.3",
+    "husky": "^0.14.3",
+    "jest": "^22.1.4",
+    "jest-junit": "^3.4.1",
+    "mongo-mock": "^3.0.0",
+    "nsp": "^3.1.0",
+    "ts-jest": "^22.0.1",
+    "tslint": "^5.9.1",
+    "typescript": "^2.6.2"
+  },
+  "files": [
+    "dist/",
+    "src/",
+    "index.ts"
+  ],
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json",
+      "node"
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/.*?\\.d\\.ts$",
+      "<rootDir>/.*?\\.mock\\.ts$"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover",
+      "cobertura"
+    ]
+  },
+  "jest-junit": {
+    "output": "./coverage/junit.xml"
+  }
+}

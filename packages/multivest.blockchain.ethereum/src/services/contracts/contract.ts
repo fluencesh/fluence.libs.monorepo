@@ -1,64 +1,101 @@
-import * as config from 'config';
 import * as EthereumAbi from 'ethereumjs-abi';
-import * as EthereumUtil from 'ethereumjs-util';
-import * as Web3 from 'web3';
-import * as logger from 'winston';
 
 import { MultivestError } from '@applicature/multivest.core';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
-import has = Reflect.has;
+import {Hashtable} from "@applicature/multivest.core/dist/structure";
+import {Signature} from "@applicature-restricted/multivest.blockchain";
+import {EthereumContract} from "../types/types";
 
 export class Contract {
-    private ethereumService: EthereumBlockchainService;
-    private contract: Web3.Contract<any>;
-    private signerAddress: string;
+    protected ethereumBlockchainService: EthereumBlockchainService;
+    protected abi: any;
 
-    constructor(abi: Array<Web3.AbiDefinition>, private address: string, private signerPrivateKey: string) {
-        this.ethereumService = new EthereumBlockchainService();
-        this.contract = this.ethereumService.getContract(abi, address);
-
-        this.signerPrivateKey = signerPrivateKey || config.get('multivest.blockchain.ethereum.senderPrivateAddress');
-
-        this.signerAddress = EthereumUtil.privateToAddress(this.signerPrivateKey).toString('hex');
+    constructor(ethereumBlockchainService: EthereumBlockchainService, abi: any) {
+        this.ethereumBlockchainService = ethereumBlockchainService;
+        this.abi = abi;
     }
 
-    public async generateData(methodId: string, types: any, values: any) {
-        const hash = EthereumAbi.soliditySHA3(types, values);
-
-        // remove 0x from beginning
-        const privateKey = Buffer.from(this.signerPrivateKey.substr(2), 'hex');
-
-        const prefix = Buffer.from('\x19Ethereum Signed Message:\n');
-        const prefixedMsg = EthereumUtil.sha3(Buffer.concat([prefix, Buffer.from(String(hash.length)), hash]));
-
-        const res = EthereumUtil.ecsign(prefixedMsg, privateKey);
-
-        const pubKey = EthereumUtil.ecrecover(prefixedMsg, res.v, res.r, res.s);
-        const addrBuf = EthereumUtil.pubToAddress(pubKey);
-        const recoveredAddress = addrBuf.toString('hex');
-
-        if (this.signerAddress !== recoveredAddress) {
-            // @TODO: log it
-
-            throw new MultivestError('internal error');
-        }
-
-        const methodArgTypes = [...types, 'uint8', 'bytes32', 'bytes32'];
-        const methodArgValues = [...values, res.v, res.r, res.s];
-
-        logger.info(
-            'generateData arguments',
-            methodArgValues.map((item) => {
-                if (item instanceof Buffer) {
-                    return item.toString('hex');
-                }
-
-                return item.valueOf();
-            })
-        );
-
-        const data = EthereumAbi.simpleEncode(`${methodId}(${methodArgTypes.join(',')})`, ...methodArgValues);
+    protected async generateData(methodId: string, types: any, values: any) {
+        const data = EthereumAbi.simpleEncode(`${methodId}(${types.join(',')})`, ...values);
 
         return data.toString('hex');
     }
+
+    protected async generateSignedData(privateKey: Buffer, methodId: string, types: any, values: any) {
+        const hash = EthereumAbi.soliditySHA3(types, values);
+
+        const signature: Signature = this.ethereumBlockchainService.signData(privateKey, hash);
+
+        const methodArgTypes = [...types, 'uint8', 'bytes32', 'bytes32'];
+        const methodArgValues = [...values, signature.v, signature.r, signature.s];
+
+        return this.generateData(methodId, methodArgTypes, methodArgValues);
+    }
+
+    // public async getSate(contracts: Hashtable<EthereumContract>, params: Hashtable<object>) {
+    //     // @TODO: define contracts structure
+    //
+    //     const response = {};
+    //
+    //     for (const contractAddress in params) {
+    //         if (! contracts.hasOwnProperty(contractAddress)) {
+    //             throw new MultivestError('unknown contract address');
+    //         }
+    //
+    //         let contract = contracts[contractAddress];
+    //
+    //         for (let stateId in params[contractAddress]) {
+    //             // @TODO: check that stateId exists
+    //
+    //             response[contractAddress][stateId] = await this.getStateMethod(
+    //                 contract,
+    //                 stateId,
+    //                 params[contractAddress][stateId]
+    //             );
+    //         }
+    //     }
+    // }
+    //
+    // public async getStateMethod(contracts: EthereumContract, stateId: string, args: any) {
+    //     if(Array.isArray(args)) {
+    //         for(let item of args) {
+    //             await this.getSate(contract, contractId, stateId, item);
+    //         }
+    //     }
+    //     else if(typeof args == "object" && args.constructor.name != "BigNumber") {
+    //         const keys = Object.keys(args);
+    //
+    //         if(keys.length == 1) {
+    //             const val = (await contract[stateId].call(keys[0])).valueOf();
+    //
+    //             assert.equal(val, args[keys[0]],
+    //                 `Contract ${contractId} state ${stateId} with arg ${keys[0]} & value ${val} is not equal to ${args[keys[0]]}`);
+    //
+    //             return;
+    //         }
+    //
+    //         const passArgs = [];
+    //
+    //         if(! args.hasOwnProperty("__val")) {
+    //             assert.fail(new Error("__val is not present"));
+    //         }
+    //
+    //         for(let arg of Object.keys(args)) {
+    //             if(arg == "__val") {
+    //                 continue;
+    //             }
+    //
+    //             passArgs.push(args[arg]);
+    //         }
+    //
+    //         const val = (await contract[stateId].call( ...passArgs )).valueOf();
+    //
+    //         assert.equal(val, args["__val"], `Contract ${contractId} state ${stateId} with value ${val} is not equal to ${args['__val']}`);
+    //     }
+    //     else {
+    //         const val = (await contract[stateId].call()).valueOf();
+    //
+    //         assert.equal(val, args, `Contract ${contractId} state ${stateId} with value ${val} is not equal to ${args.valueOf()}`);
+    //     }
+    // }
 }

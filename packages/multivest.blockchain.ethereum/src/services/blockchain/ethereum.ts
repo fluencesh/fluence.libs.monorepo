@@ -1,38 +1,14 @@
-import * as logger from 'winston';
-
-import { BlockchainService } from '@applicature-restricted/multivest.blockchain';
-import { Block, MultivestError, PluginManager, Transaction } from '@applicature/multivest.core';
+import {BlockchainService, Signature} from '@applicature-restricted/multivest.blockchain';
+import { MultivestError } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
-import * as config from 'config';
-import EthereumBip44 from 'ethereum-bip44';
 import * as EthereumTx from 'ethereumjs-tx';
-import * as Web3 from 'web3';
-import { ETHEREUM, EthereumTransaction } from './model';
+import * as EthereumUtil from 'ethereumjs-util';
+
+import {ETHEREUM, ethereumNetworkToChainId, EthereumTransaction, ethereumValidNetworks} from '../types/types';
 
 export class EthereumBlockchainService extends BlockchainService {
-    private client: Web3;
-    private chainId: string;
-    private signerPrivateKey: string;
-
-    constructor(fake?: boolean, signerPrivateKey?: string) {
-        super();
-
-        if (!fake) {
-            const clientProvider = new Web3.providers.HttpProvider(
-                config.get('multivest.blockchain.ethereum.providers.native.url')
-            );
-
-            this.client = new Web3(clientProvider);
-
-            this.chainId = config.get('multivest.blockchain.ethereum.chainId');
-
-            this.signerPrivateKey =
-                signerPrivateKey || config.get('multivest.blockchain.ethereum.senderPrivateAddress');
-        }
-    }
-
-    public getServiceId() {
-        return 'blockchain.ethereum';
+    public isValidNetwork(network: string) {
+        return ethereumValidNetworks.indexOf(network) > -1;
     }
 
     public getBlockchainId() {
@@ -43,141 +19,68 @@ export class EthereumBlockchainService extends BlockchainService {
         return 'ETH';
     }
 
-    public getContract(abi: Array<Web3.AbiDefinition>, address: string) {
-        const Contract = this.client.eth.contract(abi);
-        return Contract.at(address);
+    public getHDAddress(index: number): string {
+        throw new MultivestError('not implemented')
     }
 
-    public getHDAddress(index: number) {
-        const masterPublicKey = config.get('multivest.blockchain.ethereum.hd.masterPublicKey');
-        const wallet = EthereumBip44.fromPublicSeed(masterPublicKey);
-        return wallet.getAddress(index);
+    public isValidAddress(address: string): boolean {
+        return EthereumUtil.isValidAddress(address);
     }
 
-    public isValidAddress(address: string) {
-        return Web3.utils.isAddress(address);
-    }
+    public signData(privateKey: Buffer, data: Buffer): Signature {
+        const signerAddress = EthereumUtil.privateToAddress(privateKey).toString('hex');
 
-    public getBlockHeight(): Promise<number> {
-        return new Promise((resolve, reject) => {
-            this.client.eth.getBlockNumber((err, blockNumber) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                resolve(blockNumber);
-            });
-        });
-    }
+        const prefix = Buffer.from('\x19Ethereum Signed Message:\n');
+        const prefixedMsg = EthereumUtil.sha3(Buffer.concat([prefix, Buffer.from(String(data.length)), data]));
 
-    public async getBlockByHeight(blockHeight: number): Promise<Block> {
-        const block = this.client.eth.getBlock(blockHeight, true);
-        return this.convertBlock(block);
-    }
+        const res = EthereumUtil.ecsign(prefixedMsg, privateKey);
 
-    public async getTransactionByHash(txHash: string) {
-        return this.client.eth.getTransaction(txHash) as any;
-    }
+        const pubKey = EthereumUtil.ecrecover(prefixedMsg, res.v, res.r, res.s);
+        const addrBuf = EthereumUtil.pubToAddress(pubKey, false);
 
-    public async sendTransaction(data: Partial<EthereumTransaction>) {
-        const networkNonce = await this.client.eth.getTransactionCount(data.from[0].address);
+        const recoveredAddress = addrBuf.toString('hex');
 
-        if (data.nonce !== networkNonce) {
-            logger.error('EthereumService: Wrong count of nonces in network', {
-                address: data.from[0].address,
-                nonce: data.nonce,
-                networkNonce
-            });
+        if (signerAddress !== recoveredAddress) {
+            // @TODO: log it
+
+            throw new MultivestError('internal error');
         }
 
-        const txParams = {
-            nonce: `0x${data.nonce.toString(16)}`,
-            gasPrice: `0x${new BigNumber(data.gasPrice).toString(16)}`,
-            gasLimit: `0x${new BigNumber(data.gas).toString(16)}`,
-
-            to: data.to[0].address.toLowerCase(),
-            value: `0x${data.to[0].amount.toString(16)}`,
-
-            data: data.input,
-
-            chainId: parseInt(this.chainId, 10),
+        return {
+            v: res.v,
+            r: res.r,
+            s: res.s
         };
+    }
 
-        logger.info('EthereumService: sending tx params', txParams);
+    public signDataAndStringify(privateKey: Buffer, data: Buffer): string {
+        const signature = this.signData(privateKey, data);
+
+        const stringifiedSignature = EthereumUtil.toRpcSig(signature.v, signature.r, signature.s);
+
+        return stringifiedSignature;
+    }
+
+    public signTransaction(privateKey: Buffer, txData: EthereumTransaction): string {
+        const txParams = {
+            nonce: `0x${txData.nonce.toString(16)}`,
+            gasPrice: `0x${new BigNumber(txData.gasPrice).toString(16)}`,
+            gasLimit: `0x${new BigNumber(txData.gas).toString(16)}`,
+
+            to: txData.to[0].address.toLowerCase(),
+            value: `0x${txData.to[0].amount.toString(16)}`,
+
+            data: txData.input,
+
+            chainId: ethereumNetworkToChainId[this.network]
+        };
 
         const tx = new EthereumTx(txParams);
 
-        tx.sign(Buffer.from(this.signerPrivateKey.substr(2), 'hex'));
+        tx.sign(privateKey);
 
         const serializedTx = tx.serialize();
 
-        await this.sendRawTransaction('0x' + serializedTx.toString('hex'));
-
-        return `0x${tx.hash().toString('hex')}`;
-    }
-
-    public async sendRawTransaction(txHex: string): Promise<string> {
-        return new Promise((resolve: (value: string) => void, reject) => {
-            this.client.eth.sendRawTransaction(txHex, (err: any, hash: string) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(hash);
-                }
-            });
-        });
-    }
-
-    public async call(from: string, to: string, data: string) {
-        return this.client.eth.call({
-            data,
-            from,
-            to,
-        });
-    }
-
-    public async sign(address: string, data: string) {
-        return this.client.eth.sign(address, data);
-    }
-
-    public async getBalance(address: string, minConf: number) {
-        if (minConf && minConf > 0) {
-            throw new MultivestError('minConf is not supported');
-        }
-
-        return this.client.eth.getBalance(address);
-    }
-
-    public async estimateGas(from: string, to: string, data: string) {
-        return this.client.eth.estimateGas({
-            data,
-            from,
-            to,
-        });
-    }
-
-    private convertBlock(block: Web3.BlockWithTransactionData): Block {
-        return {
-            height: block.number,
-            hash: block.hash,
-            parentHash: block.parentHash,
-            difficulty: block.difficulty.toNumber(),
-            nonce: block.nonce,
-            network: this.getBlockchainId(),
-            size: block.size,
-            time: block.timestamp,
-            transactions: block.transactions.map(this.convertTransaction),
-        };
-    }
-
-    private convertTransaction(tx: Web3.Transaction): Transaction {
-        return {
-            hash: tx.hash,
-            blockHash: tx.blockHash,
-            blockHeight: tx.blockNumber,
-            fee: tx.gasPrice.times(tx.gas),
-            from: [{ address: tx.from }],
-            to: [{ address: tx.to, amount: tx.value }],
-        };
+        return serializedTx;
     }
 }

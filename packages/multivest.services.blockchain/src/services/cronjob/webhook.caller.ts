@@ -33,6 +33,9 @@ export class WebHookCaller extends Job {
         return `webhook.caller`;
     }
 
+    public async init() {
+        return Promise.resolve();
+    }
 
     public async execute(): Promise<void> {
         const webHookLimit = await this.webHookService.listByStatus(Scheme.WebhookReportItemStatus.Created);

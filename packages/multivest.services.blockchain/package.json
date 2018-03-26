@@ -1,9 +1,9 @@
 {
-  "name": "@applicature/multivest.services.blockchain",
-  "version": "0.1.25",
+  "name": "@applicature-restricted/multivest.services.blockchain",
+  "version": "0.2.0",
   "private": false,
   "license": "UNLICENSED",
-  "description": "MongoDB Blockchain Plugin",
+  "description": "BlockPool Services Plugin",
   "author": "Andrew Zubko <andrew@applicature.com>",
   "engines": {
     "node": ">=4.8.0",
@@ -24,10 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.com:applicature/multivest.mongodb.blockchain.git"
-  },
-  "publishConfig": {
-    "registry": "https://artifacts-dev.zubko.biz/repository/applicature-npm/"
+    "url": "git@bitbucket.com:applicature/multivest.services.blockchain.git"
   },
   "dependencies": {
     "@applicature-restricted/multivest.blockchain": "^0.2.16",

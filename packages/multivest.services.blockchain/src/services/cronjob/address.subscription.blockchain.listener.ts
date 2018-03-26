@@ -13,7 +13,7 @@ import { AddressSubscriptionService } from '../object/address.subscription.servi
 import WebHookActionItem = Scheme.WebHookActionItem;
 import {JobService} from '../object/job.service';
 import {ProjectService} from '../object/project.service';
-import { WebhookActionItemObjectService } from '../object/webhook.service';
+import { WebhookActionItemObjectService } from '../object/webhook.action.service';
 import { PopulatedBlockchainListener } from './blockchain.listener';
 
 interface RecipientAndTx {

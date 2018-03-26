@@ -1,7 +1,7 @@
 import { Hashtable, PluginManager, Service } from '@applicature/multivest.core';
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import { Scheme } from '../../types';
-import { WebhookActionItemObjectService } from '../object/webhook.service';
+import { WebhookActionItemObjectService } from '../object/webhook.action.service';
 
 export interface WebHookCallResult {
     request: {

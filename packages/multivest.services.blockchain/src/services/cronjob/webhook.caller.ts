@@ -7,7 +7,7 @@ import {
 
 import { Scheme } from '../../types';
 import WebHookActionItem = Scheme.WebHookActionItem;
-import { WebhookActionItemObjectService } from '../object/webhook.service';
+import { WebhookActionItemObjectService } from '../object/webhook.action.service';
 import { WebHookCallerService } from '../webhook/webhook.caller.service';
 
 interface RecipientAndTx {

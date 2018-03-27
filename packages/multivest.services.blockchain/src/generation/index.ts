@@ -9,10 +9,7 @@ async function start() {
     const pluginManager = new PluginManager([
         {
             path: '@applicature/multivest.mongodb',
-        },
-        {
-            path: '@applicature/multivest.mongodb.ico',
-        },
+        }
     ]);
 
     await pluginManager.init();

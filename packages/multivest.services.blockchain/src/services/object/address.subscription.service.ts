@@ -1,4 +1,5 @@
 import {PluginManager, Service} from '@applicature/multivest.core';
+import { Plugin } from '@applicature/multivest.mongodb';
 import { AddressSubscriptionDao } from '../../dao/address.subscription.dao';
 import { Scheme } from '../../types';
 
@@ -7,12 +8,16 @@ export class AddressSubscriptionService extends Service {
 
     constructor(pluginManager: PluginManager) {
         super(pluginManager);
+    }
 
-        // @TODO: set subscriptionDao
+    public async init(): Promise<void> {
+        const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
+
+        this.subscriptionDao = await mongodbPlugin.getDao('address.subscriptions') as AddressSubscriptionDao;
     }
 
     public getServiceId(): string {
-        return 'object.subscriptions';
+        return 'object.address.subscriptions';
     }
 
     public async createSubscription(

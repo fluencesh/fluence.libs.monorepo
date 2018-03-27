@@ -1,4 +1,5 @@
 import {Hashtable, PluginManager, Service} from '@applicature/multivest.core';
+import { Plugin } from '@applicature/multivest.mongodb';
 import { EthereumEventLogDao } from '../../dao/ethereum.event.log.dao';
 import { Scheme } from '../../types';
 
@@ -7,8 +8,13 @@ export class EthereumEventLogService extends Service {
 
     constructor(pluginManager: PluginManager) {
         super(pluginManager);
+    }
 
-        // @TODO: set ethereumEventLogDao
+    public async init(): Promise<void> {
+        const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
+
+        this.ethereumEventLogDao = await
+            mongodbPlugin.getDao('ethereumEvents') as EthereumEventLogDao;
     }
 
     public getServiceId(): string {

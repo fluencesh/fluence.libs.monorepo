@@ -1,4 +1,5 @@
-import {PluginManager, Service} from '@applicature/multivest.core';
+import { PluginManager, Service } from '@applicature/multivest.core';
+import { Plugin } from '@applicature/multivest.mongodb';
 import { ProjectDao } from '../../dao/project.dao';
 import { Scheme } from '../../types';
 
@@ -7,8 +8,12 @@ export abstract class ProjectService extends Service {
 
     constructor(pluginManager: PluginManager) {
         super(pluginManager);
+    }
 
-        // @TODO: set project dao
+    public async init(): Promise<void> {
+        const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
+
+        this.projectDao = await mongodbPlugin.getDao('projects') as ProjectDao;
     }
 
     public getServiceId(): string {

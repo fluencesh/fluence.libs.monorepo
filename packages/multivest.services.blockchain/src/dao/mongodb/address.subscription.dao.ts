@@ -1,4 +1,4 @@
-import { MongoDBDao } from '@applicature/multivest.mongodb/dist/mongodb.dao';
+import { MongoDBDao } from '@applicature/multivest.mongodb';
 import { Scheme } from '../../types';
 import { AddressSubscriptionDao } from '../address.subscription.dao';
 import Subscription = Scheme.AddressSubscription;
@@ -7,11 +7,11 @@ export class MongodbAddressSubscriptionDao extends MongoDBDao<Scheme.AddressSubs
         implements AddressSubscriptionDao {
 
     public getDaoId() {
-        return 'subscriptions';
+        return 'address.subscriptions';
     }
 
     public getCollectionName() {
-        return 'subscriptions';
+        return 'address.subscriptions';
     }
 
     public getDefaultValue() {

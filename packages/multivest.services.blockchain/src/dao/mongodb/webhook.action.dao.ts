@@ -1,8 +1,7 @@
+import { Hashtable } from '@applicature/multivest.core';
 import { MongoDBDao } from '@applicature/multivest.mongodb';
 import { Scheme } from '../../types';
-import { ProjectDao } from '../project.dao';
-import {WebHookActionDao} from '../webhook.action.dao';
-import {Hashtable} from '@applicature/multivest.core';
+import { WebHookActionDao } from '../webhook.action.dao';
 
 export class MongodbWebHookActionDao extends MongoDBDao<Scheme.WebHookActionItem> implements WebHookActionDao {
     public getDaoId() {

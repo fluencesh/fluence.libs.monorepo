@@ -1,4 +1,5 @@
 import {PluginManager, Service} from '@applicature/multivest.core';
+import { Plugin } from '@applicature/multivest.mongodb';
 import { EthereumContractSubscriptionDao } from '../../dao/ethereum.contract.subscription.dao';
 import { Scheme } from '../../types';
 
@@ -7,8 +8,13 @@ export class EthereumContractSubscriptionService extends Service {
 
     constructor(pluginManager: PluginManager) {
         super(pluginManager);
+    }
 
-        // @TODO: set ethereumContractSubscriptionDao
+    public async init(): Promise<void> {
+        const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
+
+        this.ethereumContractSubscriptionDao = await
+            mongodbPlugin.getDao('ethereumContracts') as EthereumContractSubscriptionDao;
     }
 
     public getServiceId(): string {

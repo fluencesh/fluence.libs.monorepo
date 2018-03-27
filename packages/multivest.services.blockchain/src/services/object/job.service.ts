@@ -1,4 +1,5 @@
 import { PluginManager, Service } from '@applicature/multivest.core';
+import { Plugin } from '@applicature/multivest.mongodb';
 import { JobDao } from '../../dao/job.dao';
 import { Scheme } from '../../types';
 
@@ -7,8 +8,12 @@ export class JobService extends Service {
 
     constructor(pluginManager: PluginManager) {
         super(pluginManager);
+    }
 
-        // @TODO: set JobDao
+    public async init(): Promise<void> {
+        const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
+
+        this.jobDao = await mongodbPlugin.getDao('jobs') as JobDao;
     }
 
     public getServiceId(): string {

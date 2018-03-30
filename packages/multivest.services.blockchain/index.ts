@@ -33,7 +33,7 @@ export * from './src/services/object/transaction.service';
 export * from './src/services/object/webhook.action.service';
 export * from './src/services/webhook/webhook.caller.service';
 
-export * from './src/types/index';
+export * from './src/types';
 
 export * from './src/errors';
 

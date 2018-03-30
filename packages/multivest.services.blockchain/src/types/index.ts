@@ -174,6 +174,8 @@ export namespace Scheme {
 
         fails: Array<WebHookFailedReport>;
 
+        status: Scheme.WebhookReportItemStatus;
+
         createdAt: Date;
     }
 
@@ -195,6 +197,28 @@ export namespace Scheme {
         };
 
         error?: any;
+
+        createdAt: Date;
+    }
+
+    export enum TransportConnectionStatus {
+        Enabled = 'ENABLED',
+        Disabled = 'DISABLED'
+    }
+    export interface TransportConnection extends MongoScheme {
+        blockchainId: string;
+        networkId: string;
+        providerId: string;
+
+        priority: number;
+
+        settings: any;
+
+        status: TransportConnectionStatus;
+
+        isFailing: boolean;
+        lastFailedAt: Date;
+        failedCount: number;
 
         createdAt: Date;
     }

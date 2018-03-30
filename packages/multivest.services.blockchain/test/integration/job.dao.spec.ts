@@ -14,6 +14,8 @@ describe('exchange dao', () => {
         connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
         dao = new MongodbJobDao(connection);
 
+        await dao.remove({});
+
         const random = randomJob();
         job = await dao.createJob(random.id, random.params);
     });

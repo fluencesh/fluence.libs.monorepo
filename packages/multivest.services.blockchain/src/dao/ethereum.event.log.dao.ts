@@ -21,5 +21,5 @@ export abstract class EthereumEventLogDao extends Dao<Scheme.EthereumEventLog> {
     ): Promise<Scheme.EthereumEventLog>;
 
     public abstract async getById(id: string): Promise<Scheme.EthereumEventLog>;
-    public abstract async listByIds(ids: Array<string>): Promise<Scheme.EthereumEventLog>;
+    public abstract async listByIds(ids: Array<string>): Promise<Array<Scheme.EthereumEventLog>>;
 }

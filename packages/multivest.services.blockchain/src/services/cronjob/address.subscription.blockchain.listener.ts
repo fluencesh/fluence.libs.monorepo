@@ -126,6 +126,8 @@ export class AddressSubscriptionBlockChainListener extends PopulatedBlockchainLi
 
                     fails: [],
 
+                    status: Scheme.WebhookReportItemStatus.Created,
+
                     createdAt: new Date()
                 });
             }

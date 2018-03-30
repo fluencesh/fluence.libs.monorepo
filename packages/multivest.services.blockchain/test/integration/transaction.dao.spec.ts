@@ -2,7 +2,9 @@ import { Transaction } from '@applicature/multivest.core';
 import * as config from 'config';
 import { Db, MongoClient } from 'mongodb';
 import { v1 as generateId } from 'uuid';
-import { Scheme } from '../../index';
+// import { Scheme } from '../../index';
+import { Scheme } from '../../src/types';
+
 import { MongodbTransactionDao } from '../../src/dao/mongodb/transaction.dao';
 import { randomTransaction } from '../../src/generation/transaction';
 

@@ -58,7 +58,7 @@ export class MongodbEthereumEventLogDao extends MongoDBDao<Scheme.EthereumEventL
         return this.getRaw({ id });
     }
 
-    public async listByIds(ids: Array<string>): Promise<Scheme.EthereumEventLog> {
-        return this.getRaw({ id: {$in: ids} });
+    public async listByIds(ids: Array<string>): Promise<Array<Scheme.EthereumEventLog>> {
+        return this.listRaw({ id: {$in: ids} });
     }
 }

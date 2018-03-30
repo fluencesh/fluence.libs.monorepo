@@ -85,7 +85,8 @@ export class MongodbWebHookActionDao extends MongoDBDao<Scheme.WebHookActionItem
     }
 
     public async setConfirmationsAndStatus(
-        id: string, confirmations: number, status: Scheme.WebhookReportItemStatus
+        id: string,
+        confirmations: number, status: Scheme.WebhookReportItemStatus
     ): Promise<void> {
         await this.updateRaw({ id }, {
             $set: {

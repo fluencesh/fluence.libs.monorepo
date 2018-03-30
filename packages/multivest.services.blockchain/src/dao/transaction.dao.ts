@@ -27,7 +27,9 @@ export abstract class TransactionDao extends Dao<Scheme.Transaction> {
         blockchainId: string, networkId: string, status: Scheme.TransactionStatus
     ): Promise<Array<Scheme.Transaction>>;
 
-    public abstract async listByUniqId(blockchainId: string, networkId: string, uniqId: string): Promise<Array<Scheme.Transaction>>;
+    public abstract async listByUniqId(
+        blockchainId: string, networkId: string, uniqId: string
+    ): Promise<Array<Scheme.Transaction>>;
 
     public abstract async getCountByAddress(blockchainId: string, networkId: string, address: string): Promise<number>;
 

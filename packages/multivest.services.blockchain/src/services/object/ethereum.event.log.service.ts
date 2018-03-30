@@ -52,7 +52,7 @@ export class EthereumEventLogService extends Service {
         return this.ethereumEventLogDao.getById(id);
     }
 
-    public async listByIds(ids: Array<string>): Promise<Scheme.EthereumEventLog> {
+    public async listByIds(ids: Array<string>): Promise<Array<Scheme.EthereumEventLog>> {
         return this.ethereumEventLogDao.listByIds(ids);
     }
 }

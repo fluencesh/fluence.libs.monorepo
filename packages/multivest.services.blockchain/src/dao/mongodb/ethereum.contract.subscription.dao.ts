@@ -61,6 +61,9 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
 
             subscribed,
 
+            isProjectActive,
+            isClientActive,
+
             createdAt: new Date()
         });
     }

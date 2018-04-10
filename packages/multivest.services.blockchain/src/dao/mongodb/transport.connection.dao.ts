@@ -4,6 +4,7 @@ import { TransportConnectionDao } from '../transport.connection.dao';
 
 export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportConnection>
     implements TransportConnectionDao {
+
     public getDaoId() {
         return 'transportConnections';
     }
@@ -19,6 +20,16 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
     public async getById(id: string): Promise<Scheme.TransportConnection> {
         return this.getRaw({
             id
+        });
+    }
+
+    public async listByBlockchainAndNetwork(
+        blockchainId: string,
+        networkId: string
+    ): Promise<Array<Scheme.TransportConnection>> {
+        return this.list({
+            blockchainId,
+            networkId
         });
     }
 
@@ -88,6 +99,25 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
         at: Date
     ) {
         await this.updateRaw({ id }, {
+            $set: {
+                isFailing,
+                lastFailedAt: at
+            }
+        });
+
+        return;
+    }
+
+    public async setFailedByIds(
+        ids: Array<string>,
+        isFailing: boolean,
+        at: Date
+    ) {
+        await this.updateRaw({
+            id: {
+                $in: ids
+            }
+        }, {
             $set: {
                 isFailing,
                 lastFailedAt: at

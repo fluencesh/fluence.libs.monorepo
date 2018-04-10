@@ -7,7 +7,7 @@ import { Scheme } from '../../src/types';
 import { randomTransportConnection } from '../helper';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('client dao', () => {
+describe('transport connection dao', () => {
     let dao: MongodbTransportConnectionDao;
     let collection: any;
 
@@ -28,6 +28,16 @@ describe('client dao', () => {
 
         expect(collection.findOne).toHaveBeenCalledWith({ id: 'id' });
         expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
+    it('listByBlockchainAndNetwork() transfers correct arguments', async () => {
+        await dao.listByBlockchainAndNetwork('blockchainId', 'networkId');
+
+        expect(collection.find).toHaveBeenCalledWith({
+            blockchainId: 'blockchainId',
+            networkId: 'networkId'
+        });
+        expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
     it('createTransportConnection() transfers correct arguments', async () => {
@@ -111,6 +121,31 @@ describe('client dao', () => {
                 $set: {
                     isFailing: false,
                     lastFailedAt: null
+                }
+            }
+        );
+        expect(collection.updateMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('setFailedByBlockchainIds() transfers correct arguments', async () => {
+        const at = new Date();
+
+        await dao.setFailedByIds(
+            [ '1' ],
+            true,
+            at
+        );
+
+        expect(collection.updateMany).toHaveBeenCalledWith(
+            {
+                id: {
+                    $in: [ '1' ]
+                }
+            },
+            {
+                $set: {
+                    isFailing: true,
+                    lastFailedAt: at
                 }
             }
         );

@@ -21,26 +21,13 @@ export class EthereumBlockchainService extends BlockchainService {
 
     constructor(
         pluginManager: PluginManager,
-        connections: Array<Scheme.TransportConnection>,
-        transportService: EthereumTransportService
+        managedEthereumTransportService: ManagedEthereumTransportService
     ) {
-        const connection = connections.find((con) => !!con.networkId);
-
-        if (!connection) {
-            throw new MultivestError('param `connections` should contain at least one obj with filled network id');
-        }
-
-        super(pluginManager, connection.networkId, transportService);
-
-        this.pluginManager = pluginManager;
-        this.connections = connections;
-    }
-
-    public async init() {
-        const transports: Array<EthereumTransportService> =
-            this.connections.map((con) => new EthersEthereumTransportService(con));
-
-        this.blockChainTransportService = new ManagedEthereumTransportService(this.pluginManager, transports);
+        super(
+            pluginManager,
+            managedEthereumTransportService.getNetworkId(),
+            managedEthereumTransportService
+        );
     }
 
     public getServiceId() {

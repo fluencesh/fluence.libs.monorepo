@@ -13,8 +13,12 @@ export abstract class BlockchainService extends Service {
     protected network: string;
     protected blockChainTransportService: BlockchainTransportService;
 
-    constructor(network: string, blockChainTransportService: BlockchainTransportService) {
-        super(null);
+    constructor(
+        pluginManager: PluginManager,
+        network: string,
+        blockChainTransportService: BlockchainTransportService
+    ) {
+        super(pluginManager);
 
         if (!this.isValidNetwork(network)) {
             throw new MultivestError('wrong network');

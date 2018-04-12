@@ -17,7 +17,7 @@ export * from './src/dao/transport.connection.dao';
 export * from './src/dao/mongodb/webhook.action.dao';
 export * from './src/dao/webhook.action.dao';
 
-export * from './src/generation/index';
+// export * from './src/generation/index';
 export * from './src/generation/jobs';
 export * from './src/generation/transaction';
 

@@ -21,7 +21,8 @@ export class EthereumBlockchainService extends BlockchainService {
 
     constructor(
         pluginManager: PluginManager,
-        connections: Array<Scheme.TransportConnection>
+        connections: Array<Scheme.TransportConnection>,
+        transportService: EthereumTransportService
     ) {
         const connection = connections.find((con) => !!con.networkId);
 
@@ -29,7 +30,7 @@ export class EthereumBlockchainService extends BlockchainService {
             throw new MultivestError('param `connections` should contain at least one obj with filled network id');
         }
 
-        super(pluginManager, connection.networkId, null);
+        super(pluginManager, connection.networkId, transportService);
 
         this.pluginManager = pluginManager;
         this.connections = connections;

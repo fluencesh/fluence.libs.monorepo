@@ -37,7 +37,7 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
     }
 
     public getServiceId() {
-        return `managed.ethereum.transport.service`;
+        return 'managed.ethereum.transport.service';
     }
 
     public async getBlockByHash(hash: string): Promise<Block> {

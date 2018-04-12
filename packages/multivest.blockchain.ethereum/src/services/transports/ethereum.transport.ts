@@ -1,5 +1,5 @@
-import {ETHEREUM, EthereumTransaction, EthereumTransactionReceipt} from "../types/types";
-import { BlockchainTransportService } from "@applicature-restricted/multivest.blockchain";
+import { BlockchainTransportService } from '@applicature-restricted/multivest.services.blockchain';
+import { ETHEREUM, EthereumTransaction, EthereumTransactionReceipt } from '../types/types';
 
 export abstract class EthereumTransportService extends BlockchainTransportService {
     public getBlockchainId() {

@@ -1,10 +1,9 @@
-import * as EthereumAbi from 'ethereumjs-abi';
-
+import {Signature} from '@applicature-restricted/multivest.blockchain';
 import { MultivestError } from '@applicature/multivest.core';
+import { Hashtable } from '@applicature/multivest.core/';
+import * as EthereumAbi from 'ethereumjs-abi';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
-import {Hashtable} from "@applicature/multivest.core/dist/structure";
-import {Signature} from "@applicature-restricted/multivest.blockchain";
-import {EthereumContract} from "../types/types";
+import {EthereumContract} from '../types/types';
 
 export class Contract {
     protected ethereumBlockchainService: EthereumBlockchainService;
@@ -32,6 +31,7 @@ export class Contract {
         return this.generateData(methodId, methodArgTypes, methodArgValues);
     }
 
+    /* tslint:disable */
     // public async getSate(contracts: Hashtable<EthereumContract>, params: Hashtable<object>) {
     //     // @TODO: define contracts structure
     //

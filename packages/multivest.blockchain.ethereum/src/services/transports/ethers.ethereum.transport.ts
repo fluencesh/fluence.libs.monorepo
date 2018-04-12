@@ -1,43 +1,56 @@
+import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
 import { Block, MultivestError, PluginManager, Transaction } from '@applicature/multivest.core';
 import {
     ETHEREUM, EthereumBlock, EthereumTransaction, EthereumTransactionReceipt,
     ethereumValidNetworks
 } from '../types/types';
-import {EthereumTransportService} from "./ethereum.transport";
+import { EthereumTransportService } from './ethereum.transport';
 
 import { providers } from 'ethers';
 
 export enum Provider {
-    JsonRpc,
-    Etherscan,
-    Infura
+    JsonRpc = 'json-rpc',
+    Etherscan = 'etherscan',
+    Infura = 'infura'
 }
 
 export class EthersEthereumTransportService extends EthereumTransportService {
     private network: string;
     private provider: any;
 
-    constructor(provider: Provider, network: string, url: string, apiToken?: string) {
-        super(null);
+    constructor(transportConnection: Scheme.TransportConnection) {
+        super(null, transportConnection);
 
-        if (ethereumValidNetworks.indexOf(network) == -1) {
+        this.network = this.transportConnection.networkId;
+
+        if (ethereumValidNetworks.indexOf(this.network) === -1) {
             throw new MultivestError('unknown network');
         }
 
-        this.network = network;
+        const url = this.transportConnection.settings.url;
+        const apiToken = this.transportConnection.settings.apiUrl;
 
-        if (provider === Provider.Infura) {
-            this.provider = new providers.InfuraProvider(network, apiToken)
-        }
-        else if (provider === Provider.Etherscan) {
-            this.provider = new providers.EtherscanProvider(network, apiToken);
-        }
-        else if (provider === Provider.JsonRpc) {
-            this.provider = new providers.JsonRpcProvider(url, network);
-        }
-        else {
+        if (transportConnection.providerId === Provider.Infura) {
+            this.provider = new providers.InfuraProvider(this.network, apiToken);
+        } else if (transportConnection.providerId === Provider.Etherscan) {
+            this.provider = new providers.EtherscanProvider(this.network, apiToken);
+        } else if (transportConnection.providerId === Provider.JsonRpc) {
+            this.provider = new providers.JsonRpcProvider(url, this.network);
+        } else {
             throw new MultivestError('unknown provider');
         }
+    }
+
+    public getNetworkId() {
+        return this.network;
+    }
+
+    public getServiceId() {
+        return 'ethers.ethereum.transport.service';
+    }
+
+    public getBlockByHash(hash: string) {
+        return this.provider.getBlock(hash);
     }
 
     public getBlockHeight(): Promise<number> {
@@ -80,7 +93,7 @@ export class EthersEthereumTransportService extends EthereumTransportService {
     }
 
     public async estimateGas(transaction: EthereumTransaction): Promise<number> {
-        return this.provider.estimateGas(transaction)
+        return this.provider.estimateGas(transaction);
     }
 
     public async getGasPrice(): Promise<number> {

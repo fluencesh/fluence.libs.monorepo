@@ -1,6 +1,6 @@
 import { Transaction } from '@applicature/multivest.core';
 import { Hashtable } from '@applicature/multivest.core';
-import {Block} from "@applicature/multivest.core";
+import {Block} from '@applicature/multivest.core';
 
 export const ETHEREUM = 'ETHEREUM';
 
@@ -54,7 +54,7 @@ export interface EthereumTransactionReceipt {
     from: string;
     gasUsed: number;
     logs: Array<EthereumTopic>;
-    logsBloom: string
+    logsBloom: string;
     root: string;
     to: string;
     transactionHash: string;
@@ -82,10 +82,10 @@ export interface EthereumContractItem {
     anonymous?: boolean;
     constant?: boolean;
 
-    inputs: Array<EthereumContractItemNameType>,
-    name: string,
-    outputs?: Array<EthereumContractItemNameType>,
-    type: string
+    inputs: Array<EthereumContractItemNameType>;
+    name: string;
+    outputs?: Array<EthereumContractItemNameType>;
+    type: string;
 }
 
 export interface EthereumContractItemNameType {

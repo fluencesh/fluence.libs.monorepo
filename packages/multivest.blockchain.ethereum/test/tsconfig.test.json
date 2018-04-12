@@ -4,12 +4,9 @@
         "module": "commonjs",
         "noImplicitAny": true,
         "removeComments": true,
-        "sourceMap": true,
-        "rootDir": "./src",
+        "sourceMap": true, 
         "outDir": "./dist",
-        "mapRoot": "./dist",
         "declaration": true,
-        "baseUrl": "./",
         "paths": {
             "web3": [
                 "@types/web3/index.d.ts"
@@ -28,9 +25,5 @@
             "./node_modules/@types",
             "./@types"
         ]
-    },
-    "exclude": [
-        "./node_modules",
-        "./test/**/*"
-    ]
+    }
 }

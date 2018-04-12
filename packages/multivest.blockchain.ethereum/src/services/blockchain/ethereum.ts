@@ -1,12 +1,51 @@
-import {BlockchainService, Signature} from '@applicature-restricted/multivest.blockchain';
-import { MultivestError } from '@applicature/multivest.core';
+import { Signature } from '@applicature-restricted/multivest.blockchain';
+import {
+    BlockchainService,
+    BlockchainTransportService,
+    ManagedBlockchainTransportService,
+    Scheme
+} from '@applicature-restricted/multivest.services.blockchain';
+import { MultivestError, PluginManager } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
+import * as config from 'config';
 import * as EthereumTx from 'ethereumjs-tx';
 import * as EthereumUtil from 'ethereumjs-util';
-
-import {ETHEREUM, ethereumNetworkToChainId, EthereumTransaction, ethereumValidNetworks} from '../types/types';
+import { EthereumTransportService } from '../transports/ethereum.transport';
+import { EthersEthereumTransportService, Provider } from '../transports/ethers.ethereum.transport';
+import { ETHEREUM, ethereumNetworkToChainId, EthereumTransaction, ethereumValidNetworks } from '../types/types';
+import { ManagedEthereumTransportService } from './managed.ethereum.transport.service';
 
 export class EthereumBlockchainService extends BlockchainService {
+    private apiToken: string;
+    private connections: Array<Scheme.TransportConnection>;
+
+    constructor(
+        pluginManager: PluginManager,
+        connections: Array<Scheme.TransportConnection>
+    ) {
+        const connection = connections.find((con) => !!con.networkId);
+
+        if (!connection) {
+            throw new MultivestError('param `connections` should contain at least one obj with filled network id');
+        }
+
+        super(pluginManager, connection.networkId, null);
+
+        this.pluginManager = pluginManager;
+        this.connections = connections;
+    }
+
+    public async init() {
+        const transports: Array<EthereumTransportService> =
+            this.connections.map((con) => new EthersEthereumTransportService(con));
+
+        this.blockChainTransportService = new ManagedEthereumTransportService(this.pluginManager, transports);
+    }
+
+    public getServiceId() {
+        return 'ethereum.blockchain.service';
+    }
+
     public isValidNetwork(network: string) {
         return ethereumValidNetworks.indexOf(network) > -1;
     }
@@ -20,7 +59,7 @@ export class EthereumBlockchainService extends BlockchainService {
     }
 
     public getHDAddress(index: number): string {
-        throw new MultivestError('not implemented')
+        throw new MultivestError('not implemented');
     }
 
     public isValidAddress(address: string): boolean {
@@ -28,7 +67,7 @@ export class EthereumBlockchainService extends BlockchainService {
     }
 
     public signData(privateKey: Buffer, data: Buffer): Signature {
-        const signerAddress = EthereumUtil.privateToAddress(privateKey).toString('hex');
+        const signerAddress = (EthereumUtil.privateToAddress(privateKey) as Buffer).toString('hex');
 
         const prefix = Buffer.from('\x19Ethereum Signed Message:\n');
         const prefixedMsg = EthereumUtil.sha3(Buffer.concat([prefix, Buffer.from(String(data.length)), data]));
@@ -36,7 +75,7 @@ export class EthereumBlockchainService extends BlockchainService {
         const res = EthereumUtil.ecsign(prefixedMsg, privateKey);
 
         const pubKey = EthereumUtil.ecrecover(prefixedMsg, res.v, res.r, res.s);
-        const addrBuf = EthereumUtil.pubToAddress(pubKey, false);
+        const addrBuf = EthereumUtil.pubToAddress(pubKey, false) as Buffer;
 
         const recoveredAddress = addrBuf.toString('hex');
 
@@ -81,6 +120,6 @@ export class EthereumBlockchainService extends BlockchainService {
 
         const serializedTx = tx.serialize();
 
-        return serializedTx;
+        return serializedTx.toString('hex');
     }
 }

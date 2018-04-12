@@ -1,14 +1,13 @@
 import { EthereumBlockchainService } from '../blockchain/ethereum';
-// tslint:disable-next-line:no-var-requires
-const abi = require(__dirname + '/../../abi/erc20.json');
 
 export class Erc20Contract {
     private ethereumService: EthereumBlockchainService;
     private contract: any;
 
-    constructor(address: string) {
-        this.ethereumService = new EthereumBlockchainService();
-        this.contract = this.ethereumService.getContract(abi, address);
+    constructor(ethereumBlockchainService: EthereumBlockchainService, abi: any, address: string) {
+        this.ethereumService = ethereumBlockchainService;
+        // FIXME:
+        // this.contract = this.ethereumService.getContract(abi, address);
     }
 
     public async getDecimals() {

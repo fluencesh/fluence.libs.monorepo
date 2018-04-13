@@ -58,12 +58,14 @@ export class EthersEthereumTransportService extends EthereumTransportService {
     }
 
     public async getBlockByHeight(blockHeight: number): Promise<Block> {
+        // THINK: what should be done if block === null
         const block = await this.provider.getBlock(blockHeight);
 
         return this.convertBlock(block);
     }
 
     public async getTransactionByHash(txHash: string) {
+        // THINK: what should be done if tx === null
         const tx = await this.provider.getTransaction(txHash);
 
         return this.convertTransaction(tx);
@@ -105,6 +107,7 @@ export class EthersEthereumTransportService extends EthereumTransportService {
     }
 
     public async getTransactionReceipt(txHex: string): Promise<EthereumTransactionReceipt> {
+        // THINK: what should be receipt if block === null
         const receipt = await this.provider.getTransactionReceipt(txHex);
 
         return this.convertTransactionReceipt(receipt);
@@ -115,13 +118,13 @@ export class EthersEthereumTransportService extends EthereumTransportService {
             height: block.number,
             hash: block.hash,
             parentHash: block.parentHash,
-            difficulty: block.difficulty.toNumber(),
+            difficulty: block.difficulty,
             time: block.timestamp,
             nonce: block.nonce,
 
             network: ETHEREUM,
             size: block.size,
-            transactions: block.transactions.map(this.convertTransaction),
+            transactions: block.transactions.map((tx: any) => this.convertTransaction(tx)),
             fee: null, // @TODO: define
 
             sha3Uncles: block.sha3Uncles,
@@ -144,7 +147,7 @@ export class EthersEthereumTransportService extends EthereumTransportService {
             blockHash: tx.blockHash,
             blockHeight: tx.blockNumber,
 
-            fee: tx.gasPrice.times(tx.gas),
+            fee: tx.gas ? tx.gasPrice.mul(tx.gas) : null,
             from: [{ address: tx.from }],
             to: [{ address: tx.to, amount: tx.value }],
 

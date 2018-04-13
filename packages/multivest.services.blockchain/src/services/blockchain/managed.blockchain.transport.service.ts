@@ -16,9 +16,13 @@ export class ManagedBlockchainTransportService extends BlockchainTransportServic
     protected transportConnectionService: TransportConnectionService;
 
     constructor(
-        pluginManager: PluginManager
+        pluginManager: PluginManager,
+        transports: Array<BlockchainTransportService>
     ) {
         super(pluginManager, null);
+
+        this.transportServices = transports;
+        this.reference = transports[0];
 
         this.transportConnectionService = new TransportConnectionService(pluginManager);
     }
@@ -50,12 +54,7 @@ export class ManagedBlockchainTransportService extends BlockchainTransportServic
             const activeIds: Array<string> = [];
 
             for (const transportService of this.transportServices) {
-                const blockHeight = await transportService.getBlockHeight();
-
-                const transportConnection = transportService.getTransportConnection();
-                const transportConnectionId = transportConnection ? transportConnection.id : null;
-
-                if (blockHeight >= referenceBlockHeight + this.allowedNumberOfBlockToDelay) {
+                const markTransportAsInactive = () => {
                     this.activeTransports[transportService.getServiceId()] = false;
 
                     if (
@@ -65,6 +64,20 @@ export class ManagedBlockchainTransportService extends BlockchainTransportServic
                     ) {
                         inactiveIds.push(transportConnectionId);
                     }
+                };
+
+                let blockHeight: number;
+                try {
+                    blockHeight = await transportService.getBlockHeight();
+                } catch (ex) {
+                    markTransportAsInactive();
+                }
+                
+                const transportConnection = transportService.getTransportConnection();
+                const transportConnectionId = transportConnection ? transportConnection.id : null;
+
+                if (blockHeight >= referenceBlockHeight + this.allowedNumberOfBlockToDelay) {
+                    markTransportAsInactive();
                 } else {
                     this.activeTransports[transportService.getServiceId()] = true;
 

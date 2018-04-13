@@ -32,7 +32,12 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
         this.lastCheckAt = 0;
         this.allowedNumberOfBlockToDelay = allowedNumberOfBlockToDelay;
         this.activeTransports = {};
-        this.transportConnectionService = new TransportConnectionService(pluginManager);
+    }
+
+    public async init() {
+        this.transportConnectionService = new TransportConnectionService(this.pluginManager);
+
+        await this.transportConnectionService.init();
     }
 
     public getBlockchainId() {

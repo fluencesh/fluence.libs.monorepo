@@ -64,7 +64,7 @@ export class EthersEthereumTransportService extends EthereumTransportService {
     }
 
     public async getTransactionByHash(txHash: string) {
-        const tx = this.provider.getTransaction(txHash) as any;
+        const tx = await this.provider.getTransaction(txHash);
 
         return this.convertTransaction(tx);
     }

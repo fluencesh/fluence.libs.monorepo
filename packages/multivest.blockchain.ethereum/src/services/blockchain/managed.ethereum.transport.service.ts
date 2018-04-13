@@ -18,14 +18,11 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
     protected activeTransports: Hashtable<boolean>;
     protected transportConnectionService: TransportConnectionService;
 
-    private networkId: string;
-
     constructor(pluginManager: PluginManager, transports: Array<EthereumTransportService>) {
         super(pluginManager, null);
 
         this.transportServices = transports;
-
-        this.networkId = transports[0].getNetworkId();
+        this.reference = transports[0];
     }
 
     public getBlockchainId() {
@@ -33,7 +30,7 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
     }
 
     public getNetworkId() {
-        return this.networkId;
+        return this.reference.getNetworkId();
     }
 
     public getServiceId() {

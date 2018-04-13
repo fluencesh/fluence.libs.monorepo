@@ -3,7 +3,7 @@ import {
   ManagedBlockchainTransportService,
   TransportConnectionService
 } from '@applicature-restricted/multivest.services.blockchain';
-import { Block, Hashtable, PluginManager } from '@applicature/multivest.core';
+import { Block, Hashtable, MultivestError, PluginManager } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
 import { EthereumTransportService } from '../transports/ethereum.transport';
 import { EthersEthereumTransportService } from '../transports/ethers.ethereum.transport';
@@ -18,11 +18,21 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
     protected activeTransports: Hashtable<boolean>;
     protected transportConnectionService: TransportConnectionService;
 
-    constructor(pluginManager: PluginManager, transports: Array<EthereumTransportService>) {
+    constructor(
+        pluginManager: PluginManager,
+        transports: Array<EthereumTransportService>,
+        validityCheckDuration: number = 10000,
+        allowedNumberOfBlockToDelay = 5
+    ) {
         super(pluginManager, null);
 
         this.transportServices = transports;
         this.reference = transports[0];
+        this.validityCheckDuration = validityCheckDuration;
+        this.lastCheckAt = 0;
+        this.allowedNumberOfBlockToDelay = allowedNumberOfBlockToDelay;
+        this.activeTransports = {};
+        this.transportConnectionService = new TransportConnectionService(pluginManager);
     }
 
     public getBlockchainId() {
@@ -107,7 +117,12 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
         const today = new Date();
         const now = +today;
 
-        const referenceBlockHeight = await this.reference.getBlockHeight();
+        let referenceBlockHeight;
+        try {
+            referenceBlockHeight = await this.reference.getBlockHeight();
+        } catch (ex) {
+            throw new MultivestError(`Can not update transports' status. Original message: ${ex.message}`);
+        }
 
         if (now > this.lastCheckAt + this.validityCheckDuration) {
             const inactiveIds: Array<string> = [];

@@ -100,7 +100,7 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
         return transportService.estimateGas(transaction);
     }
 
-    public async getGasPrice(): Promise<number> {
+    public async getGasPrice(): Promise<BigNumber> {
         const transportService = await this.getActiveTransportService();
 
         return transportService.getGasPrice();

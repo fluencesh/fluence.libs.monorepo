@@ -134,4 +134,8 @@ export class EthereumBlockchainService extends BlockchainService {
     public call(tx: EthereumTransaction) {
         return this.blockChainTransportService.call(tx);
     }
+
+    public estimateGas(tx: EthereumTransaction) {
+        this.blockChainTransportService.estimateGas(tx);
+    }
 }

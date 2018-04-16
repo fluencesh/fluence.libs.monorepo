@@ -1,12 +1,12 @@
 import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
 import { Block, MultivestError, PluginManager, Transaction } from '@applicature/multivest.core';
+import { BigNumber } from 'bignumber.js';
+import { Contract, providers } from 'ethers';
 import {
     ETHEREUM, EthereumBlock, EthereumTransaction, EthereumTransactionReceipt,
     ethereumValidNetworks
 } from '../types/types';
 import { EthereumTransportService } from './ethereum.transport';
-
-import { Contract, providers } from 'ethers';
 
 export enum Provider {
     JsonRpc = 'json-rpc',
@@ -98,8 +98,10 @@ export class EthersEthereumTransportService extends EthereumTransportService {
         return this.provider.estimateGas(transaction);
     }
 
-    public async getGasPrice(): Promise<number> {
-        return this.provider.getGasPrice();
+    public async getGasPrice(): Promise<BigNumber> {
+        const price = (await this.provider.getGasPrice()) as BigNumber;
+
+        return price;
     }
 
     public async getCode(address: string): Promise<string> {

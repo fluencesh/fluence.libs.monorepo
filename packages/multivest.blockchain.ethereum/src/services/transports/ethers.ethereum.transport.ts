@@ -6,7 +6,7 @@ import {
 } from '../types/types';
 import { EthereumTransportService } from './ethereum.transport';
 
-import { providers } from 'ethers';
+import { Contract, providers } from 'ethers';
 
 export enum Provider {
     JsonRpc = 'json-rpc',
@@ -79,7 +79,7 @@ export class EthersEthereumTransportService extends EthereumTransportService {
         return this.provider.call({
             to: tx.to,
             nonce: tx.nonce,
-            gasLimit: tx.gas,
+            gasLimit: tx.gasLimit,
             gasPrice: tx.gasPrice,
             data: tx.input,
             value: tx.to[0].amount
@@ -107,7 +107,6 @@ export class EthersEthereumTransportService extends EthereumTransportService {
     }
 
     public async getTransactionReceipt(txHex: string): Promise<EthereumTransactionReceipt> {
-        // THINK: what should be receipt if block === null
         const receipt = await this.provider.getTransactionReceipt(txHex);
 
         return this.convertTransactionReceipt(receipt);
@@ -151,7 +150,7 @@ export class EthersEthereumTransportService extends EthereumTransportService {
             from: [{ address: tx.from }],
             to: [{ address: tx.to, amount: tx.value }],
 
-            gas: tx.gas,
+            gasLimit: tx.gasLimit,
             gasPrice: tx.gasPrice,
             nonce: tx.nonce,
             input: tx.input,
@@ -161,7 +160,6 @@ export class EthersEthereumTransportService extends EthereumTransportService {
 
     private convertTransactionReceipt(receipt: any): EthereumTransactionReceipt {
         // @TODO: implement
-
-        throw new MultivestError('not implemented');
+        return Object.assign({}, receipt);
     }
 }

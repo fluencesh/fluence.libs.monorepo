@@ -13,7 +13,7 @@ export const ethereumNetworkToChainId: Hashtable<number> = {
 };
 
 export interface EthereumTransaction extends Transaction {
-    gas?: number;
+    gasLimit?: number;
     gasPrice?: number;
     nonce?: number;
     input?: string;

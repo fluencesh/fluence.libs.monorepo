@@ -12,10 +12,18 @@ import * as EthereumTx from 'ethereumjs-tx';
 import * as EthereumUtil from 'ethereumjs-util';
 import { EthereumTransportService } from '../transports/ethereum.transport';
 import { EthersEthereumTransportService, Provider } from '../transports/ethers.ethereum.transport';
-import { ETHEREUM, ethereumNetworkToChainId, EthereumTransaction, ethereumValidNetworks } from '../types/types';
+import {
+    ETHEREUM,
+    ethereumNetworkToChainId,
+    EthereumTransaction,
+    EthereumTransactionReceipt,
+    ethereumValidNetworks,
+} from '../types/types';
 import { ManagedEthereumTransportService } from './managed.ethereum.transport.service';
 
 export class EthereumBlockchainService extends BlockchainService {
+    protected blockChainTransportService: ManagedEthereumTransportService;
+
     private apiToken: string;
     private connections: Array<Scheme.TransportConnection>;
 
@@ -92,7 +100,7 @@ export class EthereumBlockchainService extends BlockchainService {
         const txParams = {
             nonce: `0x${txData.nonce.toString(16)}`,
             gasPrice: `0x${new BigNumber(txData.gasPrice).toString(16)}`,
-            gasLimit: `0x${new BigNumber(txData.gas).toString(16)}`,
+            gasLimit: `0x${new BigNumber(txData.gasLimit).toString(16)}`,
 
             to: txData.to[0].address.toLowerCase(),
             value: `0x${txData.to[0].amount.toString(16)}`,
@@ -109,5 +117,21 @@ export class EthereumBlockchainService extends BlockchainService {
         const serializedTx = tx.serialize();
 
         return serializedTx.toString('hex');
+    }
+
+    public getGasPrice() {
+        return this.blockChainTransportService.getGasPrice();
+    }
+
+    public getCode(address: string) {
+        return this.blockChainTransportService.getCode(address);
+    }
+
+    public getTransactionReceipt(txHex: string): Promise<EthereumTransactionReceipt> {
+        return this.blockChainTransportService.getTransactionReceipt(txHex);
+    }
+
+    public call(tx: EthereumTransaction) {
+        return this.blockChainTransportService.call(tx);
     }
 }

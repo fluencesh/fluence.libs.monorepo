@@ -1,4 +1,8 @@
 declare module 'ethers' {
+  class Contract {
+    public static getDeployTransaction(bytecode: string, abi: string, ...params: Array<any>): any
+  }
+
   namespace providers {
     export type Network = {
       chainId: number

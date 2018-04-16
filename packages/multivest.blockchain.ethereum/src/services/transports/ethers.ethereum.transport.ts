@@ -124,7 +124,7 @@ export class EthersEthereumTransportService extends EthereumTransportService {
 
             network: ETHEREUM,
             size: block.size,
-            transactions: block.transactions.map((tx: any) => this.convertTransaction(tx)),
+            transactions: block.transactions,
             fee: null, // @TODO: define
 
             sha3Uncles: block.sha3Uncles,

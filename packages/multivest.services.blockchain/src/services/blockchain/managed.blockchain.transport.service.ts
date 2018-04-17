@@ -17,7 +17,9 @@ export class ManagedBlockchainTransportService extends BlockchainTransportServic
 
     constructor(
         pluginManager: PluginManager,
-        transports: Array<BlockchainTransportService>
+        transports: Array<BlockchainTransportService>,
+        validityCheckDuration: number = 10000,
+        allowedNumberOfBlockToDelay = 5
     ) {
         super(pluginManager, null);
 

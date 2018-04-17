@@ -1,4 +1,4 @@
-import { MongoDBDao } from '@applicature/multivest.mongodb/dist/mongodb.dao';
+import { MongoDBDao } from '@applicature/multivest.mongodb';
 import { Scheme } from '../../types';
 import { TransportConnectionDao } from '../transport.connection.dao';
 

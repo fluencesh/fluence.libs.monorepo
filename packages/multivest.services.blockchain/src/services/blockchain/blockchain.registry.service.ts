@@ -3,7 +3,7 @@ import { TransportConnectionService } from '../object/transport.connection.servi
 import { BlockchainService } from './blockchain.service';
 import { ManagedBlockchainTransportService } from './managed.blockchain.transport.service';
 
-export class TransportRegistryService extends Service {
+export class BlockchainRegistryService extends Service {
     private registry: Hashtable<BlockchainService>;
     private transportConnectionService: TransportConnectionService;
 

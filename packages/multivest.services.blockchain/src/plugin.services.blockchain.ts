@@ -1,4 +1,4 @@
-import { Plugin } from '@applicature/multivest.core';
+import { Plugin, Service } from '@applicature/multivest.core';
 import { Plugin as MongodbPlugin } from '@applicature/multivest.mongodb';
 
 import { MongodbAddressSubscriptionDao } from './dao/mongodb/address.subscription.dao';
@@ -8,14 +8,20 @@ import { MongodbEthereumEventLogDao } from './dao/mongodb/ethereum.event.log.dao
 import { MongodbJobDao } from './dao/mongodb/job.dao';
 import { MongodbProjectDao } from './dao/mongodb/project.dao';
 import { MongodbTransactionDao } from './dao/mongodb/transaction.dao';
+import { MongodbTransportConnectionDao } from './dao/mongodb/transport.connection.dao';
 import { MongodbWebHookActionDao } from './dao/mongodb/webhook.action.dao';
 
+import { BlockchainRegistryService } from './services/blockchain/blockchain.registry.service';
+import { BlockchainService } from './services/blockchain/blockchain.service';
+import { BlockchainTransportService } from './services/blockchain/blockchain.transport.service';
+import { ManagedBlockchainTransportService } from './services/blockchain/managed.blockchain.transport.service';
 import { ClientService } from './services/object/client.service';
 import { EthereumContractSubscriptionService } from './services/object/ethereum.contract.subscription.service';
 import { EthereumEventLogService } from './services/object/ethereum.event.log.service';
 import { JobService } from './services/object/job.service';
 import { ProjectService } from './services/object/project.service';
 import { TransactionService } from './services/object/transaction.service';
+import { TransportConnectionService } from './services/object/transport.connection.service';
 import { WebhookActionItemObjectService } from './services/object/webhook.action.service';
 import { WebHookCallerService } from './services/webhook/webhook.caller.service';
 
@@ -34,14 +40,18 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbJobDao);
         mongoDbPlugin.addDao(MongodbProjectDao);
         mongoDbPlugin.addDao(MongodbTransactionDao);
+        mongoDbPlugin.addDao(MongodbTransportConnectionDao);
         mongoDbPlugin.addDao(MongodbWebHookActionDao);
 
+        this.registerService(BlockchainRegistryService);
+        this.registerService(ManagedBlockchainTransportService as any as typeof Service);
         this.registerService(ClientService);
         this.registerService(EthereumContractSubscriptionService);
         this.registerService(EthereumEventLogService);
         this.registerService(JobService);
         this.registerService(ProjectService);
         this.registerService(TransactionService);
+        this.registerService(TransportConnectionService);
         this.registerService(WebhookActionItemObjectService);
         this.registerService(WebHookCallerService);
     }

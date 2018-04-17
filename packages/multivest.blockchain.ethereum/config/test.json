@@ -1,5 +1,9 @@
 {
     "multivest": {
+        "mongodb": {
+            "url": "mongodb://localhost/multivest",
+            "options": null
+        },
         "blockchain": {
             "ethereum": {
                 "providers": {

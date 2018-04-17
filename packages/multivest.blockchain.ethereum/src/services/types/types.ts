@@ -1,6 +1,7 @@
 import { Transaction } from '@applicature/multivest.core';
 import { Hashtable } from '@applicature/multivest.core';
-import {Block} from '@applicature/multivest.core';
+import { Block } from '@applicature/multivest.core';
+import { MongoScheme } from '@applicature/multivest.mongodb';
 
 export const ETHEREUM = 'ETHEREUM';
 
@@ -92,4 +93,9 @@ export interface EthereumContractItemNameType {
     name: string;
     type: string;
     indexed: boolean;
+}
+
+export interface ContractScheme extends MongoScheme {
+    address: string;
+    abi: any;
 }

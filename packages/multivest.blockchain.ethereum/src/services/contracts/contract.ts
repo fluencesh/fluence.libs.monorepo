@@ -32,6 +32,27 @@ export class Contract {
     }
 
     /* tslint:disable */
+    /*
+        params: {
+            [contractAddress]: {
+                // contract public methods
+                'balanceOf': [{_owner: '0x0'}, {_owner: '0x1'}, {_owner: '0x2'}],
+                'allowance': [{_owner: '0x', _spender: '0x'}],
+
+                // contract public variables
+                'decimals': true,
+                name: true,
+                totalSupply: true
+            }
+        }
+
+        Response:
+        address => {
+           balanceOf: [{args: [{_owner: '0x'}], response: [{balance: '0x'}]}, {args: [{_owner: '0x1'}], response: [{balance: '0x2'}]}],
+           decimals: [{response: [{decimals: '18'}]}],
+        }
+     */
+
     // public async getSate(contracts: Hashtable<EthereumContract>, params: Hashtable<object>) {
     //     // @TODO: define contracts structure
     //
@@ -75,16 +96,7 @@ export class Contract {
     //         }
     //
     //         const passArgs = [];
-    //
-    //         if(! args.hasOwnProperty("__val")) {
-    //             assert.fail(new Error("__val is not present"));
-    //         }
-    //
     //         for(let arg of Object.keys(args)) {
-    //             if(arg == "__val") {
-    //                 continue;
-    //             }
-    //
     //             passArgs.push(args[arg]);
     //         }
     //

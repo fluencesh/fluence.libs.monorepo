@@ -44,7 +44,9 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbWebHookActionDao);
 
         this.registerService(BlockchainRegistryService);
-        this.registerService(ManagedBlockchainTransportService as any as typeof Service);
+        // THINK: is ManagedBlockchainTransportService should be in PluginManager?
+        // 'cause it's incompatible for now. also this service isn't using anywhere.
+        // this.registerService(ManagedBlockchainTransportService);
         this.registerService(ClientService);
         this.registerService(EthereumContractSubscriptionService);
         this.registerService(EthereumEventLogService);

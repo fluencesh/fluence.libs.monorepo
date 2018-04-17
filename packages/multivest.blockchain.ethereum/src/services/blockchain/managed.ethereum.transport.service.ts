@@ -17,17 +17,17 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
     protected allowedNumberOfBlockToDelay: number;
     protected activeTransports: Hashtable<boolean>;
     protected transportConnectionService: TransportConnectionService;
+    protected networkId: string;
 
     constructor(
         pluginManager: PluginManager,
-        transports: Array<EthereumTransportService>,
+        networkId: string,
         validityCheckDuration: number = 10000,
         allowedNumberOfBlockToDelay = 5
     ) {
         super(pluginManager, null);
 
-        this.transportServices = transports;
-        this.reference = transports[0];
+        this.networkId = networkId;
         this.validityCheckDuration = validityCheckDuration;
         this.lastCheckAt = 0;
         this.allowedNumberOfBlockToDelay = allowedNumberOfBlockToDelay;
@@ -35,9 +35,16 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
     }
 
     public async init() {
-        this.transportConnectionService = new TransportConnectionService(this.pluginManager);
+        this.transportConnectionService =
+            this.pluginManager.getServiceByClass(TransportConnectionService) as TransportConnectionService;
 
-        await this.transportConnectionService.init();
+        const connections = await this.transportConnectionService.listByBlockchainAndNetwork(
+            this.getBlockchainId(),
+            this.getNetworkId()
+        );
+
+        this.transportServices = connections.map((con) => new EthersEthereumTransportService(this.pluginManager, con));
+        this.reference = this.transportServices[0];
     }
 
     public getBlockchainId() {
@@ -45,7 +52,7 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
     }
 
     public getNetworkId() {
-        return this.reference.getNetworkId();
+        return this.networkId;
     }
 
     public getServiceId() {

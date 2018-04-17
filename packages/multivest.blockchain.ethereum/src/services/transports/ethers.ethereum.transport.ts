@@ -18,8 +18,8 @@ export class EthersEthereumTransportService extends EthereumTransportService {
     private network: string;
     private provider: any;
 
-    constructor(transportConnection: Scheme.TransportConnection) {
-        super(null, transportConnection);
+    constructor(pluginManager: PluginManager, transportConnection: Scheme.TransportConnection) {
+        super(pluginManager, transportConnection);
 
         this.network = this.transportConnection.networkId;
 

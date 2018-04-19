@@ -78,7 +78,7 @@ export function randomProject(): Scheme.Project {
         name: generateId(),
         status: random(0, 1, true) > .5 ? Scheme.ProjectStatus.Active : Scheme.ProjectStatus.Inactive,
 
-        webHookUrl: `https://www.${generateId()}.eu`,
+        webhookUrl: `https://www.${generateId()}.eu`,
         failedRetryCount: random(0, 5),
 
         sharedSecret: `secret_${generateId()}`,
@@ -101,7 +101,7 @@ export function randomWebhookAction(): Scheme.WebHookActionItem {
     }
 
     return {
-        webHookUrl: `https://www.${generateId()}.eu`,
+        webhookUrl: `https://www.${generateId()}.eu`,
 
         clientId: generateId(),
         projectId: generateId(),

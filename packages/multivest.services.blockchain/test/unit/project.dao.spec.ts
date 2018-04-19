@@ -42,7 +42,7 @@ describe('exchange dao', () => {
         const created = await dao.createProject(
             data.clientId,
             data.name,
-            data.webHookUrl,
+            data.webhookUrl,
             data.sharedSecret,
             data.status
         );
@@ -56,7 +56,7 @@ describe('exchange dao', () => {
         await dao.setNameAndWebhookUrlAndStatus(
             'id',
             'name',
-            'webHookUrl',
+            'webhookUrl',
             Scheme.ProjectStatus.Active
         );
 
@@ -67,7 +67,7 @@ describe('exchange dao', () => {
             {
                 $set: {
                     name: 'name',
-                    webHookUrl: 'webHookUrl',
+                    webhookUrl: 'webhookUrl',
                     status: Scheme.ProjectStatus.Active
                 }
             }

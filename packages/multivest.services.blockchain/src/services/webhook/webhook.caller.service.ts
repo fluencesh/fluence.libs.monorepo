@@ -39,7 +39,7 @@ export class WebHookCallerService extends Service {
         // @TODO: calculate HASH
 
         const options: AxiosRequestConfig = {
-            url: action.webHookUrl,
+            url: action.webhookUrl,
 
             method: 'POST',
 

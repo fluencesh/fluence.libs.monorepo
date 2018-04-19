@@ -5,6 +5,7 @@ import {
     Recipient,
     Transaction,
 } from '@applicature/multivest.core';
+import { v1 as generateId } from 'uuid';
 
 import { BlockchainService } from '../blockchain/blockchain.service';
 
@@ -27,7 +28,7 @@ let networkId: string;
 export class AddressSubscriptionBlockChainListener extends PopulatedBlockchainListener {
     protected subscriptionService: AddressSubscriptionService;
     protected projectService: ProjectService;
-    protected webHookService: WebhookActionItemObjectService;
+    protected webhookService: WebhookActionItemObjectService;
 
     constructor(
         pluginManager: PluginManager,
@@ -42,7 +43,11 @@ export class AddressSubscriptionBlockChainListener extends PopulatedBlockchainLi
 
         super(pluginManager, blockchainService, jobService, sinceBlock, minConfirmation);
 
-        // @TODO: proejctService
+        this.subscriptionService =
+            pluginManager.getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;
+        this.projectService = pluginManager.getServiceByClass(ProjectService) as ProjectService;
+        this.webhookService =
+            pluginManager.getServiceByClass(WebhookActionItemObjectService) as WebhookActionItemObjectService;
     }
 
     public getJobId() {
@@ -72,7 +77,7 @@ export class AddressSubscriptionBlockChainListener extends PopulatedBlockchainLi
 
         const subscriptions = await this.subscriptionService.listBySubscribedAddresses(recipients);
 
-        const webHookActions: Array<WebHookActionItem> = [];
+        const webhookActions: Array<WebHookActionItem> = [];
 
         const projectsMap: Hashtable<Scheme.Project> = {};
 
@@ -98,12 +103,12 @@ export class AddressSubscriptionBlockChainListener extends PopulatedBlockchainLi
                     amount: recipient.amount
                 };
 
-                webHookActions.push({
-                    id: null, // auto generate id
+                webhookActions.push({
+                    id: generateId(), // auto generate id
 
                     clientId: subscription.clientId,
                     projectId: subscription.projectId,
-                    webHookUrl: null,
+                    webhookUrl: project.webhookUrl,
 
                     blockChainId: this.blockchainService.getBlockchainId(), // blockchain id
                     networkId: this.blockchainService.getNetworkId(), // network id
@@ -137,7 +142,7 @@ export class AddressSubscriptionBlockChainListener extends PopulatedBlockchainLi
             }
         }
 
-        await this.webHookService.fill(webHookActions);
+        await this.webhookService.fill(webhookActions);
 
         return;
     }

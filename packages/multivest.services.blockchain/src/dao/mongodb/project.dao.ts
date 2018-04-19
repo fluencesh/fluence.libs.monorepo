@@ -18,14 +18,14 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
     public async createProject(
         clientId: string,
         name: string,
-        webHookUrl: string,
+        webhookUrl: string,
         sharedSecret: string,
         status: Scheme.ProjectStatus
     ): Promise<Scheme.Project> {
         return this.create({
             clientId,
             name,
-            webHookUrl,
+            webhookUrl,
             sharedSecret,
             status,
             createdAt: new Date()
@@ -44,7 +44,7 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
 
     public async setNameAndWebhookUrlAndStatus(
         projectId: string,
-        name: string, webHookUrl: string, status: Scheme.ProjectStatus
+        name: string, webhookUrl: string, status: Scheme.ProjectStatus
     ): Promise<void> {
         await this.updateRaw(
             {
@@ -53,7 +53,7 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
             {
                 $set: {
                     name,
-                    webHookUrl,
+                    webhookUrl,
                     status
                 }
             }

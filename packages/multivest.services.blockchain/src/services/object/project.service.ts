@@ -23,11 +23,11 @@ export abstract class ProjectService extends Service {
     public async createProject(
         clientId: string,
         name: string,
-        webHookUrl: string,
+        webhookUrl: string,
         sharedSecret: string,
         status: Scheme.ProjectStatus
     ): Promise<Scheme.Project> {
-        return this.projectDao.createProject(clientId, name, webHookUrl, sharedSecret, status);
+        return this.projectDao.createProject(clientId, name, webhookUrl, sharedSecret, status);
     }
 
     public async getById(projectId: string): Promise<Scheme.Project> {
@@ -40,9 +40,9 @@ export abstract class ProjectService extends Service {
 
     public async setNameAndWebhookUrlAndStatus(
         projectId: string,
-        name: string, webHookUrl: string, status: Scheme.ProjectStatus
+        name: string, webhookUrl: string, status: Scheme.ProjectStatus
     ): Promise<void> {
-        return this.projectDao.setNameAndWebhookUrlAndStatus(projectId, name, webHookUrl, status);
+        return this.projectDao.setNameAndWebhookUrlAndStatus(projectId, name, webhookUrl, status);
     }
 
     public async setStatus(projectId: string, status: Scheme.ProjectStatus): Promise<void> {

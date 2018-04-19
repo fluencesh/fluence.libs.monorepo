@@ -53,7 +53,7 @@ describe('address subscription dao', () => {
         const created = await dao.createProject(
             data.clientId,
             data.name,
-            data.webHookUrl,
+            data.webhookUrl,
             data.sharedSecret,
             data.status
         );
@@ -65,7 +65,7 @@ describe('address subscription dao', () => {
 
     it('should set new name, webhook url and status', async () => {
         project.name = generateId();
-        project.webHookUrl = `https://www.${generateId()}.eu`;
+        project.webhookUrl = `https://www.${generateId()}.eu`;
         project.status = project.status === Scheme.ProjectStatus.Active
             ? Scheme.ProjectStatus.Inactive
             : Scheme.ProjectStatus.Active;
@@ -73,7 +73,7 @@ describe('address subscription dao', () => {
         await dao.setNameAndWebhookUrlAndStatus(
             project.id,
             project.name,
-            project.webHookUrl,
+            project.webhookUrl,
             project.status
         );
 

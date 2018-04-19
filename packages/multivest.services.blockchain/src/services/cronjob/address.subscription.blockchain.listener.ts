@@ -6,7 +6,7 @@ import {
     Transaction,
 } from '@applicature/multivest.core';
 
-import { BlockchainService } from '@applicature-restricted/multivest.blockchain';
+import { BlockchainService } from '../blockchain/blockchain.service';
 
 import { Scheme } from '../../types';
 import { AddressSubscriptionService } from '../object/address.subscription.service';
@@ -21,6 +21,9 @@ interface RecipientAndTx {
     tx: Transaction;
 }
 
+let blockchainId: string;
+let networkId: string;
+
 export class AddressSubscriptionBlockChainListener extends PopulatedBlockchainListener {
     protected subscriptionService: AddressSubscriptionService;
     protected projectService: ProjectService;
@@ -33,15 +36,16 @@ export class AddressSubscriptionBlockChainListener extends PopulatedBlockchainLi
         sinceBlock: number,
         minConfirmation: number
     ) {
+        // FIXME: bad practice
+        blockchainId = blockchainService.getBlockchainId();
+        networkId = blockchainService.getNetworkId();
+
         super(pluginManager, blockchainService, jobService, sinceBlock, minConfirmation);
 
         // @TODO: proejctService
     }
 
     public getJobId() {
-        const blockchainId = this.blockchainService.getBlockchainId();
-        const networkId = this.blockchainService.getNetworkId();
-
         return `${blockchainId}.${networkId}.address.subscription.listener`;
     }
 

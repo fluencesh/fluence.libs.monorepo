@@ -1,8 +1,9 @@
 import { PluginManager } from '@applicature/multivest.core';
 
-import { BlockchainListener, BlockchainService } from '@applicature-restricted/multivest.blockchain';
+import { BlockchainListener } from '@applicature-restricted/multivest.blockchain';
 
 import { Scheme } from '../../types';
+import { BlockchainService } from '../blockchain/blockchain.service';
 import { JobService } from '../object/job.service';
 
 export abstract class PopulatedBlockchainListener extends BlockchainListener {
@@ -15,7 +16,8 @@ export abstract class PopulatedBlockchainListener extends BlockchainListener {
         sinceBlock: number,
         minConfirmation = 0
     ) {
-        super(pluginManager, blockchainService, sinceBlock, minConfirmation);
+        // FIXME: type issue. BlockchainListener used class BlockchainService which was moved into this package
+        super(pluginManager, blockchainService as any, sinceBlock, minConfirmation);
 
         this.jobService = this.jobService;
     }

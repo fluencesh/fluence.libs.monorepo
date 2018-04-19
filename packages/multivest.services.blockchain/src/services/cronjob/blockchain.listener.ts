@@ -19,7 +19,7 @@ export abstract class PopulatedBlockchainListener extends BlockchainListener {
         // FIXME: type issue. BlockchainListener used class BlockchainService which was moved into this package
         super(pluginManager, blockchainService as any, sinceBlock, minConfirmation);
 
-        this.jobService = this.jobService;
+        this.jobService = jobService;
     }
 
     public async init() {

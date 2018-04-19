@@ -5,7 +5,7 @@ export abstract class ProjectDao extends Dao<Scheme.Project> {
     public abstract async createProject(
         clientId: string,
         name: string,
-        webHookUrl: string,
+        webhookUrl: string,
         sharedSecret: string,
         status: Scheme.ProjectStatus
     ): Promise<Scheme.Project>;
@@ -16,7 +16,7 @@ export abstract class ProjectDao extends Dao<Scheme.Project> {
 
     public abstract async  setNameAndWebhookUrlAndStatus(
         projectId: string,
-        name: string, webHookUrl: string, status: Scheme.ProjectStatus
+        name: string, webhookUrl: string, status: Scheme.ProjectStatus
     ): Promise<void>;
 
     public abstract async setStatus(projectId: string, status: Scheme.ProjectStatus): Promise<void>;

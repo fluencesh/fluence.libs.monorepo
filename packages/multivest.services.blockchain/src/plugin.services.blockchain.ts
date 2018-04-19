@@ -15,6 +15,7 @@ import { BlockchainRegistryService } from './services/blockchain/blockchain.regi
 import { BlockchainService } from './services/blockchain/blockchain.service';
 import { BlockchainTransportService } from './services/blockchain/blockchain.transport.service';
 import { ManagedBlockchainTransportService } from './services/blockchain/managed.blockchain.transport.service';
+import { AddressSubscriptionService } from './services/object/address.subscription.service';
 import { ClientService } from './services/object/client.service';
 import { EthereumContractSubscriptionService } from './services/object/ethereum.contract.subscription.service';
 import { EthereumEventLogService } from './services/object/ethereum.event.log.service';
@@ -43,10 +44,8 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbTransportConnectionDao);
         mongoDbPlugin.addDao(MongodbWebHookActionDao);
 
+        this.registerService(AddressSubscriptionService);
         this.registerService(BlockchainRegistryService);
-        // THINK: is ManagedBlockchainTransportService should be in PluginManager?
-        // 'cause it's incompatible for now. also this service isn't using anywhere.
-        // this.registerService(ManagedBlockchainTransportService);
         this.registerService(ClientService);
         this.registerService(EthereumContractSubscriptionService);
         this.registerService(EthereumEventLogService);

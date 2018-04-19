@@ -35,7 +35,7 @@ export namespace Scheme {
 
         status: ProjectStatus;
 
-        webHookUrl: string;
+        webhookUrl: string;
         failedRetryCount: number;
 
         sharedSecret: string;
@@ -144,7 +144,7 @@ export namespace Scheme {
     }
 
     export interface WebHookActionItem extends MongoScheme {
-        webHookUrl: string;
+        webhookUrl: string;
 
         clientId: string;
         projectId: string;

@@ -25,6 +25,7 @@ export * from './src/services/cronjob/address.subscription.blockchain.listener';
 export * from './src/services/cronjob/blockchain.listener';
 export * from './src/services/cronjob/webhook.caller';
 
+export * from './src/services/object/address.subscription.service';
 export * from './src/services/object/job.service';
 export * from './src/services/object/client.service';
 export * from './src/services/object/ethereum.contract.subscription.service';

@@ -35,13 +35,14 @@ export class AddressSubscriptionBlockChainListener extends PopulatedBlockchainLi
         blockchainService: BlockchainService,
         jobService: JobService,
         sinceBlock: number,
-        minConfirmation: number
+        minConfirmation: number,
+        processedBlockHeight: number = 0
     ) {
         // FIXME: bad practice
         blockchainId = blockchainService.getBlockchainId();
         networkId = blockchainService.getNetworkId();
 
-        super(pluginManager, blockchainService, jobService, sinceBlock, minConfirmation);
+        super(pluginManager, blockchainService, jobService, sinceBlock, minConfirmation, processedBlockHeight);
 
         this.subscriptionService =
             pluginManager.getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;

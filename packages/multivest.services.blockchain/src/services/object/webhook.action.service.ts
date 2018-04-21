@@ -1,12 +1,12 @@
 import {Hashtable, PluginManager, Service} from '@applicature/multivest.core';
-import WebHookActionItem = Scheme.WebHookActionItem;
+import WebhookActionItem = Scheme.WebhookActionItem;
 import { Plugin } from '@applicature/multivest.mongodb';
 import { TransactionDao } from '../../dao/transaction.dao';
-import { WebHookActionDao } from '../../dao/webhook.action.dao';
+import { WebhookActionDao } from '../../dao/webhook.action.dao';
 import { Scheme } from '../../types';
 
 export class WebhookActionItemObjectService extends Service {
-    protected webHookActionItemDao: WebHookActionDao;
+    protected webHookActionItemDao: WebhookActionDao;
 
     constructor(pluginManager: PluginManager) {
         super(pluginManager);
@@ -15,7 +15,7 @@ export class WebhookActionItemObjectService extends Service {
     public async init(): Promise<void> {
         const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
 
-        this.webHookActionItemDao = await mongodbPlugin.getDao('webhooks') as WebHookActionDao;
+        this.webHookActionItemDao = await mongodbPlugin.getDao('webhooks') as WebhookActionDao;
     }
 
     public getServiceId(): string {
@@ -45,7 +45,7 @@ export class WebhookActionItemObjectService extends Service {
 
         eventId: string,
         params: Hashtable<any>
-    ): Promise<Scheme.WebHookActionItem> {
+    ): Promise<Scheme.WebhookActionItem> {
         return this.webHookActionItemDao.createAction(
             clientId, projectId,
             blockChainId, networkId,
@@ -63,25 +63,25 @@ export class WebhookActionItemObjectService extends Service {
         );
     }
 
-    public async fill(actionItems: Array<WebHookActionItem>): Promise<void> {
+    public async fill(actionItems: Array<WebhookActionItem>): Promise<void> {
         await this.webHookActionItemDao.fill(actionItems);
 
         return;
     }
 
-    public async getById(id: string): Promise<Scheme.WebHookActionItem> {
+    public async getById(id: string): Promise<Scheme.WebhookActionItem> {
         return this.webHookActionItemDao.getById(id);
     }
 
-    public async listByClientId(clientId: string): Promise<Array<Scheme.WebHookActionItem>> {
+    public async listByClientId(clientId: string): Promise<Array<Scheme.WebhookActionItem>> {
         return this.webHookActionItemDao.listByClientId(clientId);
     }
 
-    public async listByProjectId(projectId: string): Promise<Array<Scheme.WebHookActionItem>> {
+    public async listByProjectId(projectId: string): Promise<Array<Scheme.WebhookActionItem>> {
         return this.webHookActionItemDao.listByProjectId(projectId);
     }
 
-    public async listByStatus(status: Scheme.WebhookReportItemStatus): Promise<Array<Scheme.WebHookActionItem>> {
+    public async listByStatus(status: Scheme.WebhookReportItemStatus): Promise<Array<Scheme.WebhookActionItem>> {
         return this.webHookActionItemDao.listByProjectId(status);
     }
 
@@ -95,7 +95,7 @@ export class WebhookActionItemObjectService extends Service {
         return this.webHookActionItemDao.setStatus(id, status);
     }
 
-    public async addFailReport(id: string, fail: Scheme.WebHookFailedReport): Promise<void> {
+    public async addFailReport(id: string, fail: Scheme.WebhookFailedReport): Promise<void> {
         return this.webHookActionItemDao.addFailReport(id, fail);
     }
 }

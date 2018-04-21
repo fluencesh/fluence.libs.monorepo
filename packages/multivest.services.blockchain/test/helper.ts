@@ -87,7 +87,7 @@ export function randomProject(): Scheme.Project {
     } as Scheme.Project;
 }
 
-export function randomWebhookAction(): Scheme.WebHookActionItem {
+export function randomWebhookAction(): Scheme.WebhookActionItem {
     const failedCount = random(0, 5);
 
     const randomNumber = random(0, 1, true);
@@ -136,7 +136,7 @@ export function randomWebhookAction(): Scheme.WebHookActionItem {
         status,
 
         createdAt: new Date()
-    } as Scheme.WebHookActionItem;
+    } as Scheme.WebhookActionItem;
 }
 
 export function randomTransportConnection() {

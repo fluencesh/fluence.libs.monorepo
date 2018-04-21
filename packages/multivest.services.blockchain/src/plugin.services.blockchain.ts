@@ -9,7 +9,7 @@ import { MongodbJobDao } from './dao/mongodb/job.dao';
 import { MongodbProjectDao } from './dao/mongodb/project.dao';
 import { MongodbTransactionDao } from './dao/mongodb/transaction.dao';
 import { MongodbTransportConnectionDao } from './dao/mongodb/transport.connection.dao';
-import { MongodbWebHookActionDao } from './dao/mongodb/webhook.action.dao';
+import { MongodbWebhookActionDao } from './dao/mongodb/webhook.action.dao';
 
 import { BlockchainRegistryService } from './services/blockchain/blockchain.registry.service';
 import { BlockchainService } from './services/blockchain/blockchain.service';
@@ -24,7 +24,7 @@ import { ProjectService } from './services/object/project.service';
 import { TransactionService } from './services/object/transaction.service';
 import { TransportConnectionService } from './services/object/transport.connection.service';
 import { WebhookActionItemObjectService } from './services/object/webhook.action.service';
-import { WebHookCallerService } from './services/webhook/webhook.caller.service';
+import { WebhookCallerService } from './services/webhook/webhook.caller.service';
 
 class BlockchainServicesPlugin extends Plugin<void> {
     public getPluginId() {
@@ -42,7 +42,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbProjectDao);
         mongoDbPlugin.addDao(MongodbTransactionDao);
         mongoDbPlugin.addDao(MongodbTransportConnectionDao);
-        mongoDbPlugin.addDao(MongodbWebHookActionDao);
+        mongoDbPlugin.addDao(MongodbWebhookActionDao);
 
         this.registerService(AddressSubscriptionService);
         this.registerService(BlockchainRegistryService);
@@ -54,7 +54,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         this.registerService(TransactionService);
         this.registerService(TransportConnectionService);
         this.registerService(WebhookActionItemObjectService);
-        this.registerService(WebHookCallerService);
+        this.registerService(WebhookCallerService);
     }
 }
 

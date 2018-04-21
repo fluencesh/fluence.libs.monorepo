@@ -1,6 +1,6 @@
 import * as config from 'config';
 import { Db, MongoClient } from 'mongodb';
-import { MongodbWebHookActionDao } from '../../src/dao/mongodb/webhook.action.dao';
+import { MongodbWebhookActionDao } from '../../src/dao/mongodb/webhook.action.dao';
 import { Scheme } from '../../src/types';
 
 import { omit, random } from 'lodash';
@@ -9,15 +9,15 @@ import { v1 as generateId } from 'uuid';
 import { randomWebhookAction } from '../helper';
 
 describe('address subscription dao', () => {
-    let dao: MongodbWebHookActionDao;
-    const webhookActions: Array<Scheme.WebHookActionItem> = [];
+    let dao: MongodbWebhookActionDao;
+    const webhookActions: Array<Scheme.WebhookActionItem> = [];
     const webhookActionsCount = 15;
-    let webhookAction: Scheme.WebHookActionItem;
+    let webhookAction: Scheme.WebhookActionItem;
     let connection: Db;
 
     beforeAll(async () => {
         connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
-        dao = new MongodbWebHookActionDao(connection);
+        dao = new MongodbWebhookActionDao(connection);
         dao.remove({});
 
         for (let i = 0; i < webhookActionsCount; i++) {

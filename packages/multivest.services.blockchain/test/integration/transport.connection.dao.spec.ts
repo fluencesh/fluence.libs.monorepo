@@ -29,6 +29,8 @@ describe('transport connection dao', () => {
     });
 
     afterAll(async () => {
+        await connection.db('multivest').collection('transportConnections').remove({});
+
         connection.close();
     });
 

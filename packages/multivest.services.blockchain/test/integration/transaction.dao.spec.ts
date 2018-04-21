@@ -26,6 +26,8 @@ describe('transaction dao', () => {
     });
 
     afterAll(async () => {
+        await connection.db('multivest').collection('transactions').remove({});
+
         connection.close();
     });
 

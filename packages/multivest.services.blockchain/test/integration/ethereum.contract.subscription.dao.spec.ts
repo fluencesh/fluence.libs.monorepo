@@ -30,6 +30,8 @@ describe('ethereum contract subscription dao', () => {
     });
 
     afterAll(async () => {
+        await connection.db('multivest').collection('ethereumContracts').remove({});
+
         connection.close();
     });
 

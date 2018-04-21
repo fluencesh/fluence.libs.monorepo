@@ -31,6 +31,8 @@ export abstract class WebhookActionDao extends Dao<Scheme.WebhookActionItem> {
 
     public abstract async listByClientId(clientId: string): Promise<Array<Scheme.WebhookActionItem>>;
     public abstract async listByProjectId(projectId: string): Promise<Array<Scheme.WebhookActionItem>>;
+    public abstract async listByStatus(status: Scheme.WebhookReportItemStatus)
+        : Promise<Array<Scheme.WebhookActionItem>>;
 
     public abstract async setConfirmationsAndStatus(
         id: string, confirmations: number, status: Scheme.WebhookReportItemStatus

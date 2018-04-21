@@ -30,6 +30,8 @@ describe('address subscription dao', () => {
     });
 
     afterAll(async () => {
+        await connection.db('multivest').collection('projects').remove({});
+
         connection.close();
     });
 

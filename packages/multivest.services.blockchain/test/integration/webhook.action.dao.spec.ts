@@ -30,6 +30,8 @@ describe('address subscription dao', () => {
     });
 
     afterAll(async () => {
+        await connection.db('multivest').collection('webhooks').remove({});
+
         connection.close();
     });
 
@@ -40,7 +42,7 @@ describe('address subscription dao', () => {
     });
 
     it('should get by client id', async () => {
-        const filtered = webhookActions.filter((eel) => eel.clientId === webhookAction.clientId);
+        const filtered = webhookActions.filter((wa) => wa.clientId === webhookAction.clientId);
 
         const got = await dao.listByClientId(webhookAction.clientId);
 
@@ -48,9 +50,17 @@ describe('address subscription dao', () => {
     });
 
     it('should get by project id', async () => {
-        const filtered = webhookActions.filter((eel) => eel.projectId === webhookAction.projectId);
+        const filtered = webhookActions.filter((wa) => wa.projectId === webhookAction.projectId);
 
         const got = await dao.listByProjectId(webhookAction.projectId);
+
+        expect(got).toEqual(filtered);
+    });
+
+    it('should get by status', async () => {
+        const filtered = webhookActions.filter((wa) => wa.status === webhookAction.status);
+
+        const got = await dao.listByStatus(webhookAction.status);
 
         expect(got).toEqual(filtered);
     });

@@ -82,7 +82,7 @@ export class WebhookActionItemObjectService extends Service {
     }
 
     public async listByStatus(status: Scheme.WebhookReportItemStatus): Promise<Array<Scheme.WebhookActionItem>> {
-        return this.webHookActionItemDao.listByProjectId(status);
+        return this.webHookActionItemDao.listByStatus(status);
     }
 
     public async setConfirmationsAndStatus(

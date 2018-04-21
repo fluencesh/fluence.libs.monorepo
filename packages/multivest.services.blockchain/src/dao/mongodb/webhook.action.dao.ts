@@ -84,6 +84,12 @@ export class MongodbWebhookActionDao extends MongoDBDao<Scheme.WebhookActionItem
         });
     }
 
+    public async listByStatus(status: Scheme.WebhookReportItemStatus): Promise<Array<Scheme.WebhookActionItem>> {
+        return this.listRaw({
+            status
+        });
+    }
+
     public async setConfirmationsAndStatus(
         id: string,
         confirmations: number, status: Scheme.WebhookReportItemStatus

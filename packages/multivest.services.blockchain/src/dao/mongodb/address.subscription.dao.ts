@@ -11,7 +11,7 @@ export class MongodbAddressSubscriptionDao extends MongoDBDao<Scheme.AddressSubs
     }
 
     public getCollectionName() {
-        return 'address.subscriptions';
+        return 'addressSubscriptions';
     }
 
     public getDefaultValue() {

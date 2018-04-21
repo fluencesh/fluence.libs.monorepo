@@ -34,6 +34,8 @@ describe('transport connection service', () => {
     });
 
     afterAll(async () => {
+        await connection.db('multivest').collection('transportConnections').remove({});
+
         connection.close();
     });
 

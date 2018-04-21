@@ -3,7 +3,7 @@ import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import { Scheme } from '../../types';
 import { WebhookActionItemObjectService } from '../object/webhook.action.service';
 
-export interface WebHookCallResult {
+export interface WebhookCallResult {
     request: {
         method: string,
         headers: Hashtable<string>,
@@ -18,8 +18,8 @@ export interface WebHookCallResult {
     error: any;
 }
 
-export class WebHookCallerService extends Service {
-    protected webHookObjectService: WebhookActionItemObjectService;
+export class WebhookCallerService extends Service {
+    protected webhookObjectService: WebhookActionItemObjectService;
 
     constructor(pluginManager: PluginManager) {
         super(pluginManager);
@@ -27,14 +27,21 @@ export class WebHookCallerService extends Service {
         // @TODO: set project dao
     }
 
+    public async init() {
+        await super.init();
+
+        this.webhookObjectService =
+            this.pluginManager.getServiceByClass(WebhookActionItemObjectService) as WebhookActionItemObjectService;
+    }
+
     public getServiceId(): string {
         return 'service.webhooks';
     }
 
     public async send(
-        action: Scheme.WebHookActionItem,
+        action: Scheme.WebhookActionItem,
         timeoutInMs: number
-    ): Promise<WebHookCallResult> {
+    ): Promise<WebhookCallResult> {
 
         // @TODO: calculate HASH
 

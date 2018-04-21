@@ -11,7 +11,7 @@ import { BlockchainService } from '../blockchain/blockchain.service';
 
 import { Scheme } from '../../types';
 import { AddressSubscriptionService } from '../object/address.subscription.service';
-import WebHookActionItem = Scheme.WebHookActionItem;
+import WebhookActionItem = Scheme.WebhookActionItem;
 import {JobService} from '../object/job.service';
 import {ProjectService} from '../object/project.service';
 import { WebhookActionItemObjectService } from '../object/webhook.action.service';
@@ -78,7 +78,7 @@ export class AddressSubscriptionBlockChainListener extends PopulatedBlockchainLi
 
         const subscriptions = await this.subscriptionService.listBySubscribedAddresses(recipients);
 
-        const webhookActions: Array<WebHookActionItem> = [];
+        const webhookActions: Array<WebhookActionItem> = [];
 
         const projectsMap: Hashtable<Scheme.Project> = {};
 

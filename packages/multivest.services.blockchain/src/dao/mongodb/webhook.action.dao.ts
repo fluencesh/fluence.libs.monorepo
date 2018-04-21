@@ -1,9 +1,9 @@
 import { Hashtable } from '@applicature/multivest.core';
 import { MongoDBDao } from '@applicature/multivest.mongodb';
 import { Scheme } from '../../types';
-import { WebHookActionDao } from '../webhook.action.dao';
+import { WebhookActionDao } from '../webhook.action.dao';
 
-export class MongodbWebHookActionDao extends MongoDBDao<Scheme.WebHookActionItem> implements WebHookActionDao {
+export class MongodbWebhookActionDao extends MongoDBDao<Scheme.WebhookActionItem> implements WebhookActionDao {
     public getDaoId() {
         return 'webhooks';
     }
@@ -13,7 +13,7 @@ export class MongodbWebHookActionDao extends MongoDBDao<Scheme.WebHookActionItem
     }
 
     public getDefaultValue() {
-        return {} as Scheme.WebHookActionItem;
+        return {} as Scheme.WebhookActionItem;
     }
 
     public  async createAction(
@@ -39,7 +39,7 @@ export class MongodbWebHookActionDao extends MongoDBDao<Scheme.WebHookActionItem
 
         eventId: string,
         params: Hashtable<any>
-    ): Promise<Scheme.WebHookActionItem> {
+    ): Promise<Scheme.WebhookActionItem> {
         return this.create({
             clientId,
             projectId,
@@ -68,17 +68,17 @@ export class MongodbWebHookActionDao extends MongoDBDao<Scheme.WebHookActionItem
         });
     }
 
-    public async getById(id: string): Promise<Scheme.WebHookActionItem> {
+    public async getById(id: string): Promise<Scheme.WebhookActionItem> {
         return this.get({ id });
     }
 
-    public async listByClientId(clientId: string): Promise<Array<Scheme.WebHookActionItem>> {
+    public async listByClientId(clientId: string): Promise<Array<Scheme.WebhookActionItem>> {
         return this.listRaw({
             clientId
         });
     }
 
-    public async listByProjectId(projectId: string): Promise<Array<Scheme.WebHookActionItem>> {
+    public async listByProjectId(projectId: string): Promise<Array<Scheme.WebhookActionItem>> {
         return this.listRaw({
             projectId
         });
@@ -108,7 +108,7 @@ export class MongodbWebHookActionDao extends MongoDBDao<Scheme.WebHookActionItem
         return;
     }
 
-    public async addFailReport(id: string, fail: Scheme.WebHookFailedReport): Promise<void> {
+    public async addFailReport(id: string, fail: Scheme.WebhookFailedReport): Promise<void> {
         await this.updateRaw({ id }, {
             $addToSet: {
                 fails: fail

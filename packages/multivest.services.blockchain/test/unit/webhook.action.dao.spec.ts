@@ -1,17 +1,17 @@
 import * as config from 'config';
 import { random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
-import { MongodbWebHookActionDao } from '../../src/dao/mongodb/webhook.action.dao';
+import { MongodbWebhookActionDao } from '../../src/dao/mongodb/webhook.action.dao';
 import { Scheme } from '../../src/types';
 import { randomWebhookAction } from '../helper';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
 describe('exchange dao', () => {
-    let dao: MongodbWebHookActionDao;
+    let dao: MongodbWebhookActionDao;
     let collection: any;
 
     beforeAll(async () => {
-        dao = new MongodbWebHookActionDao(DbMock);
+        dao = new MongodbWebhookActionDao(DbMock);
         collection = CollectionMock as any;
     });
 

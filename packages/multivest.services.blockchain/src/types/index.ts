@@ -143,7 +143,7 @@ export namespace Scheme {
         EthereumContractEvent = 'ETHEREUM_CONTRACT_EVENT'
     }
 
-    export interface WebHookActionItem extends MongoScheme {
+    export interface WebhookActionItem extends MongoScheme {
         webhookUrl: string;
 
         clientId: string;
@@ -172,14 +172,14 @@ export namespace Scheme {
         failedCount: number;
         lastFailedAt: Date;
 
-        fails: Array<WebHookFailedReport>;
+        fails: Array<WebhookFailedReport>;
 
         status: Scheme.WebhookReportItemStatus;
 
         createdAt: Date;
     }
 
-    export interface WebHookFailedReport {
+    export interface WebhookFailedReport {
         request: {
             method: string;
             headers: Hashtable<string>,

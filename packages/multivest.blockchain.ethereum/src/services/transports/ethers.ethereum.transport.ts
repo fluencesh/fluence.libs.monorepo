@@ -58,8 +58,11 @@ export class EthersEthereumTransportService extends EthereumTransportService {
     }
 
     public async getBlockByHeight(blockHeight: number): Promise<Block> {
-        // THINK: what should be done if block === null
         const block = await this.provider.getBlock(blockHeight);
+
+        block.transactions = await Promise.all(
+            block.transactions.map((txHash: string) => this.getTransactionByHash(txHash))
+        );
 
         return this.convertBlock(block);
     }

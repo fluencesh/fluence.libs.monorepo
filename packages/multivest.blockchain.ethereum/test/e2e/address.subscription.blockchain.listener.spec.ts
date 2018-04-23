@@ -35,7 +35,6 @@ describe('address subscription', () => {
     let jobService: JobService;
     let agenda: Agenda;
     let block: Block;
-    let app: express.Application;
     let clientServer: Server;
     let webhookBodies: Array<any>;
 
@@ -167,25 +166,6 @@ describe('address subscription', () => {
     }
 
     async function startClientServer() {
-        // app = express();
-
-        // app.use(json());
-
-        // app.post(webhookSettings.endpoint, (req, res) => {
-        //     webhookBodies.push(req.body);
-
-        //     res.end();
-        // });
-
-        // await new Promise((resolve, reject) => {
-        //     clientServer = app.listen(webhookSettings.port, (err) => {
-        //         if (err) {
-        //             return reject();
-        //         }
-        //         resolve();
-        //     });
-        // });
-
         const requestHandler = (request: ServerRequest, response: ServerResponse) => {
             const body: Array<any> = [];
             request
@@ -248,9 +228,8 @@ describe('address subscription', () => {
         const db = connection.db('multivest');
 
         await Promise.all(
-            [
-                'transportConnections', 'addressSubscriptions', 'jobs', 'webhooks'
-            ].map((table) => db.collection(table).remove({}))
+            ['transportConnections', 'addressSubscriptions', 'jobs', 'webhooks']
+                .map((table) => db.collection(table).remove({}))
         );
 
         const serverStop = new Promise((resolve, reject) => {

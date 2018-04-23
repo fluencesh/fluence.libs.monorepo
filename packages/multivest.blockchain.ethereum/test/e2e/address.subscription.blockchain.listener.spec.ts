@@ -14,7 +14,9 @@ import * as Agenda from 'agenda';
 import { json } from 'body-parser';
 import * as config from 'config';
 import * as express from 'express';
+import { createServer, Server, ServerRequest, ServerResponse } from 'http';
 import { Db, MongoClient } from 'mongodb';
+import { promisify } from 'util';
 import { EthereumBlockchainService } from '../../src/services/blockchain/ethereum';
 import { ManagedEthereumTransportService } from '../../src/services/blockchain/managed.ethereum.transport.service';
 
@@ -34,6 +36,7 @@ describe('address subscription', () => {
     let agenda: Agenda;
     let block: Block;
     let app: express.Application;
+    let clientServer: Server;
     let webhookBodies: Array<any>;
 
     const webhookSettings = {
@@ -164,24 +167,49 @@ describe('address subscription', () => {
     }
 
     async function startClientServer() {
-        app = express();
+        // app = express();
 
-        app.use(json());
+        // app.use(json());
 
-        app.post(webhookSettings.endpoint, (req, res) => {
-            webhookBodies.push(req.body);
+        // app.post(webhookSettings.endpoint, (req, res) => {
+        //     webhookBodies.push(req.body);
 
-            res.end();
-        });
+        //     res.end();
+        // });
 
-        await new Promise((resolve, reject) => {
-            app.listen(webhookSettings.port, (err) => {
-                if (err) {
-                    return reject();
-                }
-                resolve();
-            });
-        });
+        // await new Promise((resolve, reject) => {
+        //     clientServer = app.listen(webhookSettings.port, (err) => {
+        //         if (err) {
+        //             return reject();
+        //         }
+        //         resolve();
+        //     });
+        // });
+
+        const requestHandler = (request: ServerRequest, response: ServerResponse) => {
+            const body: Array<any> = [];
+            request
+                .on('data', (chunk) => {
+                    body.push(chunk);
+                })
+                .on('end', () => {
+                    try {
+                        webhookBodies.push(JSON.parse(Buffer.concat(body).toString()));
+                        response.statusCode = 200;
+                        response.end();
+
+                        request.connection.end();
+                        request.connection.destroy();
+                    } catch (ex) {
+                        response.statusCode = 400;
+                        response.end('invalid body');
+                    }
+                });
+        };
+
+        clientServer = createServer(requestHandler);
+
+        await promisify(clientServer.listen).call(clientServer, webhookSettings.port);
     }
 
     function startAgenda(): Promise<Agenda> {
@@ -217,7 +245,7 @@ describe('address subscription', () => {
     });
 
     afterAll(async () => {
-        const db = await connection.db('multivest');
+        const db = connection.db('multivest');
 
         await Promise.all(
             [
@@ -225,25 +253,29 @@ describe('address subscription', () => {
             ].map((table) => db.collection(table).remove({}))
         );
 
-        await connection.close();
-
-        process.exit(0);
-    });
-
-    it.skip('should create webhooks action items', async () => {
-        await new Promise((resolve, reject) => {
-            const getBlockHeight = blockchainService.getBlockHeight;
-            blockchainService.getBlockHeight = () => Promise.resolve(sinceBlock + 2);
-
-            const jobId = subscriptionServiceListener.getJobId();
-
-            agenda.now(jobId);
-
-            agenda.on(`complete:${jobId}`, (job) => {
-                blockchainService.getBlockHeight = getBlockHeight;
+        const serverStop = new Promise((resolve, reject) => {
+            clientServer.close((err) => {
+                if (err) {
+                    return reject();
+                }
                 resolve();
             });
         });
+
+        const agendaStop = new Promise((resolve, reject) => {
+            agenda.stop((err) => {
+                if (err) {
+                    return reject();
+                }
+                resolve();
+            });
+        });
+
+        await Promise.all([
+            connection.close(),
+            serverStop,
+            agendaStop
+        ]);
     });
 
     it('should work', async () => {

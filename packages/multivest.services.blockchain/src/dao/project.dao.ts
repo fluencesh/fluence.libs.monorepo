@@ -12,6 +12,8 @@ export abstract class ProjectDao extends Dao<Scheme.Project> {
 
     public abstract async getById(projectId: string): Promise<Scheme.Project>;
 
+    public abstract async getByApiKey(apiKey: string): Promise<Scheme.Project>;
+
     public abstract async listByClientId(clientId: string): Promise<Array<Scheme.Project>>;
 
     public abstract async  setNameAndWebhookUrlAndStatus(

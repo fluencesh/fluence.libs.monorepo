@@ -29,6 +29,13 @@ describe('exchange dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
+    it('getByApiKey() transfers correct arguments', async () => {
+        await dao.getByApiKey('api-key');
+
+        expect(collection.findOne).toHaveBeenCalledWith({ apiKey: 'api-key' });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
     it('listByClientId() transfers correct arguments', async () => {
         await dao.listByClientId('clientId');
 

@@ -75,7 +75,7 @@ export class EthersEthereumTransportService extends EthereumTransportService {
     }
 
     // TODO: test it
-    public async sendRawTransaction(txHex: string): Promise<Transaction> {
+    public async sendRawTransaction(txHex: string): Promise<EthereumTransaction> {
         const hash = this.provider.sendTransaction(txHex);
 
         return this.convertTransactionFromHash(hash);
@@ -177,12 +177,13 @@ export class EthersEthereumTransportService extends EthereumTransportService {
 
     private convertTransactionReceipt(receipt: any): EthereumTransactionReceipt {
         const cumulativeGasUsed = receipt.cumulativeGasUsed
-            ? receipt.cumulativeGasUsed.toNumber()
+            ? receipt.cumulativeGasUsed.toString()
             : receipt.cumulativeGasUsed;
 
         return {
             blockHash: receipt.blockHash,
             blockNumber: receipt.blockNumber,
+            byzantium: receipt.byzantium,
             contractAddress: receipt.contractAddress,
             cumulativeGasUsed,
             from: receipt.from,
@@ -190,7 +191,7 @@ export class EthersEthereumTransportService extends EthereumTransportService {
             logs: receipt.logs,
             logsBloom: receipt.logsBloom,
             root: receipt.root,
-            to: receipt.to, // CHECK: in docs this field does not specify
+            status: receipt.status,
             transactionHash: receipt.transactionHash,
             transactionIndex: receipt.transactionIndex,
         } as EthereumTransactionReceipt;

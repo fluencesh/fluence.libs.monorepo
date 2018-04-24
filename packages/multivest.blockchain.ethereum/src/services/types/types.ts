@@ -50,6 +50,7 @@ export interface EthereumBlock extends Block {
 export interface EthereumTransactionReceipt {
     blockHash: string;
     blockNumber: number;
+    byzantium: boolean;
     contractAddress: string;
     cumulativeGasUsed: BigNumber;
     from: string;
@@ -57,9 +58,9 @@ export interface EthereumTransactionReceipt {
     logs: Array<EthereumTopic>;
     logsBloom: string;
     root: string;
-    to: string;
     transactionHash: string;
     transactionIndex: number;
+    status: number;
 }
 
 export interface EthereumTopic {

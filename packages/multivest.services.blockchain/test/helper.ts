@@ -80,6 +80,7 @@ export function randomProject(): Scheme.Project {
 
         webhookUrl: `https://www.${generateId()}.eu`,
         failedRetryCount: random(0, 5),
+        apiKey: generateId(),
 
         sharedSecret: `secret_${generateId()}`,
 

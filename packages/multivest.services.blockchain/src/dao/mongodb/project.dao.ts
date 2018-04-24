@@ -1,4 +1,5 @@
 import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { v1 as generateId } from 'uuid';
 import { Scheme } from '../../types';
 import { ProjectDao } from '../project.dao';
 
@@ -28,6 +29,7 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
             webhookUrl,
             sharedSecret,
             status,
+            apiKey: generateId(),
             createdAt: new Date()
         });
     }

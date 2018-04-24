@@ -14,8 +14,8 @@ export const ethereumNetworkToChainId: Hashtable<number> = {
 };
 
 export interface EthereumTransaction extends Transaction {
-    gasLimit?: number;
-    gasPrice?: number;
+    gasLimit?: BigNumber;
+    gasPrice?: BigNumber;
     nonce?: number;
     input?: string;
     transactionIndex?: string;
@@ -42,8 +42,8 @@ export interface EthereumBlock extends Block {
     miner: string;
     totalDifficulty: string;
     extraData: string;
-    gasLimit: string;
-    gasUsed: string;
+    gasLimit: BigNumber;
+    gasUsed: BigNumber;
     uncles: string;
 }
 
@@ -51,9 +51,9 @@ export interface EthereumTransactionReceipt {
     blockHash: string;
     blockNumber: number;
     contractAddress: string;
-    cumulativeGasUsed: number;
+    cumulativeGasUsed: BigNumber;
     from: string;
-    gasUsed: number;
+    gasUsed: BigNumber;
     logs: Array<EthereumTopic>;
     logsBloom: string;
     root: string;

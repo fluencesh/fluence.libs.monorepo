@@ -12,8 +12,6 @@ import { MongodbTransportConnectionDao } from './dao/mongodb/transport.connectio
 import { MongodbWebhookActionDao } from './dao/mongodb/webhook.action.dao';
 
 import { BlockchainRegistryService } from './services/blockchain/blockchain.registry.service';
-import { BlockchainService } from './services/blockchain/blockchain.service';
-import { BlockchainTransportService } from './services/blockchain/blockchain.transport.service';
 import { ManagedBlockchainTransportService } from './services/blockchain/managed.blockchain.transport.service';
 import { AddressSubscriptionService } from './services/object/address.subscription.service';
 import { ClientService } from './services/object/client.service';

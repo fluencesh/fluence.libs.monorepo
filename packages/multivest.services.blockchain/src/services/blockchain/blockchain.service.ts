@@ -60,13 +60,13 @@ export abstract class BlockchainService extends Service {
         return this.blockChainTransportService.getTransactionByHash(txHash);
     }
 
-    public async sendTransaction(privateKey: Buffer, txData: Transaction): Promise<string> {
+    public async sendTransaction(privateKey: Buffer, txData: Transaction): Promise<Transaction> {
         const txHex = await this.signTransaction(privateKey, txData);
 
-        return this.blockChainTransportService.sendRawTransaction(txHex);
+        return this.sendRawTransaction(txHex);
     }
 
-    public async sendRawTransaction(txHex: string): Promise<string> {
+    public async sendRawTransaction(txHex: string): Promise<Transaction> {
         return this.blockChainTransportService.sendRawTransaction(txHex);
     }
 

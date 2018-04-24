@@ -192,7 +192,7 @@ export class ManagedBlockchainTransportService extends BlockchainTransportServic
     //     return this.reference.sendTransaction(txData);
     // }
 
-    public async sendRawTransaction(txHex: string): Promise<string> {
+    public async sendRawTransaction(txHex: string): Promise<Transaction> {
         await this.updateValid();
 
         for (const transportService of this.transportServices) {

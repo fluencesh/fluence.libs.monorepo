@@ -83,7 +83,7 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
         return transportService.getTransactionByHash(hash);
     }
 
-    public async sendRawTransaction(txHex: string): Promise<string> {
+    public async sendRawTransaction(txHex: string): Promise<EthereumTransaction> {
         const transportService = await this.getActiveTransportService();
 
         return transportService.sendRawTransaction(txHex);

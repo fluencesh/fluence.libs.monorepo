@@ -1,6 +1,7 @@
 import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
 import { Block, MultivestError, PluginManager, Transaction } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
+import * as EthJsTransaction from 'ethereumjs-tx';
 import { Contract, providers } from 'ethers';
 import {
     ETHEREUM, EthereumBlock, EthereumTransaction, EthereumTransactionReceipt,
@@ -68,14 +69,22 @@ export class EthersEthereumTransportService extends EthereumTransportService {
     }
 
     public async getTransactionByHash(txHash: string) {
-        // THINK: what should be done if tx === null
         const tx = await this.provider.getTransaction(txHash);
 
         return this.convertTransaction(tx);
     }
 
-    public async sendRawTransaction(txHex: string): Promise<string> {
-        return this.provider.sendTransaction(txHex);
+    // TODO: test it
+    public async sendRawTransaction(txHex: string): Promise<Transaction> {
+        const hash = this.provider.sendTransaction(txHex);
+
+        return this.convertTransactionFromHash(hash);
+    }
+
+    public async convertTransactionFromHash(hash: string) {
+        const tx = new EthJsTransaction(hash);
+
+        return this.convertTransaction(tx);
     }
 
     public async call(tx: EthereumTransaction): Promise<string> {
@@ -151,20 +160,39 @@ export class EthersEthereumTransportService extends EthereumTransportService {
             blockHash: tx.blockHash,
             blockHeight: tx.blockNumber,
 
-            fee: tx.gas ? tx.gasPrice.mul(tx.gas) : null,
+            fee: tx.gasPrice.mul(tx.gasLimit),
             from: [{ address: tx.from }],
-            to: [{ address: tx.to, amount: tx.value }],
+            to: [{
+                address: tx.to,
+                amount: tx.value
+            }],
 
             gasLimit: tx.gasLimit,
             gasPrice: tx.gasPrice,
             nonce: tx.nonce,
             input: tx.input,
             transactionIndex: tx.transactionIndex
-        };
+        } as EthereumTransaction;
     }
 
     private convertTransactionReceipt(receipt: any): EthereumTransactionReceipt {
-        // @TODO: implement
-        return Object.assign({}, receipt);
+        const cumulativeGasUsed = receipt.cumulativeGasUsed
+            ? receipt.cumulativeGasUsed.toNumber()
+            : receipt.cumulativeGasUsed;
+
+        return {
+            blockHash: receipt.blockHash,
+            blockNumber: receipt.blockNumber,
+            contractAddress: receipt.contractAddress,
+            cumulativeGasUsed,
+            from: receipt.from,
+            gasUsed: receipt.gasUsed ? receipt.gasUsed.toNumber() : receipt.gasUsed,
+            logs: receipt.logs,
+            logsBloom: receipt.logsBloom,
+            root: receipt.root,
+            to: receipt.to, // CHECK: in docs this field does not specify
+            transactionHash: receipt.transactionHash,
+            transactionIndex: receipt.transactionIndex,
+        } as EthereumTransactionReceipt;
     }
 }

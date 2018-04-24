@@ -49,6 +49,12 @@ describe('address subscription dao', () => {
         expect(got).toEqual(filtered);
     });
 
+    it('should get by api key id', async () => {
+        const got = await dao.getByApiKey(project.apiKey);
+
+        expect(got).toEqual(project);
+    });
+
     it('should create project', async () => {
         const data = randomProject();
 

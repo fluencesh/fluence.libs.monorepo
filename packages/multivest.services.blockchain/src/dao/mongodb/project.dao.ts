@@ -38,6 +38,10 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
         return this.get({ id: projectId });
     }
 
+    public async getByApiKey(apiKey: string): Promise<Scheme.Project> {
+        return this.get({ apiKey });
+    }
+
     public async listByClientId(clientId: string): Promise<Array<Scheme.Project>> {
         return this.listRaw({
             clientId

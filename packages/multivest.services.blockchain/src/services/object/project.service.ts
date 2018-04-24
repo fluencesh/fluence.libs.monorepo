@@ -48,4 +48,8 @@ export abstract class ProjectService extends Service {
     public async setStatus(projectId: string, status: Scheme.ProjectStatus): Promise<void> {
         return this.projectDao.setStatus(projectId, status);
     }
+
+    public async getByApiKey(apiKey: string) {
+        return this.projectDao.getByApiKey(apiKey);
+    }
 }

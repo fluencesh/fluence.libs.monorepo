@@ -1,4 +1,4 @@
-import {PluginManager, Service} from '@applicature/multivest.core';
+import { PluginManager, Service } from '@applicature/multivest.core';
 import { Plugin } from '@applicature/multivest.mongodb';
 import { AddressSubscriptionDao } from '../../dao/address.subscription.dao';
 import { Scheme } from '../../types';

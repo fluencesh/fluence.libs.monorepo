@@ -1,6 +1,7 @@
 import { Block, Transaction } from '@applicature/multivest.core';
 import {MultivestError, PluginManager, Service} from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
+import { Errors } from '../../errors';
 import { BlockchainTransportService } from './blockchain.transport.service';
 
 export interface Signature {
@@ -21,7 +22,7 @@ export abstract class BlockchainService extends Service {
         super(pluginManager);
 
         if (!this.isValidNetwork(network)) {
-            throw new MultivestError('wrong network');
+            throw new MultivestError(Errors.WRONG_NETWORK);
         }
 
         this.network = network;

@@ -2,9 +2,11 @@ import { PluginManager, Service } from '@applicature/multivest.core';
 import { Plugin } from '@applicature/multivest.mongodb';
 import { ClientDao } from '../../dao/client.dao';
 import { Scheme } from '../../types';
+import { AddressSubscriptionService } from './address.subscription.service';
 
 export class ClientService extends Service {
     protected clientDao: ClientDao;
+    protected addressSubscriptionService: AddressSubscriptionService;
 
     constructor(pluginManager: PluginManager) {
         super(pluginManager);
@@ -14,6 +16,9 @@ export class ClientService extends Service {
         const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
 
         this.clientDao = await mongodbPlugin.getDao('clients') as ClientDao;
+
+        this.addressSubscriptionService =
+            this.pluginManager.getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;
     }
 
     public getServiceId(): string {
@@ -32,7 +37,12 @@ export class ClientService extends Service {
         return this.clientDao.getByEthereumAddress(ethereumAddress);
     }
 
-    public setStatus(clientId: string, status: Scheme.ClientStatus): Promise<void> {
-        return this.clientDao.setStatus(clientId, status);
+    public async setStatus(clientId: string, status: Scheme.ClientStatus): Promise<void> {
+        await Promise.all([
+            this.clientDao.setStatus(clientId, status),
+            this.addressSubscriptionService.setClientActive(clientId, status === Scheme.ClientStatus.Active)
+        ]);
+
+        return;
     }
 }

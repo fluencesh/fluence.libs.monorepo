@@ -125,7 +125,7 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
         return transportService.getTransactionReceipt(txHex);
     }
 
-    public async getAddressTransactionsCount(address: string, blockTag: number | string): Promise<number> {
+    public async getAddressTransactionsCount(address: string, blockTag?: number | string): Promise<number> {
         const transportService = await this.getActiveTransportService();
 
         return transportService.getAddressTransactionsCount(address, blockTag);

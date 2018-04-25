@@ -99,8 +99,8 @@ export class EthereumBlockchainService extends BlockchainService {
     public signTransaction(privateKey: Buffer, txData: EthereumTransaction): string {
         const txParams = {
             nonce: `0x${txData.nonce.toString(16)}`,
-            gasPrice: `0x${new BigNumber(txData.gasPrice).toString(16)}`,
-            gasLimit: `0x${new BigNumber(txData.gasLimit).toString(16)}`,
+            gasPrice: `0x${txData.gasPrice.toString(16)}`,
+            gasLimit: `0x${txData.gasLimit.toString(16)}`,
 
             to: txData.to[0].address.toLowerCase(),
             value: `0x${txData.to[0].amount.toString(16)}`,

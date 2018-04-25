@@ -139,7 +139,7 @@ export class EthereumBlockchainService extends BlockchainService {
         return this.blockChainTransportService.estimateGas(tx);
     }
 
-    public getAddressTransactionsCount(address: string, blockTag: number | string): Promise<number> {
+    public getAddressTransactionsCount(address: string, blockTag?: number | string): Promise<number> {
         return this.blockChainTransportService.getAddressTransactionsCount(address, blockTag);
     }
 }

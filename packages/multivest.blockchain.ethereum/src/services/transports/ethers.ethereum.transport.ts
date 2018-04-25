@@ -126,6 +126,12 @@ export class EthersEthereumTransportService extends EthereumTransportService {
         return this.convertTransactionReceipt(receipt);
     }
 
+    public async getAddressTransactionsCount(address: string, blockTag?: number | string): Promise<number> {
+        const count: number = await this.provider.getTransactionCount(address, blockTag);
+
+        return count;
+    }
+
     private convertBlock(block: any): EthereumBlock {
         return {
             height: block.number,

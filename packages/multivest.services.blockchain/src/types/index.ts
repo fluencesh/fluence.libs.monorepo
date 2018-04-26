@@ -45,14 +45,12 @@ export namespace Scheme {
         createdAt: Date;
     }
 
-    export interface AddressSubscription extends MongoScheme {
+    export interface Subscription extends MongoScheme {
         clientId: string;
         projectId: string;
 
         blockChainId: string;
         networkId: string;
-
-        address: string;
 
         minConfirmations: number;
 
@@ -61,6 +59,14 @@ export namespace Scheme {
         isClientActive: boolean;
 
         createdAt: Date;
+    }
+
+    export interface AddressSubscription extends Subscription {
+        address: string;
+    }
+
+    export interface TransactionHashSubscription extends Subscription {
+        hash: string;
     }
 
     export interface Transaction extends MongoScheme {
@@ -142,7 +148,8 @@ export namespace Scheme {
 
     export enum WebhookTriggerType {
         Address = 'ADDRESS',
-        EthereumContractEvent = 'ETHEREUM_CONTRACT_EVENT'
+        EthereumContractEvent = 'ETHEREUM_CONTRACT_EVENT',
+        Transaction = 'TRANSACTION'
     }
 
     export interface WebhookActionItem extends MongoScheme {

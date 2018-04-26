@@ -43,6 +43,10 @@ export abstract class ProjectService extends Service {
         return this.projectDao.listByClientId(clientId);
     }
 
+    public async listByIds(ids: Array<string>): Promise<Array<Scheme.Project>> {
+        return this.projectDao.listByIds(ids);
+    }
+
     public async setNameAndWebhookUrlAndStatus(
         projectId: string,
         name: string, webhookUrl: string, status: Scheme.ProjectStatus

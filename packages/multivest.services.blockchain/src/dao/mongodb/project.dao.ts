@@ -48,6 +48,12 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
         });
     }
 
+    public async listByIds(ids: Array<string>): Promise<Array<Scheme.Project>> {
+        return this.listRaw({
+            id: { $in: ids }
+        });
+    }
+
     public async setNameAndWebhookUrlAndStatus(
         projectId: string,
         name: string, webhookUrl: string, status: Scheme.ProjectStatus

@@ -68,9 +68,18 @@ export class MongodbAddressSubscriptionDao extends MongoDBDao<Scheme.AddressSubs
     public async listBySubscribedAddresses(addresses: Array<string>): Promise<Array<Subscription>> {
         return this.listRaw({
             address: { $in: addresses },
-            subscribed: true,
-            isProjectActive: true,
-            isClientActive: true
+        });
+    }
+
+    public async listBySubscribedAddress(
+        address: string,
+        clientId: string,
+        projectId: string
+    ): Promise<Array<Subscription>> {
+        return this.listRaw({
+            address,
+            clientId,
+            projectId
         });
     }
 

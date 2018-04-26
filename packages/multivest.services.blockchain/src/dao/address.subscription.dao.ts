@@ -21,6 +21,8 @@ export abstract class AddressSubscriptionDao extends Dao<Scheme.AddressSubscript
     public abstract async listByClientId(clientId: string): Promise<Array<Scheme.AddressSubscription>>;
     public abstract async listBySubscribedAddresses(addresses: Array<string>)
         : Promise<Array<Scheme.AddressSubscription>>;
+    public abstract async listBySubscribedAddress(address: string, clientId: string, projectId: string)
+        : Promise<Array<Scheme.AddressSubscription>>;
 
     public abstract async setSubscribed(
         id: string,

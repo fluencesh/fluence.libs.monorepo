@@ -58,10 +58,48 @@ export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.Tra
         });
     }
 
+    public listBySubscribedHash(
+        hash: string,
+        clientId: string,
+        projectId: string
+    ): Promise<Array<Scheme.TransactionHashSubscription>> {
+        return this.listRaw({
+            hash,
+            clientId,
+            projectId
+        });
+    }
+
     public async setSubscribed(id: string, subscribed: boolean) {
         await this.updateRaw({ id }, {
             $set: {
                 subscribed
+            }
+        });
+
+        return;
+    }
+
+    public async setProjectActive(
+        projectId: string,
+        isActive: boolean
+    ): Promise<void> {
+        await this.updateRaw({ projectId }, {
+            $set: {
+                isProjectActive: isActive
+            }
+        });
+
+        return;
+    }
+
+    public async setClientActive(
+        clientId: string,
+        isActive: boolean
+    ): Promise<void> {
+        await this.updateRaw({ clientId }, {
+            $set: {
+                isClientActive: isActive
             }
         });
 

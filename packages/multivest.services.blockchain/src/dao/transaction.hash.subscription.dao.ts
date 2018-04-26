@@ -20,9 +20,21 @@ export abstract class TransactionHashSubscriptionDao extends Dao<Scheme.Transact
     public abstract async listByClientId(clientId: string): Promise<Array<Scheme.TransactionHashSubscription>>;
     public abstract async listBySubscribedHashes(hashes: Array<string>)
         : Promise<Array<Scheme.TransactionHashSubscription>>;
+    public abstract async listBySubscribedHash(hash: string, clientId: string, projectId: string)
+        : Promise<Array<Scheme.TransactionHashSubscription>>;
 
     public abstract async setSubscribed(
         subscriptionId: string,
         subscribed: boolean
+    ): Promise<void>;
+
+    public abstract async setProjectActive(
+        projectId: string,
+        isActive: boolean
+    ): Promise<void>;
+
+    public abstract async setClientActive(
+        clientId: string,
+        isActive: boolean
     ): Promise<void>;
 }

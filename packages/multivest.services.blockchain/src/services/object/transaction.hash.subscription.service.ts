@@ -37,6 +37,14 @@ export class TransactionHashSubscriptionService extends Service {
         return this.transactionHashSubscriptionDao.listBySubscribedHashes(hashes);
     }
 
+    public async listBySubscribedHash(
+        hash: string,
+        clientId: string,
+        projectId: string
+    ): Promise<Array<Scheme.TransactionHashSubscription>> {
+        return this.transactionHashSubscriptionDao.listBySubscribedHash(hash, clientId, projectId);
+    }
+
     public createSubscription(
         clientId: string,
         projectId: string,
@@ -66,5 +74,19 @@ export class TransactionHashSubscriptionService extends Service {
         subscribed: boolean
     ): Promise<void> {
         return this.transactionHashSubscriptionDao.setSubscribed(subscriptionId, subscribed);
+    }
+
+    public async setProjectActive(
+        projectId: string,
+        isActive: boolean
+    ): Promise<void> {
+        return this.transactionHashSubscriptionDao.setProjectActive(projectId, isActive);
+    }
+
+    public async setClientActive(
+        clientId: string,
+        isActive: boolean
+    ): Promise<void> {
+        return this.transactionHashSubscriptionDao.setClientActive(clientId, isActive);
     }
 }

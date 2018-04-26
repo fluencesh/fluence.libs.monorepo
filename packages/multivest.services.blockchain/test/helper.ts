@@ -18,6 +18,20 @@ export function randomAddressSubscription(): Scheme.AddressSubscription {
     } as Scheme.AddressSubscription;
 }
 
+export function randomTransactionSubscription(): Scheme.TransactionHashSubscription {
+    return {
+        blockChainId: generateId(),
+        clientId: generateId(),
+        hash: `0x${generateId()}`,
+        isClientActive: true,
+        isProjectActive: true,
+        minConfirmations: 0,
+        networkId: generateId(),
+        projectId: generateId(),
+        subscribed: true,
+    } as Scheme.TransactionHashSubscription;
+}
+
 export function randomClient(): Scheme.Client {
     return {
         ethereumAddress: generateId(),

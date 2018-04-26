@@ -52,6 +52,16 @@ describe('address subscription dao', () => {
         expect(got).toEqual(filtered);
     });
 
+    it('should get by id & project id & client id', async () => {
+        const got = await dao.listBySubscribedAddress(
+            addressSubscription.address,
+            addressSubscription.clientId,
+            addressSubscription.projectId
+        );
+
+        expect(got).toEqual([addressSubscription]);
+    });
+
     it('should set new subscriber status', async () => {
         addressSubscription.subscribed = !addressSubscription.subscribed;
         await dao.setSubscribed(addressSubscription.id, addressSubscription.subscribed);

@@ -8,6 +8,7 @@ import { MongodbEthereumEventLogDao } from './dao/mongodb/ethereum.event.log.dao
 import { MongodbJobDao } from './dao/mongodb/job.dao';
 import { MongodbProjectDao } from './dao/mongodb/project.dao';
 import { MongodbTransactionDao } from './dao/mongodb/transaction.dao';
+import { MongodbTransactionHashSubscriptionDao } from './dao/mongodb/transaction.hash.subscription.dao';
 import { MongodbTransportConnectionDao } from './dao/mongodb/transport.connection.dao';
 import { MongodbWebhookActionDao } from './dao/mongodb/webhook.action.dao';
 
@@ -40,6 +41,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbJobDao);
         mongoDbPlugin.addDao(MongodbProjectDao);
         mongoDbPlugin.addDao(MongodbTransactionDao);
+        mongoDbPlugin.addDao(MongodbTransactionHashSubscriptionDao);
         mongoDbPlugin.addDao(MongodbTransportConnectionDao);
         mongoDbPlugin.addDao(MongodbWebhookActionDao);
 

@@ -41,6 +41,13 @@ describe('address subscription dao', () => {
         expect(got).toEqual(project);
     });
 
+    it('should get by ids', async () => {
+        const filtered = projects.filter((p, index) => index < 3);
+        const got = await dao.listByIds(filtered.map((p) => p.id));
+
+        expect(got).toEqual(filtered);
+    });
+
     it('should get by client id', async () => {
         const filtered = projects.filter((p) => p.clientId === project.clientId);
 

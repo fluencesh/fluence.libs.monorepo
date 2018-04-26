@@ -36,6 +36,13 @@ describe('exchange dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
+    it('listByIds() transfers correct arguments', async () => {
+        await dao.listByIds(['id']);
+
+        expect(collection.find).toHaveBeenCalledWith({ id: { $in: ['id'] } });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
     it('listByClientId() transfers correct arguments', async () => {
         await dao.listByClientId('clientId');
 

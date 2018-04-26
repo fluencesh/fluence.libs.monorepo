@@ -21,6 +21,6 @@ export abstract class BlockchainTransportService extends Service {
     public abstract async getBlockByHash(blockHash: string): Promise<Block>;
     public abstract async getBlockByHeight(blockHeight: number): Promise<Block>;
     public abstract async getTransactionByHash(txHash: string): Promise<Transaction>;
-    public abstract async sendRawTransaction(txHex: string): Promise<Transaction>;
+    public abstract async sendRawTransaction(txHex: string, ): Promise<Transaction>;
     public abstract async getBalance(address: string, minConf: number): Promise<BigNumber>;
 }

@@ -1,17 +1,17 @@
 import * as config from 'config';
 import { random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
-import { MongodbAddressSubscriptionDao } from '../../src/dao/mongodb/address.subscription.dao';
+import { MongodbTransactionHashSubscriptionDao } from '../../src/dao/mongodb/transaction.hash.subscription.dao';
 import { Scheme } from '../../src/types';
-import { randomAddressSubscription } from '../helper';
+import { randomTransactionSubscription } from '../helper';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
 describe('Address subscription dao', () => {
-    let dao: MongodbAddressSubscriptionDao;
+    let dao: MongodbTransactionHashSubscriptionDao;
     let collection: any;
 
     beforeAll(async () => {
-        dao = new MongodbAddressSubscriptionDao(DbMock);
+        dao = new MongodbTransactionHashSubscriptionDao(DbMock);
         collection = CollectionMock as any;
     });
 
@@ -43,23 +43,23 @@ describe('Address subscription dao', () => {
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
-    it('listBySubscribedAddress() transfers correct arguments', async () => {
-        const address = 'address';
+    it('listBySubscribedHash() transfers correct arguments', async () => {
+        const hash = 'hash';
         const clientId = 'clientId';
         const projectId = 'projectId';
 
-        await dao.listBySubscribedAddress(address, clientId, projectId);
+        await dao.listBySubscribedHash(hash, clientId, projectId);
 
-        expect(collection.find).toHaveBeenCalledWith({ address, clientId, projectId });
+        expect(collection.find).toHaveBeenCalledWith({ hash, clientId, projectId });
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
-    it('listBySubscribedAddresses() transfers correct arguments', async () => {
-        const addresses = [ 'address' ];
+    it('listBySubscribedHashes() transfers correct arguments', async () => {
+        const hashes = [ 'hash' ];
 
-        await dao.listBySubscribedAddresses(addresses);
+        await dao.listBySubscribedHashes(hashes);
 
-        expect(collection.find).toHaveBeenCalledWith({ address: { $in: addresses } });
+        expect(collection.find).toHaveBeenCalledWith({ hash: { $in: hashes } });
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
@@ -112,13 +112,13 @@ describe('Address subscription dao', () => {
     });
 
     it('createSubscription() transfers correct arguments', async () => {
-        const data = randomAddressSubscription();
+        const data = randomTransactionSubscription();
         await dao.createSubscription(
             data.clientId,
             data.projectId,
             data.blockChainId,
             data.networkId,
-            data.address,
+            data.hash,
             data.minConfirmations,
             data.subscribed,
             data.isProjectActive,

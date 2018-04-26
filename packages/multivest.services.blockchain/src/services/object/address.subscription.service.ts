@@ -53,6 +53,14 @@ export class AddressSubscriptionService extends Service {
         return this.subscriptionDao.listByClientId(clientId);
     }
 
+    public async listBySubscribedAddress(
+        address: string,
+        clientId: string,
+        projectId: string
+    ): Promise<Array<Scheme.AddressSubscription>> {
+        return this.subscriptionDao.listBySubscribedAddress(address, clientId, projectId);
+    }
+
     public async setSubscribed(
         id: string,
         subscribed: boolean

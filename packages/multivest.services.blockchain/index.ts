@@ -14,16 +14,18 @@ export * from './src/dao/mongodb/transaction.dao';
 export * from './src/dao/transaction.dao';
 export * from './src/dao/mongodb/transport.connection.dao';
 export * from './src/dao/transport.connection.dao';
+export * from './src/dao/mongodb/transaction.hash.subscription.dao';
+export * from './src/dao/transaction.hash.subscription.dao';
 export * from './src/dao/mongodb/webhook.action.dao';
 export * from './src/dao/webhook.action.dao';
 
-// export * from './src/generation/index';
 export * from './src/generation/jobs';
 export * from './src/generation/transaction';
 
 export * from './src/services/cronjob/address.subscription.blockchain.listener';
 export * from './src/services/cronjob/blockchain.listener';
 export * from './src/services/cronjob/webhook.caller';
+export * from './src/services/cronjob/transaction.hash.subscription.listener';
 
 export * from './src/services/object/address.subscription.service';
 export * from './src/services/object/job.service';

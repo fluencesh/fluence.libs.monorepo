@@ -19,6 +19,7 @@ import { EthereumContractSubscriptionService } from './services/object/ethereum.
 import { EthereumEventLogService } from './services/object/ethereum.event.log.service';
 import { JobService } from './services/object/job.service';
 import { ProjectService } from './services/object/project.service';
+import { TransactionHashSubscriptionService } from './services/object/transaction.hash.subscription.service';
 import { TransactionService } from './services/object/transaction.service';
 import { TransportConnectionService } from './services/object/transport.connection.service';
 import { WebhookActionItemObjectService } from './services/object/webhook.action.service';
@@ -50,6 +51,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         this.registerService(JobService);
         this.registerService(ProjectService);
         this.registerService(TransactionService);
+        this.registerService(TransactionHashSubscriptionService);
         this.registerService(TransportConnectionService);
         this.registerService(WebhookActionItemObjectService);
         this.registerService(WebhookCallerService);

@@ -35,6 +35,7 @@ export * from './src/services/object/ethereum.event.log.service';
 export * from './src/services/object/job.service';
 export * from './src/services/object/project.service';
 export * from './src/services/object/transaction.service';
+export * from './src/services/object/transaction.hash.subscription.service';
 export * from './src/services/object/transport.connection.service';
 export * from './src/services/object/webhook.action.service';
 export * from './src/services/webhook/webhook.caller.service';

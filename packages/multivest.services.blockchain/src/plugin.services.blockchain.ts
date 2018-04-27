@@ -3,8 +3,6 @@ import { Plugin as MongodbPlugin } from '@applicature/multivest.mongodb';
 
 import { MongodbAddressSubscriptionDao } from './dao/mongodb/address.subscription.dao';
 import { MongodbClientDao } from './dao/mongodb/client.dao';
-import { MongodbEthereumContractSubscriptionDao } from './dao/mongodb/ethereum.contract.subscription.dao';
-import { MongodbEthereumEventLogDao } from './dao/mongodb/ethereum.event.log.dao';
 import { MongodbJobDao } from './dao/mongodb/job.dao';
 import { MongodbProjectDao } from './dao/mongodb/project.dao';
 import { MongodbTransactionDao } from './dao/mongodb/transaction.dao';
@@ -16,8 +14,6 @@ import { BlockchainRegistryService } from './services/blockchain/blockchain.regi
 import { ManagedBlockchainTransportService } from './services/blockchain/managed.blockchain.transport.service';
 import { AddressSubscriptionService } from './services/object/address.subscription.service';
 import { ClientService } from './services/object/client.service';
-import { EthereumContractSubscriptionService } from './services/object/ethereum.contract.subscription.service';
-import { EthereumEventLogService } from './services/object/ethereum.event.log.service';
 import { JobService } from './services/object/job.service';
 import { ProjectService } from './services/object/project.service';
 import { TransactionHashSubscriptionService } from './services/object/transaction.hash.subscription.service';
@@ -36,8 +32,6 @@ class BlockchainServicesPlugin extends Plugin<void> {
 
         mongoDbPlugin.addDao(MongodbAddressSubscriptionDao);
         mongoDbPlugin.addDao(MongodbClientDao);
-        mongoDbPlugin.addDao(MongodbEthereumContractSubscriptionDao);
-        mongoDbPlugin.addDao(MongodbEthereumEventLogDao);
         mongoDbPlugin.addDao(MongodbJobDao);
         mongoDbPlugin.addDao(MongodbProjectDao);
         mongoDbPlugin.addDao(MongodbTransactionDao);
@@ -48,8 +42,6 @@ class BlockchainServicesPlugin extends Plugin<void> {
         this.registerService(AddressSubscriptionService);
         this.registerService(BlockchainRegistryService);
         this.registerService(ClientService);
-        this.registerService(EthereumContractSubscriptionService);
-        this.registerService(EthereumEventLogService);
         this.registerService(JobService);
         this.registerService(ProjectService);
         this.registerService(TransactionService);

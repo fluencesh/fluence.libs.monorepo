@@ -40,51 +40,6 @@ export function randomClient(): Scheme.Client {
     } as Scheme.Client;
 }
 
-export function randomEthereumContractSubscription(): Scheme.EthereumContractSubscription {
-    const randomNumber = random(0, 1, true);
-    let compatibleStandard;
-    if (randomNumber < .33) {
-        compatibleStandard = Scheme.EthereumContractCompatibleStandard.ERC20;
-    } else if (randomNumber >= .33 && randomNumber < .67) {
-        compatibleStandard = Scheme.EthereumContractCompatibleStandard.ERC223;
-    } else {
-        compatibleStandard = Scheme.EthereumContractCompatibleStandard.ERC721;
-    }
-
-    return {
-        compatibleStandard,
-        abi: [],
-        abiEvents: [],
-        subscribedEvents: [],
-        subscribeAllEvents: true,
-        ...randomAddressSubscription(),
-    } as Scheme.EthereumContractSubscription;
-}
-
-export function randomEthereumEventLog(): Scheme.EthereumEventLog {
-    return {
-        id: generateId(),
-
-        blockChainId: generateId(),
-        networkId: generateId(),
-
-        blockHash: generateId(),
-        blockHeight: random(1, 1000),
-        blockTime: random(500, 2000),
-
-        txHash: generateId(),
-
-        address: generateId(),
-
-        event: 'data',
-        eventHash: generateId(),
-
-        params: { [generateId()]: generateId() },
-
-        createdAt: new Date()
-    } as Scheme.EthereumEventLog;
-}
-
 export function randomProject(): Scheme.Project {
     return {
         clientId: generateId(),

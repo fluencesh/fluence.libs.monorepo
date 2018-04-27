@@ -34,7 +34,7 @@
     "@applicature-restricted/multivest.blockchain": "^0.2.15",
     "@applicature-restricted/multivest.services.blockchain": "^0.2.14",
     "@applicature/multivest.core": "^0.1.24",
-    "@applicature/multivest.mongodb": "^0.2.1",
+    "@applicature/multivest.mongodb": "^0.1.11",
     "bignumber.js": "^4.1.0",
     "config": "^1.26.1",
     "ethereum-bip44": "^2.1.3",

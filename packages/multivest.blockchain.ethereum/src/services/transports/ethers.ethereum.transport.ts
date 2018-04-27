@@ -75,7 +75,7 @@ export class EthersEthereumTransportService extends EthereumTransportService {
     }
 
     // TODO: test it
-    public async sendRawTransaction(txHex: string): Promise<EthereumTransaction> {
+    public async sendRawTransaction(txHex: string, projectId?: string): Promise<EthereumTransaction> {
         const hash = this.provider.sendTransaction(txHex);
 
         return this.convertTransactionFromHash(hash);

@@ -1,7 +1,9 @@
+import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
 import { Transaction } from '@applicature/multivest.core';
 import { Hashtable } from '@applicature/multivest.core';
 import { Block } from '@applicature/multivest.core';
 import { MongoScheme } from '@applicature/multivest.mongodb';
+import BigNumber from 'bignumber.js';
 
 export const ETHEREUM = 'ETHEREUM';
 
@@ -99,4 +101,59 @@ export interface EthereumContractItemNameType {
 export interface ContractScheme extends MongoScheme {
     address: string;
     abi: any;
+}
+
+export enum EthereumContractCompatibleStandard {
+    ERC20 = 'ERC20',
+    ERC223 = 'ERC223',
+    ERC721 = 'ERC721'
+}
+
+export interface EthereumContractSubscription extends Scheme.AddressSubscription {
+    compatibleStandard: EthereumContractCompatibleStandard;
+
+    abi: Array<EthereumContractAbiItem>;
+
+    abiEvents: Array<string>;
+
+    subscribedEvents: Array<string>;
+    subscribeAllEvents: boolean;
+
+    createdAt: Date;
+}
+
+export interface EthereumContractAbiItem {
+    anonymous?: boolean;
+    constant?: boolean;
+
+    inputs: Array<EthereumContractAbiItemNameType>;
+    name: string;
+    outputs?: Array<EthereumContractAbiItemNameType>;
+    type: string;
+}
+
+export interface EthereumContractAbiItemNameType {
+    name: string;
+    type: string;
+    indexed: boolean;
+}
+
+export interface EthereumEventLog extends MongoScheme {
+    blockChainId: string;
+    networkId: string;
+
+    blockHash: string;
+    blockHeight: number;
+    blockTime: number;
+
+    txHash: string;
+
+    address: string;
+
+    event: string;
+    eventHash: string;
+
+    params: Hashtable<any>;
+
+    createdAt: Date;
 }

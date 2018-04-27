@@ -6,6 +6,7 @@ import { v1 as generateId } from 'uuid';
 import { MongoContractDao } from '../../src/dao/mongodb/contract.dao';
 import { ContractService } from '../../src/services/objects/contract.service';
 import { ContractScheme } from '../../src/services/types/types';
+import { randomContract } from '../helper';
 import { getRandomAbi } from '../mock/helper';
 
 describe('transport connection service', () => {
@@ -15,13 +16,6 @@ describe('transport connection service', () => {
     const contractsCount: number = 15;
     let contract: ContractScheme;
     let connection: Db;
-
-    function randomContract() {
-        return {
-            address: createHash('sha1').update(random(0, 1000).toString(), 'utf8').digest('hex'),
-            abi: getRandomAbi()
-        };
-    }
 
     beforeAll(async () => {
         connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});

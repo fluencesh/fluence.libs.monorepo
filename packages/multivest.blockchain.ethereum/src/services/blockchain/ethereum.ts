@@ -10,15 +10,15 @@ import { BigNumber } from 'bignumber.js';
 import * as config from 'config';
 import * as EthereumTx from 'ethereumjs-tx';
 import * as EthereumUtil from 'ethereumjs-util';
-import { EthereumTransportService } from '../transports/ethereum.transport';
-import { EthersEthereumTransportService, Provider } from '../transports/ethers.ethereum.transport';
 import {
     ETHEREUM,
     ethereumNetworkToChainId,
     EthereumTransaction,
     EthereumTransactionReceipt,
     ethereumValidNetworks,
-} from '../types/types';
+} from '../../types';
+import { EthereumTransportService } from '../transports/ethereum.transport';
+import { EthersEthereumTransportService, Provider } from '../transports/ethers.ethereum.transport';
 import { ManagedEthereumTransportService } from './managed.ethereum.transport.service';
 
 export class EthereumBlockchainService extends BlockchainService {

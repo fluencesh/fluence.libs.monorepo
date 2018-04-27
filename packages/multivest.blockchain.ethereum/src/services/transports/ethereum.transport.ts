@@ -1,6 +1,6 @@
 import { BlockchainTransportService } from '@applicature-restricted/multivest.services.blockchain';
 import { BigNumber } from 'bignumber.js';
-import { ETHEREUM, EthereumTransaction, EthereumTransactionReceipt } from '../types/types';
+import { ETHEREUM, EthereumTransaction, EthereumTransactionReceipt } from '../../types';
 
 export abstract class EthereumTransportService extends BlockchainTransportService {
     public getBlockchainId() {

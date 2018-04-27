@@ -1,5 +1,5 @@
 import { Dao } from '@applicature/multivest.core';
-import { ContractScheme } from '../services/types/types';
+import { ContractScheme } from '../types';
 
 export abstract class ContractDao extends Dao<ContractScheme> {
     public abstract async getById(contractId: string): Promise<ContractScheme>;

@@ -3,7 +3,7 @@ import {
     EthereumContractAbiItem,
     EthereumContractCompatibleStandard,
     EthereumContractSubscription
-} from '../services/types/types';
+} from '../types';
 
 export abstract class EthereumContractSubscriptionDao extends Dao<EthereumContractSubscription> {
     public abstract async createContractSubscription(

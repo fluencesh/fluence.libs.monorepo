@@ -1,5 +1,5 @@
 import { MongoDBDao } from '@applicature/multivest.mongodb';
-import { ContractScheme } from '../../services/types/types';
+import { ContractScheme } from '../../types';
 import { ContractDao } from '../contract.dao';
 
 export class MongoContractDao extends MongoDBDao<ContractScheme> implements ContractDao {

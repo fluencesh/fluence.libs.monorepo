@@ -13,5 +13,5 @@ export * from './src/services/transports/ethereum.json-rpc.proxy';
 export * from './src/services/transports/ethereum.transport';
 export * from './src/services/transports/ethers.ethereum.transport';
 
-export * from './src/services/types/types';
+export * from './src/types';
 export * from './src/plugin.blockchain.ethereum';

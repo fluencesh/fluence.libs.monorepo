@@ -5,7 +5,7 @@ import {
     EthereumContractAbiItem,
     EthereumContractCompatibleStandard,
     EthereumContractSubscription,
-} from '../types/types';
+} from '../../types';
 
 export class EthereumContractSubscriptionService extends Service {
     protected ethereumContractSubscriptionDao: EthereumContractSubscriptionDao;

@@ -7,7 +7,7 @@ import {
     EthereumContractCompatibleStandard,
     EthereumContractSubscription,
     EthereumEventLog
-} from '../src/services/types/types';
+} from '../src/types';
 import { getRandomAbi } from './mock/helper';
 
 export function randomAddressSubscription(): Scheme.AddressSubscription {

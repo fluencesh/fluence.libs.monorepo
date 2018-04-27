@@ -1,7 +1,7 @@
 import { PluginManager, Service } from '@applicature/multivest.core';
 import { Plugin } from '@applicature/multivest.mongodb';
 import { ContractDao } from '../../dao/contract.dao';
-import { ContractScheme } from '../types/types';
+import { ContractScheme } from '../../types';
 
 export class ContractService extends Service {
     protected contractDao: ContractDao;

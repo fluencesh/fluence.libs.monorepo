@@ -5,7 +5,7 @@ import { Db, MongoClient } from 'mongodb';
 import { v1 as generateId } from 'uuid';
 import { MongoContractDao } from '../../src/dao/mongodb/contract.dao';
 import { ContractService } from '../../src/services/objects/contract.service';
-import { ContractScheme } from '../../src/services/types/types';
+import { ContractScheme } from '../../src/types';
 import { randomContract } from '../helper';
 import { getRandomAbi } from '../mock/helper';
 

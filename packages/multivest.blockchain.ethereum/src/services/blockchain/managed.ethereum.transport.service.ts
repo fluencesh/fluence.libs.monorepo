@@ -5,9 +5,9 @@ import {
 } from '@applicature-restricted/multivest.services.blockchain';
 import { Block, Hashtable, MultivestError, PluginManager } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
+import { ETHEREUM, EthereumTransaction, EthereumTransactionReceipt } from '../../types';
 import { EthereumTransportService } from '../transports/ethereum.transport';
 import { EthersEthereumTransportService } from '../transports/ethers.ethereum.transport';
-import { ETHEREUM, EthereumTransaction, EthereumTransactionReceipt } from '../types/types';
 
 export class ManagedEthereumTransportService extends EthereumTransportService {
     protected transportServices: Array<EthereumTransportService>;

@@ -1,7 +1,9 @@
 import { MongoDBDao } from '@applicature/multivest.mongodb';
 import {
+    EthereumContractAbiItem,
+    EthereumContractCompatibleStandard,
     EthereumContractSubscription
-} from '../../services/types/types';
+} from '../../types';
 import {
     EthereumContractSubscriptionDao,
 } from '../ethereum.contract.subscription.dao';

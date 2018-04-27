@@ -4,9 +4,12 @@ import { BigNumber } from 'bignumber.js';
 import * as EthJsTransaction from 'ethereumjs-tx';
 import { Contract, providers } from 'ethers';
 import {
-    ETHEREUM, EthereumBlock, EthereumTransaction, EthereumTransactionReceipt,
+    ETHEREUM,
+    EthereumBlock,
+    EthereumTransaction,
+    EthereumTransactionReceipt,
     ethereumValidNetworks
-} from '../types/types';
+} from '../../types';
 import { EthereumTransportService } from './ethereum.transport';
 
 export enum Provider {

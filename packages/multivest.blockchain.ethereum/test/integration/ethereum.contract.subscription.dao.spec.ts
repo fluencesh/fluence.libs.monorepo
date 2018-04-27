@@ -1,7 +1,7 @@
 import * as config from 'config';
 import { Db, MongoClient } from 'mongodb';
 import { MongodbEthereumContractSubscriptionDao } from '../../src/dao/mongodb/ethereum.contract.subscription.dao';
-import { EthereumContractSubscription } from '../../src/services/types/types';
+import { EthereumContractSubscription } from '../../src/types';
 
 import { omit, random } from 'lodash';
 import { v1 as generateId } from 'uuid';

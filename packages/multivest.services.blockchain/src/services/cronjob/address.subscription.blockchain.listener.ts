@@ -15,7 +15,7 @@ import WebhookActionItem = Scheme.WebhookActionItem;
 import {JobService} from '../object/job.service';
 import {ProjectService} from '../object/project.service';
 import { WebhookActionItemObjectService } from '../object/webhook.action.service';
-import { PopulatedBlockchainListener } from './blockchain.listener';
+import { BlockchainListener } from './blockchain.listener';
 
 interface RecipientAndTx {
     recipient: Recipient;
@@ -25,7 +25,7 @@ interface RecipientAndTx {
 let blockchainId: string;
 let networkId: string;
 
-export class AddressSubscriptionBlockChainListener extends PopulatedBlockchainListener {
+export class AddressSubscriptionBlockChainListener extends BlockchainListener {
     protected subscriptionService: AddressSubscriptionService;
     protected projectService: ProjectService;
     protected webhookService: WebhookActionItemObjectService;

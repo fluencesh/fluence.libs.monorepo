@@ -14,12 +14,12 @@ import { JobService } from '../object/job.service';
 import { ProjectService } from '../object/project.service';
 import { TransactionHashSubscriptionService } from '../object/transaction.hash.subscription.service';
 import { WebhookActionItemObjectService } from '../object/webhook.action.service';
-import { PopulatedBlockchainListener } from './blockchain.listener';
+import { BlockchainListener } from './blockchain.listener';
 
 let blockchainId: string;
 let networkId: string;
 
-export class TransactionHashSubscriptionListener extends PopulatedBlockchainListener {
+export class TransactionHashSubscriptionListener extends BlockchainListener {
     protected subscriptionService: TransactionHashSubscriptionService;
     protected projectService: ProjectService;
     protected webhookService: WebhookActionItemObjectService;

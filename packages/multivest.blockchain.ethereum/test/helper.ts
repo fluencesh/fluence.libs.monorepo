@@ -44,14 +44,14 @@ export function randomEthereumContractSubscription(): EthereumContractSubscripti
         compatibleStandard = EthereumContractCompatibleStandard.ERC721;
     }
 
-    return {
+    const addressSubscription = randomAddressSubscription();
+    return Object.assign({
         compatibleStandard,
         abi: [],
         abiEvents: [],
         subscribedEvents: [],
         subscribeAllEvents: true,
-        ...randomAddressSubscription(),
-    } as EthereumContractSubscription;
+    }, addressSubscription) as EthereumContractSubscription;
 }
 
 export function randomEthereumEventLog(): EthereumEventLog {
@@ -75,7 +75,7 @@ export function randomEthereumEventLog(): EthereumEventLog {
         params: { [generateId()]: generateId() },
 
         createdAt: new Date()
-    } as Scheme.EthereumEventLog;
+    } as EthereumEventLog;
 }
 
 export function randomWebhookAction(): Scheme.WebhookActionItem {

@@ -1,7 +1,7 @@
 import {
+    BlockchainListener,
     BlockchainService,
     JobService,
-    PopulatedBlockchainListener,
     ProjectService,
     Scheme,
     WebhookActionItemObjectService,
@@ -22,14 +22,15 @@ import { EthereumContractSubscriptionService } from '../objects/ethereum.contrac
 let blockchainId: string;
 let networkId: string;
 
-export class EthereumContractSubscriptionListener extends PopulatedBlockchainListener {
+export class EthereumContractSubscriptionListener extends BlockchainListener {
     protected subscriptionService: EthereumContractSubscriptionService;
     protected projectService: ProjectService;
     protected webhookService: WebhookActionItemObjectService;
+    protected blockchainService: EthereumBlockchainService;
 
     constructor(
         pluginManager: PluginManager,
-        blockchainService: BlockchainService,
+        blockchainService: EthereumBlockchainService,
         jobService: JobService,
         sinceBlock: number,
         minConfirmation: number,
@@ -121,10 +122,9 @@ export class EthereumContractSubscriptionListener extends PopulatedBlockchainLis
     }
 
     private async getTxReceiptMapByTxHashes(txHashes: Array<string>) {
-        // HACK:
-        const blockchainService = this.blockchainService as any as EthereumBlockchainService;
-
-        const txReceipts = await Promise.all(txHashes.map((hash) => blockchainService.getTransactionReceipt(hash)));
+        const txReceipts = await Promise.all(
+            txHashes.map((hash) => this.blockchainService.getTransactionReceipt(hash))
+        );
 
         const txReceiptMap: Hashtable<EthereumTransactionReceipt> = {};
         txReceipts.forEach((txReceipt) => {

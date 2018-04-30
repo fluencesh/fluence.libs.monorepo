@@ -89,7 +89,25 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<EthereumC
     public async listBySubscribedAddresses(
         addresses: Array<string>
     ): Promise<Array<EthereumContractSubscription>> {
-        return this.listRaw({ address: {$in: addresses}, isProjectActive: true, isClientActive: true });
+        return this.listRaw({ address: { $in: addresses } });
+    }
+
+    public async listBySubscribedAddress(
+        address: string,
+        clientId: string,
+        projectId: string
+    ): Promise<Array<EthereumContractSubscription>> {
+        const filters: any = { address };
+
+        if (clientId !== undefined) {
+            filters.clientId = clientId;
+        }
+
+        if (projectId !== undefined) {
+            filters.projectId = projectId;
+        }
+
+        return this.listRaw(filters);
     }
 
     public async setSubscribed(contractId: string, subscribed: boolean): Promise<void> {

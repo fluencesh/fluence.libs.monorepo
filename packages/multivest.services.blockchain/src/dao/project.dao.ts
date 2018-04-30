@@ -7,7 +7,8 @@ export abstract class ProjectDao extends Dao<Scheme.Project> {
         name: string,
         webhookUrl: string,
         sharedSecret: string,
-        status: Scheme.ProjectStatus
+        status: Scheme.ProjectStatus,
+        txMinConfirmations: number
     ): Promise<Scheme.Project>;
 
     public abstract async getById(projectId: string): Promise<Scheme.Project>;

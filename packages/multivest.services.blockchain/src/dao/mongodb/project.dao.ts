@@ -21,7 +21,8 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
         name: string,
         webhookUrl: string,
         sharedSecret: string,
-        status: Scheme.ProjectStatus
+        status: Scheme.ProjectStatus,
+        txMinConfirmations: number
     ): Promise<Scheme.Project> {
         return this.create({
             clientId,
@@ -30,7 +31,8 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
             sharedSecret,
             status,
             apiKey: generateId(),
-            createdAt: new Date()
+            createdAt: new Date(),
+            txMinConfirmations,
         });
     }
 

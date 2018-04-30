@@ -30,9 +30,17 @@ export abstract class ProjectService extends Service {
         name: string,
         webhookUrl: string,
         sharedSecret: string,
-        status: Scheme.ProjectStatus
+        status: Scheme.ProjectStatus,
+        txMinConfirmations: number
     ): Promise<Scheme.Project> {
-        return this.projectDao.createProject(clientId, name, webhookUrl, sharedSecret, status);
+        return this.projectDao.createProject(
+            clientId,
+            name,
+            webhookUrl,
+            sharedSecret,
+            status,
+            txMinConfirmations
+        );
     }
 
     public async getById(projectId: string): Promise<Scheme.Project> {

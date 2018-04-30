@@ -76,18 +76,16 @@ export abstract class BlockchainService extends Service {
     public async sendTransaction(
         privateKey: Buffer,
         txData: Transaction,
-        projectId?: string,
-        minConfirmation?: number
+        projectId?: string
     ): Promise<Transaction> {
         const txHex = await this.signTransaction(privateKey, txData);
 
-        return this.sendRawTransaction(txHex, projectId, minConfirmation);
+        return this.sendRawTransaction(txHex, projectId);
     }
 
     public async sendRawTransaction(
         txHex: string,
-        projectId?: string,
-        minConfirmation: number = 0 // THINK: where it should be set
+        projectId?: string
     ): Promise<Transaction> {
         const tx = await this.blockChainTransportService.sendRawTransaction(txHex);
 
@@ -98,18 +96,19 @@ export abstract class BlockchainService extends Service {
             const isProjectActive = project.status === Scheme.ProjectStatus.Active;
             const isClientActive = client.status === Scheme.ClientStatus.Active;
 
-            // THINK: is subscription should be created if (isProjectActive === false || isClientActive === false) ?
-            await this.transactionHashSubscriptionService.createSubscription(
-                project.clientId,
-                project.id,
-                this.getBlockchainId(),
-                this.getNetworkId(),
-                txHex,
-                minConfirmation,
-                isProjectActive && isClientActive,
-                isProjectActive,
-                isClientActive
-            );
+            if (isProjectActive && isClientActive) {
+                await this.transactionHashSubscriptionService.createSubscription(
+                    project.clientId,
+                    project.id,
+                    this.getBlockchainId(),
+                    this.getNetworkId(),
+                    txHex,
+                    project.txMinConfirmations,
+                    true, // subscribed
+                    true, // isProjectActive
+                    true  // isClientActive
+                );
+            }
         }
 
         return tx;

@@ -70,7 +70,8 @@ describe('address subscription dao', () => {
             data.name,
             data.webhookUrl,
             data.sharedSecret,
-            data.status
+            data.status,
+            data.txMinConfirmations
         );
 
         const got = await dao.getById(created.id);

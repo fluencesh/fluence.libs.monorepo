@@ -53,7 +53,9 @@ export function randomProject(): Scheme.Project {
 
         sharedSecret: `secret_${generateId()}`,
 
-        createdAt: new Date()
+        createdAt: new Date(),
+
+        txMinConfirmations: random(0, 10)
     } as Scheme.Project;
 }
 

@@ -38,6 +38,8 @@ export namespace Scheme {
         webhookUrl: string;
         failedRetryCount: number;
 
+        txMinConfirmations: number;
+
         apiKey: string;
 
         sharedSecret: string;

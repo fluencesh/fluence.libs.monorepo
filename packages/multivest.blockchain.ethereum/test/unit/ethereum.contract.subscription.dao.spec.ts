@@ -50,8 +50,6 @@ describe('ethereum contract subscription dao', () => {
                 address: {
                     $in: ['address']
                 },
-                isProjectActive: true,
-                isClientActive: true
             }
         );
         expect(collection.find).toHaveBeenCalledTimes(1);

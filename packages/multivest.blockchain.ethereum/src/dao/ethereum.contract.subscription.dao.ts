@@ -37,6 +37,11 @@ export abstract class EthereumContractSubscriptionDao extends Dao<EthereumContra
     public abstract async listBySubscribedAddresses(
         addresses: Array<string>
     ): Promise<Array<EthereumContractSubscription>>;
+    public abstract async listBySubscribedAddress(
+        address: string,
+        clientId: string,
+        projectId: string
+    ): Promise<Array<EthereumContractSubscription>>;
 
     public abstract async setSubscribed(
         id: string,

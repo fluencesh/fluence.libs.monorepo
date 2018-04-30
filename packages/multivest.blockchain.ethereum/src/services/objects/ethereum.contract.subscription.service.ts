@@ -75,6 +75,14 @@ export class EthereumContractSubscriptionService extends Service {
         return this.ethereumContractSubscriptionDao.listBySubscribedAddresses(addresses);
     }
 
+    public async listBySubscribedAddress(
+        address: string,
+        clientId?: string,
+        projectId?: string
+    ): Promise<Array<EthereumContractSubscription>> {
+        return this.ethereumContractSubscriptionDao.listBySubscribedAddress(address, clientId, projectId);
+    }
+
     public async setSubscribed(
         id: string,
         subscribed: boolean

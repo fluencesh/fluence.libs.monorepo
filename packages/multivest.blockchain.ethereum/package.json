@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@applicature-restricted/multivest.blockchain": "^0.2.17",
-    "@applicature-restricted/multivest.services.blockchain": "^0.2.23",
+    "@applicature-restricted/multivest.services.blockchain": "^0.2.24",
     "@applicature/multivest.core": "^0.1.25",
     "@applicature/multivest.mongodb": "^0.1.16",
     "axios": "^0.18.0",

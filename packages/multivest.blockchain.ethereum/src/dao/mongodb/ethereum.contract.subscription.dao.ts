@@ -42,9 +42,9 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<EthereumC
         subscribedEvents: Array<string>,
         subscribeAllEvents: boolean,
 
-        subscribed: boolean,
-        isProjectActive: boolean,
-        isClientActive: boolean
+        subscribed: boolean = true,
+        isProjectActive: boolean = true,
+        isClientActive: boolean = true
     ): Promise<EthereumContractSubscription> {
         return this.create({
             clientId,
@@ -112,28 +112,6 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<EthereumC
 
     public async setSubscribed(contractId: string, subscribed: boolean): Promise<void> {
         await this.updateRaw({ id: contractId }, { $set: { subscribed } });
-
-        return;
-    }
-
-    public async setProjectActive(
-        projectId: string,
-        isActive: boolean
-    ): Promise<void> {
-        await this.updateRaw({ projectId }, {
-            $set: { isProjectActive: isActive }
-        });
-
-        return;
-    }
-
-    public async setClientActive(
-        clientId: string,
-        isActive: boolean
-    ): Promise<void>  {
-        await this.updateRaw({ clientId }, {
-            $set: { isClientActive: isActive }
-        });
 
         return;
     }

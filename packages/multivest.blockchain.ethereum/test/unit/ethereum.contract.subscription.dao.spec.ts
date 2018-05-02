@@ -77,44 +77,6 @@ describe('ethereum contract subscription dao', () => {
         expect(collection.insertOne).toHaveBeenCalledTimes(1);
     });
 
-    it('setProjectActive() transfers correct arguments', async () => {
-        await dao.setProjectActive(
-            'projectId',
-            true
-        );
-
-        expect(collection.updateMany).toHaveBeenCalledWith(
-            {
-                projectId: 'projectId'
-            },
-            {
-                $set: {
-                    isProjectActive: true
-                }
-            }
-        );
-        expect(collection.updateMany).toHaveBeenCalledTimes(1);
-    });
-
-    it('setClientActive() transfers correct arguments', async () => {
-        await dao.setClientActive(
-            'clientId',
-            true
-        );
-
-        expect(collection.updateMany).toHaveBeenCalledWith(
-            {
-                clientId: 'clientId'
-            },
-            {
-                $set: {
-                    isClientActive: true
-                }
-            }
-        );
-        expect(collection.updateMany).toHaveBeenCalledTimes(1);
-    });
-
     it('setSubscribedEventsAndAllEvents() transfers correct arguments', async () => {
         await dao.setSubscribedEventsAndAllEvents(
             'id',

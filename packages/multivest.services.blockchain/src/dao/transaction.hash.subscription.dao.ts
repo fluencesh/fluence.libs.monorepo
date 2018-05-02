@@ -9,9 +9,9 @@ export abstract class TransactionHashSubscriptionDao extends Dao<Scheme.Transact
         networkId: string,
         hash: string,
         minConfirmations: number,
-        subscribed: boolean,
-        isProjectActive: boolean,
-        isClientActive: boolean
+        subscribed?: boolean,
+        isProjectActive?: boolean,
+        isClientActive?: boolean
     ): Promise<Scheme.TransactionHashSubscription>;
 
     public abstract async getById(subscriptionId: string): Promise<Scheme.TransactionHashSubscription>;

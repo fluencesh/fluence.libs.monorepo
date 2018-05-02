@@ -25,9 +25,9 @@ export class MongodbAddressSubscriptionDao extends MongoDBDao<Scheme.AddressSubs
         networkId: string,
         address: string,
         minConfirmations: number,
-        subscribed: boolean,
-        isProjectActive: boolean,
-        isClientActive: boolean
+        subscribed: boolean = true,
+        isProjectActive: boolean = true,
+        isClientActive: boolean = true
     ): Promise<Scheme.AddressSubscription> {
         return this.create({
             clientId,

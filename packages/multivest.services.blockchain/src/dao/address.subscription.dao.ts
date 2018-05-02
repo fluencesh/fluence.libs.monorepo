@@ -10,9 +10,9 @@ export abstract class AddressSubscriptionDao extends Dao<Scheme.AddressSubscript
         networkId: string,
         address: string,
         minConfirmations: number,
-        subscribed: boolean,
-        isProjectActive: boolean,
-        isClientActive: boolean
+        subscribed?: boolean,
+        isProjectActive?: boolean,
+        isClientActive?: boolean
     ): Promise<Scheme.AddressSubscription>;
 
     public abstract async getById(subscriptionId: string): Promise<Scheme.AddressSubscription>;

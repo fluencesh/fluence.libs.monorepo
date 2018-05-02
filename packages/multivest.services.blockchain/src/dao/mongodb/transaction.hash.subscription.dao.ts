@@ -23,9 +23,9 @@ export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.Tra
         networkId: string,
         hash: string,
         minConfirmations: number,
-        subscribed: boolean,
-        isProjectActive: boolean,
-        isClientActive: boolean
+        subscribed: boolean = true,
+        isProjectActive: boolean = true,
+        isClientActive: boolean = true
     ): Promise<Scheme.TransactionHashSubscription> {
         return this.create({
             clientId,

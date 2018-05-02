@@ -6,9 +6,11 @@ import { Contract, providers } from 'ethers';
 import {
     ETHEREUM,
     EthereumBlock,
+    EthereumTopic,
+    EthereumTopicFilter,
     EthereumTransaction,
     EthereumTransactionReceipt,
-    ethereumValidNetworks
+    ethereumValidNetworks,
 } from '../../types';
 import { EthereumTransportService } from './ethereum.transport';
 
@@ -121,6 +123,10 @@ export class EthersEthereumTransportService extends EthereumTransportService {
 
     public async getCode(address: string): Promise<string> {
         return this.provider.getCode(address);
+    }
+
+    public async getLogs(filters: EthereumTopicFilter): Promise<Array<EthereumTopic>> {
+        return this.provider.getLogs(filters);
     }
 
     public async getTransactionReceipt(txHex: string): Promise<EthereumTransactionReceipt> {

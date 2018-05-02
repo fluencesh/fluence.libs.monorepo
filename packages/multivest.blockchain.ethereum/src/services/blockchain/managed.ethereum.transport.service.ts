@@ -5,7 +5,13 @@ import {
 } from '@applicature-restricted/multivest.services.blockchain';
 import { Block, Hashtable, MultivestError, PluginManager } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
-import { ETHEREUM, EthereumTransaction, EthereumTransactionReceipt } from '../../types';
+import {
+    ETHEREUM,
+    EthereumTopic,
+    EthereumTopicFilter,
+    EthereumTransaction,
+    EthereumTransactionReceipt,
+} from '../../types';
 import { EthereumTransportService } from '../transports/ethereum.transport';
 import { EthersEthereumTransportService } from '../transports/ethers.ethereum.transport';
 
@@ -117,6 +123,12 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
         const transportService = await this.getActiveTransportService();
 
         return transportService.getCode(address);
+    }
+
+    public async getLogs(filters: EthereumTopicFilter): Promise<Array<EthereumTopic>> {
+        const transportService = await this.getActiveTransportService();
+
+        return transportService.getLogs(filters);
     }
 
     public async getTransactionReceipt(txHex: string): Promise<EthereumTransactionReceipt> {

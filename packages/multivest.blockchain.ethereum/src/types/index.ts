@@ -77,6 +77,13 @@ export interface EthereumTopic {
     removed: boolean;
 }
 
+export interface EthereumTopicFilter {
+    fromBlock?: number;
+    toBlock?: number;
+    address?: string;
+    topics?: Array<string>;
+}
+
 export interface EthereumContract {
     address: string;
     abi: Array<EthereumContractItem>;

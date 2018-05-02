@@ -25,9 +25,9 @@ export abstract class EthereumContractSubscriptionDao extends Dao<EthereumContra
         subscribedEvents: Array<string>,
         subscribeAllEvents: boolean,
 
-        subscribed: boolean,
-        isProjectActive: boolean,
-        isClientActive: boolean
+        subscribed?: boolean,
+        isProjectActive?: boolean,
+        isClientActive?: boolean
     ): Promise<EthereumContractSubscription>;
 
     public abstract async getById(contractId: string): Promise<EthereumContractSubscription>;
@@ -46,16 +46,6 @@ export abstract class EthereumContractSubscriptionDao extends Dao<EthereumContra
     public abstract async setSubscribed(
         id: string,
         subscribed: boolean
-    ): Promise<void>;
-
-    public abstract async setProjectActive(
-        projectId: string,
-        isActive: boolean
-    ): Promise<void>;
-
-    public abstract async setClientActive(
-        clientId: string,
-        isActive: boolean
     ): Promise<void>;
 
     public abstract async setSubscribedEventsAndAllEvents(

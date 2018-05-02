@@ -44,9 +44,9 @@ export class EthereumContractSubscriptionService extends Service {
         subscribedEvents: Array<string>,
         subscribeAllEvents: boolean,
 
-        subscribed: boolean,
-        isProjectActive: boolean,
-        isClientActive: boolean
+        subscribed: boolean = true,
+        isProjectActive: boolean = true,
+        isClientActive: boolean = true
     ): Promise<EthereumContractSubscription> {
         return this.ethereumContractSubscriptionDao
             .createContractSubscription(
@@ -77,8 +77,8 @@ export class EthereumContractSubscriptionService extends Service {
 
     public async listBySubscribedAddress(
         address: string,
-        clientId?: string,
-        projectId?: string
+        clientId: string,
+        projectId: string
     ): Promise<Array<EthereumContractSubscription>> {
         return this.ethereumContractSubscriptionDao.listBySubscribedAddress(address, clientId, projectId);
     }
@@ -88,20 +88,6 @@ export class EthereumContractSubscriptionService extends Service {
         subscribed: boolean
     ): Promise<void> {
         return this.ethereumContractSubscriptionDao.setSubscribed(id, subscribed);
-    }
-
-    public async setProjectActive(
-        projectId: string,
-        isActive: boolean
-    ): Promise<void> {
-        return this.ethereumContractSubscriptionDao.setProjectActive(projectId, isActive);
-    }
-
-    public async setClientActive(
-        clientId: string,
-        isActive: boolean
-    ): Promise<void> {
-        return this.ethereumContractSubscriptionDao.setClientActive(clientId, isActive);
     }
 
     public async setSubscribedEventsAndAllEvents(

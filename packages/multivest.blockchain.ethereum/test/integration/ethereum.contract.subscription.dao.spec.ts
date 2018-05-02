@@ -108,34 +108,6 @@ describe('ethereum contract subscription dao', () => {
         await dao.remove({ id: created.id });
     });
 
-    it('should set project active status', async () => {
-        ethereumContractSubscription.isProjectActive = !ethereumContractSubscription.isProjectActive;
-
-        await dao.setProjectActive(
-            ethereumContractSubscription.projectId,
-            ethereumContractSubscription.isProjectActive
-        );
-
-        const got = await dao.getById(ethereumContractSubscription.id);
-
-        expect(got).toEqual(ethereumContractSubscription);
-    });
-
-    it('should set client active status', async () => {
-        ethereumContractSubscription.isClientActive = !ethereumContractSubscription.isClientActive;
-
-        await dao.setClientActive(
-            ethereumContractSubscription.clientId,
-            ethereumContractSubscription.isClientActive
-        );
-
-        const got = await dao.listByClientId(ethereumContractSubscription.clientId);
-
-        got.forEach((ecs) => {
-            expect(ecs.isClientActive).toEqual(ethereumContractSubscription.isClientActive);
-        });
-    });
-
     it('should set subscribed all events status', async () => {
         ethereumContractSubscription.subscribedEvents = ['data', 'exit'];
         ethereumContractSubscription.subscribeAllEvents = ethereumContractSubscription.subscribeAllEvents;

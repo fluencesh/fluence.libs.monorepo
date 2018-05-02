@@ -14,8 +14,14 @@ import {
 } from '@applicature/multivest.core';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as config from 'config';
+import { set } from 'lodash';
 import { v1 as generateId } from 'uuid';
-import { EthereumBlock, EthereumTransactionReceipt } from '../../types';
+import {
+    EthereumBlock,
+    EthereumTopic,
+    EthereumTopicFilter,
+    EthereumTransactionReceipt,
+} from '../../types';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
 import { EthereumContractSubscriptionService } from '../objects/ethereum.contract.subscription.service';
 
@@ -54,10 +60,9 @@ export class EthereumContractSubscriptionListener extends BlockchainListener {
     }
 
     protected async processBlock(publishedBlockHeight: number, block: EthereumBlock): Promise<void> {
-        const txHashes = block.transactions.map((tx) => tx.hash);
-        const txReceiptMap: Hashtable<EthereumTransactionReceipt> = await this.getTxReceiptMapByTxHashes(txHashes);
+        const logsMap = await this.getLogMapByBlockHeight(block.height);
 
-        const addresses = Object.keys(txReceiptMap).map((key) => txReceiptMap[key].contractAddress);
+        const addresses = Object.keys(logsMap);
         const subscriptions = await this.subscriptionService.listBySubscribedAddresses(addresses);
 
         const projectsIds = subscriptions.map((subscription) => subscription.projectId);
@@ -68,49 +73,47 @@ export class EthereumContractSubscriptionListener extends BlockchainListener {
 
         subscriptions.forEach((subscription) => {
             const project = projectsMap[subscription.projectId];
-            const receipt = txReceiptMap[subscription.address];
+            const log = logsMap[subscription.address];
 
-            receipt.logs.forEach((log) => {
-                const subscribedTopics = log.topics.filter(
-                    (topic) => subscription.subscribeAllEvents || subscription.subscribedEvents.includes(topic)
-                );
+            const subscribedTopics = log.topics.filter(
+                (topic) => subscription.subscribeAllEvents || subscription.subscribedEvents.includes(topic)
+            );
 
-                subscribedTopics.forEach((topic) => {
-                    webhookActions.push({
-                        id: generateId(),
-        
-                        clientId: subscription.clientId,
-                        projectId: subscription.projectId,
-                        webhookUrl: project.webhookUrl,
-        
-                        blockChainId: this.blockchainService.getBlockchainId(),
-                        networkId: this.blockchainService.getNetworkId(),
-        
-                        blockHash: block.hash,
-                        blockHeight: block.height,
-                        blockTime: block.time,
-        
-                        minConfirmations: subscription.minConfirmations,
-                        confirmations,
-        
-                        txHash: log.transactionHash,
-        
-                        type: Scheme.WebhookTriggerType.EthereumContractEvent,
-                        refId: subscription.id,
-        
-                        eventId: topic,
-                        params: {},
-        
-                        failedCount: 0,
-                        lastFailedAt: null,
-        
-                        fails: [],
-        
-                        status: Scheme.WebhookReportItemStatus.Created,
-        
-                        createdAt: new Date()
-                    } as Scheme.WebhookActionItem);
-                });
+            subscribedTopics.forEach((topic) => {
+                webhookActions.push({
+                    id: generateId(),
+
+                    clientId: subscription.clientId,
+                    projectId: subscription.projectId,
+                    webhookUrl: project.webhookUrl,
+    
+                    blockChainId: this.blockchainService.getBlockchainId(),
+                    networkId: this.blockchainService.getNetworkId(),
+    
+                    blockHash: block.hash,
+                    blockHeight: block.height,
+                    blockTime: block.time,
+    
+                    minConfirmations: subscription.minConfirmations,
+                    confirmations,
+    
+                    txHash: log.transactionHash,
+    
+                    type: Scheme.WebhookTriggerType.EthereumContractEvent,
+                    refId: subscription.id,
+    
+                    eventId: topic,
+                    params: {},
+    
+                    failedCount: 0,
+                    lastFailedAt: null,
+    
+                    fails: [],
+    
+                    status: Scheme.WebhookReportItemStatus.Created,
+    
+                    createdAt: new Date()
+                } as Scheme.WebhookActionItem);
             });
         });
 
@@ -121,17 +124,16 @@ export class EthereumContractSubscriptionListener extends BlockchainListener {
         return;
     }
 
-    private async getTxReceiptMapByTxHashes(txHashes: Array<string>) {
-        const txReceipts = await Promise.all(
-            txHashes.map((hash) => this.blockchainService.getTransactionReceipt(hash))
-        );
+    private async getLogMapByBlockHeight(height: number) {
+        const topicFilters = {
+            fromBlock: height,
+            toBlock: height,
+        } as EthereumTopicFilter;
 
-        const txReceiptMap: Hashtable<EthereumTransactionReceipt> = {};
-        txReceipts.forEach((txReceipt) => {
-            txReceiptMap[txReceipt.contractAddress] = txReceipt;
-        });
+        const logs = await this.blockchainService.getLogs(topicFilters);
+        const logsMap: Hashtable<EthereumTopic> = logs.reduce((map, log) => set(map, log.address, log), {});
 
-        return txReceiptMap;
+        return logsMap;
     }
 
     private async getProjectsMapByIds(ids: Array<string>): Promise<Hashtable<Scheme.Project>> {

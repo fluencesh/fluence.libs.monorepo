@@ -13,6 +13,8 @@ import * as EthereumUtil from 'ethereumjs-util';
 import {
     ETHEREUM,
     ethereumNetworkToChainId,
+    EthereumTopic,
+    EthereumTopicFilter,
     EthereumTransaction,
     EthereumTransactionReceipt,
     ethereumValidNetworks,
@@ -125,6 +127,10 @@ export class EthereumBlockchainService extends BlockchainService {
 
     public getCode(address: string) {
         return this.blockChainTransportService.getCode(address);
+    }
+
+    public getLogs(filters: EthereumTopicFilter): Promise<Array<EthereumTopic>> {
+        return this.blockChainTransportService.getLogs(filters);
     }
 
     public getTransactionReceipt(txHex: string): Promise<EthereumTransactionReceipt> {

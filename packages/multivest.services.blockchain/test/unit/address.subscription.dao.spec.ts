@@ -29,6 +29,18 @@ describe('Address subscription dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
+    it('getByIdActiveOnly() transfers correct arguments', async () => {
+        await dao.getByIdActiveOnly('id');
+
+        expect(collection.findOne).toHaveBeenCalledWith({
+            id: 'id',
+            isClientActive: true,
+            isProjectActive: true,
+            subscribed: true
+        });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
     it('listByClientId() transfers correct arguments', async () => {
         await dao.listByClientId('clientId');
 
@@ -36,10 +48,34 @@ describe('Address subscription dao', () => {
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
+    it('listByClientIdActiveOnly() transfers correct arguments', async () => {
+        await dao.listByClientIdActiveOnly('clientId');
+
+        expect(collection.find).toHaveBeenCalledWith({
+            clientId: 'clientId',
+            isClientActive: true,
+            isProjectActive: true,
+            subscribed: true
+        });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
     it('listByProjectId() transfers correct arguments', async () => {
         await dao.listByProjectId('projectId');
 
         expect(collection.find).toHaveBeenCalledWith({ projectId: 'projectId' });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
+    it('listByProjectIdActiveOnly() transfers correct arguments', async () => {
+        await dao.listByProjectIdActiveOnly('projectId');
+
+        expect(collection.find).toHaveBeenCalledWith({
+            projectId: 'projectId',
+            isClientActive: true,
+            isProjectActive: true,
+            subscribed: true
+        });
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
@@ -54,12 +90,44 @@ describe('Address subscription dao', () => {
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
+    it('listBySubscribedAddressActiveOnly() transfers correct arguments', async () => {
+        const address = 'address';
+        const clientId = 'clientId';
+        const projectId = 'projectId';
+
+        await dao.listBySubscribedAddressActiveOnly(address, clientId, projectId);
+
+        expect(collection.find).toHaveBeenCalledWith({
+            address,
+            clientId,
+            projectId,
+            isClientActive: true,
+            isProjectActive: true,
+            subscribed: true
+        });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
     it('listBySubscribedAddresses() transfers correct arguments', async () => {
         const addresses = [ 'address' ];
 
         await dao.listBySubscribedAddresses(addresses);
 
         expect(collection.find).toHaveBeenCalledWith({ address: { $in: addresses } });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
+    it('listBySubscribedAddressesActiveOnly() transfers correct arguments', async () => {
+        const addresses = [ 'address' ];
+
+        await dao.listBySubscribedAddressesActiveOnly(addresses);
+
+        expect(collection.find).toHaveBeenCalledWith({
+            address: { $in: addresses },
+            isClientActive: true,
+            isProjectActive: true,
+            subscribed: true
+        });
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 

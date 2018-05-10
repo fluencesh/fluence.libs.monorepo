@@ -1,7 +1,7 @@
-import { Scheme } from './../src/types';
-
+import { createHash } from 'crypto';
 import { random } from 'lodash';
 import { v1 as generateId } from 'uuid';
+import { Scheme } from './../src/types';
 
 export function randomAddressSubscription(): Scheme.AddressSubscription {
     return {
@@ -55,7 +55,10 @@ export function randomProject(): Scheme.Project {
 
         createdAt: new Date(),
 
-        txMinConfirmations: random(0, 10)
+        txMinConfirmations: random(0, 10),
+
+        removedAt: null,
+        isRemoved: false
     } as Scheme.Project;
 }
 
@@ -135,4 +138,64 @@ export function randomTransportConnection() {
 
         createdAt: new Date()
     } as Scheme.TransportConnection;
+}
+
+export function randomEthereumContractSubscription(): Scheme.EthereumContractSubscription {
+    const randomNumber = random(0, 1, true);
+    let compatibleStandard;
+    if (randomNumber < .33) {
+        compatibleStandard = Scheme.EthereumContractCompatibleStandard.ERC20;
+    } else if (randomNumber >= .33 && randomNumber < .67) {
+        compatibleStandard = Scheme.EthereumContractCompatibleStandard.ERC223;
+    } else {
+        compatibleStandard = Scheme.EthereumContractCompatibleStandard.ERC721;
+    }
+
+    const addressSubscription = randomAddressSubscription();
+    return Object.assign({
+        compatibleStandard,
+        abi: [],
+        abiEvents: [],
+        subscribedEvents: [],
+        subscribeAllEvents: true,
+    }, addressSubscription) as Scheme.EthereumContractSubscription;
+}
+
+export function randomEthereumEventLog(): Scheme.EthereumEventLog {
+    return {
+        id: generateId(),
+
+        blockChainId: generateId(),
+        networkId: generateId(),
+
+        blockHash: generateId(),
+        blockHeight: random(1, 1000),
+        blockTime: random(500, 2000),
+
+        txHash: generateId(),
+
+        address: generateId(),
+
+        event: 'data',
+        eventHash: generateId(),
+
+        params: { [generateId()]: generateId() },
+
+        createdAt: new Date()
+    } as Scheme.EthereumEventLog;
+}
+
+export function randomContract() {
+    return {
+        address: createHash('sha1').update(random(0, 1000).toString(), 'utf8').digest('hex'),
+        abi: getRandomAbi()
+    };
+}
+
+// tslint:disable-next-line:no-var-requires
+const abi: Array<any> = require('./data/abi.json');
+const methodsCount = abi.length;
+
+export function getRandomAbi() {
+    return [ abi[random(0, methodsCount - 1)] ];
 }

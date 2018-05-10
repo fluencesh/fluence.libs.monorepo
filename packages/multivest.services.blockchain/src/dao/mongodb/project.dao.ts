@@ -1,5 +1,6 @@
 import { MongoDBDao } from '@applicature/multivest.mongodb';
 import { v1 as generateId } from 'uuid';
+import * as logger from 'winston';
 import { Scheme } from '../../types';
 import { ProjectDao } from '../project.dao';
 
@@ -33,20 +34,50 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
             apiKey: generateId(),
             createdAt: new Date(),
             txMinConfirmations,
+            isRemoved: false,
+            removedAt: null
         });
     }
 
     public async getById(projectId: string) {
-        return this.get({ id: projectId });
+        return this.get({
+            id: projectId
+        });
+    }
+
+    public async getByIdActiveOnly(projectId: string) {
+        return this.get({
+            id: projectId,
+            status: Scheme.ProjectStatus.Active,
+            isRemoved: false
+        });
     }
 
     public async getByApiKey(apiKey: string): Promise<Scheme.Project> {
-        return this.get({ apiKey });
+        return this.get({
+            apiKey
+        });
+    }
+
+    public async getByApiKeyActiveOnly(apiKey: string): Promise<Scheme.Project> {
+        return this.get({
+            apiKey,
+            status: Scheme.ProjectStatus.Active,
+            isRemoved: false
+        });
     }
 
     public async listByClientId(clientId: string): Promise<Array<Scheme.Project>> {
         return this.listRaw({
             clientId
+        });
+    }
+
+    public async listByClientIdActiveOnly(clientId: string): Promise<Array<Scheme.Project>> {
+        return this.listRaw({
+            clientId,
+            status: Scheme.ProjectStatus.Active,
+            isRemoved: false
         });
     }
 
@@ -56,22 +87,95 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
         });
     }
 
+    public async listByIdsActiveOnly(ids: Array<string>): Promise<Array<Scheme.Project>> {
+        return this.listRaw({
+            id: { $in: ids },
+            status: Scheme.ProjectStatus.Active,
+            isRemoved: false
+        });
+    }
+
+    public async listByFilters(
+        name?: string,
+        sharedSecret?: string,
+        status?: Scheme.ProjectStatus,
+        webhookUrl?: string
+    ): Promise<Array<Scheme.Project>> {
+        const filters: Partial<Scheme.Project> = {};
+        if (name) {
+            filters.name = name;
+        }
+        if (sharedSecret) {
+            filters.sharedSecret = sharedSecret;
+        }
+        if (status) {
+            filters.status = status;
+        }
+        if (webhookUrl) {
+            filters.webhookUrl = webhookUrl;
+        }
+        if (!Object.keys(filters).length) {
+            logger.warn('at least one filter should be specified');
+
+            return [];
+        }
+        return this.listRaw(filters);
+    }
+
+    public async listByFiltersActiveOnly(
+        name?: string,
+        sharedSecret?: string,
+        status?: Scheme.ProjectStatus,
+        webhookUrl?: string
+    ): Promise<Array<Scheme.Project>> {
+        const filters: Partial<Scheme.Project> = {};
+        if (name) {
+            filters.name = name;
+        }
+        if (sharedSecret) {
+            filters.sharedSecret = sharedSecret;
+        }
+        if (status) {
+            filters.status = status;
+        }
+        if (webhookUrl) {
+            filters.webhookUrl = webhookUrl;
+        }
+        if (!Object.keys(filters).length) {
+            logger.warn('at least one filter should be specified');
+
+            return [];
+        }
+
+        filters.status = Scheme.ProjectStatus.Active;
+        filters.isRemoved = false;
+
+        return this.listRaw(filters);
+    }
+
     public async setNameAndWebhookUrlAndStatus(
         projectId: string,
-        name: string, webhookUrl: string, status: Scheme.ProjectStatus
+        name?: string,
+        webhookUrl?: string,
+        status?: Scheme.ProjectStatus
     ): Promise<void> {
-        await this.updateRaw(
-            {
-                id: projectId
-            },
-            {
-                $set: {
-                    name,
-                    webhookUrl,
-                    status
-                }
-            }
-        );
+        const data: Partial<Scheme.Project> = {};
+        if (name) {
+            data.name = name;
+        }
+        if (status) {
+            data.status = status;
+        }
+        if (webhookUrl) {
+            data.webhookUrl = webhookUrl;
+        }
+        if (!Object.keys(data).length) {
+            logger.warn('at least one of project field should be specified');
+
+            return;
+        }
+
+        await this.updateRaw({ id: projectId }, { $set: data });
 
         return;
     }
@@ -89,5 +193,17 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
         );
 
         return;
+    }
+
+    public async removeProject(projectId: string): Promise<void> {
+        await this.updateRaw(
+            { id: projectId },
+            {
+                $set: {
+                    isRemoved: true,
+                    removedAt: new Date()
+                }
+            }
+        );
     }
 }

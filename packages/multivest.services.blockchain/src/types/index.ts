@@ -34,6 +34,7 @@ export namespace Scheme {
         name: string;
 
         status: ProjectStatus;
+        isRemoved: boolean;
 
         webhookUrl: string;
         failedRetryCount: number;
@@ -45,6 +46,7 @@ export namespace Scheme {
         sharedSecret: string;
 
         createdAt: Date;
+        removedAt: Date;
     }
 
     export interface Subscription extends MongoScheme {
@@ -161,6 +163,7 @@ export namespace Scheme {
         Enabled = 'ENABLED',
         Disabled = 'DISABLED'
     }
+
     export interface TransportConnection extends MongoScheme {
         blockchainId: string;
         networkId: string;
@@ -175,6 +178,66 @@ export namespace Scheme {
         isFailing: boolean;
         lastFailedAt: Date;
         failedCount: number;
+
+        createdAt: Date;
+    }
+
+    export interface ContractScheme extends MongoScheme {
+        address: string;
+        abi: Array<EthereumContractAbiItem>;
+    }
+
+    export enum EthereumContractCompatibleStandard {
+        ERC20 = 'ERC20',
+        ERC223 = 'ERC223',
+        ERC721 = 'ERC721'
+    }
+
+    export interface EthereumContractSubscription extends Scheme.AddressSubscription {
+        compatibleStandard: EthereumContractCompatibleStandard;
+
+        abi: Array<EthereumContractAbiItem>;
+
+        abiEvents: Array<string>;
+
+        subscribedEvents: Array<string>;
+        subscribeAllEvents: boolean;
+
+        createdAt: Date;
+    }
+
+    export interface EthereumContractAbiItem {
+        anonymous?: boolean;
+        constant?: boolean;
+
+        inputs: Array<EthereumContractAbiItemNameType>;
+        name: string;
+        outputs?: Array<EthereumContractAbiItemNameType>;
+        type: string;
+    }
+
+    export interface EthereumContractAbiItemNameType {
+        name: string;
+        type: string;
+        indexed: boolean;
+    }
+
+    export interface EthereumEventLog extends MongoScheme {
+        blockChainId: string;
+        networkId: string;
+
+        blockHash: string;
+        blockHeight: number;
+        blockTime: number;
+
+        txHash: string;
+
+        address: string;
+
+        event: string;
+        eventHash: string;
+
+        params: Hashtable<any>;
 
         createdAt: Date;
     }

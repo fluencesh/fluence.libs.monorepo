@@ -44,17 +44,53 @@ export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.Tra
         return this.get({ id });
     }
 
+    public getByIdActiveOnly(id: string) {
+        return this.get({
+            id,
+            subscribed: true,
+            isClientActive: true,
+            isProjectActive: true
+        });
+    }
+
     public listByClientId(clientId: string): Promise<Array<Scheme.TransactionHashSubscription>> {
         return this.listRaw({ clientId });
+    }
+
+    public listByClientIdActiveOnly(clientId: string): Promise<Array<Scheme.TransactionHashSubscription>> {
+        return this.listRaw({
+            clientId,
+            subscribed: true,
+            isClientActive: true,
+            isProjectActive: true
+        });
     }
 
     public listByProjectId(projectId: string): Promise<Array<Scheme.TransactionHashSubscription>> {
         return this.listRaw({ projectId });
     }
 
+    public listByProjectIdActiveOnly(projectId: string): Promise<Array<Scheme.TransactionHashSubscription>> {
+        return this.listRaw({
+            projectId,
+            subscribed: true,
+            isClientActive: true,
+            isProjectActive: true
+        });
+    }
+
     public listBySubscribedHashes(hashes: Array<string>): Promise<Array<Scheme.TransactionHashSubscription>> {
         return this.listRaw({
             hash: { $in: hashes }
+        });
+    }
+
+    public listBySubscribedHashesActiveOnly(hashes: Array<string>): Promise<Array<Scheme.TransactionHashSubscription>> {
+        return this.listRaw({
+            hash: { $in: hashes },
+            subscribed: true,
+            isClientActive: true,
+            isProjectActive: true
         });
     }
 
@@ -67,6 +103,21 @@ export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.Tra
             hash,
             clientId,
             projectId
+        });
+    }
+
+    public listBySubscribedHashActiveOnly(
+        hash: string,
+        clientId: string,
+        projectId: string
+    ): Promise<Array<Scheme.TransactionHashSubscription>> {
+        return this.listRaw({
+            hash,
+            clientId,
+            projectId,
+            subscribed: true,
+            isClientActive: true,
+            isProjectActive: true
         });
     }
 

@@ -3,10 +3,14 @@ import { Plugin } from '@applicature/multivest.mongodb';
 import { ClientDao } from '../../dao/client.dao';
 import { Scheme } from '../../types';
 import { AddressSubscriptionService } from './address.subscription.service';
+import { EthereumContractSubscriptionService } from './ethereum.contract.subscription.service';
+import { TransactionHashSubscriptionService } from './transaction.hash.subscription.service';
 
 export class ClientService extends Service {
     protected clientDao: ClientDao;
     protected addressSubscriptionService: AddressSubscriptionService;
+    protected transactionHashSubscriptionService: TransactionHashSubscriptionService;
+    protected contractSubscriptionService: EthereumContractSubscriptionService;
 
     constructor(pluginManager: PluginManager) {
         super(pluginManager);
@@ -17,8 +21,12 @@ export class ClientService extends Service {
 
         this.clientDao = await mongodbPlugin.getDao('clients') as ClientDao;
 
-        this.addressSubscriptionService =
-            this.pluginManager.getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;
+        this.addressSubscriptionService = this.pluginManager
+            .getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;
+        this.transactionHashSubscriptionService = this.pluginManager
+            .getServiceByClass(TransactionHashSubscriptionService) as TransactionHashSubscriptionService;
+        this.contractSubscriptionService = this.pluginManager
+            .getServiceByClass(EthereumContractSubscriptionService) as EthereumContractSubscriptionService;
     }
 
     public getServiceId(): string {
@@ -38,11 +46,20 @@ export class ClientService extends Service {
     }
 
     public async setStatus(clientId: string, status: Scheme.ClientStatus): Promise<void> {
+        const isActive = status === Scheme.ClientStatus.Active;
         await Promise.all([
             this.clientDao.setStatus(clientId, status),
-            this.addressSubscriptionService.setClientActive(clientId, status === Scheme.ClientStatus.Active)
+            this.modifySubscriptionStatus(clientId, isActive)
         ]);
 
         return;
+    }
+
+    private async modifySubscriptionStatus(clientId: string, isActive: boolean): Promise<any> {
+        return Promise.all([
+            this.addressSubscriptionService.setClientActive(clientId, isActive),
+            this.transactionHashSubscriptionService.setClientActive(clientId, isActive),
+            this.contractSubscriptionService.setClientActive(clientId, isActive)
+        ]);
     }
 }

@@ -15,12 +15,21 @@ export abstract class TransactionHashSubscriptionDao extends Dao<Scheme.Transact
     ): Promise<Scheme.TransactionHashSubscription>;
 
     public abstract async getById(subscriptionId: string): Promise<Scheme.TransactionHashSubscription>;
+    public abstract async getByIdActiveOnly(subscriptionId: string): Promise<Scheme.TransactionHashSubscription>;
 
     public abstract async listByProjectId(projectId: string): Promise<Array<Scheme.TransactionHashSubscription>>;
+    public abstract async listByProjectIdActiveOnly(projectId: string)
+        : Promise<Array<Scheme.TransactionHashSubscription>>;
     public abstract async listByClientId(clientId: string): Promise<Array<Scheme.TransactionHashSubscription>>;
+    public abstract async listByClientIdActiveOnly(clientId: string)
+        : Promise<Array<Scheme.TransactionHashSubscription>>;
     public abstract async listBySubscribedHashes(hashes: Array<string>)
         : Promise<Array<Scheme.TransactionHashSubscription>>;
+    public abstract async listBySubscribedHashesActiveOnly(hashes: Array<string>)
+        : Promise<Array<Scheme.TransactionHashSubscription>>;
     public abstract async listBySubscribedHash(hash: string, clientId: string, projectId: string)
+        : Promise<Array<Scheme.TransactionHashSubscription>>;
+    public abstract async listBySubscribedHashActiveOnly(hash: string, clientId: string, projectId: string)
         : Promise<Array<Scheme.TransactionHashSubscription>>;
 
     public abstract async setSubscribed(

@@ -16,12 +16,19 @@ export abstract class AddressSubscriptionDao extends Dao<Scheme.AddressSubscript
     ): Promise<Scheme.AddressSubscription>;
 
     public abstract async getById(subscriptionId: string): Promise<Scheme.AddressSubscription>;
+    public abstract async getByIdActiveOnly(subscriptionId: string): Promise<Scheme.AddressSubscription>;
 
     public abstract async listByProjectId(projectId: string): Promise<Array<Scheme.AddressSubscription>>;
+    public abstract async listByProjectIdActiveOnly(projectId: string): Promise<Array<Scheme.AddressSubscription>>;
     public abstract async listByClientId(clientId: string): Promise<Array<Scheme.AddressSubscription>>;
+    public abstract async listByClientIdActiveOnly(clientId: string): Promise<Array<Scheme.AddressSubscription>>;
     public abstract async listBySubscribedAddresses(addresses: Array<string>)
         : Promise<Array<Scheme.AddressSubscription>>;
+    public abstract async listBySubscribedAddressesActiveOnly(addresses: Array<string>)
+        : Promise<Array<Scheme.AddressSubscription>>;
     public abstract async listBySubscribedAddress(address: string, clientId: string, projectId: string)
+        : Promise<Array<Scheme.AddressSubscription>>;
+    public abstract async listBySubscribedAddressActiveOnly(address: string, clientId: string, projectId: string)
         : Promise<Array<Scheme.AddressSubscription>>;
 
     public abstract async setSubscribed(

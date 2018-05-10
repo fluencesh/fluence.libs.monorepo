@@ -1,5 +1,5 @@
 import * as config from 'config';
-import { random } from 'lodash';
+import { random, pick, omit } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
 import { MongodbProjectDao } from '../../src/dao/mongodb/project.dao';
 import { Scheme } from '../../src/types';
@@ -50,6 +50,25 @@ describe('exchange dao', () => {
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
+    it('listByFilters() transfers correct arguments', async () => {
+        const filters = {
+            name: 'name',
+            sharedSecret: 'sharedSecret',
+            status: 'status' as any,
+            webhookUrl: 'webhookUrl',
+        } as Partial<Scheme.Project>;
+
+        const got = await dao.listByFilters(
+            filters.name,
+            filters.sharedSecret,
+            filters.status,
+            filters.webhookUrl
+        );
+
+        expect(collection.find).toHaveBeenCalledWith(filters);
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
     it('createProject() transfers correct arguments', async () => {
         const data = randomProject();
 
@@ -58,7 +77,8 @@ describe('exchange dao', () => {
             data.name,
             data.webhookUrl,
             data.sharedSecret,
-            data.status
+            data.status,
+            data.txMinConfirmations
         );
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);

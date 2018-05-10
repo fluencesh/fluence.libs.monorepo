@@ -76,7 +76,7 @@ export class AddressSubscriptionBlockChainListener extends BlockchainListener {
             }
         }
 
-        const subscriptions = await this.subscriptionService.listBySubscribedAddresses(recipients);
+        const subscriptions = await this.subscriptionService.listBySubscribedAddressesActiveOnly(recipients);
 
         const webhookActions: Array<WebhookActionItem> = [];
 
@@ -91,7 +91,7 @@ export class AddressSubscriptionBlockChainListener extends BlockchainListener {
                 project = projectsMap[subscription.projectId];
             }
             else {
-                project = await this.projectService.getById(subscription.projectId);
+                project = await this.projectService.getByIdActiveOnly(subscription.projectId);
 
                 projectsMap[subscription.projectId] = project;
             }

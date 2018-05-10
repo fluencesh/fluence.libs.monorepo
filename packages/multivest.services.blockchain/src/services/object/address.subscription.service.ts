@@ -45,12 +45,24 @@ export class AddressSubscriptionService extends Service {
         return this.subscriptionDao.getById(subscriptionId);
     }
 
+    public async getByIdActiveOnly(subscriptionId: string): Promise<Scheme.AddressSubscription> {
+        return this.subscriptionDao.getByIdActiveOnly(subscriptionId);
+    }
+
     public async listByProjectId(projectId: string): Promise<Array<Scheme.AddressSubscription>> {
         return this.subscriptionDao.listByProjectId(projectId);
     }
 
+    public async listByProjectIdActiveOnly(projectId: string): Promise<Array<Scheme.AddressSubscription>> {
+        return this.subscriptionDao.listByProjectIdActiveOnly(projectId);
+    }
+
     public async listByClientId(clientId: string): Promise<Array<Scheme.AddressSubscription>> {
         return this.subscriptionDao.listByClientId(clientId);
+    }
+
+    public async listByClientIdActiveOnly(clientId: string): Promise<Array<Scheme.AddressSubscription>> {
+        return this.subscriptionDao.listByClientIdActiveOnly(clientId);
     }
 
     public async listBySubscribedAddress(
@@ -59,6 +71,24 @@ export class AddressSubscriptionService extends Service {
         projectId: string
     ): Promise<Array<Scheme.AddressSubscription>> {
         return this.subscriptionDao.listBySubscribedAddress(address, clientId, projectId);
+    }
+
+    public async listBySubscribedAddressActiveOnly(
+        address: string,
+        clientId: string,
+        projectId: string
+    ): Promise<Array<Scheme.AddressSubscription>> {
+        return this.subscriptionDao.listBySubscribedAddressActiveOnly(address, clientId, projectId);
+    }
+
+    public async listBySubscribedAddresses(addresses: Array<string>): Promise<Array<Scheme.AddressSubscription>> {
+        return this.subscriptionDao.listBySubscribedAddresses(addresses);
+    }
+
+    public async listBySubscribedAddressesActiveOnly(
+        addresses: Array<string>
+    ): Promise<Array<Scheme.AddressSubscription>> {
+        return this.subscriptionDao.listBySubscribedAddressesActiveOnly(addresses);
     }
 
     public async setSubscribed(
@@ -80,9 +110,5 @@ export class AddressSubscriptionService extends Service {
         isActive: boolean
     ): Promise<void> {
         return this.subscriptionDao.setClientActive(clientId, isActive);
-    }
-
-    public async listBySubscribedAddresses(addresses: Array<string>): Promise<Array<Scheme.AddressSubscription>> {
-        return this.subscriptionDao.listBySubscribedAddresses(addresses);
     }
 }

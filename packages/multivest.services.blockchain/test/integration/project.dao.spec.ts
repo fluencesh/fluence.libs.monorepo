@@ -8,12 +8,17 @@ import { v1 as generateId } from 'uuid';
 
 import { randomProject } from '../helper';
 
-describe('address subscription dao', () => {
+describe('project dao', () => {
     let dao: MongodbProjectDao;
     const projects: Array<Scheme.Project> = [];
     const projectsCount = 15;
     let project: Scheme.Project;
     let connection: Db;
+
+    function getActiveProjects() {
+        // tslint:disable-next-line:no-shadowed-variable
+        return projects.filter((project) => !project.isRemoved && project.status === Scheme.ProjectStatus.Active);
+    }
 
     beforeAll(async () => {
         connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
@@ -41,8 +46,32 @@ describe('address subscription dao', () => {
         expect(got).toEqual(project);
     });
 
+    it('should get by id (active only)', async () => {
+        const active = getActiveProjects()[0];
+
+        if (!active) {
+            return;
+        }
+
+        const got = await dao.getByIdActiveOnly(active.id);
+
+        expect(got).toEqual(active);
+    });
+
     it('should get by ids', async () => {
         const filtered = projects.filter((p, index) => index < 3);
+        const got = await dao.listByIds(filtered.map((p) => p.id));
+
+        expect(got).toEqual(filtered);
+    });
+
+    it('should get by ids (active only)', async () => {
+        const filtered = getActiveProjects();
+
+        if (filtered.length) {
+            return;
+        }
+
         const got = await dao.listByIds(filtered.map((p) => p.id));
 
         expect(got).toEqual(filtered);
@@ -56,7 +85,71 @@ describe('address subscription dao', () => {
         expect(got).toEqual(filtered);
     });
 
+    it('should get by client id (active only)', async () => {
+        const filtered = getActiveProjects().filter((proj, index, projs) => proj.clientId === projs[0].clientId);
+
+        if (filtered.length) {
+            return;
+        }
+
+        const got = await dao.listByClientId(project.clientId);
+
+        expect(got).toEqual(filtered);
+    });
+
+    it('should get by filters', async () => {
+        const filtered = projects.filter((p) =>
+            p.name === project.name
+            && p.webhookUrl === project.webhookUrl
+            && p.status === project.status
+            && p.sharedSecret === project.sharedSecret
+        );
+
+        const got = await dao.listByFilters(
+            project.name,
+            project.sharedSecret,
+            project.status,
+            project.webhookUrl
+        );
+
+        expect(got).toEqual(filtered);
+    });
+
+    it('should get by filters (active only)', async () => {
+        const filtered = getActiveProjects().filter((p) =>
+            p.name === project.name
+            && p.webhookUrl === project.webhookUrl
+            && p.status === project.status
+            && p.sharedSecret === project.sharedSecret
+        );
+
+        if (filtered.length) {
+            return;
+        }
+
+        const got = await dao.listByFiltersActiveOnly(
+            project.name,
+            project.sharedSecret,
+            project.status,
+            project.webhookUrl
+        );
+
+        expect(got).toEqual(filtered);
+    });
+
     it('should get by api key id', async () => {
+        const got = await dao.getByApiKey(project.apiKey);
+
+        expect(got).toEqual(project);
+    });
+
+    it('should get by api key id (active only)', async () => {
+        const active = getActiveProjects()[0];
+
+        if (!active) {
+            return;
+        }
+
         const got = await dao.getByApiKey(project.apiKey);
 
         expect(got).toEqual(project);

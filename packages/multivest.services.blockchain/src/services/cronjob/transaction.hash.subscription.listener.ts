@@ -55,14 +55,14 @@ export class TransactionHashSubscriptionListener extends BlockchainListener {
             txMap[tx.hash] = tx;
         });
 
-        const subscriptions = await this.subscriptionService.listBySubscribedHashes(Object.keys(txMap));
+        const subscriptions = await this.subscriptionService.listBySubscribedHashesActiveOnly(Object.keys(txMap));
 
         if (subscriptions.length) {
             const uniqueProjectsIds = subscriptions
                 .map((subscription) => subscription.projectId)
                 .filter((projectId, index, projectIds) => projectIds.indexOf(projectId) === index);
 
-            const projects = await this.projectService.listByIds(uniqueProjectsIds);
+            const projects = await this.projectService.listByIdsActiveOnly(uniqueProjectsIds);
             const projectsMap: Hashtable<Scheme.Project> = {};
             projects.forEach((project) => {
                 projectsMap[project.id] = project;

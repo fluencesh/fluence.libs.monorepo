@@ -25,16 +25,32 @@ export class TransactionHashSubscriptionService extends Service {
         return this.transactionHashSubscriptionDao.getById(subscriptionId);
     }
 
+    public getByIdActiveOnly(subscriptionId: string): Promise<Scheme.TransactionHashSubscription> {
+        return this.transactionHashSubscriptionDao.getByIdActiveOnly(subscriptionId);
+    }
+
     public listByClient(clientId: string): Promise<Array<Scheme.TransactionHashSubscription>> {
         return this.transactionHashSubscriptionDao.listByClientId(clientId);
+    }
+
+    public listByClientActiveOnly(clientId: string): Promise<Array<Scheme.TransactionHashSubscription>> {
+        return this.transactionHashSubscriptionDao.listByClientIdActiveOnly(clientId);
     }
 
     public listByProject(projectId: string): Promise<Array<Scheme.TransactionHashSubscription>> {
         return this.transactionHashSubscriptionDao.listByProjectId(projectId);
     }
 
+    public listByProjectActiveOnly(projectId: string): Promise<Array<Scheme.TransactionHashSubscription>> {
+        return this.transactionHashSubscriptionDao.listByProjectIdActiveOnly(projectId);
+    }
+
     public listBySubscribedHashes(hashes: Array<string>): Promise<Array<Scheme.TransactionHashSubscription>> {
         return this.transactionHashSubscriptionDao.listBySubscribedHashes(hashes);
+    }
+
+    public listBySubscribedHashesActiveOnly(hashes: Array<string>): Promise<Array<Scheme.TransactionHashSubscription>> {
+        return this.transactionHashSubscriptionDao.listBySubscribedHashesActiveOnly(hashes);
     }
 
     public async listBySubscribedHash(
@@ -43,6 +59,14 @@ export class TransactionHashSubscriptionService extends Service {
         projectId: string
     ): Promise<Array<Scheme.TransactionHashSubscription>> {
         return this.transactionHashSubscriptionDao.listBySubscribedHash(hash, clientId, projectId);
+    }
+
+    public async listBySubscribedHashActiveOnly(
+        hash: string,
+        clientId: string,
+        projectId: string
+    ): Promise<Array<Scheme.TransactionHashSubscription>> {
+        return this.transactionHashSubscriptionDao.listBySubscribedHashActiveOnly(hash, clientId, projectId);
     }
 
     public createSubscription(

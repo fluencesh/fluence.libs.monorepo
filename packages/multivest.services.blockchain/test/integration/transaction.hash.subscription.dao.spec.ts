@@ -15,6 +15,14 @@ describe('transaction hash subscription dao', () => {
     let transactionSubscription: Scheme.TransactionHashSubscription;
     let connection: Db;
 
+    function getActiveSubscriptions() {
+        return transactionSubscriptions.filter((subscription) =>
+            subscription.subscribed
+            && subscription.isClientActive
+            && subscription.isProjectActive
+        );
+    }
+
     beforeAll(async () => {
         connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
         dao = new MongodbTransactionHashSubscriptionDao(connection);
@@ -40,15 +48,53 @@ describe('transaction hash subscription dao', () => {
         expect(got).toEqual(transactionSubscription);
     });
 
+    it('should get by id (active only)', async () => {
+        const subscription = getActiveSubscriptions()[0];
+
+        if (!subscription) {
+            return;
+        }
+
+        const got = await dao.getByIdActiveOnly(subscription.id);
+
+        expect(got).toEqual(subscription);
+    });
+
     it('should get by client id', async () => {
         const filtered = transactionSubscriptions.filter((as) => as.clientId === transactionSubscription.clientId);
         const got = await dao.listByClientId(transactionSubscription.clientId);
         expect(got).toEqual(filtered);
     });
 
+    it('should get by client id (active only)', async () => {
+        const filtered = getActiveSubscriptions()
+            .filter((sub, index, subs) => sub.clientId === subs[0].clientId);
+
+        if (filtered.length === 0) {
+            return;
+        }
+
+        const got = await dao.listByClientIdActiveOnly(filtered[0].clientId);
+
+        expect(got).toEqual(filtered);
+    });
+
     it('should get by project id', async () => {
         const filtered = transactionSubscriptions.filter((as) => as.projectId === transactionSubscription.projectId);
         const got = await dao.listByProjectId(transactionSubscription.projectId);
+        expect(got).toEqual(filtered);
+    });
+
+    it('should get by project id (active only)', async () => {
+        const filtered = getActiveSubscriptions()
+            .filter((sub, index, subs) => sub.projectId === subs[0].projectId);
+
+        if (filtered.length === 0) {
+            return;
+        }
+
+        const got = await dao.listByProjectIdActiveOnly(filtered[0].projectId);
+
         expect(got).toEqual(filtered);
     });
 
@@ -60,6 +106,27 @@ describe('transaction hash subscription dao', () => {
         );
 
         expect(got).toEqual([transactionSubscription]);
+    });
+
+    it('should get by id & project id & client id (active only)', async () => {
+        const filtered = getActiveSubscriptions()
+            .filter((sub, index, subs) =>
+                sub.projectId === subs[0].projectId
+                && sub.clientId === subs[0].clientId
+                && sub.hash === subs[0].hash
+            );
+
+        if (filtered.length === 0) {
+            return;
+        }
+
+        const got = await dao.listBySubscribedHashActiveOnly(
+            filtered[0].hash,
+            filtered[0].clientId,
+            filtered[0].projectId
+        );
+
+        expect(got).toEqual(filtered);
     });
 
     it('should set new subscriber status', async () => {

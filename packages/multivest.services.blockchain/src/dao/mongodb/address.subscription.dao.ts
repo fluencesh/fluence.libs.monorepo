@@ -53,9 +53,27 @@ export class MongodbAddressSubscriptionDao extends MongoDBDao<Scheme.AddressSubs
         });
     }
 
+    public async getByIdActiveOnly(id: string): Promise<Scheme.AddressSubscription> {
+        return this.getRaw({
+            id,
+            subscribed: true,
+            isClientActive: true,
+            isProjectActive: true
+        });
+    }
+
     public async listByProjectId(projectId: string): Promise<Array<Scheme.AddressSubscription>> {
         return this.listRaw({
             projectId
+        });
+    }
+
+    public async listByProjectIdActiveOnly(projectId: string): Promise<Array<Scheme.AddressSubscription>> {
+        return this.listRaw({
+            projectId,
+            subscribed: true,
+            isClientActive: true,
+            isProjectActive: true
         });
     }
 
@@ -65,9 +83,27 @@ export class MongodbAddressSubscriptionDao extends MongoDBDao<Scheme.AddressSubs
         });
     }
 
+    public async listByClientIdActiveOnly(clientId: string): Promise<Array<Scheme.AddressSubscription>> {
+        return this.listRaw({
+            clientId,
+            subscribed: true,
+            isClientActive: true,
+            isProjectActive: true
+        });
+    }
+
     public async listBySubscribedAddresses(addresses: Array<string>): Promise<Array<Subscription>> {
         return this.listRaw({
             address: { $in: addresses },
+        });
+    }
+
+    public async listBySubscribedAddressesActiveOnly(addresses: Array<string>): Promise<Array<Subscription>> {
+        return this.listRaw({
+            address: { $in: addresses },
+            subscribed: true,
+            isClientActive: true,
+            isProjectActive: true
         });
     }
 
@@ -80,6 +116,21 @@ export class MongodbAddressSubscriptionDao extends MongoDBDao<Scheme.AddressSubs
             address,
             clientId,
             projectId
+        });
+    }
+
+    public async listBySubscribedAddressActiveOnly(
+        address: string,
+        clientId: string,
+        projectId: string
+    ): Promise<Array<Subscription>> {
+        return this.listRaw({
+            address,
+            clientId,
+            projectId,
+            subscribed: true,
+            isClientActive: true,
+            isProjectActive: true
         });
     }
 

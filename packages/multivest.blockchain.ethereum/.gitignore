@@ -11,3 +11,4 @@ coverage
 coverage
 /.history
 /.vscode
+**/.DS_Store

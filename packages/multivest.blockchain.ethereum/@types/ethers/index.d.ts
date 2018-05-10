@@ -1,5 +1,10 @@
 declare module 'ethers' {
   class Contract {
+    // [ index: string ]: Function;
+    functions: {[ funName: string ]: (...params: Array<any>) => Promise<any> };
+
+    constructor(address: string, abi: any, provider: providers.Provider);
+
     public static getDeployTransaction(bytecode: string, abi: string, ...params: Array<any>): any
   }
 

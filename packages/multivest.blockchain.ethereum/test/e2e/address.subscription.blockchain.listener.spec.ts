@@ -134,7 +134,8 @@ describe('address subscription', () => {
             project.name,
             project.webhookUrl,
             project.sharedSecret,
-            project.status
+            project.status,
+            project.txMinConfirmations
         );
         
         addressSubscription.projectId = project.id;

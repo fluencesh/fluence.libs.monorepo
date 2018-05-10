@@ -1,7 +1,8 @@
 import {
 //   BlockchainTransportService,
   ManagedBlockchainTransportService,
-  TransportConnectionService
+  Scheme,
+  TransportConnectionService,
 } from '@applicature-restricted/multivest.services.blockchain';
 import { Block, Hashtable, MultivestError, PluginManager } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
@@ -141,6 +142,17 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
         const transportService = await this.getActiveTransportService();
 
         return transportService.getAddressTransactionsCount(address, blockTag);
+    }
+
+    public async callContractMethod(
+        contractEntity: Scheme.ContractScheme,
+        methodName: string,
+        inputTypes: Array<string> = [],
+        inputValues: Array<string> = []
+    ): Promise<any> {
+        const transport = await this.getActiveTransportService();
+
+        return transport.callContractMethod(contractEntity, methodName, inputTypes, inputValues);
     }
 
     public async updateValid() {

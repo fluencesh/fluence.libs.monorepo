@@ -1,8 +1,7 @@
-import {Signature} from '@applicature-restricted/multivest.blockchain';
+import { Signature } from '@applicature-restricted/multivest.services.blockchain';
 import { MultivestError } from '@applicature/multivest.core';
 import { Hashtable } from '@applicature/multivest.core/';
 import * as EthereumAbi from 'ethereumjs-abi';
-import {EthereumContract} from '../../types';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
 
 export class Contract {

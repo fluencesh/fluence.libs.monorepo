@@ -1,9 +1,9 @@
-import { Signature } from '@applicature-restricted/multivest.blockchain';
 import {
     BlockchainService,
     BlockchainTransportService,
     ManagedBlockchainTransportService,
-    Scheme
+    Scheme,
+    Signature
 } from '@applicature-restricted/multivest.services.blockchain';
 import { MultivestError, PluginManager } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
@@ -139,6 +139,15 @@ export class EthereumBlockchainService extends BlockchainService {
 
     public call(tx: EthereumTransaction) {
         return this.blockChainTransportService.call(tx);
+    }
+
+    public callContractMethod(
+        contractEntity: Scheme.ContractScheme,
+        methodName: string,
+        inputTypes: Array<string> = [],
+        inputValues: Array<string> = []
+    ) {
+        return this.blockChainTransportService.callContractMethod(contractEntity, methodName, inputTypes, inputValues);
     }
 
     public estimateGas(tx: EthereumTransaction) {

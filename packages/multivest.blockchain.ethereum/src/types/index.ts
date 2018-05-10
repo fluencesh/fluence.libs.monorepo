@@ -47,6 +47,7 @@ export interface EthereumBlock extends Block {
     gasLimit: BigNumber;
     gasUsed: BigNumber;
     uncles: string;
+    transactions: Array<EthereumTransaction>;
 }
 
 export interface EthereumTransactionReceipt {
@@ -82,85 +83,4 @@ export interface EthereumTopicFilter {
     toBlock?: number;
     address?: string;
     topics?: Array<string>;
-}
-
-export interface EthereumContract {
-    address: string;
-    abi: Array<EthereumContractItem>;
-}
-
-export interface EthereumContractItem {
-    anonymous?: boolean;
-    constant?: boolean;
-
-    inputs: Array<EthereumContractItemNameType>;
-    name: string;
-    outputs?: Array<EthereumContractItemNameType>;
-    type: string;
-}
-
-export interface EthereumContractItemNameType {
-    name: string;
-    type: string;
-    indexed: boolean;
-}
-
-export interface ContractScheme extends MongoScheme {
-    address: string;
-    abi: any;
-}
-
-export enum EthereumContractCompatibleStandard {
-    ERC20 = 'ERC20',
-    ERC223 = 'ERC223',
-    ERC721 = 'ERC721'
-}
-
-export interface EthereumContractSubscription extends Scheme.AddressSubscription {
-    compatibleStandard: EthereumContractCompatibleStandard;
-
-    abi: Array<EthereumContractAbiItem>;
-
-    abiEvents: Array<string>;
-
-    subscribedEvents: Array<string>;
-    subscribeAllEvents: boolean;
-
-    createdAt: Date;
-}
-
-export interface EthereumContractAbiItem {
-    anonymous?: boolean;
-    constant?: boolean;
-
-    inputs: Array<EthereumContractAbiItemNameType>;
-    name: string;
-    outputs?: Array<EthereumContractAbiItemNameType>;
-    type: string;
-}
-
-export interface EthereumContractAbiItemNameType {
-    name: string;
-    type: string;
-    indexed: boolean;
-}
-
-export interface EthereumEventLog extends MongoScheme {
-    blockChainId: string;
-    networkId: string;
-
-    blockHash: string;
-    blockHeight: number;
-    blockTime: number;
-
-    txHash: string;
-
-    address: string;
-
-    event: string;
-    eventHash: string;
-
-    params: Hashtable<any>;
-
-    createdAt: Date;
 }

@@ -141,6 +141,49 @@ export class EthersEthereumTransportService extends EthereumTransportService {
         return count;
     }
 
+    public async callContractMethod(
+        contractEntity: Scheme.ContractScheme,
+        methodName: string,
+        inputTypes: Array<string> = [],
+        inputValues: Array<string> = []
+    ) {
+        const contract = new Contract(contractEntity.address, contractEntity.abi, this.provider);
+
+        const methodSignature = `${methodName}(${inputTypes.join(',')})`;
+        const result: Array<any> | any = await contract.functions[methodSignature](...inputValues);
+
+        // tslint:disable-next-line:no-shadowed-variable
+        const abiItem = contractEntity.abi.find((abiItem) => {
+            if (abiItem.name === methodName) {
+                const isMatch = !abiItem.inputs.find((input, index) => input.type !== inputTypes[index]);
+
+                return isMatch;
+            }
+        });
+
+        return this.convertContractMethodResponse(abiItem, result);
+    }
+
+    private convertContractMethodResponse(abiItem: Scheme.EthereumContractAbiItem, result: Array<any> | any): any {
+        // NOTICE: if output length === 1 then result will be a value.
+        // NOTICE: if output length > 1 then result will be an Array.
+
+        result = (result instanceof Array ? result : [ result ]);
+
+        if (!abiItem) {
+            return result.map((value: any) => value.toString());
+        }
+        
+        const dto: any = {};
+        result.forEach((value: any, index: number) => {
+            const name = abiItem.outputs[index].name;
+
+            dto[name] = value.toString();
+        });
+
+        return dto;
+    }
+
     private convertBlock(block: any): EthereumBlock {
         return {
             height: block.number,

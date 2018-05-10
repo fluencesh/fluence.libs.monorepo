@@ -1,6 +1,7 @@
 import {
     BlockchainListener,
     BlockchainService,
+    EthereumContractSubscriptionService,
     JobService,
     ProjectService,
     Scheme,
@@ -23,7 +24,6 @@ import {
     EthereumTransactionReceipt,
 } from '../../types';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
-import { EthereumContractSubscriptionService } from '../objects/ethereum.contract.subscription.service';
 
 let blockchainId: string;
 let networkId: string;
@@ -63,7 +63,7 @@ export class EthereumContractSubscriptionListener extends BlockchainListener {
         const logsMap = await this.getLogMapByBlockHeight(block.height);
 
         const addresses = Object.keys(logsMap);
-        const subscriptions = await this.subscriptionService.listBySubscribedAddresses(addresses);
+        const subscriptions = await this.subscriptionService.listBySubscribedAddressesActiveOnly(addresses);
 
         const projectsIds = subscriptions.map((subscription) => subscription.projectId);
         const projectsMap: Hashtable<Scheme.Project> = await this.getProjectsMapByIds(projectsIds);
@@ -137,7 +137,7 @@ export class EthereumContractSubscriptionListener extends BlockchainListener {
     }
 
     private async getProjectsMapByIds(ids: Array<string>): Promise<Hashtable<Scheme.Project>> {
-        const projects = await Promise.all(ids.map((id) => this.projectService.getById(id)));
+        const projects = await Promise.all(ids.map((id) => this.projectService.getByIdActiveOnly(id)));
 
         const projectsMap: Hashtable<Scheme.Project> = {};
         projects.forEach((project) => {

@@ -3,12 +3,6 @@ import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
 import { createHash } from 'crypto';
 import { random } from 'lodash';
 import { v1 as generateId } from 'uuid';
-import {
-    EthereumContractCompatibleStandard,
-    EthereumContractSubscription,
-    EthereumEventLog
-} from '../src/types';
-import { getRandomAbi } from './mock/helper';
 
 export function randomAddressSubscription(): Scheme.AddressSubscription {
     return {
@@ -33,15 +27,15 @@ export function randomClient(): Scheme.Client {
     } as Scheme.Client;
 }
 
-export function randomEthereumContractSubscription(): EthereumContractSubscription {
+export function randomEthereumContractSubscription(): Scheme.EthereumContractSubscription {
     const randomNumber = random(0, 1, true);
     let compatibleStandard;
     if (randomNumber < .33) {
-        compatibleStandard = EthereumContractCompatibleStandard.ERC20;
+        compatibleStandard = Scheme.EthereumContractCompatibleStandard.ERC20;
     } else if (randomNumber >= .33 && randomNumber < .67) {
-        compatibleStandard = EthereumContractCompatibleStandard.ERC223;
+        compatibleStandard = Scheme.EthereumContractCompatibleStandard.ERC223;
     } else {
-        compatibleStandard = EthereumContractCompatibleStandard.ERC721;
+        compatibleStandard = Scheme.EthereumContractCompatibleStandard.ERC721;
     }
 
     const addressSubscription = randomAddressSubscription();
@@ -51,10 +45,10 @@ export function randomEthereumContractSubscription(): EthereumContractSubscripti
         abiEvents: [],
         subscribedEvents: [],
         subscribeAllEvents: true,
-    }, addressSubscription) as EthereumContractSubscription;
+    }, addressSubscription) as Scheme.EthereumContractSubscription;
 }
 
-export function randomEthereumEventLog(): EthereumEventLog {
+export function randomEthereumEventLog(): Scheme.EthereumEventLog {
     return {
         id: generateId(),
 
@@ -75,7 +69,7 @@ export function randomEthereumEventLog(): EthereumEventLog {
         params: { [generateId()]: generateId() },
 
         createdAt: new Date()
-    } as EthereumEventLog;
+    } as Scheme.EthereumEventLog;
 }
 
 export function randomWebhookAction(): Scheme.WebhookActionItem {
@@ -128,11 +122,4 @@ export function randomWebhookAction(): Scheme.WebhookActionItem {
 
         createdAt: new Date()
     } as Scheme.WebhookActionItem;
-}
-
-export function randomContract() {
-    return {
-        address: createHash('sha1').update(random(0, 1000).toString(), 'utf8').digest('hex'),
-        abi: getRandomAbi()
-    };
 }

@@ -19,6 +19,7 @@ import {
     EthereumTransactionReceipt,
     ethereumValidNetworks,
 } from '../../types';
+import { EthereumBlock } from '../../types';
 import { EthereumTransportService } from '../transports/ethereum.transport';
 import { EthersEthereumTransportService, Provider } from '../transports/ethers.ethereum.transport';
 import { ManagedEthereumTransportService } from './managed.ethereum.transport.service';
@@ -142,12 +143,12 @@ export class EthereumBlockchainService extends BlockchainService {
     }
 
     public callContractMethod(
-        contractEntity: Scheme.ContractScheme,
+        contractAddress: string,
         methodName: string,
         inputTypes: Array<string> = [],
         inputValues: Array<string> = []
     ) {
-        return this.blockChainTransportService.callContractMethod(contractEntity, methodName, inputTypes, inputValues);
+        return this.blockChainTransportService.callContractMethod(contractAddress, methodName, inputTypes, inputValues);
     }
 
     public estimateGas(tx: EthereumTransaction) {

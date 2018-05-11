@@ -145,14 +145,14 @@ export class ManagedEthereumTransportService extends EthereumTransportService {
     }
 
     public async callContractMethod(
-        contractEntity: Scheme.ContractScheme,
+        contractAddress: string,
         methodName: string,
         inputTypes: Array<string> = [],
         inputValues: Array<string> = []
     ): Promise<any> {
         const transport = await this.getActiveTransportService();
 
-        return transport.callContractMethod(contractEntity, methodName, inputTypes, inputValues);
+        return transport.callContractMethod(contractAddress, methodName, inputTypes, inputValues);
     }
 
     public async updateValid() {

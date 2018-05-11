@@ -1,8 +1,9 @@
-import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
+import { Scheme, ContractService } from '@applicature-restricted/multivest.services.blockchain';
 import { Block, MultivestError, PluginManager, Transaction } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
 import * as EthJsTransaction from 'ethereumjs-tx';
 import { Contract, providers } from 'ethers';
+import { get } from 'lodash';
 import {
     ETHEREUM,
     EthereumBlock,
@@ -23,6 +24,7 @@ export enum Provider {
 export class EthersEthereumTransportService extends EthereumTransportService {
     private network: string;
     private provider: any;
+    private contractService: ContractService;
 
     constructor(pluginManager: PluginManager, transportConnection: Scheme.TransportConnection) {
         super(pluginManager, transportConnection);
@@ -45,6 +47,8 @@ export class EthersEthereumTransportService extends EthereumTransportService {
         } else {
             throw new MultivestError('unknown provider');
         }
+
+        this.contractService = this.pluginManager.getServiceByClass(ContractService) as ContractService;
     }
 
     public getNetworkId() {
@@ -55,8 +59,16 @@ export class EthersEthereumTransportService extends EthereumTransportService {
         return 'ethers.ethereum.transport.service';
     }
 
-    public getBlockByHash(hash: string) {
-        return this.provider.getBlock(hash);
+    public async getBlockByHash(hash: string) {
+        const block = await this.provider.getBlock(hash);
+
+        block.transactions = await Promise.all(
+            block.transactions.map((txHash: string) => this.getTransactionByHash(txHash))
+        );
+
+        block.height = get(block, 'transactions[0].height', null);
+
+        return this.convertBlock(block);
     }
 
     public getBlockHeight(): Promise<number> {
@@ -142,11 +154,13 @@ export class EthersEthereumTransportService extends EthereumTransportService {
     }
 
     public async callContractMethod(
-        contractEntity: Scheme.ContractScheme,
+        contractAddress: string,
         methodName: string,
         inputTypes: Array<string> = [],
         inputValues: Array<string> = []
     ) {
+        const contractEntity = await this.contractService.getByAddress(contractAddress);
+
         const contract = new Contract(contractEntity.address, contractEntity.abi, this.provider);
 
         const methodSignature = `${methodName}(${inputTypes.join(',')})`;

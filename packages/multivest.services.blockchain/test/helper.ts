@@ -188,8 +188,9 @@ export function randomEthereumEventLog(): Scheme.EthereumEventLog {
 export function randomContract() {
     return {
         address: createHash('sha1').update(random(0, 1000).toString(), 'utf8').digest('hex'),
-        abi: getRandomAbi()
-    };
+        abi: getRandomAbi(),
+        projectId: generateId()
+    } as Scheme.ContractScheme;
 }
 
 // tslint:disable-next-line:no-var-requires

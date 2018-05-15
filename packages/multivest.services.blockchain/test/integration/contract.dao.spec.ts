@@ -1,6 +1,6 @@
 import * as config from 'config';
 import { createHash } from 'crypto';
-import { random } from 'lodash';
+import { random, get } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
 import { v1 as generateId } from 'uuid';
 import { MongoContractDao } from '../../src/dao/mongodb/contract.dao';
@@ -44,8 +44,20 @@ describe('transport connection service', () => {
         expect(got).toEqual(contract);
     });
 
+    it('should get contract by id and projectId', async () => {
+        const got = await dao.getByIdAndProjectId(contract.id, contract.projectId);
+
+        expect(got).toEqual(contract);
+    });
+
     it('should get contract by address', async () => {
         const got = await dao.getByAddress(contract.address);
+
+        expect(got).toEqual(contract);
+    });
+
+    it('should get contract by address and projectId', async () => {
+        const got = await dao.getByAddressAndProjectId(contract.address, contract.projectId);
 
         expect(got).toEqual(contract);
     });
@@ -54,13 +66,16 @@ describe('transport connection service', () => {
         const someContract = randomContract();
 
         const created = await dao.createContract(
+            someContract.projectId,
             someContract.address,
             someContract.abi
         );
 
-        const got = await dao.getById(created.id);
-
-        expect(got).toEqual(created);
+        Object.keys(someContract).forEach((key) => {
+            const srcVal = get(someContract, key);
+            const createdVal = get(created, key);
+            expect(srcVal).toEqual(createdVal);
+        });
     });
 
     it('should set abi', async () => {

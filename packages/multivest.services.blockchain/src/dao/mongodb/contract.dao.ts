@@ -21,17 +21,33 @@ export class MongoContractDao extends MongoDBDao<Scheme.ContractScheme> implemen
         });
     }
 
+    public async getByIdAndProjectId(contractId: string, projectId: string): Promise<Scheme.ContractScheme> {
+        return this.getRaw({
+            id: contractId,
+            projectId
+        });
+    }
+
     public async getByAddress(address: string): Promise<Scheme.ContractScheme> {
         return this.getRaw({
             address
         });
     }
 
+    public async getByAddressAndProjectId(address: string, projectId: string): Promise<Scheme.ContractScheme> {
+        return this.getRaw({
+            address,
+            projectId
+        });
+    }
+
     public async createContract(
+        projectId: string,
         address: string,
         abi: any
     ): Promise<Scheme.ContractScheme> {
         return this.create({
+            projectId,
             address,
             abi
         });

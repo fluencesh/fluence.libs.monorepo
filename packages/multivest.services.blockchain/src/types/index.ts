@@ -185,6 +185,7 @@ export namespace Scheme {
     export interface ContractScheme extends MongoScheme {
         address: string;
         abi: Array<EthereumContractAbiItem>;
+        projectId: string;
     }
 
     export enum EthereumContractCompatibleStandard {

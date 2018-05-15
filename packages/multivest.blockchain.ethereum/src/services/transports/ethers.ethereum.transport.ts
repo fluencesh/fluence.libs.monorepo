@@ -154,13 +154,11 @@ export class EthersEthereumTransportService extends EthereumTransportService {
     }
 
     public async callContractMethod(
-        contractAddress: string,
+        contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
         inputValues: Array<string> = []
     ) {
-        const contractEntity = await this.contractService.getByAddress(contractAddress);
-
         const contract = new Contract(contractEntity.address, contractEntity.abi, this.provider);
 
         const methodSignature = `${methodName}(${inputTypes.join(',')})`;

@@ -21,7 +21,7 @@ export abstract class EthereumTransportService extends BlockchainTransportServic
     public abstract async getTransactionReceipt(txHex: string): Promise<EthereumTransactionReceipt>;
     public abstract async getAddressTransactionsCount(address: string, blockTag?: string | number): Promise<number>;
     public abstract async callContractMethod(
-        contractAddress: string,
+        contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes?: Array<string>,
         inputValues?: Array<string>

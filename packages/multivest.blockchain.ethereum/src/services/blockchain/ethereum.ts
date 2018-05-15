@@ -143,12 +143,12 @@ export class EthereumBlockchainService extends BlockchainService {
     }
 
     public callContractMethod(
-        contractAddress: string,
+        contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
         inputValues: Array<string> = []
     ) {
-        return this.blockChainTransportService.callContractMethod(contractAddress, methodName, inputTypes, inputValues);
+        return this.blockChainTransportService.callContractMethod(contractEntity, methodName, inputTypes, inputValues);
     }
 
     public estimateGas(tx: EthereumTransaction) {

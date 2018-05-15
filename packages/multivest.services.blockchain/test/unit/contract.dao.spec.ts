@@ -30,6 +30,13 @@ describe('contract dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
+    it('getByIdAndProjectId() transfers correct arguments', async () => {
+        await dao.getByIdAndProjectId('id', 'projectId');
+
+        expect(collection.findOne).toHaveBeenCalledWith({ id: 'id', projectId: 'projectId' });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
     it('getByAddress() transfers correct arguments', async () => {
         await dao.getByAddress('address');
 
@@ -37,8 +44,16 @@ describe('contract dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
+    it('getByAddressAndProjectId() transfers correct arguments', async () => {
+        await dao.getByAddressAndProjectId('address', 'projectId');
+
+        expect(collection.findOne).toHaveBeenCalledWith({ address: 'address', projectId: 'projectId' });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
     it('should create contract', async () => {
         await dao.createContract(
+            'projectId',
             'address',
             'abi'
         );

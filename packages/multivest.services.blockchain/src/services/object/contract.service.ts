@@ -21,15 +21,24 @@ export class ContractService extends Service {
         return this.contractDao.getById(contractId);
     }
 
+    public getByIdAndProjectId(contractId: string, projectId: string): Promise<Scheme.ContractScheme> {
+        return this.contractDao.getByIdAndProjectId(contractId, projectId);
+    }
+
     public getByAddress(address: string): Promise<Scheme.ContractScheme> {
         return this.contractDao.getByAddress(address);
     }
 
+    public getByAddressAndProjectId(address: string, projectId: string): Promise<Scheme.ContractScheme> {
+        return this.contractDao.getByAddressAndProjectId(address, projectId);
+    }
+
     public createContract(
+        projectId: string,
         address: string,
         abi: any
     ): Promise<Scheme.ContractScheme> {
-        return this.contractDao.createContract(address, abi);
+        return this.contractDao.createContract(projectId, address, abi);
     }
 
     public setAbi(contractId: string, abi: any): Promise<void> {

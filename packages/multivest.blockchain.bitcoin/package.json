@@ -15,7 +15,7 @@
   "scripts": {
     "build": "gulp clean && gulp build",
     "lint": "tslint '{src/**/*.ts,test/**/*.ts}'",
-    "precommit": "npm run lint ; npm run test:coverage ; npm run test:security",
+    "precommit": "npm run lint ; npm run test:coverage ;",
     "test": "jest test/unit",
     "test:integration": "jest test/integration",
     "test:coverage": "jest test/unit --coverage --collectCoverageFrom=*/**/*.ts",

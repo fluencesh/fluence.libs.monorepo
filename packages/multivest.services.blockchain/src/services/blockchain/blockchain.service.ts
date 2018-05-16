@@ -6,7 +6,7 @@ import { Scheme } from '../../types';
 import { ClientService } from '../object/client.service';
 import { ProjectService } from '../object/project.service';
 import { TransactionHashSubscriptionService } from '../object/transaction.hash.subscription.service';
-import { BlockchainTransportService } from './blockchain.transport.service';
+import { BlockchainTransport } from '../transports/blockchain.transport';
 
 export interface Signature {
     v: number;
@@ -15,25 +15,22 @@ export interface Signature {
 }
 
 export abstract class BlockchainService extends Service {
-    protected network: string;
-    protected blockChainTransportService: BlockchainTransportService;
+    protected blockchainTransport: BlockchainTransport;
     protected projectService: ProjectService;
     protected clientService: ClientService;
     protected transactionHashSubscriptionService: TransactionHashSubscriptionService;
 
     constructor(
         pluginManager: PluginManager,
-        network: string,
-        blockChainTransportService: BlockchainTransportService
+        blockchainTransport: BlockchainTransport
     ) {
         super(pluginManager);
 
-        if (!this.isValidNetwork(network)) {
+        if (!this.isValidNetwork(blockchainTransport.getNetworkId())) {
             throw new MultivestError(Errors.WRONG_NETWORK);
         }
 
-        this.network = network;
-        this.blockChainTransportService = blockChainTransportService;
+        this.blockchainTransport = blockchainTransport;
 
         this.projectService = pluginManager.getServiceByClass(ProjectService) as ProjectService;
         this.clientService = pluginManager.getServiceByClass(ClientService) as ClientService;
@@ -43,34 +40,34 @@ export abstract class BlockchainService extends Service {
 
     public abstract isValidNetwork(network: string): boolean;
     public abstract getSymbol(): string;
-    public abstract getHDAddress(index: number): string;
+    public abstract getHDAddress(index: number): Promise<string>;
     public abstract isValidAddress(address: string): boolean;
     public abstract signData(privateKey: Buffer, data: Buffer): Signature;
     public abstract signDataAndStringify(privateKey: Buffer, data: Buffer): string;
     public abstract signTransaction(privateKey: Buffer, txData: Transaction): string;
 
     public getBlockchainId(): string {
-        return this.blockChainTransportService.getBlockchainId();
+        return this.blockchainTransport.getBlockchainId();
     }
 
     public getNetworkId(): string {
-        return this.blockChainTransportService.getNetworkId();
+        return this.blockchainTransport.getNetworkId();
     }
 
     public async getBlockHeight(): Promise<number> {
-        return this.blockChainTransportService.getBlockHeight();
+        return this.blockchainTransport.getBlockHeight();
     }
 
     public async getBlockByHeight(blockHeight: number): Promise<Block> {
-        return this.blockChainTransportService.getBlockByHeight(blockHeight);
+        return this.blockchainTransport.getBlockByHeight(blockHeight);
     }
 
     public async getBlockByHash(blockHash: string): Promise<Block> {
-        return this.blockChainTransportService.getBlockByHash(blockHash);
+        return this.blockchainTransport.getBlockByHash(blockHash);
     }
 
     public async getTransactionByHash(txHash: string): Promise<Transaction> {
-        return this.blockChainTransportService.getTransactionByHash(txHash);
+        return this.blockchainTransport.getTransactionByHash(txHash);
     }
 
     public async sendTransaction(
@@ -87,7 +84,7 @@ export abstract class BlockchainService extends Service {
         txHex: string,
         projectId?: string
     ): Promise<Transaction> {
-        const tx = await this.blockChainTransportService.sendRawTransaction(txHex);
+        const tx = await this.blockchainTransport.sendRawTransaction(txHex);
 
         if (projectId) {
             const project = await this.projectService.getById(projectId);
@@ -104,9 +101,6 @@ export abstract class BlockchainService extends Service {
                     this.getNetworkId(),
                     txHex,
                     project.txMinConfirmations,
-                    true, // subscribed
-                    true, // isProjectActive
-                    true  // isClientActive
                 );
             }
         }
@@ -115,6 +109,6 @@ export abstract class BlockchainService extends Service {
     }
 
     public async getBalance(address: string, minConf: number): Promise<BigNumber> {
-        return this.blockChainTransportService.getBalance(address, minConf);
+        return this.blockchainTransport.getBalance(address, minConf);
     }
 }

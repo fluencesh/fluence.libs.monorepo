@@ -117,7 +117,7 @@ describe('ethereum blockchain', () => {
         contractService = pluginManager.getServiceByClass(ContractService) as ContractService;
         const randomContractAbi = require('./data/random.contract.abi.json');
         const randomContractAddress = '0x85B887d535736080b235a5ea389C2CD256bD3744';
-        randomContract = await contractService.createContract(randomContractAddress, randomContractAbi);
+        randomContract = await contractService.createContract('project id', randomContractAddress, randomContractAbi);
     });
 
     it('should get block by height', async () => {
@@ -262,16 +262,11 @@ describe('ethereum blockchain', () => {
     });
 
     it('should call contract\'s method (without input & single output)', async () => {
-        const contract = {
-            abi: require('./data/random.contract.abi.json'),
-            address: '0x85B887d535736080b235a5ea389C2CD256bD3744'
-        } as Scheme.ContractScheme;
-
         const methodName = 'name';
         // tslint:disable-next-line:no-shadowed-variable
-        const methodAbi = contract.abi.find((methodAbi) => methodAbi.name === methodName);
+        const methodAbi = randomContract.abi.find((methodAbi) => methodAbi.name === methodName);
 
-        const result = await blockchainService.callContractMethod(randomContract.address, methodName);
+        const result = await blockchainService.callContractMethod(randomContract, methodName);
 
         methodAbi.outputs.forEach((output) => {
             expect(typeof result[output.name] === 'string').toBeTruthy();
@@ -286,7 +281,7 @@ describe('ethereum blockchain', () => {
         const types = ['uint256'];
         const values = ['1'];
 
-        const result = await blockchainService.callContractMethod(randomContract.address, methodName, types, values);
+        const result = await blockchainService.callContractMethod(randomContract, methodName, types, values);
 
         methodAbi.outputs.forEach((output) => {
             expect(typeof result[output.name] === 'string').toBeTruthy();

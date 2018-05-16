@@ -1,6 +1,6 @@
 {
   "name": "@applicature-restricted/multivest.blockchain.ethereum",
-  "version": "0.2.29",
+  "version": "0.2.30",
   "private": false,
   "license": "UNLICENSED",
   "description": "Ethereum Blockchain Plugin",
@@ -31,7 +31,7 @@
     "registry": "https://private-registry/repository/fluence/"
   },
   "dependencies": {
-    "@applicature-restricted/multivest.services.blockchain": "^0.2.26",
+    "@applicature-restricted/multivest.services.blockchain": "^0.2.28",
     "@applicature/multivest.core": "^0.1.25",
     "@applicature/multivest.mongodb": "^0.1.16",
     "axios": "^0.18.0",

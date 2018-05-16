@@ -45,8 +45,8 @@ export * from './src/services/webhook/webhook.caller.service';
 
 export * from './src/services/blockchain/blockchain.registry.service';
 export * from './src/services/blockchain/blockchain.service';
-export * from './src/services/blockchain/blockchain.transport.service';
-export * from './src/services/blockchain/managed.blockchain.transport.service';
+export * from './src/services/transports/blockchain.transport';
+export * from './src/services/transports/managed.blockchain.transport.service';
 export * from './src/services/blockchain/json-rpc.proxy';
 
 export * from './src/types';

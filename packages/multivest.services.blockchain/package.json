@@ -1,6 +1,6 @@
 {
   "name": "@applicature-restricted/multivest.services.blockchain",
-  "version": "0.2.27",
+  "version": "0.2.28",
   "private": false,
   "license": "UNLICENSED",
   "description": "BlockPool Services Plugin",
@@ -27,7 +27,7 @@
     "url": "git@bitbucket.com:applicature/multivest.services.blockchain.git"
   },
   "dependencies": {
-    "@applicature/multivest.core": "^0.1.21",
+    "@applicature/multivest.core": "^0.1.25",
     "@applicature/multivest.mongodb": "^0.1.11",
     "agenda": "^1.0.3",
     "axios": "^0.18.0",

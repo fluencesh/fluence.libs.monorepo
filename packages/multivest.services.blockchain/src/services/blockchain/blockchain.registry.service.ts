@@ -1,7 +1,7 @@
 import { Hashtable, PluginManager, Service } from '@applicature/multivest.core';
 import { TransportConnectionService } from '../object/transport.connection.service';
+import { ManagedBlockchainTransportService } from '../transports/managed.blockchain.transport.service';
 import { BlockchainService } from './blockchain.service';
-import { ManagedBlockchainTransportService } from './managed.blockchain.transport.service';
 
 export class BlockchainRegistryService extends Service {
     private registry: Hashtable<BlockchainService>;

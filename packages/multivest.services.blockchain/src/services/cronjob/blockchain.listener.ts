@@ -71,7 +71,7 @@ export abstract class BlockchainListener extends Job {
         await this.processBlocks(processingBlock, publicBlockHeight);
     }
 
-    protected abstract processBlock(publishedBlockHeight: number, block: any): void;
+    protected abstract async processBlock(publishedBlockHeight: number, block: any): Promise<void>;
 
     protected async processBlocks(processSinceBlock: number, publishedBlockHeight: number) {
         const jobId = this.getJobId();

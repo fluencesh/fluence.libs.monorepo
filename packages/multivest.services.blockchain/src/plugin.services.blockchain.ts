@@ -14,7 +14,6 @@ import { MongodbTransportConnectionDao } from './dao/mongodb/transport.connectio
 import { MongodbWebhookActionDao } from './dao/mongodb/webhook.action.dao';
 
 import { BlockchainRegistryService } from './services/blockchain/blockchain.registry.service';
-import { ManagedBlockchainTransportService } from './services/blockchain/managed.blockchain.transport.service';
 import { AddressSubscriptionService } from './services/object/address.subscription.service';
 import { ClientService } from './services/object/client.service';
 import { ContractService } from './services/object/contract.service';
@@ -26,6 +25,7 @@ import { TransactionHashSubscriptionService } from './services/object/transactio
 import { TransactionService } from './services/object/transaction.service';
 import { TransportConnectionService } from './services/object/transport.connection.service';
 import { WebhookActionItemObjectService } from './services/object/webhook.action.service';
+import { ManagedBlockchainTransportService } from './services/transports/managed.blockchain.transport.service';
 import { WebhookCallerService } from './services/webhook/webhook.caller.service';
 
 class BlockchainServicesPlugin extends Plugin<void> {

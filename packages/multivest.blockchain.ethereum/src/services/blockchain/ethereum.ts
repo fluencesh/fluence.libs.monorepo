@@ -1,6 +1,5 @@
 import {
     BlockchainService,
-    BlockchainTransportService,
     ManagedBlockchainTransportService,
     Scheme,
     Signature
@@ -20,26 +19,12 @@ import {
     ethereumValidNetworks,
 } from '../../types';
 import { EthereumBlock } from '../../types';
-import { EthereumTransportService } from '../transports/ethereum.transport';
+import { EthereumTransport } from '../transports/ethereum.transport';
 import { EthersEthereumTransportService, Provider } from '../transports/ethers.ethereum.transport';
 import { ManagedEthereumTransportService } from './managed.ethereum.transport.service';
 
 export class EthereumBlockchainService extends BlockchainService {
-    protected blockChainTransportService: ManagedEthereumTransportService;
-
-    private apiToken: string;
-    private connections: Array<Scheme.TransportConnection>;
-
-    constructor(
-        pluginManager: PluginManager,
-        managedEthereumTransportService: ManagedEthereumTransportService
-    ) {
-        super(
-            pluginManager,
-            managedEthereumTransportService.getNetworkId(),
-            managedEthereumTransportService
-        );
-    }
+    protected blockchainTransport: EthereumTransport;
 
     public getServiceId() {
         return 'ethereum.blockchain.service';
@@ -57,7 +42,7 @@ export class EthereumBlockchainService extends BlockchainService {
         return 'ETH';
     }
 
-    public getHDAddress(index: number): string {
+    public async getHDAddress(index: number): Promise<string> {
         throw new MultivestError('not implemented');
     }
 
@@ -110,7 +95,7 @@ export class EthereumBlockchainService extends BlockchainService {
 
             data: txData.input,
 
-            chainId: ethereumNetworkToChainId[this.network]
+            chainId: ethereumNetworkToChainId[this.getNetworkId()]
         };
 
         const tx = new EthereumTx(txParams);
@@ -123,23 +108,23 @@ export class EthereumBlockchainService extends BlockchainService {
     }
 
     public getGasPrice() {
-        return this.blockChainTransportService.getGasPrice();
+        return this.blockchainTransport.getGasPrice();
     }
 
     public getCode(address: string) {
-        return this.blockChainTransportService.getCode(address);
+        return this.blockchainTransport.getCode(address);
     }
 
     public getLogs(filters: EthereumTopicFilter): Promise<Array<EthereumTopic>> {
-        return this.blockChainTransportService.getLogs(filters);
+        return this.blockchainTransport.getLogs(filters);
     }
 
     public getTransactionReceipt(txHex: string): Promise<EthereumTransactionReceipt> {
-        return this.blockChainTransportService.getTransactionReceipt(txHex);
+        return this.blockchainTransport.getTransactionReceipt(txHex);
     }
 
     public call(tx: EthereumTransaction) {
-        return this.blockChainTransportService.call(tx);
+        return this.blockchainTransport.call(tx);
     }
 
     public callContractMethod(
@@ -148,14 +133,14 @@ export class EthereumBlockchainService extends BlockchainService {
         inputTypes: Array<string> = [],
         inputValues: Array<string> = []
     ) {
-        return this.blockChainTransportService.callContractMethod(contractEntity, methodName, inputTypes, inputValues);
+        return this.blockchainTransport.callContractMethod(contractEntity, methodName, inputTypes, inputValues);
     }
 
     public estimateGas(tx: EthereumTransaction) {
-        return this.blockChainTransportService.estimateGas(tx);
+        return this.blockchainTransport.estimateGas(tx);
     }
 
     public getAddressTransactionsCount(address: string, blockTag?: number | string): Promise<number> {
-        return this.blockChainTransportService.getAddressTransactionsCount(address, blockTag);
+        return this.blockchainTransport.getAddressTransactionsCount(address, blockTag);
     }
 }

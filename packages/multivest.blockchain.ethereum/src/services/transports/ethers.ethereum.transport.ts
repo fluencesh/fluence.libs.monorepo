@@ -1,5 +1,5 @@
-import { Scheme, ContractService } from '@applicature-restricted/multivest.services.blockchain';
-import { Block, MultivestError, PluginManager, Transaction } from '@applicature/multivest.core';
+import { ContractService, Scheme } from '@applicature-restricted/multivest.services.blockchain';
+import { Block, MultivestError, PluginManager, Service, Transaction } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
 import * as EthJsTransaction from 'ethereumjs-tx';
 import { Contract, providers } from 'ethers';
@@ -13,7 +13,7 @@ import {
     EthereumTransactionReceipt,
     ethereumValidNetworks,
 } from '../../types';
-import { EthereumTransportService } from './ethereum.transport';
+import { EthereumTransport } from './ethereum.transport';
 
 export enum Provider {
     JsonRpc = 'json-rpc',
@@ -21,13 +21,16 @@ export enum Provider {
     Infura = 'infura'
 }
 
-export class EthersEthereumTransportService extends EthereumTransportService {
+export class EthersEthereumTransportService extends Service implements EthereumTransport {
     private network: string;
     private provider: any;
     private contractService: ContractService;
+    private transportConnection: Scheme.TransportConnection;
 
     constructor(pluginManager: PluginManager, transportConnection: Scheme.TransportConnection) {
-        super(pluginManager, transportConnection);
+        super(pluginManager);
+
+        this.transportConnection = transportConnection;
 
         this.network = this.transportConnection.networkId;
 
@@ -57,6 +60,18 @@ export class EthersEthereumTransportService extends EthereumTransportService {
 
     public getServiceId() {
         return 'ethers.ethereum.transport.service';
+    }
+
+    public getTransportId() {
+        return 'ethers.ethereum.transport.service';
+    }
+
+    public getBlockchainId() {
+        return ETHEREUM;
+    }
+
+    public getTransportConnection() {
+        return this.transportConnection;
     }
 
     public async getBlockByHash(hash: string) {

@@ -1,50 +1,65 @@
-import { Dao, Hashtable, Job, PluginManager } from '@applicature/multivest.core';
-import { IcoCompositeDao, Scheme, TransactionDao } from '@applicature/multivest.mongodb.ico';
+import { Scheme, TransactionDao } from '@applicature-restricted/multivest.services.blockchain';
+import { Dao, Hashtable, Job, PluginManager, Transaction } from '@applicature/multivest.core';
 import * as Agenda from 'agenda';
 import * as config from 'config';
 import * as logger from 'winston';
 import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';
+import { ManagedBitcoinTransportService } from '../services/transports/managed.bitcoin.transport.service';
+import { AvailableNetwork } from '../types';
 
 export abstract class CompatibleBitcoinTransactionSender extends Job {
-    private daos: Hashtable<IcoCompositeDao>;
+    private daos: Hashtable<Dao<any>>;
+    private blockchainService: BitcoinBlockchainService;
+    private sendFromAddress: string;
+    private privateKey: Buffer;
 
     constructor(
         pluginManager: PluginManager,
-        private blockchainService: BitcoinBlockchainService,
-        private sendFromAddress: string
+        sendFromAddress: string,
+        privateKey: Buffer
     ) {
         super(pluginManager);
+
+        this.sendFromAddress = sendFromAddress;
+        this.privateKey = privateKey;
     }
 
     public async init() {
-        this.daos = await this.pluginManager.get('mongodb').getDaos() as Hashtable<IcoCompositeDao>;
+        this.daos = await this.pluginManager.get('mongodb').getDaos() as Hashtable<Dao<any>>;
+
+        const transportService = new ManagedBitcoinTransportService(this.pluginManager, AvailableNetwork.MAIN_NET);
+        await transportService.init();
+
+        this.blockchainService = new BitcoinBlockchainService(this.pluginManager, transportService);
     }
 
     public async execute() {
         const transactionDao = this.daos.transactions as TransactionDao;
         const transactions = await transactionDao.listByNetworkAndStatus(
             this.blockchainService.getBlockchainId(),
+            this.blockchainService.getNetworkId(),
             Scheme.TransactionStatus.Created
         );
 
         for (const transaction of transactions) {
             logger.info(`${this.getJobId()}: send transaction`, transaction);
 
-
-
             if (!transaction.ref.from[0].address) {
                 transaction.ref.from[0].address = this.sendFromAddress;
             }
 
-            let txHash;
+            let tx: Transaction;
 
             try {
-                txHash = await this.blockchainService.sendTransaction({
-                    fee: transaction.ref.fee,
-                    from: transaction.ref.from,
-                    hash: transaction.ref.hash,
-                    to: transaction.ref.to,
-                });
+                tx = await this.blockchainService.sendTransaction(
+                    this.privateKey,
+                    {
+                        fee: transaction.ref.fee,
+                        from: transaction.ref.from,
+                        hash: transaction.ref.hash,
+                        to: transaction.ref.to,
+                    }
+                );
             }
             catch (error) {
                 logger.error(`transaction sending failed ${transaction.uniqId}`, error);
@@ -53,12 +68,12 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
 
             logger.info(`${this.getJobId()}: transaction sent`, {
                 transaction,
-                txHash,
+                tx
             });
 
             await transactionDao.setHashAndStatus(
                 transaction.id,
-                txHash,
+                tx.hash,
                 Scheme.TransactionStatus.Sent
             );
         }

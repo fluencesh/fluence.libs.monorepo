@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "sourceMap": true, 
+        "outDir": "./dist",
+        "declaration": true,
+        "typeRoots": [
+            "./node_modules/@types",
+            "./@types"
+        ]
+    }
+}

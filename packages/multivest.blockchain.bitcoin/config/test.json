@@ -1,1 +1,7 @@
-{}
+{
+    "multivest": {
+        "blockchainInfo": {
+            "url": "https://testnet.blockchain.info/"
+        }
+    }
+}

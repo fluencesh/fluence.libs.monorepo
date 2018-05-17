@@ -1,11 +1,18 @@
-import { BlockchainListener } from '@applicature-restricted/multivest.blockchain';
+import {
+    BlockchainListener,
+    Scheme,
+    TransactionDao,
+} from '@applicature-restricted/multivest.services.blockchain';
 import { Block, Hashtable, Transaction } from '@applicature/multivest.core';
 import { Plugin as MongoPlugin } from '@applicature/multivest.mongodb';
-import { Scheme, TransactionDao } from '@applicature/multivest.mongodb.ico';
 import * as logger from 'winston';
 
-export abstract class CompatibleBitcoinTxMiningListener extends BlockchainListener {
-    public async processBlock(block: Block) {
+export class CompatibleBitcoinTxMiningListener extends BlockchainListener {
+    public getJobId() {
+        return 'compatible.bitcoin.tx.mining.listener';
+    }
+
+    public async processBlock(publishedBlockHeight: number, block: Block) {
         const txMapping: Hashtable<Transaction> = {};
         const mongoPlugin = this.pluginManager.get('mongodb') as MongoPlugin;
         const transactionDao = await mongoPlugin.getDao('transactions') as TransactionDao;
@@ -20,6 +27,7 @@ export abstract class CompatibleBitcoinTxMiningListener extends BlockchainListen
 
         const transactions = await transactionDao.listByNetworkAndStatus(
             this.blockchainService.getBlockchainId(),
+            this.blockchainService.getNetworkId(),
             Scheme.TransactionStatus.Sent
         );
 
@@ -38,6 +46,7 @@ export abstract class CompatibleBitcoinTxMiningListener extends BlockchainListen
 
                 await transactionDao.setMinedBlock(
                     this.blockchainService.getBlockchainId(),
+                    this.blockchainService.getNetworkId(),
                     tx.hash,
                     block.hash,
                     block.height,

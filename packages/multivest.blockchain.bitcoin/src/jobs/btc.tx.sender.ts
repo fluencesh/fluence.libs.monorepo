@@ -7,8 +7,8 @@ export class BitcoinTransactionSender extends CompatibleBitcoinTransactionSender
     constructor(pluginManager: PluginManager) {
         super(
             pluginManager,
-            new BitcoinBlockchainService(),
-            config.get('multivest.blockchain.bitcoin.sendFromAddress')
+            config.get('multivest.blockchain.bitcoin.sendFromAddress'),
+            Buffer.alloc(0) // FIXME: should pass privateKey
         );
     }
 

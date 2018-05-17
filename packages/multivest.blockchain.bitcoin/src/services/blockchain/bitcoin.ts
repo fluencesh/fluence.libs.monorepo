@@ -1,32 +1,15 @@
 
-import { BlockchainService } from '@applicature-restricted/multivest.blockchain';
-import { Block, Recipient, Sender, Transaction } from '@applicature/multivest.core';
-import { BigNumber } from 'bignumber.js';
-import * as Client from 'bitcoin-core';
-import { Block as OriginalBlock, Transaction as OriginalTransaction } from 'bitcoin-core';
+import { BlockchainService, Signature } from '@applicature-restricted/multivest.services.blockchain';
+import { Block, MultivestError, PluginManager, Recipient, Sender, Transaction } from '@applicature/multivest.core';
 import * as bitcoin from 'bitcoinjs-lib';
 import * as config from 'config';
-import { BITCOIN } from './model';
-
-type NetworkName = 'bitcoin' | 'litecoin' | 'testnet';
+import { BITCOIN } from '../../constants';
+import { Errors } from '../../errors';
+import { AvailableNetwork } from '../../types';
+import { BitcoinTransport } from '../transports/bitcoin.transport';
 
 export class BitcoinBlockchainService extends BlockchainService {
-    private client: Client;
-    private networkName: NetworkName;
-    private network: bitcoin.Network;
-    private masterPublicKey: string;
-
-    constructor(fake?: boolean) {
-        super();
-
-        if (!fake) {
-            this.client = new Client(config.get('multivest.blockchain.bitcoin.providers.native'));
-        }
-
-        this.networkName = config.get('multivest.blockchain.bitcoin.network') as NetworkName;
-        this.network = bitcoin.networks[this.networkName];
-        this.masterPublicKey = config.get('multivest.blockchain.bitcoin.hd.masterPublicKey');
-    }
+    protected blockchainTransport: BitcoinTransport;
 
     public getBlockchainId() {
         return BITCOIN;
@@ -36,118 +19,57 @@ export class BitcoinBlockchainService extends BlockchainService {
         return 'BTC';
     }
 
-    public getHDAddress(index: number) {
-        const hdNode = bitcoin.HDNode.fromBase58(this.masterPublicKey, this.network);
+    public getServiceId() {
+        return `bitcoin.${ this.getNetworkId() }.blockchain.service`;
+    }
 
-        return hdNode.derive(0).derive(index).getAddress().toString();
+    public isValidNetwork(network: string) {
+        return AvailableNetwork.MAIN_NET === network || AvailableNetwork.TEST_NET === network;
+    }
+
+    public getHDAddress(index: number) {
+        return this.blockchainTransport.getHDAddress(index);
     }
 
     public isValidAddress(address: string) {
-        try {
-            bitcoin.address.fromBase58Check(address);
-        }
-        catch (e) {
-            return false;
-        }
-
-        return true;
+        return this.blockchainTransport.isValidAddress(address);
     }
 
-    public async getBlockHeight() {
-        return this.client.getBlockCount();
+    public signTransaction(privateKey: Buffer, txData: Transaction): string {
+        const network = this.getBitcoinLibNetwork();
+
+        const key = bitcoin.ECPair.fromWIF(privateKey.toString('utf8'), network);
+        
+        const tx = new bitcoin.TransactionBuilder();
+        tx.addInput(txData.hash, 0);
+        tx.addOutput(txData.to[0].address, txData.to[0].amount.toNumber());
+        tx.sign(0, key);
+
+        return tx.build().toHex();
     }
 
-    public parseBlock(block: OriginalBlock): Block {
+    public signData(privateKey: Buffer, data: Buffer): Signature {
+        const network = this.getBitcoinLibNetwork();
+        const keyPair = bitcoin.ECPair.fromWIF(privateKey.toString('utf8'), network);
+        const signature = keyPair.sign(data) as any;
+
+        // HACK: props `r` and `s` are hidden by `bitcoin-lib`'s declaration. their type is BigInteger.
         return {
-            difficulty: block.difficulty,
-            fee: null,
-            hash: block.hash,
-            height: block.height,
-            network: this.networkName,
-            nonce: block.nonce,
-            parentHash: block.previousblockhash,
-            size: block.size,
-            time: block.time,
-            transactions: block.tx.map((tx: any) => this.convertTransaction(block, tx)),
-        };
+            r: signature.r.toBuffer(32),
+            s: signature.s.toBuffer(32)
+        } as Signature;
     }
 
-    public convertTransaction(block: OriginalBlock, tx: any): Transaction {
-        const senders: Array<Sender> = [];
-        const recipients: Array<Recipient> = [];
-        tx.vout.forEach((vout: any) => {
-            if (vout.scriptPubKey && vout.scriptPubKey.addresses && vout.scriptPubKey.addresses[0]) {
-                recipients.push({
-                    address: vout.scriptPubKey.addresses[0],
-                    amount: new BigNumber(100000000).times(vout.value),
-                });
-            }
-        });
-        const result: Transaction = {
-            blockHash: block.hash,
-            blockHeight: block.height,
-            blockTime: block.time,
-            fee: null,
-            from: senders,
-            hash: tx.hash,
-            to: recipients,
-        };
-        return result;
+    public signDataAndStringify(privateKey: Buffer, data: Buffer): string {
+        const signature = this.signData(privateKey, data);
+        const hex = Buffer.alloc(64, Buffer.concat([ signature.r, signature.s ])).toString('hex');
+
+        return `0x${ hex }`;
     }
 
-    public parseTransaction(transaction: OriginalTransaction): Transaction {
-        const senders: Array<Sender> = [];
-        const recipients: Array<Recipient> = [];
-
-        transaction.details.forEach((item: any) => {
-            if (item.category === 'send') {
-                senders.push({
-                    address: item.address,
-                });
-            }
-            else {
-                recipients.push({
-                   address: item.address,
-                   amount: new BigNumber(item.amount)
-                });
-            }
-        });
-
-        return {
-            blockHash: transaction.blockhash,
-            blockHeight: transaction.blockindex,
-            fee: new BigNumber(transaction.fee),
-            from: senders,
-            hash: transaction.txid,
-            to: recipients,
-        };
-    }
-
-    public async getBlockByHeight(blockHeight: number) {
-        const blockHash = await this.client.getBlockHash(blockHeight);
-        const block = await this.client.getBlockByHash(blockHash, { extension: 'json' });
-        return this.parseBlock(block);
-    }
-
-    public async getTransactionByHash(txHash: string) {
-        const tx = await this.client.getTransactionByHash(txHash, { extension: 'json', summary: true });
-        return this.parseTransaction(tx);
-    }
-
-    public async sendTransaction(transaction: Partial<Transaction>) {
-        return this.client.sendToAddress(
-            transaction.to[0].address.toString(),
-            transaction.to[0].amount.toString()
-        );
-    }
-
-    public sendRawTransaction(txHex: string) {
-        return this.client.sendRawTransaction(txHex);
-    }
-
-    public async getBalance(address: string, minConf = 1) {
-        return new BigNumber(
-            await this.client.getBalance(address, minConf)
-        );
+    private getBitcoinLibNetwork(): bitcoin.Network {
+        return this.getNetworkId() === AvailableNetwork.MAIN_NET
+            ? bitcoin.networks.bitcoin
+            : bitcoin.networks.testnet;
     }
 }

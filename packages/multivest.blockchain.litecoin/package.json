@@ -1,6 +1,6 @@
 {
   "name": "@applicature-restricted/multivest.blockchain.litecoin",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "private": false,
   "license": "UNLICENSED",
   "description": "Litecoin Blockchain Plugin",
@@ -15,7 +15,7 @@
   "scripts": {
     "build": "gulp clean && gulp build",
     "lint": "tslint '{src/**/*.ts,test/**/*.ts}'",
-    "precommit": "npm run lint ; npm run test:coverage ; npm run test:security",
+    "precommit": "npm run lint ; npm run test:coverage",
     "test": "jest",
     "test:coverage": "jest --coverage --collectCoverageFrom=*/**/*.ts",
     "test:ci": "jest --coverage --testResultsProcessor ./node_modules/jest-junit --collectCoverageFrom=*/**/*.ts",

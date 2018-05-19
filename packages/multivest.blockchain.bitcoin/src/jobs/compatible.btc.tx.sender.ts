@@ -3,11 +3,14 @@ import { Dao, Hashtable, Job, PluginManager, Transaction } from '@applicature/mu
 import * as Agenda from 'agenda';
 import * as config from 'config';
 import * as logger from 'winston';
+import { BitcoinTransport } from '../..';
 import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';
 import { ManagedBitcoinTransportService } from '../services/transports/managed.bitcoin.transport.service';
 import { AvailableNetwork } from '../types';
 
 export abstract class CompatibleBitcoinTransactionSender extends Job {
+    protected networkId: AvailableNetwork;
+
     private daos: Hashtable<Dao<any>>;
     private blockchainService: BitcoinBlockchainService;
     private sendFromAddress: string;
@@ -16,10 +19,12 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
     constructor(
         pluginManager: PluginManager,
         sendFromAddress: string,
-        privateKey: Buffer
+        privateKey: Buffer,
+        networkId: AvailableNetwork
     ) {
         super(pluginManager);
 
+        this.networkId = networkId;
         this.sendFromAddress = sendFromAddress;
         this.privateKey = privateKey;
     }
@@ -27,10 +32,7 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
     public async init() {
         this.daos = await this.pluginManager.get('mongodb').getDaos() as Hashtable<Dao<any>>;
 
-        const transportService = new ManagedBitcoinTransportService(this.pluginManager, AvailableNetwork.MAIN_NET);
-        await transportService.init();
-
-        this.blockchainService = new BitcoinBlockchainService(this.pluginManager, transportService);
+        this.blockchainService = await this.prepareBlockchainService();
     }
 
     public async execute() {
@@ -78,4 +80,6 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
             );
         }
     }
+
+    protected abstract async prepareBlockchainService(): Promise<BitcoinBlockchainService>;
 }

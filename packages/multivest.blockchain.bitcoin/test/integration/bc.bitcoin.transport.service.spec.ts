@@ -82,7 +82,7 @@ describe('bc bitcoin transport service ', () => {
     });
 
     it('should get tx by hash', async () => {
-        const hash = '0x3d8098f7c22eab54e3ca338dca6cbff8624ad73e2c8d9ad0efa287412cd70d65';
+        const hash = '0xbd9094c980164e9a99943bc948fd56b0521911866816c53567c48716cad8d49b';
 
         const tx = await transport.getTransactionByHash(hash);
 

@@ -1,7 +1,6 @@
 import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
 import { Block, PluginManager, Service, Transaction } from '@applicature/multivest.core';
 import BigNumber from 'bignumber.js';
-// import { Client, Block as BitcoinCoreBlock, Transaction as BitcoinCoreTransaction } from 'bitcoin-core';
 import * as Client from 'bitcoin-core';
 import { get, has } from 'lodash';
 import { STD_VALUE_MULTIPLIER } from '../../constants';
@@ -9,7 +8,7 @@ import { AbstractBitcoinTransportService } from './abstract.bitcoin.transport';
 import { BitcoinTransport } from './bitcoin.transport';
 
 export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
-    private client: Client;
+    protected client: Client;
 
     constructor(pluginManager: PluginManager, transportConnection: Scheme.TransportConnection) {
         super(pluginManager, transportConnection);
@@ -26,7 +25,9 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
     }
 
     public async getBalance(address: string, minConf: number = 1): Promise<BigNumber> {
-        const balance = await this.client.getBalance(address, minConf);
+        const preparedHash = this.prepareHash(address);
+
+        const balance = await this.client.getBalance(preparedHash, minConf);
 
         return new BigNumber(balance);
     }
@@ -100,7 +101,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
     private convertTransaction(tx: any, block: Block = {} as Block): Transaction {
         const convertedTx = {
             blockHash: `0x${tx.blockhash}`,
-            hash: `0x${tx.hash}`,
+            hash: `0x${tx.txid}`,
 
             from: [{
                 // NOTICE: somehow sender's address isn't filled by lib
@@ -112,7 +113,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
             })),
         } as Transaction;
 
-        if (block) {
+        if (Object.keys(block).length > 0) {
             convertedTx.blockHeight = block.height;
             convertedTx.blockTime = block.time;
         }

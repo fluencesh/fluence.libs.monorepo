@@ -11,6 +11,10 @@ import { BitcoinTransport } from '../transports/bitcoin.transport';
 export class BitcoinBlockchainService extends BlockchainService {
     protected blockchainTransport: BitcoinTransport;
 
+    constructor(pluginManager: PluginManager, blockchainTransport: BitcoinTransport) {
+        super(pluginManager, blockchainTransport);
+    }
+
     public getBlockchainId() {
         return BITCOIN;
     }

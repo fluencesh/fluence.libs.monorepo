@@ -2,9 +2,6 @@ import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
 import { Block, MultivestError, PluginManager, Service, Transaction } from '@applicature/multivest.core';
 import BigNumber from 'bignumber.js';
 import {
-    address as BitcoinLibAddress,
-    HDNode,
-    networks as BitcoinLibNetworks,
     Transaction as BitcoinLibTx,
 } from 'bitcoinjs-lib';
 import * as config from 'config';

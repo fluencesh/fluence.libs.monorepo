@@ -35,7 +35,7 @@ export class ManagedBitcoinTransportService extends ManagedBlockchainTransportSe
         return this.transportServices[0].isValidAddress(address);
     }
 
-    protected prepareTransportServices(connections: Array<Scheme.TransportConnection>) {
+    protected prepareTransportServices(connections: Array<Scheme.TransportConnection>): Array<BitcoinTransport> {
         return connections.map((con) => new BiBitcoinTransportService(this.pluginManager, con));
     }
 

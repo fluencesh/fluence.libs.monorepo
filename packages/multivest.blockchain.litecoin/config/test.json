@@ -23,10 +23,11 @@
       "litecoin": {
         "providers": {
           "native": {
-            "host": "172.31.12.100",
-            "network": "mainnet",
-            "username": "clout",
-            "password": "owikfq3oij21eojfw4oif"
+            "host": "94.130.216.246",
+            "port": "19332",
+            "network": "testnet",
+            "username": "test",
+            "password": "test"
           }
         },
         "listener": {

@@ -18,7 +18,7 @@ import { createServer, Server, ServerRequest, ServerResponse } from 'http';
 import { Db, MongoClient } from 'mongodb';
 import { promisify } from 'util';
 import { EthereumBlockchainService } from '../../src/services/blockchain/ethereum';
-import { ManagedEthereumTransportService } from '../../src/services/blockchain/managed.ethereum.transport.service';
+import { ManagedEthereumTransportService } from '../../src/services/transports/managed.ethereum.transport.service';
 
 describe('address subscription', () => {
     const sinceBlock: number = 2143395;

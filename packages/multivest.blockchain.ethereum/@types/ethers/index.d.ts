@@ -1,7 +1,10 @@
+import { BigNumber } from '../../../multivest.services.blockchain/node_modules/bignumber.js';
+
 declare module 'ethers' {
   class Contract {
-    // [ index: string ]: Function;
     functions: {[ funName: string ]: (...params: Array<any>) => Promise<any> };
+
+    estimate: {[ funName: string ]: (...params: Array<any>) => Promise<BigNumber> }
 
     constructor(address: string, abi: any, provider: providers.Provider);
 

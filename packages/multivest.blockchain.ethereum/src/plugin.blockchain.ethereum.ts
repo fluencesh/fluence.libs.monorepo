@@ -1,8 +1,8 @@
 import { Plugin, Service } from '@applicature/multivest.core';
 import { Plugin as MongodbPlugin } from '@applicature/multivest.mongodb';
 import { EthereumBlockchainService } from './services/blockchain/ethereum';
-import { ManagedEthereumTransportService } from './services/blockchain/managed.ethereum.transport.service';
 import { EthersEthereumTransportService } from './services/transports/ethers.ethereum.transport';
+import { ManagedEthereumTransportService } from './services/transports/managed.ethereum.transport.service';
 
 class EthereumBlockchainPlugin extends Plugin<any> {
     public getPluginId() {

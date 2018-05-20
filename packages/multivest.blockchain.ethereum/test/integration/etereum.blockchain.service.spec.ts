@@ -1,4 +1,8 @@
-import { MongodbTransportConnectionDao, Scheme, ContractService } from '@applicature-restricted/multivest.services.blockchain';
+import {
+    ContractService,
+    MongodbTransportConnectionDao,
+    Scheme,
+} from '@applicature-restricted/multivest.services.blockchain';
 import { PluginManager } from '@applicature/multivest.core';
 import BigNumber from 'bignumber.js';
 import * as config from 'config';
@@ -6,7 +10,7 @@ import { utils } from 'ethers';
 import { has } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
 import { EthereumBlockchainService } from '../../src/services/blockchain/ethereum';
-import { ManagedEthereumTransportService } from '../../src/services/blockchain/managed.ethereum.transport.service';
+import { ManagedEthereumTransportService } from '../../src/services/transports/managed.ethereum.transport.service';
 import { EthereumBlock, EthereumEvent, EthereumTopic, EthereumTopicFilter, EthereumTransaction } from '../../src/types';
 
 describe('ethereum blockchain', () => {
@@ -286,5 +290,30 @@ describe('ethereum blockchain', () => {
         methodAbi.outputs.forEach((output) => {
             expect(typeof result[output.name] === 'string').toBeTruthy();
         });
+    });
+
+    it('should get gas estimate of contract\'s method (without input & single output)', async () => {
+        const methodName = 'name';
+        // tslint:disable-next-line:no-shadowed-variable
+        const methodAbi = randomContract.abi.find((methodAbi) => methodAbi.name === methodName);
+
+        const result = await blockchainService.contractMethodGasEstimate(randomContract, methodName);
+
+        expect(isCustomBn(result)).toBeTruthy();
+        expect(result.toString()).toEqual('0');
+    });
+
+    it('should call contract\'s method (with input & multiply output)', async () => {
+        const methodName = 'allOf';
+        // tslint:disable-next-line:no-shadowed-variable
+        const methodAbi = randomContract.abi.find((methodAbi) => methodAbi.name === methodName);
+
+        const types = ['uint256'];
+        const values = ['1'];
+
+        const result = await blockchainService.contractMethodGasEstimate(randomContract, methodName, types, values);
+
+        expect(isCustomBn(result)).toBeTruthy();
+        expect(result.toString()).toEqual('0');
     });
 });

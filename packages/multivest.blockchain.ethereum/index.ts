@@ -1,5 +1,5 @@
 export * from './src/services/blockchain/ethereum';
-export * from './src/services/blockchain/managed.ethereum.transport.service';
+export * from './src/services/transports/managed.ethereum.transport.service';
 
 export * from './src/services/contracts/contract';
 export * from './src/services/contracts/erc20.contract';

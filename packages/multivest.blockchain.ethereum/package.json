@@ -1,6 +1,6 @@
 {
   "name": "@applicature-restricted/multivest.blockchain.ethereum",
-  "version": "0.2.30",
+  "version": "0.2.31",
   "private": false,
   "license": "UNLICENSED",
   "description": "Ethereum Blockchain Plugin",

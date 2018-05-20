@@ -90,6 +90,17 @@ export class ManagedEthereumTransportService extends ManagedBlockchainTransportS
         return transport.callContractMethod(contractEntity, methodName, inputTypes, inputValues);
     }
 
+    public async contractMethodGasEstimate(
+        contractEntity: Scheme.ContractScheme,
+        methodName: string,
+        inputTypes: Array<string> = [],
+        inputValues: Array<string> = []
+    ): Promise<any> {
+        const transport = await this.getActiveTransportService();
+
+        return transport.contractMethodGasEstimate(contractEntity, methodName, inputTypes, inputValues);
+    }
+
     protected prepareTransportServices(connections: Array<Scheme.TransportConnection>) {
         return connections.map((con) => new EthersEthereumTransportService(this.pluginManager, con));
     }

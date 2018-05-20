@@ -22,4 +22,10 @@ export interface EthereumTransport extends BlockchainTransport {
         inputTypes?: Array<string>,
         inputValues?: Array<string>
     ): Promise<any>;
+    contractMethodGasEstimate(
+        contractEntity: Scheme.ContractScheme,
+        methodName: string,
+        inputTypes?: Array<string>,
+        inputValues?: Array<string>
+    ): Promise<any>;
 }

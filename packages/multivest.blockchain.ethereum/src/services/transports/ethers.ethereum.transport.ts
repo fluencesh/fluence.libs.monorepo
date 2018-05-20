@@ -191,6 +191,18 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         return this.convertContractMethodResponse(abiItem, result);
     }
 
+    public async contractMethodGasEstimate(
+        contractEntity: Scheme.ContractScheme,
+        methodName: string,
+        inputTypes: Array<string> = [],
+        inputValues: Array<string> = []
+    ): Promise<BigNumber> {
+        const contract = new Contract(contractEntity.address, contractEntity.abi, this.provider);
+        const methodSignature = `${methodName}(${inputTypes.join(',')})`;
+
+        return contract.estimate[methodSignature](...inputValues);
+    }
+
     private convertContractMethodResponse(abiItem: Scheme.EthereumContractAbiItem, result: Array<any> | any): any {
         // NOTICE: if output length === 1 then result will be a value.
         // NOTICE: if output length > 1 then result will be an Array.

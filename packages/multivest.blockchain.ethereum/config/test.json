@@ -14,6 +14,9 @@
                 "senderPrivateAddress": "0x",
                 "chainId": "4"
             }
+        },
+        "jwt": {
+            "secret": "secret"
         }
     }
 }

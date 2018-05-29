@@ -98,11 +98,24 @@ describe('ethereum blockchain', () => {
     });
 
     it('should transfer correct params in `estimateGas`', async () => {
-        const tx = { to: 'to', input: 'input' } as any as EthereumTransaction;
+        const tx = {
+            to: [{ address: 'to', amount: 0 as any }],
+            input: 'input',
+            gasLimit: 'gasLimit' as any,
+            gasPrice: 'gasPrice' as any,
+            nonce: 0,
+        } as EthereumTransaction;
 
         await transportService.estimateGas(tx);
 
-        expect(ProviderMock.estimateGas).toHaveBeenCalledWith(tx);
+        expect(ProviderMock.estimateGas).toHaveBeenCalledWith({
+            data: tx.input,
+            gasLimit: tx.gasLimit,
+            gasPrice: tx.gasPrice,
+            nonce: tx.nonce,
+            to: tx.to[0].address,
+            value: tx.to[0].amount
+        });
         expect(ProviderMock.estimateGas).toHaveBeenCalledTimes(1);
     });
 

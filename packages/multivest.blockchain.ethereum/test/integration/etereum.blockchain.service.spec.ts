@@ -175,7 +175,7 @@ describe('ethereum blockchain', () => {
 
     it('should call contract\'s method', async () => {
         const tx = {
-            to: '0xab13665b08d9dfcb6a323ed9148e5fe74ea15ca3',
+            to: [ { address: '0xab13665b08d9dfcb6a323ed9148e5fe74ea15ca3' } ],
             input: utils.id('name()').substring(0, 10),
         } as any as EthereumTransaction;
 
@@ -194,7 +194,7 @@ describe('ethereum blockchain', () => {
 
     it('should get estimated gas', async () => {
         const tx = {
-            to: '0x1d45e9Ac123985c8F8F67387caE9CdFd9B24AeF3',
+            to: [ { address: '0x1d45e9Ac123985c8F8F67387caE9CdFd9B24AeF3' } ],
             input: utils.id('mintingFinished()').substring(0, 10),
         } as any as EthereumTransaction;
 

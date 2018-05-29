@@ -121,7 +121,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
 
     public async call(tx: EthereumTransaction): Promise<string> {
         return this.provider.call({
-            to: tx.to,
+            to: tx.to[0].address,
             nonce: tx.nonce,
             gasLimit: tx.gasLimit,
             gasPrice: tx.gasPrice,
@@ -138,8 +138,15 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         return this.provider.getBalance(address);
     }
 
-    public async estimateGas(transaction: EthereumTransaction): Promise<number> {
-        return this.provider.estimateGas(transaction);
+    public async estimateGas(tx: EthereumTransaction): Promise<number> {
+        return this.provider.estimateGas({
+            to: tx.to[0].address,
+            nonce: tx.nonce,
+            gasLimit: tx.gasLimit,
+            gasPrice: tx.gasPrice,
+            data: tx.input,
+            value: tx.to[0].amount
+        });
     }
 
     public async getGasPrice(): Promise<BigNumber> {

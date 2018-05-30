@@ -1,5 +1,6 @@
 import { createHash } from 'crypto';
 import { random } from 'lodash';
+import { generate } from 'randomstring';
 import { v1 as generateId } from 'uuid';
 import { Scheme } from './../src/types';
 
@@ -41,6 +42,13 @@ export function randomClient(): Scheme.Client {
 }
 
 export function randomProject(): Scheme.Project {
+    const salt = generate({ length: 64, charset: '1234567890abcdef' });
+    const token = generate({ length: 64, charset: '1234567890abcdef' });
+    const saltyToken = createHash('sha256')
+        .update(token)
+        .update(salt)
+        .digest('hex');
+
     return {
         clientId: generateId(),
 
@@ -49,13 +57,16 @@ export function randomProject(): Scheme.Project {
 
         webhookUrl: `https://www.${generateId()}.eu`,
         failedRetryCount: random(0, 5),
-        apiKey: generateId(),
 
         sharedSecret: `secret_${generateId()}`,
 
         createdAt: new Date(),
 
         txMinConfirmations: random(0, 10),
+
+        token,
+        salt,
+        saltyToken,
 
         removedAt: null,
         isRemoved: false

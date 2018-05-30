@@ -1,6 +1,8 @@
+import { MultivestError } from '@applicature/multivest.core';
 import { MongoDBDao } from '@applicature/multivest.mongodb';
-import { v1 as generateId } from 'uuid';
+import { pick } from 'lodash';
 import * as logger from 'winston';
+import { Errors } from '../../errors';
 import { Scheme } from '../../types';
 import { ProjectDao } from '../project.dao';
 
@@ -23,7 +25,9 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
         webhookUrl: string,
         sharedSecret: string,
         status: Scheme.ProjectStatus,
-        txMinConfirmations: number
+        txMinConfirmations: number,
+        saltyToken: string,
+        salt: string
     ): Promise<Scheme.Project> {
         return this.create({
             clientId,
@@ -31,9 +35,10 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
             webhookUrl,
             sharedSecret,
             status,
-            apiKey: generateId(),
             createdAt: new Date(),
             txMinConfirmations,
+            saltyToken,
+            salt,
             isRemoved: false,
             removedAt: null
         });
@@ -48,20 +53,6 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
     public async getByIdActiveOnly(projectId: string) {
         return this.get({
             id: projectId,
-            status: Scheme.ProjectStatus.Active,
-            isRemoved: false
-        });
-    }
-
-    public async getByApiKey(apiKey: string): Promise<Scheme.Project> {
-        return this.get({
-            apiKey
-        });
-    }
-
-    public async getByApiKeyActiveOnly(apiKey: string): Promise<Scheme.Project> {
-        return this.get({
-            apiKey,
             status: Scheme.ProjectStatus.Active,
             isRemoved: false
         });
@@ -191,6 +182,21 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
                 }
             }
         );
+
+        return;
+    }
+
+    public async setToken(
+        projectId: string,
+        saltyToken: string,
+        salt: string
+    ) {
+        await this.updateRaw({ id: projectId }, {
+            $set: {
+                saltyToken,
+                salt
+            }
+        });
 
         return;
     }

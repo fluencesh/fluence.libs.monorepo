@@ -3,6 +3,9 @@
     "mongodb": {
       "url": "mongodb://localhost/fluence",
       "options": null
+    },
+    "jwt": {
+      "secret": "Killer is Bill"
     }
   }
 }

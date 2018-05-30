@@ -26,7 +26,7 @@
     "url": "git@bitbucket.com:applicature/multivest.blockchain.litecoin.git"
   },
   "dependencies": {
-    "@applicature-restricted/multivest.blockchain.bitcoin": "^0.1.4",
+    "@applicature-restricted/multivest.blockchain.bitcoin": "^0.2.1",
     "@applicature-restricted/multivest.services.blockchain": "^0.2.28",
     "@applicature/multivest.core": "^0.1.21",
     "@applicature/multivest.mongodb": "^0.1.11",
@@ -41,6 +41,7 @@
     "winston": "^2.4.2"
   },
   "devDependencies": {
+    "@types/agenda": "^1.0.3",
     "@types/bitcoinjs-lib": "^3.4.0",
     "@types/config": "0.0.33",
     "@types/jest": "^22.2.3",

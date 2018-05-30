@@ -1,12 +1,13 @@
 import * as config from 'config';
-import { random, pick, omit } from 'lodash';
+import { omit, pick, random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
+import { generate } from 'randomstring';
 import { MongodbProjectDao } from '../../src/dao/mongodb/project.dao';
 import { Scheme } from '../../src/types';
 import { randomProject } from '../helper';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('exchange dao', () => {
+describe('project dao', () => {
     let dao: MongodbProjectDao;
     let collection: any;
 
@@ -26,13 +27,6 @@ describe('exchange dao', () => {
         await dao.getById('id');
 
         expect(collection.findOne).toHaveBeenCalledWith({ id: 'id' });
-        expect(collection.findOne).toHaveBeenCalledTimes(1);
-    });
-
-    it('getByApiKey() transfers correct arguments', async () => {
-        await dao.getByApiKey('api-key');
-
-        expect(collection.findOne).toHaveBeenCalledWith({ apiKey: 'api-key' });
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
@@ -78,7 +72,9 @@ describe('exchange dao', () => {
             data.webhookUrl,
             data.sharedSecret,
             data.status,
-            data.txMinConfirmations
+            data.txMinConfirmations,
+            data.saltyToken,
+            data.salt
         );
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);
@@ -122,6 +118,30 @@ describe('exchange dao', () => {
             {
                 $set: {
                     status: Scheme.ProjectStatus.Active
+                }
+            }
+        );
+        expect(collection.updateMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('setToken() transfers correct arguments', async () => {
+        const salt = generate();
+        const saltyToken = generate();
+
+        await dao.setToken(
+            'id',
+            saltyToken,
+            salt
+        );
+
+        expect(collection.updateMany).toHaveBeenCalledWith(
+            {
+                id: 'id'
+            },
+            {
+                $set: {
+                    salt,
+                    saltyToken
                 }
             }
         );

@@ -3,6 +3,9 @@
     "mongodb": {
       "url": "mongodb://localhost/multivest",
       "options": null
+    },
+    "jwt": {
+      "secret": "Killer is Bill"
     }
   }
 }

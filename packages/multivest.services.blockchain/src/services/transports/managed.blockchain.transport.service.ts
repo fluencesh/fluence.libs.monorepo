@@ -38,7 +38,7 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
 
     public async init() {
         this.transportConnectionService =
-            this.pluginManager.getServiceByClass(TransportConnectionService) as TransportConnectionService;
+            this.pluginManager.getService('transport.connection.service') as TransportConnectionService;
 
         const connections = await this.transportConnectionService.listByBlockchainAndNetwork(
             this.getBlockchainId(),

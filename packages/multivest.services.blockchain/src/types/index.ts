@@ -41,7 +41,9 @@ export namespace Scheme {
 
         txMinConfirmations: number;
 
-        apiKey: string;
+        token?: string;
+        salt?: string;
+        saltyToken?: string;
 
         sharedSecret: string;
 
@@ -241,5 +243,10 @@ export namespace Scheme {
         params: Hashtable<any>;
 
         createdAt: Date;
+    }
+
+    export interface ProjectJwtScheme {
+        projectId: string;
+        salt: string;
     }
 }

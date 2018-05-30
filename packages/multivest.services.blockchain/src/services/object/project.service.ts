@@ -1,12 +1,26 @@
-import { PluginManager, Service } from '@applicature/multivest.core';
+import { MultivestError, PluginManager, Service } from '@applicature/multivest.core';
 import { Plugin } from '@applicature/multivest.mongodb';
+import * as config from 'config';
+import { createHash } from 'crypto';
+import * as jwt from 'jsonwebtoken';
+import { generate } from 'randomstring';
+import { v1 as generateId } from 'uuid';
 import { ProjectDao } from '../../dao/project.dao';
+import { Errors } from '../../errors';
 import { Scheme } from '../../types';
 import { AddressSubscriptionService } from './address.subscription.service';
 import { EthereumContractSubscriptionService } from './ethereum.contract.subscription.service';
 import { TransactionHashSubscriptionService } from './transaction.hash.subscription.service';
 
-export abstract class ProjectService extends Service {
+const generateRandomHash = () => generate({ charset: '0123456789abcdef', length: 64 });
+
+interface TokenData {
+    token: string;
+    salt: string;
+    saltyToken: string;
+}
+
+export class ProjectService extends Service {
     protected projectDao: ProjectDao;
     protected addressSubscriptionService: AddressSubscriptionService;
     protected transactionHashSubscriptionService: TransactionHashSubscriptionService;
@@ -41,14 +55,22 @@ export abstract class ProjectService extends Service {
         status: Scheme.ProjectStatus,
         txMinConfirmations: number
     ): Promise<Scheme.Project> {
-        return this.projectDao.createProject(
+        const tokenData = this.createToken();
+
+        const project = await this.projectDao.createProject(
             clientId,
             name,
             webhookUrl,
             sharedSecret,
             status,
-            txMinConfirmations
+            txMinConfirmations,
+            tokenData.saltyToken,
+            tokenData.salt
         );
+
+        project.token = tokenData.token;
+
+        return project;
     }
 
     public async getById(projectId: string): Promise<Scheme.Project> {
@@ -140,12 +162,47 @@ export abstract class ProjectService extends Service {
         return;
     }
 
-    public async getByApiKey(apiKey: string) {
-        return this.projectDao.getByApiKey(apiKey);
-    }
-
     public async removeProject(projectId: string): Promise<void> {
         await this.projectDao.removeProject(projectId);
+    }
+
+    public async changeToken(projectId: string): Promise<Scheme.Project> {
+        const project = await this.getById(projectId);
+        if (!project) {
+            throw new MultivestError(Errors.PROJECT_NOT_FOUND);
+        }
+
+        const tokenData = this.createToken();
+        project.token = tokenData.token;
+        project.salt = tokenData.salt;
+        project.saltyToken = tokenData.saltyToken;
+
+        this.projectDao.setToken(
+            project.id,
+            project.saltyToken,
+            project.salt
+        );
+
+        return project;
+    }
+
+    public generateSaltyToken(token: string, salt: string) {
+        return createHash('sha256')
+            .update(token)
+            .update(salt)
+            .digest('hex');
+    }
+
+    private createToken(): TokenData {
+        const token = generateRandomHash();
+        const salt = generateRandomHash();
+        const saltyToken = this.generateSaltyToken(token, salt);
+
+        return {
+            token,
+            salt,
+            saltyToken
+        };
     }
 
     private async modifySubscriptionStatus(projectId: string, isActive: boolean): Promise<any> {

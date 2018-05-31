@@ -41,6 +41,14 @@ export class MongoContractDao extends MongoDBDao<Scheme.ContractScheme> implemen
         });
     }
 
+    public async listByFabricStatus(isFabric: boolean): Promise<Array<Scheme.ContractScheme>> {
+        return this.listRaw({ isFabric });
+    }
+
+    public async listByPublicStatus(isPublic: boolean): Promise<Array<Scheme.ContractScheme>> {
+        return this.listRaw({ isPublic });
+    }
+
     public async createContract(
         projectId: string,
         address: string,
@@ -49,7 +57,9 @@ export class MongoContractDao extends MongoDBDao<Scheme.ContractScheme> implemen
         return this.create({
             projectId,
             address,
-            abi
+            abi,
+            isFabric: false,
+            isPublic: false,
         });
     }
 
@@ -64,5 +74,21 @@ export class MongoContractDao extends MongoDBDao<Scheme.ContractScheme> implemen
         );
 
         return;
+    }
+
+    public async markAsFabric(contractId: string): Promise<void> {
+        await this.updateRaw({ id: contractId }, {
+            $set: {
+                isFabric: true
+            }
+        });
+    }
+
+    public async markAsPublic(contractId: string): Promise<void> {
+        await this.updateRaw({ id: contractId }, {
+            $set: {
+                isPublic: true
+            }
+        });
     }
 }

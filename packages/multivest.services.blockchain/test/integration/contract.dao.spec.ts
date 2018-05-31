@@ -1,16 +1,14 @@
 import * as config from 'config';
 import { createHash } from 'crypto';
-import { random, get } from 'lodash';
+import { get, random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
 import { v1 as generateId } from 'uuid';
 import { MongoContractDao } from '../../src/dao/mongodb/contract.dao';
-import { ContractService } from '../../src/services/object/contract.service';
 import { Scheme } from '../../src/types';
 import { randomContract } from '../helper';
 import { getRandomAbi } from '../helper';
 
-describe('transport connection service', () => {
-    let service: ContractService;
+describe('contract dao', () => {
     let dao: MongoContractDao;
     const contracts: Array<Scheme.ContractScheme> = [];
     const contractsCount: number = 15;
@@ -25,9 +23,6 @@ describe('transport connection service', () => {
         for (let i = 0; i < contractsCount; i++) {
             contracts.push(await dao.create(randomContract()));
         }
-
-        service = new ContractService(null);
-        (service as any).contractDao = dao;
     });
 
     beforeEach(() => {
@@ -62,6 +57,22 @@ describe('transport connection service', () => {
         expect(got).toEqual(contract);
     });
 
+    it('should get list of contracts by fabric status and projectId', async () => {
+        const filtered = contracts.filter((c) => c.isFabric === contract.isFabric);
+
+        const got = await dao.listByFabricStatus(contract.isFabric);
+
+        expect(got).toEqual(filtered);
+    });
+
+    it('should get list of contracts by public status and projectId', async () => {
+        const filtered = contracts.filter((c) => c.isPublic === contract.isPublic);
+
+        const got = await dao.listByPublicStatus(contract.isPublic);
+
+        expect(got).toEqual(filtered);
+    });
+
     it('should create contract', async () => {
         const someContract = randomContract();
 
@@ -70,12 +81,12 @@ describe('transport connection service', () => {
             someContract.address,
             someContract.abi
         );
-
-        Object.keys(someContract).forEach((key) => {
-            const srcVal = get(someContract, key);
-            const createdVal = get(created, key);
-            expect(srcVal).toEqual(createdVal);
-        });
+        
+        expect(created.abi).toEqual(someContract.abi);
+        expect(created.address).toEqual(someContract.address);
+        expect(created.projectId).toEqual(someContract.projectId);
+        expect(created.isFabric).toEqual(false);
+        expect(created.isPublic).toEqual(false);
     });
 
     it('should set abi', async () => {
@@ -89,5 +100,27 @@ describe('transport connection service', () => {
         const got = await dao.getById(contract.id);
 
         expect(got.abi).toEqual(newAbi);
+    });
+
+    it('should mark contract as fabric', async () => {
+        // tslint:disable-next-line:no-shadowed-variable
+        const contract = randomContract();
+        const created = await dao.createContract(contract.projectId, contract.address, contract.abi);
+
+        await dao.markAsFabric(created.id);
+
+        const got = await dao.getById(created.id);
+        expect(got.isFabric).toEqual(true);
+    });
+
+    it('should mark contract as public', async () => {
+        // tslint:disable-next-line:no-shadowed-variable
+        const contract = randomContract();
+        const created = await dao.createContract(contract.projectId, contract.address, contract.abi);
+
+        await dao.markAsPublic(created.id);
+
+        const got = await dao.getById(created.id);
+        expect(got.isPublic).toEqual(true);
     });
 });

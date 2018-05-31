@@ -1,13 +1,16 @@
 {
-    "globals": {
-        "ts-jest": {
-            "tsConfigFile": "../tsconfig.json"
-        }
-    },
-    "transform": {
-        "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "/test/.*\\.spec\\.ts$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
-    "collectCoverage": true
+	"transform": {
+		"^.+\\.tsx?$": "ts-jest"
+	},
+	"testRegex": "test\/.*\\.spec\\.ts",
+	"moduleFileExtensions": [
+		"ts",
+		"tsx",
+		"js",
+		"jsx",
+		"json",
+		"node"
+	],
+	"collectCoverage": false,
+	"coveragePathIgnorePatterns": ["/node_modules/", "coverage"]
 }

@@ -33,8 +33,12 @@ export class ClientService extends Service {
         return 'object.clients';
     }
 
-    public async createClient(ethereumAddress: string, status: Scheme.ClientStatus): Promise<Scheme.Client> {
-        return this.clientDao.createClient(ethereumAddress, status);
+    public async createClient(
+        ethereumAddress: string,
+        status: Scheme.ClientStatus,
+        isAdmin: boolean
+    ): Promise<Scheme.Client> {
+        return this.clientDao.createClient(ethereumAddress, status, isAdmin);
     }
 
     public async getById(clientId: string): Promise<Scheme.Client> {

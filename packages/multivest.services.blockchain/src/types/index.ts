@@ -13,9 +13,8 @@ export namespace Scheme {
 
     export interface Client extends MongoScheme {
         ethereumAddress: string;
-
         status: ClientStatus;
-
+        isAdmin: boolean;
         createdAt: Date;
     }
 
@@ -188,6 +187,8 @@ export namespace Scheme {
         address: string;
         abi: Array<EthereumContractAbiItem>;
         projectId: string;
+        isFabric: boolean;
+        isPublic: boolean;
     }
 
     export enum EthereumContractCompatibleStandard {
@@ -243,6 +244,20 @@ export namespace Scheme {
         params: Hashtable<any>;
 
         createdAt: Date;
+    }
+
+    export enum AdminResolutionStatus {
+        APPROVE = 'APPROVE',
+        DISAPPROVE = 'DISAPPROVE',
+    }
+
+    export interface ContractPublicRequest extends MongoScheme {
+        clientId: string;
+        contractId: string;
+        description: string;
+        adminId: string;
+        adminResolution: string;
+        adminResolutionStatus: AdminResolutionStatus;
     }
 
     export interface ProjectJwtScheme {

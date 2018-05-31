@@ -114,9 +114,9 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
         }
         if (!Object.keys(filters).length) {
             logger.warn('at least one filter should be specified');
-
             return [];
         }
+
         return this.listRaw(filters);
     }
 

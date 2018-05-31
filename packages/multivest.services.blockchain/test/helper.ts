@@ -38,6 +38,7 @@ export function randomClient(): Scheme.Client {
         ethereumAddress: generateId(),
         status: random(0, 1, true) > .5 ? Scheme.ClientStatus.Active : Scheme.ClientStatus.Inactive,
         createdAt: new Date(),
+        isAdmin: false
     } as Scheme.Client;
 }
 
@@ -200,7 +201,9 @@ export function randomContract() {
     return {
         address: createHash('sha1').update(random(0, 1000).toString(), 'utf8').digest('hex'),
         abi: getRandomAbi(),
-        projectId: generateId()
+        projectId: generateId(),
+        isFabric: !!random(0, 1),
+        isPublic: !!random(0, 1),
     } as Scheme.ContractScheme;
 }
 
@@ -210,4 +213,21 @@ const methodsCount = abi.length;
 
 export function getRandomAbi() {
     return [ abi[random(0, methodsCount - 1)] ];
+}
+
+export function randomContractPublicRequest(
+    clientId: string = generateId(),
+    contractId: string = generateId(),
+    adminId: string = null,
+    adminResolution: string = null,
+    adminResolutionStatus: Scheme.AdminResolutionStatus = null
+): Scheme.ContractPublicRequest {
+    return {
+        clientId,
+        contractId,
+        description: 'lorem ipsum',
+        adminId,
+        adminResolution,
+        adminResolutionStatus,
+    } as Scheme.ContractPublicRequest;
 }

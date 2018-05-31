@@ -60,7 +60,7 @@ describe('address subscription dao', () => {
 
     it('should create new client', async () => {
         const data = randomClient();
-        const got = await dao.createClient(data.ethereumAddress, data.status);
+        const got = await dao.createClient(data.ethereumAddress, data.status, data.isAdmin);
 
         const incomparableFields = ['createdAt', '_id', 'id'];
         expect(omit(got, incomparableFields)).toEqual(omit(data, incomparableFields));

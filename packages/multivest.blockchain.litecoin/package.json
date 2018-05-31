@@ -1,6 +1,6 @@
 {
   "name": "@applicature-restricted/multivest.blockchain.litecoin",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "license": "UNLICENSED",
   "description": "Litecoin Blockchain Plugin",
@@ -26,8 +26,8 @@
     "url": "git@bitbucket.com:applicature/multivest.blockchain.litecoin.git"
   },
   "dependencies": {
-    "@applicature-restricted/multivest.blockchain.bitcoin": "^0.2.1",
-    "@applicature-restricted/multivest.services.blockchain": "^0.2.28",
+    "@applicature-restricted/multivest.blockchain.bitcoin": "^0.2.2",
+    "@applicature-restricted/multivest.services.blockchain": "^0.2.29",
     "@applicature/multivest.core": "^0.1.21",
     "@applicature/multivest.mongodb": "^0.1.11",
     "@applicature/multivest.mongodb.ico": "^0.1.41",

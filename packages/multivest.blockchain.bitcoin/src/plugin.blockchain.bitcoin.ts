@@ -7,7 +7,6 @@ class BitcoinBlockchainPlugin extends Plugin<void> {
     }
 
     public init() {
-        this.registerJob(BitcoinTransactionSender);
     }
 }
 

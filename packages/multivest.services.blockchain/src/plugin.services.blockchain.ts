@@ -4,6 +4,7 @@ import { Plugin as MongodbPlugin } from '@applicature/multivest.mongodb';
 import { MongodbAddressSubscriptionDao } from './dao/mongodb/address.subscription.dao';
 import { MongodbClientDao } from './dao/mongodb/client.dao';
 import { MongoContractDao } from './dao/mongodb/contract.dao';
+import { MongodbContractPublicRequestDao } from './dao/mongodb/contract.public.request.dao';
 import { MongodbEthereumContractSubscriptionDao } from './dao/mongodb/ethereum.contract.subscription.dao';
 import { MongodbEthereumEventLogDao } from './dao/mongodb/ethereum.event.log.dao';
 import { MongodbJobDao } from './dao/mongodb/job.dao';
@@ -16,6 +17,7 @@ import { MongodbWebhookActionDao } from './dao/mongodb/webhook.action.dao';
 import { BlockchainRegistryService } from './services/blockchain/blockchain.registry.service';
 import { AddressSubscriptionService } from './services/object/address.subscription.service';
 import { ClientService } from './services/object/client.service';
+import { ContractPublicRequestService } from './services/object/contract.public.request.service';
 import { ContractService } from './services/object/contract.service';
 import { EthereumContractSubscriptionService } from './services/object/ethereum.contract.subscription.service';
 import { EthereumEventLogService } from './services/object/ethereum.event.log.service';
@@ -47,6 +49,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongoContractDao);
         mongoDbPlugin.addDao(MongodbEthereumContractSubscriptionDao);
         mongoDbPlugin.addDao(MongodbEthereumEventLogDao);
+        mongoDbPlugin.addDao(MongodbContractPublicRequestDao);
 
         this.registerService(AddressSubscriptionService);
         this.registerService(BlockchainRegistryService);
@@ -61,6 +64,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         this.registerService(ContractService);
         this.registerService(EthereumContractSubscriptionService);
         this.registerService(EthereumEventLogService);
+        this.registerService(ContractPublicRequestService);
     }
 }
 

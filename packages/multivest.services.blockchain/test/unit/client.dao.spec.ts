@@ -54,7 +54,7 @@ describe('client dao', () => {
 
     it('createClient() transfers correct arguments', async () => {
         const data = randomClient();
-        await dao.createClient(data.ethereumAddress, data.status);
+        await dao.createClient(data.ethereumAddress, data.status, data.isAdmin);
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);
     });

@@ -23,10 +23,15 @@ export class MongodbClientDao extends MongoDBDao<Scheme.Client> implements Clien
         return this.get({ ethereumAddress });
     }
 
-    public async createClient(ethereumAddress: string, status: Scheme.ClientStatus): Promise<Scheme.Client> {
+    public async createClient(
+        ethereumAddress: string,
+        status: Scheme.ClientStatus,
+        isAdmin: boolean
+    ): Promise<Scheme.Client> {
         return this.create({
             ethereumAddress,
             status,
+            isAdmin,
             createdAt: new Date()
         });
     }

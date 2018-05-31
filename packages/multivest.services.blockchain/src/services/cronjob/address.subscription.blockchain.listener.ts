@@ -101,7 +101,7 @@ export class AddressSubscriptionBlockChainListener extends BlockchainListener {
                 const tx = recipientAndTx.tx;
 
                 const params = {
-                    amount: recipient.amount
+                    amount: recipient.amount.toString()
                 };
 
                 webhookActions.push({

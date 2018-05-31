@@ -7,10 +7,10 @@ export class ContractService extends Service {
     protected contractDao: ContractDao;
 
     public async init(): Promise<void> {
-        const mongodbPlugin = this.pluginManager.get('mongodb');
+        const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
 
-        // tslint:disable-next-line:no-string-literal
-        this.contractDao = (await mongodbPlugin.getDaos())['contracts'] as ContractDao;
+        this.contractDao =
+            await mongodbPlugin.getDao('contracts') as ContractDao;
     }
 
     public getServiceId() {
@@ -33,6 +33,14 @@ export class ContractService extends Service {
         return this.contractDao.getByAddressAndProjectId(address, projectId);
     }
 
+    public listByFabricStatus(isFabric: boolean): Promise<Array<Scheme.ContractScheme>> {
+        return this.contractDao.listByFabricStatus(isFabric);
+    }
+
+    public listByPublicStatus(isPublic: boolean): Promise<Array<Scheme.ContractScheme>> {
+        return this.contractDao.listByPublicStatus(isPublic);
+    }
+
     public createContract(
         projectId: string,
         address: string,
@@ -43,5 +51,13 @@ export class ContractService extends Service {
 
     public setAbi(contractId: string, abi: any): Promise<void> {
         return this.contractDao.setAbi(contractId, abi);
+    }
+
+    public markAsFabric(contractId: string): Promise<void> {
+        return this.contractDao.markAsFabric(contractId);
+    }
+
+    public markAsPublic(contractId: string): Promise<void> {
+        return this.contractDao.markAsPublic(contractId);
     }
 }

@@ -4,6 +4,7 @@ import { random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
 import { MongoContractDao } from '../../src/dao/mongodb/contract.dao';
 import { ContractService } from '../../src/services/object/contract.service';
+import { Scheme } from '../../src/types';
 import { getRandomAbi } from '../helper';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
@@ -51,6 +52,20 @@ describe('contract dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
+    it('listByFabricStatus() transfers correct arguments', async () => {
+        await dao.listByFabricStatus(true);
+
+        expect(collection.find).toHaveBeenCalledWith({ isFabric: true });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
+    it('listByPublicStatus() transfers correct arguments', async () => {
+        await dao.listByPublicStatus(true);
+
+        expect(collection.find).toHaveBeenCalledWith({ isPublic: true });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
     it('should create contract', async () => {
         await dao.createContract(
             'projectId',
@@ -61,7 +76,7 @@ describe('contract dao', () => {
         expect(collection.insertOne).toHaveBeenCalledTimes(1);
     });
 
-    it('should set abi', async () => {
+    it('setAbi() transfers correct params', async () => {
         const abi = getRandomAbi();
         await dao.setAbi('id', abi);
 
@@ -72,6 +87,38 @@ describe('contract dao', () => {
             {
                 $set: {
                     abi
+                }
+            }
+        );
+        expect(collection.updateMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('markAsFabric() transfers correct params', async () => {
+        await dao.markAsFabric('contractId');
+
+        expect(collection.updateMany).toHaveBeenCalledWith(
+            {
+                id: 'contractId'
+            },
+            {
+                $set: {
+                    isFabric: true
+                }
+            }
+        );
+        expect(collection.updateMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('markAsPublic() transfers correct params', async () => {
+        await dao.markAsPublic('contractId');
+
+        expect(collection.updateMany).toHaveBeenCalledWith(
+            {
+                id: 'contractId'
+            },
+            {
+                $set: {
+                    isPublic: true
                 }
             }
         );

@@ -61,6 +61,18 @@ describe('project dao', () => {
         expect(got).toEqual(active);
     });
 
+    it('should get by id (exists only)', async () => {
+        const active = getActiveProjects()[0];
+
+        if (!active) {
+            return;
+        }
+
+        const got = await dao.getByIdExistsOnly(active.id);
+
+        expect(got).toEqual(active);
+    });
+
     it('should get by ids', async () => {
         const filtered = projects
             .filter((p, index) => index < 3);

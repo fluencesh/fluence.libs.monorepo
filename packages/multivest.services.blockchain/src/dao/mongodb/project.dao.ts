@@ -58,6 +58,13 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
         });
     }
 
+    public async getByIdExistsOnly(projectId: string) {
+        return this.get({
+            id: projectId,
+            isRemoved: false
+        });
+    }
+
     public async listByClientId(clientId: string): Promise<Array<Scheme.Project>> {
         return this.listRaw({
             clientId

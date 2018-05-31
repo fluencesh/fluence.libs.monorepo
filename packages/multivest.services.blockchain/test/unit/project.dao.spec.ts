@@ -30,6 +30,27 @@ describe('project dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
+    it('getByIdActiveOnly() transfers correct arguments', async () => {
+        await dao.getByIdActiveOnly('id');
+
+        expect(collection.findOne).toHaveBeenCalledWith({
+            id: 'id',
+            status: Scheme.ProjectStatus.Active,
+            isRemoved: false
+        });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
+    it('getByIdExistsOnly() transfers correct arguments', async () => {
+        await dao.getByIdExistsOnly('id');
+
+        expect(collection.findOne).toHaveBeenCalledWith({
+            id: 'id',
+            isRemoved: false
+        });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
     it('listByIds() transfers correct arguments', async () => {
         await dao.listByIds(['id']);
 
@@ -37,10 +58,32 @@ describe('project dao', () => {
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
+    it('listByIdsActiveOnly() transfers correct arguments', async () => {
+        await dao.listByIdsActiveOnly(['id']);
+
+        expect(collection.find).toHaveBeenCalledWith({
+            id: { $in: ['id'] },
+            status: Scheme.ProjectStatus.Active,
+            isRemoved: false
+        });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
     it('listByClientId() transfers correct arguments', async () => {
         await dao.listByClientId('clientId');
 
         expect(collection.find).toHaveBeenCalledWith({ clientId: 'clientId' });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
+    it('listByClientIdActiveOnly() transfers correct arguments', async () => {
+        await dao.listByClientIdActiveOnly('clientId');
+
+        expect(collection.find).toHaveBeenCalledWith({
+            clientId: 'clientId',
+            status: Scheme.ProjectStatus.Active,
+            isRemoved: false
+        });
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
@@ -60,6 +103,30 @@ describe('project dao', () => {
         );
 
         expect(collection.find).toHaveBeenCalledWith(filters);
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
+    it('listByFiltersActiveOnly() transfers correct arguments', async () => {
+        const filters = {
+            name: 'name',
+            sharedSecret: 'sharedSecret',
+            status: 'status' as any,
+            webhookUrl: 'webhookUrl',
+        } as Partial<Scheme.Project>;
+
+        const got = await dao.listByFiltersActiveOnly(
+            filters.name,
+            filters.sharedSecret,
+            filters.status,
+            filters.webhookUrl
+        );
+
+        expect(collection.find).toHaveBeenCalledWith(
+            Object.assign(filters, {
+                status: Scheme.ProjectStatus.Active,
+                isRemoved: false
+            })
+        );
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 

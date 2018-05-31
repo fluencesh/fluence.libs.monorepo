@@ -73,12 +73,28 @@ export class ProjectService extends Service {
         return project;
     }
 
+    /**
+     * Returns project by ID
+     * @param projectId - value from `id` field in DB
+     */
     public async getById(projectId: string): Promise<Scheme.Project> {
         return this.projectDao.getById(projectId);
     }
 
+    /**
+     * Returns project which was not deleted and have status as `ACTIVE`
+     * @param projectId - value from `id` field in DB
+     */
     public async getByIdActiveOnly(projectId: string): Promise<Scheme.Project> {
         return this.projectDao.getByIdActiveOnly(projectId);
+    }
+
+    /**
+     * Returns project which was not deleted and may have any value in `status` field
+     * @param projectId - value from `id` field in DB
+     */
+    public async getByIdExistsOnly(projectId: string): Promise<Scheme.Project> {
+        return this.projectDao.getByIdExistsOnly(projectId);
     }
 
     public async listByClientId(clientId: string): Promise<Array<Scheme.Project>> {

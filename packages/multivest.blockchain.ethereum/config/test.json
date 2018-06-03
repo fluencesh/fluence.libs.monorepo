@@ -12,7 +12,11 @@
                     }
                 },
                 "senderPrivateAddress": "0x",
-                "chainId": "4"
+                "chainId": "4",
+                "fabricMethod": {
+                    "name": "ContractCreated",
+                    "types": ["address", "string"]
+                }
             }
         },
         "jwt": {

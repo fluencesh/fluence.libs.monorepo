@@ -66,6 +66,20 @@ describe('contract dao', () => {
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
+    it('listByIds() transfers correct arguments', async () => {
+        await dao.listByIds([ 'id' ]);
+
+        expect(collection.find).toHaveBeenCalledWith({ id: { $in: [ 'id' ] } });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
+    it('listByAddresses() transfers correct arguments', async () => {
+        await dao.listByAddresses([ 'address' ]);
+
+        expect(collection.find).toHaveBeenCalledWith({ address: { $in: [ 'address' ] } });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
     it('should create contract', async () => {
         await dao.createContract(
             'projectId',

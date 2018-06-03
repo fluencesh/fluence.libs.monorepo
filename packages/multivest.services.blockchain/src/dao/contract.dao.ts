@@ -8,6 +8,8 @@ export abstract class ContractDao extends Dao<Scheme.ContractScheme> {
     public abstract async getByAddressAndProjectId(address: string, projectId: string): Promise<Scheme.ContractScheme>;
     public abstract async listByPublicStatus(isPublic: boolean): Promise<Array<Scheme.ContractScheme>>;
     public abstract async listByFabricStatus(isFabric: boolean): Promise<Array<Scheme.ContractScheme>>;
+    public abstract async listByIds(ids: Array<string>): Promise<Array<Scheme.ContractScheme>>;
+    public abstract async listByAddresses(addresses: Array<string>): Promise<Array<Scheme.ContractScheme>>;
 
     public abstract async createContract(
         projectId: string,

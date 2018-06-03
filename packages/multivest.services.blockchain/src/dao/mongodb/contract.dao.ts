@@ -49,6 +49,18 @@ export class MongoContractDao extends MongoDBDao<Scheme.ContractScheme> implemen
         return this.listRaw({ isPublic });
     }
 
+    public async listByIds(ids: Array<string>): Promise<Array<Scheme.ContractScheme>> {
+        return this.listRaw({
+            id: { $in: ids }
+        });
+    }
+
+    public async listByAddresses(addresses: Array<string>): Promise<Array<Scheme.ContractScheme>> {
+        return this.listRaw({
+            address: { $in: addresses }
+        });
+    }
+
     public async createContract(
         projectId: string,
         address: string,

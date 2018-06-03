@@ -73,6 +73,22 @@ describe('contract dao', () => {
         expect(got).toEqual(filtered);
     });
 
+    it('should get list of contracts by ids', async () => {
+        const filtered = contracts.filter((c, index) => index < 5);
+
+        const got = await dao.listByIds(filtered.map((c) => c.id));
+
+        expect(got).toEqual(filtered);
+    });
+
+    it('should get list of contracts by addresses', async () => {
+        const filtered = contracts.filter((c, index) => index < 5);
+
+        const got = await dao.listByAddresses(filtered.map((c) => c.address));
+
+        expect(got).toEqual(filtered);
+    });
+
     it('should create contract', async () => {
         const someContract = randomContract();
 

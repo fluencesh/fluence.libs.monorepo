@@ -41,6 +41,14 @@ export class ContractService extends Service {
         return this.contractDao.listByPublicStatus(isPublic);
     }
 
+    public listByIds(ids: Array<string>): Promise<Array<Scheme.ContractScheme>> {
+        return this.contractDao.listByIds(ids);
+    }
+
+    public listByAddresses(addresses: Array<string>): Promise<Array<Scheme.ContractScheme>> {
+        return this.contractDao.listByAddresses(addresses);
+    }
+
     public createContract(
         projectId: string,
         address: string,

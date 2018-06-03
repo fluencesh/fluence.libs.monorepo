@@ -1,6 +1,7 @@
-import { PluginManager, Service } from '@applicature/multivest.core';
+import { MultivestError, PluginManager, Service } from '@applicature/multivest.core';
 import { Plugin } from '@applicature/multivest.mongodb';
 import { EthereumContractSubscriptionDao } from '../../dao/ethereum.contract.subscription.dao';
+import { Errors } from '../../errors';
 import { Scheme } from '../../types';
 
 export class EthereumContractSubscriptionService extends Service {
@@ -44,6 +45,15 @@ export class EthereumContractSubscriptionService extends Service {
         isProjectActive: boolean = true,
         isClientActive: boolean = true
     ): Promise<Scheme.EthereumContractSubscription> {
+        const abiEventsList = abi
+            .filter((method) => method.type === 'event')
+            .map((method) => method.name);
+
+        const subscribedEventsIsIncorrect = !!subscribedEvents.find((event) => !abiEventsList.includes(event));
+        if (subscribedEventsIsIncorrect) {
+            throw new MultivestError(Errors.SUBSCRIBED_EVENTS_ARE_INVALID, 400);
+        }
+
         return this.ethereumContractSubscriptionDao
             .createContractSubscription(
                 clientId, projectId,

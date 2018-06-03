@@ -1,6 +1,6 @@
 {
   "name": "@applicature-restricted/multivest.services.blockchain",
-  "version": "0.2.32",
+  "version": "0.2.33",
   "private": false,
   "license": "UNLICENSED",
   "description": "BlockPool Services Plugin",

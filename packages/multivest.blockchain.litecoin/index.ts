@@ -1,5 +1,8 @@
 export * from './src/plugin.blockchain.litecoin';
 
+export * from './src/jobs/ltc.tx.mining.listener';
+export * from './src/jobs/ltc.tx.sender';
+
 export * from './src/services/blockchain/litecoin';
 
 export * from './src/services/transports/bc.litecoin.transport.service';

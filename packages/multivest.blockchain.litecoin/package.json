@@ -1,6 +1,6 @@
 {
   "name": "@applicature-restricted/multivest.blockchain.litecoin",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": false,
   "license": "UNLICENSED",
   "description": "Litecoin Blockchain Plugin",

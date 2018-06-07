@@ -13,8 +13,6 @@ class LitecoinBlockchainPlugin extends Plugin<any> {
     }
 
     public init() {
-        this.registerJob(LitecoinTransactionSender);
-        this.registerJob(LitecoinTxMiningListener);
     }
 }
 

@@ -2,6 +2,7 @@ import { Block, MultivestError, PluginManager, Service, Transaction } from '@app
 import { Hashtable } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
 import * as logger from 'winston';
+import { BlockchainMetric } from '../../metrics/blockchain.metric';
 import { Scheme } from '../../types';
 import { TransportConnectionService } from '../object/transport.connection.service';
 import { BlockchainTransport } from './blockchain.transport';
@@ -15,12 +16,14 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
     protected activeTransports: Hashtable<boolean>;
     protected transportConnectionService: TransportConnectionService;
     protected networkId: string;
+    protected enableMetric: boolean;
 
     constructor(
         pluginManager: PluginManager,
         networkId: string,
         validityCheckDuration: number = 10000,
-        allowedNumberOfBlockToDelay = 5
+        allowedNumberOfBlockToDelay = 5,
+        enableMetric = true
     ) {
         super(pluginManager);
 
@@ -28,6 +31,7 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         this.validityCheckDuration = validityCheckDuration;
         this.lastCheckAt = 0;
         this.allowedNumberOfBlockToDelay = allowedNumberOfBlockToDelay;
+        this.enableMetric = enableMetric;
         this.activeTransports = {};
 
         this.transportConnectionService = new TransportConnectionService(pluginManager);
@@ -164,8 +168,38 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
     protected async getActiveTransportService(): Promise<BlockchainTransport> {
         await this.updateValid();
 
+        this.collectActiveNodeMetrics();
+        this.collectCallsMetrics();
+
         return this.transportServices.find((transportService) => {
             return this.activeTransports[transportService.getTransportId()];
         }) || null;
+    }
+
+    protected collectActiveNodeMetrics(): void {
+        if (!this.enableMetric) {
+            return;
+        }
+
+        const metricInstance = BlockchainMetric.getInstance(this.getBlockchainId(), this.getNetworkId());
+
+        const activeNodes = Object.keys(this.activeTransports).length;
+        metricInstance.activeNodes(activeNodes);
+
+        const healthyNodes = Object.keys(this.activeTransports).filter((key) => this.activeTransports[key]).length;
+        metricInstance.activeNodes(healthyNodes);
+
+        const unhealthyNodes = Object.keys(this.activeTransports).filter((key) => !this.activeTransports[key]).length;
+        metricInstance.unhealthyNodes(unhealthyNodes);
+    }
+
+    protected collectCallsMetrics(): void {
+        if (!this.enableMetric) {
+            return;
+        }
+
+        const metricInstance = BlockchainMetric.getInstance(this.getBlockchainId(), this.getNetworkId());
+
+        metricInstance.called();
     }
 }

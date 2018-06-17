@@ -10,15 +10,18 @@ import {
 
 import { BigNumber } from 'bignumber.js';
 import * as logger from 'winston';
+import { WebhookMetric } from '../../metrics/webhook.metric';
 import { Scheme } from '../../types';
 import { BlockchainService } from '../blockchain/blockchain.service';
 import { JobService } from '../object/job.service';
+import { WebhookActionItemObjectService } from '../object/webhook.action.service';
 
 export abstract class BlockchainListener extends Job {
     protected blockchainService: BlockchainService;
     protected sinceBlock: number;
     protected minConfirmation: number;
     protected processedBlockHeight: number;
+    protected webhookService: WebhookActionItemObjectService;
     private jobService: JobService;
 
     constructor(
@@ -37,6 +40,9 @@ export abstract class BlockchainListener extends Job {
         this.blockchainService = blockchainService;
         this.minConfirmation = minConfirmation;
         this.processedBlockHeight = processedBlockHeight;
+
+        this.webhookService =
+            pluginManager.getServiceByClass(WebhookActionItemObjectService) as WebhookActionItemObjectService;
     }
 
     public async init() {

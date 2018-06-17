@@ -5,10 +5,10 @@ import {
     Transaction,
 } from '@applicature/multivest.core';
 import { v1 as generateId } from 'uuid';
-
-import { BlockchainService } from '../blockchain/blockchain.service';
-
+import { SubscriptionMetric } from '../../metrics/subscription.metric';
+import { WebhookMetric } from '../../metrics/webhook.metric';
 import { Scheme } from '../../types';
+import { BlockchainService } from '../blockchain/blockchain.service';
 import WebhookActionItem = Scheme.WebhookActionItem;
 import { JobService } from '../object/job.service';
 import { ProjectService } from '../object/project.service';
@@ -22,7 +22,6 @@ let networkId: string;
 export class TransactionHashSubscriptionListener extends BlockchainListener {
     protected subscriptionService: TransactionHashSubscriptionService;
     protected projectService: ProjectService;
-    protected webhookService: WebhookActionItemObjectService;
 
     constructor(
         pluginManager: PluginManager,
@@ -41,8 +40,6 @@ export class TransactionHashSubscriptionListener extends BlockchainListener {
         this.subscriptionService =
             pluginManager.getServiceByClass(TransactionHashSubscriptionService) as TransactionHashSubscriptionService;
         this.projectService = pluginManager.getServiceByClass(ProjectService) as ProjectService;
-        this.webhookService =
-            pluginManager.getServiceByClass(WebhookActionItemObjectService) as WebhookActionItemObjectService;
     }
 
     public getJobId() {
@@ -110,9 +107,13 @@ export class TransactionHashSubscriptionListener extends BlockchainListener {
 
                     createdAt: new Date()
                 } as WebhookActionItem);
+
+                SubscriptionMetric.getInstance().addressFound();
             });
 
             await this.webhookService.fill(webhookActions);
+
+            WebhookMetric.getInstance().created(webhookActions.length);
         }
 
         return;

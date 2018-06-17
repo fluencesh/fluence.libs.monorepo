@@ -4,8 +4,15 @@
       "url": "mongodb://localhost/fluence",
       "options": null
     },
-    "jwt": {
-      "secret": "Killer is Bill"
+    "metric": {
+      "help": {
+        "blockchainCalls": "collects blockchain calls metric",
+        "client": "collects client metric",
+        "project": "collects project metric",
+        "nodeHealth": "collects node health metric",
+        "webhook": "collects webhook metric",
+        "subscription": "collects subscription metric"
+      }
     }
   }
 }

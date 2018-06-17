@@ -6,10 +6,10 @@ import {
     Transaction,
 } from '@applicature/multivest.core';
 import { v1 as generateId } from 'uuid';
-
-import { BlockchainService } from '../blockchain/blockchain.service';
-
+import { SubscriptionMetric } from '../../metrics/subscription.metric';
+import { WebhookMetric } from '../../metrics/webhook.metric';
 import { Scheme } from '../../types';
+import { BlockchainService } from '../blockchain/blockchain.service';
 import { AddressSubscriptionService } from '../object/address.subscription.service';
 import WebhookActionItem = Scheme.WebhookActionItem;
 import {JobService} from '../object/job.service';
@@ -47,8 +47,6 @@ export class AddressSubscriptionBlockChainListener extends BlockchainListener {
         this.subscriptionService =
             pluginManager.getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;
         this.projectService = pluginManager.getServiceByClass(ProjectService) as ProjectService;
-        this.webhookService =
-            pluginManager.getServiceByClass(WebhookActionItemObjectService) as WebhookActionItemObjectService;
     }
 
     public getJobId() {
@@ -140,10 +138,14 @@ export class AddressSubscriptionBlockChainListener extends BlockchainListener {
 
                     createdAt: new Date()
                 });
+
+                SubscriptionMetric.getInstance().addressFound();
             }
         }
 
         await this.webhookService.fill(webhookActions);
+
+        WebhookMetric.getInstance().created(webhookActions.length);
 
         return;
     }

@@ -26,6 +26,13 @@ export * from './src/dao/webhook.action.dao';
 export * from './src/generation/jobs';
 export * from './src/generation/transaction';
 
+export * from './src/metrics/blockchain.metric';
+export * from './src/metrics/client.metric';
+export * from './src/metrics/project.metric';
+export * from './src/metrics/prometheus.metric';
+export * from './src/metrics/subscription.metric';
+export * from './src/metrics/webhook.metric';
+
 export * from './src/services/cronjob/address.subscription.blockchain.listener';
 export * from './src/services/cronjob/blockchain.listener';
 export * from './src/services/cronjob/webhook.caller';

@@ -1,6 +1,6 @@
 {
   "name": "@applicature-restricted/multivest.services.blockchain",
-  "version": "0.2.33",
+  "version": "0.2.34",
   "private": false,
   "license": "UNLICENSED",
   "description": "BlockPool Services Plugin",
@@ -36,6 +36,7 @@
     "jsonwebtoken": "^8.2.1",
     "lodash": "^4.17.5",
     "mongodb": "^2.2.28",
+    "prom-client": "^11.0.0",
     "randomstring": "^1.1.5",
     "uuid": "^3.2.1",
     "winston": "^2.1.1"

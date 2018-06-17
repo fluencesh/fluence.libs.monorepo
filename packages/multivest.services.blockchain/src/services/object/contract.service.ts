@@ -1,5 +1,6 @@
 import { PluginManager, Service } from '@applicature/multivest.core';
 import { Plugin } from '@applicature/multivest.mongodb';
+import { DaoIds } from '../../constants';
 import { ContractDao } from '../../dao/contract.dao';
 import { Scheme } from '../../types';
 
@@ -10,7 +11,7 @@ export class ContractService extends Service {
         const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
 
         this.contractDao =
-            await mongodbPlugin.getDao('contracts') as ContractDao;
+            await mongodbPlugin.getDao(DaoIds.Contract) as ContractDao;
     }
 
     public getServiceId() {

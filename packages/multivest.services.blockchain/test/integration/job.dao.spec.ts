@@ -5,7 +5,7 @@ import { MongodbJobDao } from '../../src/dao/mongodb/job.dao';
 import { randomJob } from '../../src/generation/jobs';
 import { Scheme } from '../../src/types';
 
-describe('exchange dao', () => {
+describe('job dao', () => {
     let dao: MongodbJobDao;
     let job: Scheme.Job;
     let connection: Db;

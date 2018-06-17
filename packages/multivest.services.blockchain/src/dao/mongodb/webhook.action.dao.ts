@@ -1,15 +1,16 @@
 import { Hashtable } from '@applicature/multivest.core';
 import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { WebhookActionDao } from '../webhook.action.dao';
 
 export class MongodbWebhookActionDao extends MongoDBDao<Scheme.WebhookActionItem> implements WebhookActionDao {
     public getDaoId() {
-        return 'webhooks';
+        return DaoIds.WebhookAction;
     }
 
     public getCollectionName() {
-        return 'webhooks';
+        return DaoCollectionNames.WebhookAction;
     }
 
     public getDefaultValue() {

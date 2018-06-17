@@ -1,4 +1,5 @@
 import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { EthereumContractSubscriptionDao } from '../ethereum.contract.subscription.dao';
 
@@ -6,11 +7,11 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
         implements EthereumContractSubscriptionDao {
 
     public getDaoId() {
-        return 'ethereumContracts';
+        return DaoIds.EthereumContractSubscription;
     }
 
     public getCollectionName() {
-        return 'ethereumContracts';
+        return DaoCollectionNames.EthereumContractSubscription;
     }
 
     public getDefaultValue() {

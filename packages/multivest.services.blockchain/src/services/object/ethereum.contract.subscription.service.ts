@@ -1,5 +1,6 @@
 import { MultivestError, PluginManager, Service } from '@applicature/multivest.core';
 import { Plugin } from '@applicature/multivest.mongodb';
+import { DaoIds } from '../../constants';
 import { EthereumContractSubscriptionDao } from '../../dao/ethereum.contract.subscription.dao';
 import { Errors } from '../../errors';
 import { Scheme } from '../../types';
@@ -15,7 +16,7 @@ export class EthereumContractSubscriptionService extends Service {
         const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
 
         this.ethereumContractSubscriptionDao = await
-            mongodbPlugin.getDao('ethereumContracts') as EthereumContractSubscriptionDao;
+            mongodbPlugin.getDao(DaoIds.EthereumContractSubscription) as EthereumContractSubscriptionDao;
     }
 
     public getServiceId(): string {

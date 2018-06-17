@@ -100,7 +100,7 @@ export abstract class BlockchainService extends Service {
                     this.getBlockchainId(),
                     this.getNetworkId(),
                     txHex,
-                    project.txMinConfirmations,
+                    project.txMinConfirmations
                 );
             }
         }

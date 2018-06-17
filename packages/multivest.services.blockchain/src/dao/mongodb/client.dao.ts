@@ -1,14 +1,15 @@
 import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import {ClientDao} from '../client.dao';
 
 export class MongodbClientDao extends MongoDBDao<Scheme.Client> implements ClientDao {
     public getDaoId() {
-        return 'clients';
+        return DaoIds.Client;
     }
 
     public getCollectionName() {
-        return 'clients';
+        return DaoCollectionNames.Client;
     }
 
     public getDefaultValue() {

@@ -1,7 +1,6 @@
 import * as Blockchain from '@applicature/multivest.core';
 import { Hashtable } from '@applicature/multivest.core';
 import { MongoScheme } from '@applicature/multivest.mongodb';
-import {WebhookTransportInstance} from 'winston';
 
 // tslint:disable-next-line:no-namespace
 export namespace Scheme {
@@ -99,7 +98,8 @@ export namespace Scheme {
     export enum WebhookTriggerType {
         Address = 'ADDRESS',
         EthereumContractEvent = 'ETHEREUM_CONTRACT_EVENT',
-        Transaction = 'TRANSACTION'
+        Transaction = 'TRANSACTION',
+        ScheduledTransaction = 'SCHEDULED_TRANSACTION'
     }
 
     export interface WebhookActionItem extends MongoScheme {
@@ -260,8 +260,15 @@ export namespace Scheme {
         adminResolutionStatus: AdminResolutionStatus;
     }
 
-    export interface ProjectJwtScheme {
+    export interface ScheduledTx extends MongoScheme {
+        cronExpression: string;
+        tx: Blockchain.Transaction;
         projectId: string;
-        salt: string;
+        privateKey: string;
+    }
+
+    export enum ScheduledTxExecutionStatus {
+        SENT = 'SENT',
+        FAILED = 'FAILED'
     }
 }

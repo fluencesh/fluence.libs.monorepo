@@ -9,6 +9,7 @@ import { MongodbEthereumContractSubscriptionDao } from './dao/mongodb/ethereum.c
 import { MongodbEthereumEventLogDao } from './dao/mongodb/ethereum.event.log.dao';
 import { MongodbJobDao } from './dao/mongodb/job.dao';
 import { MongodbProjectDao } from './dao/mongodb/project.dao';
+import { MongodbScheduledTxDao } from './dao/mongodb/scheduled.tx.dao';
 import { MongodbTransactionDao } from './dao/mongodb/transaction.dao';
 import { MongodbTransactionHashSubscriptionDao } from './dao/mongodb/transaction.hash.subscription.dao';
 import { MongodbTransportConnectionDao } from './dao/mongodb/transport.connection.dao';
@@ -27,7 +28,6 @@ import { TransactionHashSubscriptionService } from './services/object/transactio
 import { TransactionService } from './services/object/transaction.service';
 import { TransportConnectionService } from './services/object/transport.connection.service';
 import { WebhookActionItemObjectService } from './services/object/webhook.action.service';
-import { ManagedBlockchainTransportService } from './services/transports/managed.blockchain.transport.service';
 import { WebhookCallerService } from './services/webhook/webhook.caller.service';
 
 class BlockchainServicesPlugin extends Plugin<void> {
@@ -50,6 +50,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbEthereumContractSubscriptionDao);
         mongoDbPlugin.addDao(MongodbEthereumEventLogDao);
         mongoDbPlugin.addDao(MongodbContractPublicRequestDao);
+        mongoDbPlugin.addDao(MongodbScheduledTxDao);
 
         this.registerService(AddressSubscriptionService);
         this.registerService(BlockchainRegistryService);

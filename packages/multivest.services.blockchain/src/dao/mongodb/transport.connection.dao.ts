@@ -1,4 +1,5 @@
 import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { TransportConnectionDao } from '../transport.connection.dao';
 
@@ -6,11 +7,11 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
     implements TransportConnectionDao {
 
     public getDaoId() {
-        return 'transportConnections';
+        return DaoIds.TransportConnection;
     }
 
     public getCollectionName() {
-        return 'transportConnections';
+        return DaoCollectionNames.TransportConnection;
     }
 
     public getDefaultValue() {

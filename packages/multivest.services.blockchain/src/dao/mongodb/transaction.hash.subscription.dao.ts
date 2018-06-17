@@ -1,15 +1,16 @@
 import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { TransactionHashSubscriptionDao } from '../transaction.hash.subscription.dao';
 
 export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.TransactionHashSubscription>
         implements TransactionHashSubscriptionDao {
     public getDaoId() {
-        return 'transaction.hash.subscriptions';
+        return DaoIds.TransactionHashSubscription;
     }
 
     public getCollectionName() {
-        return 'transactionHashSubscriptions';
+        return DaoCollectionNames.TransactionHashSubscription;
     }
 
     public getDefaultValue() {

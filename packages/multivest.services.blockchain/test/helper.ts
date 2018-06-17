@@ -1,7 +1,10 @@
+import { Transaction } from '@applicature/multivest.core';
+import BigNumber from 'bignumber.js';
 import { createHash } from 'crypto';
 import { random } from 'lodash';
 import { generate } from 'randomstring';
 import { v1 as generateId } from 'uuid';
+import { RandomStringPresets } from '../src/constants';
 import { Scheme } from './../src/types';
 
 export function randomAddressSubscription(): Scheme.AddressSubscription {
@@ -230,4 +233,29 @@ export function randomContractPublicRequest(
         adminResolution,
         adminResolutionStatus,
     } as Scheme.ContractPublicRequest;
+}
+
+export function randomScheduledTx() {
+    return {
+        id: generateId(),
+        cronExpression: '* * * * * * *',
+        tx: randomTransactionScheme(),
+        projectId: generateId(),
+        privateKey: generate(RandomStringPresets.Hash256)
+    } as Scheme.ScheduledTx;
+}
+
+export function randomTransactionScheme(): Transaction {
+    return {
+        hash: `0x${generate(RandomStringPresets.Hash256)}`,
+        blockHash: `0x${generate(RandomStringPresets.Hash256)}`,
+        blockHeight: random(9999, 99999),
+        blockTime: random(10, 100),
+        fee: new BigNumber(random(1, 10)),
+        from: [ { address: `0x${generate(RandomStringPresets.Hash256)}` } ],
+        to: [{
+            address: `0x${generate(RandomStringPresets.Hash256)}`,
+            amount: new BigNumber(random(1, 10))
+        }]
+    } as Transaction;
 }

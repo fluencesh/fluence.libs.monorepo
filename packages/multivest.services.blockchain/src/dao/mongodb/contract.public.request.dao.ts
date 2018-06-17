@@ -1,15 +1,16 @@
 import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { ContractPublicRequestDao } from '../contract.public.request.dao';
 
 export class MongodbContractPublicRequestDao extends MongoDBDao<Scheme.ContractPublicRequest>
     implements ContractPublicRequestDao {
     public getCollectionName() {
-        return 'contractPublicRequests';
+        return DaoCollectionNames.ContractPublicRequest;
     }
 
     public getDaoId() {
-        return 'contract.public.requests';
+        return DaoIds.ContractPublicRequest;
     }
 
     public getDefaultValue() {

@@ -1,18 +1,16 @@
-import { MultivestError } from '@applicature/multivest.core';
 import { MongoDBDao } from '@applicature/multivest.mongodb';
-import { pick } from 'lodash';
 import * as logger from 'winston';
-import { Errors } from '../../errors';
+import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { ProjectDao } from '../project.dao';
 
 export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements ProjectDao {
     public getDaoId() {
-        return 'projects';
+        return DaoIds.Project;
     }
 
     public getCollectionName() {
-        return 'projects';
+        return DaoCollectionNames.Project;
     }
 
     public getDefaultValue() {

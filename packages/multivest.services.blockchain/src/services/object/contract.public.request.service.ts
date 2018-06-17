@@ -1,5 +1,6 @@
 import { MultivestError, Service } from '@applicature/multivest.core';
 import { Plugin } from '@applicature/multivest.mongodb';
+import { DaoIds } from '../../constants';
 import { ContractPublicRequestDao } from '../../dao/contract.public.request.dao';
 import { Errors } from '../../errors';
 import { Scheme } from '../../types';
@@ -17,7 +18,7 @@ export class ContractPublicRequestService extends Service {
         const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
 
         this.contractPublicRequestDao =
-            await mongodbPlugin.getDao('contract.public.requests') as ContractPublicRequestDao;
+            await mongodbPlugin.getDao(DaoIds.ContractPublicRequest) as ContractPublicRequestDao;
 
         this.contractService = this.pluginManager.getServiceByClass(ContractService) as ContractService;
     }

@@ -1,5 +1,6 @@
 import { PluginManager, Service } from '@applicature/multivest.core';
 import { Plugin } from '@applicature/multivest.mongodb';
+import { DaoIds } from '../../constants';
 import { TransactionHashSubscriptionDao } from '../../dao/transaction.hash.subscription.dao';
 import { Scheme } from '../../types';
 
@@ -14,7 +15,7 @@ export class TransactionHashSubscriptionService extends Service {
         const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
 
         this.transactionHashSubscriptionDao =
-            await mongodbPlugin.getDao('transaction.hash.subscriptions') as TransactionHashSubscriptionDao;
+            await mongodbPlugin.getDao(DaoIds.TransactionHashSubscription) as TransactionHashSubscriptionDao;
     }
 
     public getServiceId() {

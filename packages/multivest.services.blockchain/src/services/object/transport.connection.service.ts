@@ -1,5 +1,6 @@
 import { PluginManager, Service } from '@applicature/multivest.core';
 import { Plugin } from '@applicature/multivest.mongodb';
+import { DaoIds } from '../../constants';
 import { TransportConnectionDao } from '../../dao/transport.connection.dao';
 import { Scheme } from '../../types';
 
@@ -17,7 +18,7 @@ export class TransportConnectionService extends Service {
     public async init(): Promise<void> {
         const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
 
-        this.transportConnectionDao = await mongodbPlugin.getDao('transportConnections') as TransportConnectionDao;
+        this.transportConnectionDao = await mongodbPlugin.getDao(DaoIds.TransportConnection) as TransportConnectionDao;
     }
 
     public getById(id: string): Promise<Scheme.TransportConnection> {

@@ -1,16 +1,17 @@
 import { Hashtable } from '@applicature/multivest.core';
 import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import {JobDao} from '../job.dao';
 
 export class MongodbJobDao extends MongoDBDao<Scheme.Job> implements JobDao {
 
     public getDaoId() {
-        return 'jobs';
+        return DaoIds.Job;
     }
 
     public getCollectionName() {
-        return 'jobs';
+        return DaoCollectionNames.Job;
     }
 
     public getDefaultValue() {

@@ -1,15 +1,16 @@
 import { Hashtable } from '@applicature/multivest.core';
 import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { EthereumEventLogDao } from '../ethereum.event.log.dao';
 
 export class MongodbEthereumEventLogDao extends MongoDBDao<Scheme.EthereumEventLog> implements EthereumEventLogDao {
     public getDaoId() {
-        return 'ethereumEvents';
+        return DaoIds.EthereumEventLog;
     }
 
     public getCollectionName() {
-        return 'ethereumEvents';
+        return DaoCollectionNames.EthereumEventLog;
     }
 
     public getDefaultValue() {

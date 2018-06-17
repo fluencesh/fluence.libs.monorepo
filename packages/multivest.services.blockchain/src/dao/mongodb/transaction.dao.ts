@@ -1,15 +1,16 @@
 import { Transaction } from '@applicature/multivest.core';
 import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { TransactionDao } from '../transaction.dao';
 
 export class MongodbTransactionDao extends MongoDBDao<Scheme.Transaction> implements TransactionDao {
     public getDaoId() {
-        return 'transactions';
+        return DaoIds.Transaction;
     }
 
     public getCollectionName() {
-        return 'transactions';
+        return DaoCollectionNames.Transaction;
     }
 
     public getDefaultValue() {

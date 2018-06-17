@@ -4,7 +4,7 @@ import * as config from 'config';
 import { createHash } from 'crypto';
 import * as jwt from 'jsonwebtoken';
 import { generate } from 'randomstring';
-import { v1 as generateId } from 'uuid';
+import { DaoIds } from '../../constants';
 import { ProjectDao } from '../../dao/project.dao';
 import { Errors } from '../../errors';
 import { Scheme } from '../../types';
@@ -33,7 +33,7 @@ export class ProjectService extends Service {
     public async init(): Promise<void> {
         const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
 
-        this.projectDao = await mongodbPlugin.getDao('projects') as ProjectDao;
+        this.projectDao = await mongodbPlugin.getDao(DaoIds.Project) as ProjectDao;
 
         this.addressSubscriptionService = this.pluginManager
             .getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;

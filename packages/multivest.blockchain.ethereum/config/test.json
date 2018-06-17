@@ -21,6 +21,16 @@
         },
         "jwt": {
             "secret": "secret"
-        }
+        },
+        "metric": {
+            "help": {
+                "blockchainCalls": "collects blockchain calls metric",
+                "client": "collects client metric",
+                "project": "collects project metric",
+                "nodeHealth": "collects node health metric",
+                "webhook": "collects webhook metric",
+                "subscription": "collects subscription metric"
+            }
+          }
     }
 }

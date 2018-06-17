@@ -6,6 +6,7 @@ import {
     JobService,
     ProjectService,
     Scheme,
+    SubscriptionMetric,
     WebhookActionItemObjectService,
 } from '@applicature-restricted/multivest.services.blockchain';
 import {
@@ -115,6 +116,8 @@ export class EthereumContractSubscriptionListener extends BlockchainListener {
 
         if (webhookActions.length) {
             await this.webhookService.fill(webhookActions);
+
+            SubscriptionMetric.getInstance().eventFound(webhookActions.length);
         }
 
         return;

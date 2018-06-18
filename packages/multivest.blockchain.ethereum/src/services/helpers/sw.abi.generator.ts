@@ -1,6 +1,5 @@
 import { createWriteStream } from 'fs';
 import * as yaml from 'json2yaml';
-import { promisify } from 'util';
 import {
     GeneratorOptions,
     SwApi,

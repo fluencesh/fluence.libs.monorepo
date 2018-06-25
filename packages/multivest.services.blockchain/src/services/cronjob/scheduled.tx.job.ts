@@ -2,6 +2,7 @@ import { Job, PluginManager, Transaction } from '@applicature/multivest.core';
 import * as randomstring from 'randomstring';
 import * as logger from 'winston';
 import { RandomStringPresets } from '../../constants';
+import { TransactionSentMetric } from '../../metrics/transaction.sent.metric';
 import { Scheme } from '../../types';
 import { BlockchainService } from '../blockchain/blockchain.service';
 import { ClientService } from '../object/client.service';
@@ -97,6 +98,8 @@ export class ScheduledTxJob extends Job {
         try {
             tx = await this.blockchainService.sendTransaction(this.privateKey, this.scheduledTx.tx);
 
+            TransactionSentMetric.getInstance().successfulSending();
+
             webhookAction.txHash = tx.hash;
             webhookAction.params.status = Scheme.ScheduledTxExecutionStatus.SENT;
             webhookAction.params.tx = tx;
@@ -104,8 +107,10 @@ export class ScheduledTxJob extends Job {
             await this.createWebhookAction(webhookAction);
         } catch (ex) {
             logger.error(ex.message);
-            webhookAction.params.status = Scheme.ScheduledTxExecutionStatus.FAILED;
 
+            TransactionSentMetric.getInstance().failedSending();
+
+            webhookAction.params.status = Scheme.ScheduledTxExecutionStatus.FAILED;
             await this.createWebhookAction(webhookAction);
 
             return;

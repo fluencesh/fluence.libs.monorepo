@@ -1,14 +1,13 @@
 import {
     BlockchainService,
-    ManagedBlockchainTransportService,
     Scheme,
     Signature
 } from '@applicature-restricted/multivest.services.blockchain';
-import { MultivestError, PluginManager } from '@applicature/multivest.core';
+import { MultivestError } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
-import * as config from 'config';
 import * as EthereumTx from 'ethereumjs-tx';
 import * as EthereumUtil from 'ethereumjs-util';
+import { ServiceIds } from '../../constants';
 import {
     ETHEREUM,
     ethereumNetworkToChainId,
@@ -18,16 +17,13 @@ import {
     EthereumTransactionReceipt,
     ethereumValidNetworks,
 } from '../../types';
-import { EthereumBlock } from '../../types';
 import { EthereumTransport } from '../transports/ethereum.transport';
-import { EthersEthereumTransportService, Provider } from '../transports/ethers.ethereum.transport';
-import { ManagedEthereumTransportService } from '../transports/managed.ethereum.transport.service';
 
 export class EthereumBlockchainService extends BlockchainService {
     protected blockchainTransport: EthereumTransport;
 
     public getServiceId() {
-        return 'ethereum.blockchain.service';
+        return ServiceIds.EthereumBlockchainService;
     }
 
     public isValidNetwork(network: string) {
@@ -107,7 +103,7 @@ export class EthereumBlockchainService extends BlockchainService {
         return serializedTx.toString('hex');
     }
 
-    public getGasPrice() {
+    public getGasPrice(): Promise<BigNumber> {
         return this.blockchainTransport.getGasPrice();
     }
 

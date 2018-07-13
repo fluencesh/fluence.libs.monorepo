@@ -4,6 +4,7 @@ import { Hashtable } from '@applicature/multivest.core/';
 import * as EthereumAbi from 'ethereumjs-abi';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
 
+// THINK: Is this class still useful?
 export class Contract {
     protected ethereumBlockchainService: EthereumBlockchainService;
     protected abi: any;

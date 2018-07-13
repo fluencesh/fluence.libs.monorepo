@@ -85,6 +85,20 @@ export interface EthereumTopicFilter {
     topics?: Array<string>;
 }
 
+export enum OraclizeStatus {
+    ENABLED = 'ENABLED',
+    DISABLED = 'DISABLED',
+}
+
+export interface OraclizeSubscription extends MongoScheme {
+    projectId: string;
+    eventHash: string;
+    eventName: string;
+    eventInputTypes: Array<string>;
+    webhookUrl: string;
+    status: OraclizeStatus;
+}
+
 //#region SW types
 export enum SwFormat {
     YAML = 'YAML',

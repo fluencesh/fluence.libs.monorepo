@@ -85,6 +85,20 @@ export class WebhookActionItemObjectService extends Service {
         return this.webHookActionItemDao.listByStatus(status);
     }
 
+    public async listByStatusAndType(
+        status: Scheme.WebhookReportItemStatus,
+        type: Scheme.WebhookTriggerType
+    ): Promise<Array<Scheme.WebhookActionItem>> {
+        return this.webHookActionItemDao.listByStatusAndType(status, type);
+    }
+
+    public async listByStatusAndTypes(
+        status: Scheme.WebhookReportItemStatus,
+        types: Array<Scheme.WebhookTriggerType>
+    ): Promise<Array<Scheme.WebhookActionItem>> {
+        return this.webHookActionItemDao.listByStatusAndTypes(status, types);
+    }
+
     public async setConfirmationsAndStatus(
         id: string, confirmations: number, status: Scheme.WebhookReportItemStatus
     ): Promise<void> {

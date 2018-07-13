@@ -65,6 +65,24 @@ describe('address subscription dao', () => {
         expect(got).toEqual(filtered);
     });
 
+    it('should get by status and type', async () => {
+        const filtered =
+            webhookActions.filter((wa) => wa.status === webhookAction.status && wa.type === webhookAction.type);
+
+        const got = await dao.listByStatusAndType(webhookAction.status, webhookAction.type);
+
+        expect(got).toEqual(filtered);
+    });
+
+    it('should get by status and types', async () => {
+        const filtered =
+            webhookActions.filter((wa) => wa.status === webhookAction.status && wa.type === webhookAction.type);
+
+        const got = await dao.listByStatusAndTypes(webhookAction.status, [webhookAction.type]);
+
+        expect(got).toEqual(filtered);
+    });
+
     it('should create ethereum event log', async () => {
         const data = randomWebhookAction();
 

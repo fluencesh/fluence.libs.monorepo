@@ -118,7 +118,7 @@ export abstract class BlockchainListener extends Job {
         }
     }
 
-    protected extractRecipientTransactionPairs(block: Block) {
+    private extractRecipientTransactionPairs(block: Block) {
         const mapping = {} as Hashtable<
             Array<{
                 recipient: Recipient;

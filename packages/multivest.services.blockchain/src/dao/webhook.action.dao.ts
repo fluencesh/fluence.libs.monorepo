@@ -6,7 +6,7 @@ export abstract class WebhookActionDao extends Dao<Scheme.WebhookActionItem> {
         clientId: string,
         projectId: string,
 
-        blockChainId: string,
+        blockchainId: string,
         networkId: string,
 
         blockHash: string,
@@ -33,6 +33,14 @@ export abstract class WebhookActionDao extends Dao<Scheme.WebhookActionItem> {
     public abstract async listByProjectId(projectId: string): Promise<Array<Scheme.WebhookActionItem>>;
     public abstract async listByStatus(status: Scheme.WebhookReportItemStatus)
         : Promise<Array<Scheme.WebhookActionItem>>;
+    public abstract async listByStatusAndType(
+        status: Scheme.WebhookReportItemStatus,
+        type: Scheme.WebhookTriggerType | string
+    ): Promise<Array<Scheme.WebhookActionItem>>;
+    public abstract async listByStatusAndTypes(
+        status: Scheme.WebhookReportItemStatus,
+        types: Array<Scheme.WebhookTriggerType | string>
+    ): Promise<Array<Scheme.WebhookActionItem>>;
 
     public abstract async setConfirmationsAndStatus(
         id: string, confirmations: number, status: Scheme.WebhookReportItemStatus

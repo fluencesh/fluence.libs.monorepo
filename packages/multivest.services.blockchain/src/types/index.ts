@@ -99,7 +99,8 @@ export namespace Scheme {
         Address = 'ADDRESS',
         EthereumContractEvent = 'ETHEREUM_CONTRACT_EVENT',
         Transaction = 'TRANSACTION',
-        ScheduledTransaction = 'SCHEDULED_TRANSACTION'
+        ScheduledTransaction = 'SCHEDULED_TRANSACTION',
+        OraclizeSubscription = 'ORACLIZE_SUBSCRIPTION'
     }
 
     export interface WebhookActionItem extends MongoScheme {
@@ -270,5 +271,24 @@ export namespace Scheme {
     export enum ScheduledTxExecutionStatus {
         SENT = 'SENT',
         FAILED = 'FAILED'
+    }
+
+    export interface WebhookCallResult {
+        request: WebhookCallRequest;
+        response: WebhookCallResponse;
+        error: any;
+    }
+    
+    export interface WebhookCallRequest {
+        method: string;
+        headers: Hashtable<string>;
+        data: Hashtable<any>;
+    }
+    
+    export interface WebhookCallResponse {
+        body: string;
+        headers: Hashtable<string>;
+        statusCode: number;
+        statusMessage: string;
     }
 }

@@ -43,6 +43,32 @@ describe('exchange dao', () => {
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
+    it('listByStatus() transfers correct arguments', async () => {
+        const status = Scheme.WebhookReportItemStatus.Created;
+        await dao.listByStatus(status);
+
+        expect(collection.find).toHaveBeenCalledWith({ status });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
+    it('listByStatusAndType() transfers correct arguments', async () => {
+        const status = Scheme.WebhookReportItemStatus.Created;
+        const type = Scheme.WebhookTriggerType.Address;
+        await dao.listByStatusAndType(status, type);
+
+        expect(collection.find).toHaveBeenCalledWith({ status, type });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
+    it('listByStatusAndType() transfers correct arguments', async () => {
+        const status = Scheme.WebhookReportItemStatus.Created;
+        const types = [ Scheme.WebhookTriggerType.Address ];
+        await dao.listByStatusAndTypes(status, types);
+
+        expect(collection.find).toHaveBeenCalledWith({ status, type: { $in: types } });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
     it('createAction() transfers correct arguments', async () => {
         const data = randomWebhookAction();
 

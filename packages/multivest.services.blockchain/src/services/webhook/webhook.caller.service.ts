@@ -3,21 +3,6 @@ import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import { Scheme } from '../../types';
 import { WebhookActionItemObjectService } from '../object/webhook.action.service';
 
-export interface WebhookCallResult {
-    request: {
-        method: string,
-        headers: Hashtable<string>,
-        data: Hashtable<any>
-    };
-    response: {
-        body: string;
-        headers: Hashtable<string>;
-        statusCode: number;
-        statusMessage: string;
-    };
-    error: any;
-}
-
 export class WebhookCallerService extends Service {
     protected webhookObjectService: WebhookActionItemObjectService;
 
@@ -41,7 +26,7 @@ export class WebhookCallerService extends Service {
     public async send(
         action: Scheme.WebhookActionItem,
         timeoutInMs: number
-    ): Promise<WebhookCallResult> {
+    ): Promise<Scheme.WebhookCallResult> {
 
         // @TODO: calculate HASH
 

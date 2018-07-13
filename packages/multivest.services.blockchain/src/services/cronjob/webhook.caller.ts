@@ -40,9 +40,14 @@ export class WebhookCaller extends Job {
     }
 
     public async execute(): Promise<void> {
-        const webHookLimit = await this.webhookService.listByStatus(Scheme.WebhookReportItemStatus.Created);
+        const webHookLimit = await this.webhookService.listByStatusAndTypes(
+            Scheme.WebhookReportItemStatus.Created,
+            this.getProcessingTypes()
+        );
 
         for (const item of webHookLimit) {
+            this.checkAndSendDelayReport(item);
+
             await this.processWebhook(item);
         }
 
@@ -50,8 +55,6 @@ export class WebhookCaller extends Job {
     }
 
     protected async processWebhook(item: WebhookActionItem): Promise<void> {
-        this.checkAndSendDelayReport(item);
-
         try {
             const { request, response, error } = await this.webhookCallerService.send(item, 1000000);
 
@@ -112,6 +115,8 @@ export class WebhookCaller extends Job {
                 WebhookMetric.getInstance().unsuccessfulCall();
             } else {
                 WebhookMetric.getInstance().successfulCall();
+
+                await this.processResponse(response);
             }
         }
         catch (error) {
@@ -121,6 +126,17 @@ export class WebhookCaller extends Job {
         }
 
         return;
+    }
+
+    protected async processResponse(res: Scheme.WebhookCallResponse): Promise<void> {
+        return;
+    }
+
+    protected getProcessingTypes(): Array<Scheme.WebhookTriggerType> {
+        return [
+            Scheme.WebhookTriggerType.Address, Scheme.WebhookTriggerType.EthereumContractEvent,
+            Scheme.WebhookTriggerType.ScheduledTransaction, Scheme.WebhookTriggerType.Transaction
+        ];
     }
 
     private checkAndSendDelayReport(item: WebhookActionItem) {

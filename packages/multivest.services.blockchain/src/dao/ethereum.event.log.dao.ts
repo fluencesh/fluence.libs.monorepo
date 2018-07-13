@@ -3,7 +3,7 @@ import { Scheme } from '../types';
 
 export abstract class EthereumEventLogDao extends Dao<Scheme.EthereumEventLog> {
     public abstract async createEvent(
-        blockChainId: string,
+        blockchainId: string,
         networkId: string,
 
         blockHash: string,

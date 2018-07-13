@@ -91,6 +91,26 @@ export class MongodbWebhookActionDao extends MongoDBDao<Scheme.WebhookActionItem
         });
     }
 
+    public async listByStatusAndType(
+        status: Scheme.WebhookReportItemStatus,
+        type: Scheme.WebhookTriggerType
+    ): Promise<Array<Scheme.WebhookActionItem>> {
+        return this.listRaw({
+            status,
+            type
+        });
+    }
+
+    public async listByStatusAndTypes(
+        status: Scheme.WebhookReportItemStatus,
+        types: Array<Scheme.WebhookTriggerType>
+    ): Promise<Array<Scheme.WebhookActionItem>> {
+        return this.listRaw({
+            status,
+            type: { $in: types }
+        });
+    }
+
     public async setConfirmationsAndStatus(
         id: string,
         confirmations: number, status: Scheme.WebhookReportItemStatus

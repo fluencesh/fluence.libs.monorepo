@@ -6,7 +6,7 @@ export abstract class AddressSubscriptionDao extends Dao<Scheme.AddressSubscript
     public abstract async createSubscription(
         clientId: string,
         projectId: string,
-        blockChainId: string,
+        blockchainId: string,
         networkId: string,
         address: string,
         minConfirmations: number,

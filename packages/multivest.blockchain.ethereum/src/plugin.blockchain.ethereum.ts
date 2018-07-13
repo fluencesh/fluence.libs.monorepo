@@ -1,8 +1,7 @@
 import { Plugin, Service } from '@applicature/multivest.core';
 import { Plugin as MongodbPlugin } from '@applicature/multivest.mongodb';
-import { EthereumBlockchainService } from './services/blockchain/ethereum';
-import { EthersEthereumTransportService } from './services/transports/ethers.ethereum.transport';
-import { ManagedEthereumTransportService } from './services/transports/managed.ethereum.transport.service';
+import { MongodbOraclizeSubscriptionDao } from './dao/mongodb/oraclize.subscription.dao';
+import { OraclizeSubscriptionService } from './services/objects/oraclize.subscription.service';
 
 class EthereumBlockchainPlugin extends Plugin<any> {
     public getPluginId() {
@@ -11,6 +10,10 @@ class EthereumBlockchainPlugin extends Plugin<any> {
 
     public init() {
         const mongoDbPlugin: MongodbPlugin = this.pluginManager.get('mongodb') as any;
+
+        mongoDbPlugin.addDao(MongodbOraclizeSubscriptionDao);
+
+        this.registerService(OraclizeSubscriptionService);
     }
 }
 

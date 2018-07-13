@@ -14,16 +14,14 @@ import { set } from 'lodash';
 import { v1 as generateId } from 'uuid';
 import { EthereumBlock, EthereumTopic, EthereumTopicFilter } from '../../types';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
-
-let blockchainId: string;
-let networkId: string;
+import { EthereumBlockchainListener } from './ethereum.blockchain.listener';
 
 interface FabricMethodConfigData {
     name: string;
     types: Array<string>;
 }
 
-export class ContractFabricCreationListener extends BlockchainListener {
+export class ContractFabricCreationListener extends EthereumBlockchainListener {
     protected blockchainService: EthereumBlockchainService;
     protected contractService: ContractService;
     protected projectService: ProjectService;
@@ -37,10 +35,6 @@ export class ContractFabricCreationListener extends BlockchainListener {
         minConfirmation: number,
         processedBlockHeight: number = 0
     ) {
-        // FIXME: bad practice
-        blockchainId = blockchainService.getBlockchainId();
-        networkId = blockchainService.getNetworkId();
-
         super(pluginManager, blockchainService, jobService, sinceBlock, minConfirmation, processedBlockHeight);
 
         this.contractService = this.pluginManager.getServiceByClass(ContractService) as ContractService;
@@ -50,7 +44,7 @@ export class ContractFabricCreationListener extends BlockchainListener {
     }
 
     public getJobId() {
-        return `${blockchainId}.${networkId}.contract.fabric.creation.listener`;
+        return `${ this.blockchainId }.${ this.networkId }.contract.fabric.creation.listener`;
     }
 
     public async processBlock(publishedBlockHeight: number, block: EthereumBlock): Promise<void> {
@@ -83,7 +77,7 @@ export class ContractFabricCreationListener extends BlockchainListener {
             );
 
             for (const log of contractLogs) {
-                const decoded = abi.rawDecode(eventMethodData.types, Buffer.from(log.data, 'utf8'));
+                const decoded = this.decodeData(eventMethodData.types, log.data);
                 const contractAddress = this.attachPrefix(decoded[0]);
 
                 if (!createdAddresses.find((address) => address === contractAddress)) {
@@ -111,15 +105,6 @@ export class ContractFabricCreationListener extends BlockchainListener {
         if (webhookActions.length) {
             await this.webhookService.fill(webhookActions);
         }
-    }
-
-    private async getLogsByBlockHeight(height: number) {
-        const logsFilters = {
-            fromBlock: height,
-            toBlock: height,
-        } as EthereumTopicFilter;
-
-        return this.blockchainService.getLogs(logsFilters);
     }
 
     private async getProjectMapByContracts(
@@ -180,9 +165,5 @@ export class ContractFabricCreationListener extends BlockchainListener {
 
             createdAt: new Date()
         } as Scheme.WebhookActionItem;
-    }
-
-    private attachPrefix(strLine: string) {
-        return strLine.indexOf('0x') === 0 ? strLine : `0x${strLine}`;
     }
 }

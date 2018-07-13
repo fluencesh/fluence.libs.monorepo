@@ -1,5 +1,6 @@
 import { EthereumBlockchainService } from '../blockchain/ethereum';
 
+// THINK: Is this class still useful?
 export class Erc20Contract {
     private ethereumService: EthereumBlockchainService;
     private contract: any;

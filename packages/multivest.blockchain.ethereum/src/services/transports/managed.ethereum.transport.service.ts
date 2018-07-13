@@ -1,11 +1,9 @@
 import {
-//   BlockchainTransportService,
   ManagedBlockchainTransportService,
   Scheme,
-  TransportConnectionService,
 } from '@applicature-restricted/multivest.services.blockchain';
-import { Block, Hashtable, MultivestError, PluginManager } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
+import { ServiceIds, TransportIds } from '../../constants';
 import {
     ETHEREUM,
     EthereumTopic,
@@ -30,11 +28,11 @@ export class ManagedEthereumTransportService extends ManagedBlockchainTransportS
     }
 
     public getServiceId() {
-        return 'managed.ethereum.transport.service';
+        return ServiceIds.ManagedEthereumTransportService;
     }
 
     public getTransportId() {
-        return 'managed.ethereum.transport.service';
+        return TransportIds.ManagedEthereumTransportService;
     }
 
     public async call(transaction: EthereumTransaction): Promise<string> {

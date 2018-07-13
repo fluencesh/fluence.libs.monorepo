@@ -1,9 +1,9 @@
-import { ContractService, Scheme } from '@applicature-restricted/multivest.services.blockchain';
+import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
 import { Block, MultivestError, PluginManager, Service, Transaction } from '@applicature/multivest.core';
 import { BigNumber } from 'bignumber.js';
-import * as EthJsTransaction from 'ethereumjs-tx';
 import { Contract, providers } from 'ethers';
 import { get } from 'lodash';
+import { ServiceIds, TransportIds } from '../../constants';
 import {
     ETHEREUM,
     EthereumBlock,
@@ -24,7 +24,6 @@ export enum Provider {
 export class EthersEthereumTransportService extends Service implements EthereumTransport {
     private network: string;
     private provider: any;
-    private contractService: ContractService;
     private transportConnection: Scheme.TransportConnection;
 
     constructor(pluginManager: PluginManager, transportConnection: Scheme.TransportConnection) {
@@ -50,8 +49,6 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         } else {
             throw new MultivestError('unknown provider');
         }
-
-        this.contractService = this.pluginManager.getServiceByClass(ContractService) as ContractService;
     }
 
     public getNetworkId() {
@@ -59,11 +56,11 @@ export class EthersEthereumTransportService extends Service implements EthereumT
     }
 
     public getServiceId() {
-        return 'ethers.ethereum.transport.service';
+        return ServiceIds.EthersEthereumTransportService;
     }
 
     public getTransportId() {
-        return 'ethers.ethereum.transport.service';
+        return TransportIds.EthersEthereumTransportService;
     }
 
     public getBlockchainId() {
@@ -106,17 +103,10 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         return this.convertTransaction(tx);
     }
 
-    // TODO: test it
     public async sendRawTransaction(txHex: string, projectId?: string): Promise<EthereumTransaction> {
         const hash = this.provider.sendTransaction(txHex);
 
-        return this.convertTransactionFromHash(hash);
-    }
-
-    public async convertTransactionFromHash(hash: string) {
-        const tx = new EthJsTransaction(hash);
-
-        return this.convertTransaction(tx);
+        return this.getTransactionByHash(hash);
     }
 
     public async call(tx: EthereumTransaction): Promise<string> {

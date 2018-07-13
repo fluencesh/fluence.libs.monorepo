@@ -71,8 +71,6 @@ describe('ethereum blockchain', () => {
     it('should transfer correct params in `sendTransaction`', async () => {
         const hash = 'hash';
 
-        transportService.convertTransactionFromHash = jest.fn().mockImplementationOnce(() => ({}));
-
         await transportService.sendRawTransaction(hash);
         
         expect(ProviderMock.sendTransaction).toHaveBeenCalledWith(hash);

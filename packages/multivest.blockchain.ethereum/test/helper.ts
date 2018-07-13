@@ -2,7 +2,9 @@
 import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
 import { createHash } from 'crypto';
 import { random } from 'lodash';
+import { generate } from 'randomstring';
 import { v1 as generateId } from 'uuid';
+import { OraclizeStatus, OraclizeSubscription } from '../src/types';
 
 export function randomAddressSubscription(): Scheme.AddressSubscription {
     return {
@@ -122,4 +124,47 @@ export function randomWebhookAction(): Scheme.WebhookActionItem {
 
         createdAt: new Date()
     } as Scheme.WebhookActionItem;
+}
+
+export function randomOraclize(projectId: string = generateId(), ) {
+    return {
+        projectId,
+        eventHash: `0x${generateId()}`,
+        eventName: generateId(),
+        eventInputTypes: [],
+        webhookUrl: `https://www.${generateId()}.com.uk`,
+        status: OraclizeStatus.ENABLED,
+    } as OraclizeSubscription;
+}
+
+export function randomProject(): Scheme.Project {
+    const salt = generate({ length: 64, charset: '1234567890abcdef' });
+    const token = generate({ length: 64, charset: '1234567890abcdef' });
+    const saltyToken = createHash('sha256')
+        .update(token)
+        .update(salt)
+        .digest('hex');
+
+    return {
+        clientId: generateId(),
+
+        name: generateId(),
+        status: random(0, 1, true) > .5 ? Scheme.ProjectStatus.Active : Scheme.ProjectStatus.Inactive,
+
+        webhookUrl: `https://www.${generateId()}.eu`,
+        failedRetryCount: random(0, 5),
+
+        sharedSecret: `secret_${generateId()}`,
+
+        createdAt: new Date(),
+
+        txMinConfirmations: random(0, 10),
+
+        token,
+        salt,
+        saltyToken,
+
+        removedAt: null,
+        isRemoved: false
+    } as Scheme.Project;
 }

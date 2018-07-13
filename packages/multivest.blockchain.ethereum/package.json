@@ -1,6 +1,6 @@
 {
   "name": "@applicature-restricted/multivest.blockchain.ethereum",
-  "version": "0.2.36",
+  "version": "0.2.37",
   "private": false,
   "license": "UNLICENSED",
   "description": "Ethereum Blockchain Plugin",
@@ -31,18 +31,18 @@
     "registry": "https://private-registry/repository/fluence/"
   },
   "dependencies": {
-    "@applicature-restricted/multivest.services.blockchain": "^0.2.34",
+    "@applicature-restricted/multivest.services.blockchain": "^0.2.37",
     "@applicature/multivest.core": "^0.1.25",
     "@applicature/multivest.mongodb": "^0.1.16",
     "axios": "^0.18.0",
     "bignumber.js": "^4.1.0",
     "config": "^1.30.0",
-    "json2yaml": "^1.1.0",
     "ethereum-bip44": "^2.1.3",
     "ethereumjs-abi": "^0.6.5",
     "ethereumjs-tx": "^1.3.4",
     "ethereumjs-util": "^5.2.0",
     "ethers": "^3.0.15",
+    "json2yaml": "^1.1.0",
     "mongodb": "^2.2.35",
     "web3": "^0.19",
     "winston": "^2.4.2"
@@ -72,6 +72,7 @@
     "jest-junit": "^3.7.0",
     "lodash": "^4.17.10",
     "nsp": "^3.2.1",
+    "randomstring": "^1.1.5",
     "source-map-support": "^0.5.5",
     "ts-jest": "^21.2.4",
     "ts-node": "^4.1.0",

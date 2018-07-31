@@ -1,0 +1,16 @@
+{
+	"transform": {
+		"^.+\\.tsx?$": "ts-jest"
+	},
+	"testRegex": "test\/.*\\.spec\\.ts",
+	"moduleFileExtensions": [
+		"ts",
+		"tsx",
+		"js",
+		"jsx",
+		"json",
+		"node"
+	],
+	"collectCoverage": false,
+	"coveragePathIgnorePatterns": ["/node_modules/", "coverage"]
+}

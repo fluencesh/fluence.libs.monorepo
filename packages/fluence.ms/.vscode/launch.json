@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Jest",
+            "program": "${workspaceRoot}/node_modules/jest/bin/jest",
+            "args": [
+                "--config",
+                "${workspaceRoot}/test/jest.config.json",
+                "--runInBand"
+            ],
+            "runtimeArgs": [
+                "--nolazy"
+            ],
+            "sourceMaps": true,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Current TS File",
+            "type": "node",
+            "request": "launch",
+            "args": ["${relativeFile}"],
+            "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "protocol": "inspector",
+        }
+    ]
+}

@@ -1,10 +1,14 @@
 const fs = require('fs');
+const resolve = require('path').resolve;
+const homedir = require('os').homedir();
 
 const packageJson = require('./package.json');
+const betaDirPath = resolve(homedir, './beta');
+const betaDirExists = fs.existsSync(betaDirPath);
 
-const betaDirExists = fs.existsSync('./beta');
-const settingsExists = betaDirExists ? fs.existsSync('./beta/settings.json') : false;
-let settings = settingsExists ? require('./beta/settings.json') : {};
+const settingsPath = resolve(betaDirPath, './settings.json');
+const settingsExists = betaDirExists ? fs.existsSync(settingsPath) : false;
+let settings = settingsExists ? require(settingsPath) : {};
 
 const packageVersion = packageJson.version.replace(/-beta\..*$/, '');
 
@@ -22,6 +26,6 @@ packageJson.version = `${ packageVersion }-beta.${ settings.betaVersion }`;
 fs.writeFileSync('./package.json', JSON.stringify(packageJson, null, 2), { encoding: 'utf8' });
 
 if (!betaDirExists) {
-    fs.mkdirSync('beta');
+    fs.mkdirSync(betaDirPath);
 }
-fs.writeFileSync('./beta/settings.json', JSON.stringify(settings, null, 2), { encoding: 'utf8' });
+fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2), { encoding: 'utf8' });

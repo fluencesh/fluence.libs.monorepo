@@ -1,6 +1,6 @@
+import { MultivestError } from '@fluencesh/multivest.core';
 import { NextFunction, Response } from 'express';
 import { get } from 'lodash';
-import { MultivestError } from '../../node_modules/@fluencesh/multivest.core';
 import { Errors } from '../errors';
 import { AwsRequest } from '../types';
 import { AuthMiddleware } from './auth.middleware';

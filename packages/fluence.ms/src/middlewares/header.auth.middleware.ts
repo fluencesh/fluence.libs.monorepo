@@ -26,7 +26,7 @@ export class HeaderAuthMiddleware extends AuthMiddleware {
             req.project = JSON.parse(projectRaw);
             req.relatedClient = JSON.parse(clientRaw);
         } catch (ex) {
-            return next(new MultivestError(Errors.FORBIDDEN));
+            return next(new MultivestError(Errors.FORBIDDEN, 403));
         }
         next();
     }

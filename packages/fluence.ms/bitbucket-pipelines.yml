@@ -15,38 +15,23 @@ pipelines:
           - npm install
           - npm run build
           - npm run test:ci
-          - npm run test:lint - not compatibale with ts@3.0.1
+          - npm run test:lint
           - npm run test:sonar
         services: 
           - mongo
+    - step:
+        name: Deploy beta version
+        trigger: manual
+        caches:
+          - node
+          - beta-info
+        script:
+          - printf "//`node -p \"require('url').parse(process.env.NPM_REGISTRY_URL || 'https://registry.npmjs.org').host\"`/:_authToken=${NPM_TOKEN}\nregistry=${NPM_REGISTRY_URL:-https://registry.npmjs.org}\n" >> ~/.npmrc
+          - npm install
+          - npm run build
+          - node make.beta.version
+          - npm publish --tag beta
   branches:
-    develop:
-      - step:
-          caches:
-            - node
-            - sonarcloud
-            - node-scanner
-          script:
-            - printf "//`node -p \"require('url').parse(process.env.NPM_REGISTRY_URL || 'https://registry.npmjs.org').host\"`/:_authToken=${NPM_TOKEN}\nregistry=${NPM_REGISTRY_URL:-https://registry.npmjs.org}\n" >> ~/.npmrc
-            - npm install
-            - npm run build
-            - npm run test:ci
-            - npm run test:lint
-            - npm run test:sonar
-          services: 
-            - mongo
-      - step:
-          name: Deploy beta version
-          trigger: manual
-          caches:
-            - node
-            - beta-info
-          script:
-            - printf "//`node -p \"require('url').parse(process.env.NPM_REGISTRY_URL || 'https://registry.npmjs.org').host\"`/:_authToken=${NPM_TOKEN}\nregistry=${NPM_REGISTRY_URL:-https://registry.npmjs.org}\n" >> ~/.npmrc
-            - npm install
-            - npm run build
-            - node make.beta.version
-            - npm publish --tag beta
     master:
       - step:
           caches:

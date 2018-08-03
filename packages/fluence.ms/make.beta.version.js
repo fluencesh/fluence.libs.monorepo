@@ -17,7 +17,7 @@ settings.packageVersion = settings.packageVersion || packageVersion;
 if (packageVersion === settings.packageVersion) {
     settings.betaVersion = (settings.betaVersion || 0) + 1;
 } else {
-    settings.packageVersion = packageJson.version;
+    settings.packageVersion = packageVersion;
     settings.betaVersion = 0;
 }
 

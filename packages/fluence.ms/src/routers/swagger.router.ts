@@ -1,12 +1,13 @@
 import { PluginManager } from '@fluencesh/multivest.core';
 import { NextFunction, Response, Router } from 'express';
-import { Get, Response as SwResponse } from 'swapi/dist';
+import { BaseUrl, Get, Response as SwResponse } from 'swapi/dist';
 import { SwaggerRouterUrls } from '../constants';
 import { SwaggerController } from '../controllers/swagger.controller';
 import { AuthMiddleware } from '../middlewares';
 import { ProjectRequest } from '../types';
 import { SwaggerValidation } from '../validation';
 
+@BaseUrl('/swagger/')
 export class SwaggerRouter {
     private controller: SwaggerController;
     private validationService: any;

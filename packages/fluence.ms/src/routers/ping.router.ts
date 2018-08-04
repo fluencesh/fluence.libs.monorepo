@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { Get, Response as SwResponse } from 'swapi/dist';
+import { BaseUrl, Get, Response as SwResponse } from 'swapi/dist';
 import { PingRouterUrls } from '../constants';
 import { PingController } from '../controllers/ping.controller';
 
+@BaseUrl('/ping/')
 export class PingRouter {
     private controller: PingController;
 

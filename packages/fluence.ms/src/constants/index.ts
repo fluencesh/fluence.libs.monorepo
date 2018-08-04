@@ -1,13 +1,13 @@
 export const MetricRouterUrls = {
-    GetMetrics: '/metrics/'
+    GetMetrics: '/'
 };
 
 export const SwaggerRouterUrls = {
-    GetSwaggerFile: '/swagger/'
+    GetSwaggerFile: '/'
 };
 
 export const PingRouterUrls = {
-    Ping: '/ping/'
+    Ping: '/'
 };
 
 export enum AbstractBlockchainRouteUrls {

@@ -1,11 +1,12 @@
 import { PluginManager } from '@applicature-private/multivest.core';
 import { NextFunction, Request, Response, Router } from 'express';
-import { Get, Response as SwResponse } from 'swapi/dist';
+import { BaseUrl, Get, Response as SwResponse } from 'swapi/dist';
 import { MetricRouterUrls } from '../constants';
 import { MetricController } from '../controllers/metric.controller';
 import { MetricServiceAuthMiddleware } from '../middlewares/metric.service.auth.middleware';
 import { MetricValidation } from '../validation/metric';
 
+@BaseUrl('/metrics/')
 export class MetricRouter {
     private controller: MetricController;
     private validationService: any;

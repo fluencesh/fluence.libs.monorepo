@@ -1,5 +1,8 @@
 image: andrewzzz/aws-lambda-nodejs:4382145e33052602f085a9548dc42d5979156673
 
+clone:
+  depth: full
+
 pipelines:
   default:
     - step:

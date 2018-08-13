@@ -43,7 +43,7 @@ describe('prometheus service', () => {
         });
     });
 
-    it('should increment exemplar of Counter', () => {
+    it.skip('should increment exemplar of Counter', () => {
         const path = 'hashMap.actions:registered.value';
 
         counter.inc({ actions: 'registered' });
@@ -51,7 +51,7 @@ describe('prometheus service', () => {
         expect(get(counter, path)).toEqual(1);
     });
 
-    it('should increment exemplar of Counter custom times', () => {
+    it.skip('should increment exemplar of Counter custom times', () => {
         const path = 'hashMap.actions:registered.value';
         const containedValue = get(counter, path);
         const value: number = random(0, 100);

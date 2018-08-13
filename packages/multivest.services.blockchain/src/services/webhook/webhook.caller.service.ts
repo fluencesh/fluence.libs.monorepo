@@ -1,4 +1,4 @@
-import { Hashtable, PluginManager, Service } from '@applicature/multivest.core';
+import { Hashtable, PluginManager, Service } from '@applicature-private/multivest.core';
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import { Scheme } from '../../types';
 import { WebhookActionItemObjectService } from '../object/webhook.action.service';

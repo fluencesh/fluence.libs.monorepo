@@ -3,7 +3,7 @@ import {
     PluginManager,
     Recipient,
     Transaction,
-} from '@applicature/multivest.core';
+} from '@applicature-private/multivest.core';
 
 import { WebhookMetric } from '../../metrics/webhook.metric';
 import { Scheme } from '../../types';

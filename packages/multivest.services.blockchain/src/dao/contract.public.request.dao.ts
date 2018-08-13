@@ -1,4 +1,4 @@
-import { Dao } from '@applicature/multivest.core';
+import { Dao } from '@applicature-private/multivest.core';
 import { Scheme } from '../types';
 
 export abstract class ContractPublicRequestDao extends Dao<Scheme.ContractPublicRequest> {

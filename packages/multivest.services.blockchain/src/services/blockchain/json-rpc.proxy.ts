@@ -1,4 +1,4 @@
-import {Hashtable} from '@applicature/multivest.core';
+import { Hashtable } from '@applicature-private/multivest.core';
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 
 export enum RequestType {

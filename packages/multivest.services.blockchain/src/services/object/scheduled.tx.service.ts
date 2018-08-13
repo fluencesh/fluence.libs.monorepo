@@ -1,4 +1,4 @@
-import { MultivestError, PluginManager, Service, Transaction } from '@applicature/multivest.core';
+import { MultivestError, PluginManager, Service, Transaction } from '@applicature-private/multivest.core';
 import { CronExpressionValidation, DaoIds } from '../../constants';
 import { ScheduledTxDao } from '../../dao/scheduled.tx.dao';
 import { Errors } from '../../errors';

@@ -1,4 +1,4 @@
-import { Dao } from '@applicature/multivest.core';
+import { Dao } from '@applicature-private/multivest.core';
 import { createHash } from 'crypto';
 import { Scheme } from '../types';
 

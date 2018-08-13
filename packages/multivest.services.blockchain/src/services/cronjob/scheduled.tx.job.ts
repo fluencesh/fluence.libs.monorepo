@@ -1,4 +1,4 @@
-import { Job, PluginManager, Transaction } from '@applicature/multivest.core';
+import { Job, PluginManager, Transaction } from '@applicature-private/multivest.core';
 import * as randomstring from 'randomstring';
 import * as logger from 'winston';
 import { RandomStringPresets } from '../../constants';

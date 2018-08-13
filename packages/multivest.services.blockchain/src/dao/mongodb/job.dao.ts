@@ -1,5 +1,5 @@
-import { Hashtable } from '@applicature/multivest.core';
-import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { Hashtable } from '@applicature-private/multivest.core';
+import { MongoDBDao } from '@applicature-private/multivest.mongodb';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import {JobDao} from '../job.dao';

@@ -12,3 +12,4 @@ coverage
 
 /.history
 **/.DS_Store
+/test-reports

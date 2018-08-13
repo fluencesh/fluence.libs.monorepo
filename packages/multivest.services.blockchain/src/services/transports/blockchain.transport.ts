@@ -1,4 +1,4 @@
-import {Block, PluginManager, Service, Transaction} from '@applicature/multivest.core';
+import { Block, PluginManager, Service, Transaction } from '@applicature-private/multivest.core';
 import { BigNumber } from 'bignumber.js';
 import { Scheme } from '../../..';
 

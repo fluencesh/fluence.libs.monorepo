@@ -1,4 +1,4 @@
-import { PluginManager } from '@applicature/multivest.core';
+import { PluginManager } from '@applicature-private/multivest.core';
 import * as config from 'config';
 import { random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
@@ -39,7 +39,7 @@ describe('scheduled tx service', () => {
         dao.remove({});
 
         const pm = new PluginManager([
-            { path: '@applicature/multivest.mongodb' },
+            { path: '@applicature-private/multivest.mongodb' },
             { path: resolve(__dirname, '../../src/plugin.services.blockchain') }
         ]);
         pm.setJobExecutor(AgendaMock);

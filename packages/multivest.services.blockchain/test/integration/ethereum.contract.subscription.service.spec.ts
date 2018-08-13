@@ -1,8 +1,7 @@
-import { MultivestError } from '@applicature/multivest.core';
+import { MultivestError } from '@applicature-private/multivest.core';
 import * as config from 'config';
-import { omit, random } from 'lodash';
+import { random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
-import { v1 as generateId } from 'uuid';
 import { MongodbEthereumContractSubscriptionDao } from '../../src/dao/mongodb/ethereum.contract.subscription.dao';
 import { EthereumContractSubscriptionService } from '../../src/services/object/ethereum.contract.subscription.service';
 import { Scheme } from '../../src/types';

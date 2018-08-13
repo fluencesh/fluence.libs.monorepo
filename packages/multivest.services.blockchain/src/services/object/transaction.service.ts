@@ -1,5 +1,5 @@
-import { PluginManager, Service, Transaction } from '@applicature/multivest.core';
-import { Plugin } from '@applicature/multivest.mongodb';
+import { PluginManager, Service, Transaction } from '@applicature-private/multivest.core';
+import { Plugin } from '@applicature-private/multivest.mongodb';
 import { DaoIds } from '../../constants';
 import { TransactionDao } from '../../dao/transaction.dao';
 import { Scheme } from '../../types';
@@ -12,7 +12,7 @@ export class TransactionService extends Service {
     }
 
     public async init(): Promise<void> {
-        const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
+        const mongodbPlugin = this.pluginManager.get('mongodb') as any as Plugin;
 
         this.transactionDao = await mongodbPlugin.getDao(DaoIds.Transaction) as TransactionDao;
     }

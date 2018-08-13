@@ -1,4 +1,4 @@
-import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { MongoDBDao } from '@applicature-private/multivest.mongodb';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { TransactionHashSubscriptionDao } from '../transaction.hash.subscription.dao';
@@ -33,11 +33,16 @@ export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.Tra
             projectId,
             blockChainId,
             networkId,
+
             hash,
             minConfirmations,
+
             subscribed,
+
             isProjectActive,
-            isClientActive
+            isClientActive,
+
+            createdAt: new Date()
         });
     }
 

@@ -1,5 +1,5 @@
-import { Transaction } from '@applicature/multivest.core';
-import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { Transaction } from '@applicature-private/multivest.core';
+import { MongoDBDao } from '@applicature-private/multivest.mongodb';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { TransactionDao } from '../transaction.dao';

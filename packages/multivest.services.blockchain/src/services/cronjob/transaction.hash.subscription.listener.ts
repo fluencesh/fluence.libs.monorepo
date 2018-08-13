@@ -3,7 +3,7 @@ import {
     Hashtable,
     PluginManager,
     Transaction,
-} from '@applicature/multivest.core';
+} from '@applicature-private/multivest.core';
 import { v1 as generateId } from 'uuid';
 import { SubscriptionMetric } from '../../metrics/subscription.metric';
 import { WebhookMetric } from '../../metrics/webhook.metric';

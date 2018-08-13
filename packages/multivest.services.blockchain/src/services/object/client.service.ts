@@ -1,5 +1,5 @@
-import { PluginManager, Service } from '@applicature/multivest.core';
-import { Plugin } from '@applicature/multivest.mongodb';
+import { PluginManager, Service } from '@applicature-private/multivest.core';
+import { Plugin } from '@applicature-private/multivest.mongodb';
 import { DaoIds } from '../../constants';
 import { ClientDao } from '../../dao/client.dao';
 import { Scheme } from '../../types';
@@ -18,7 +18,7 @@ export class ClientService extends Service {
     }
 
     public async init(): Promise<void> {
-        const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
+        const mongodbPlugin = this.pluginManager.get('mongodb') as any as Plugin;
 
         this.clientDao = await mongodbPlugin.getDao(DaoIds.Client) as ClientDao;
 

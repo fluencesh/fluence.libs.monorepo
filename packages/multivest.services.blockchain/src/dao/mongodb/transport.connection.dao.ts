@@ -1,4 +1,4 @@
-import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { MongoDBDao } from '@applicature-private/multivest.mongodb';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { TransportConnectionDao } from '../transport.connection.dao';
@@ -28,9 +28,21 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
         blockchainId: string,
         networkId: string
     ): Promise<Array<Scheme.TransportConnection>> {
-        return this.list({
+        return this.listRaw({
             blockchainId,
             networkId
+        });
+    }
+
+    public async listByBlockchainAndNetworkAndStatus(
+        blockchainId: string,
+        networkId: string,
+        status: Scheme.TransportConnectionStatus
+    ): Promise<Array<Scheme.TransportConnection>> {
+        return this.listRaw({
+            blockchainId,
+            networkId,
+            status
         });
     }
 
@@ -47,7 +59,9 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
 
         isFailing: boolean,
         lastFailedAt: Date,
-        failedCount: number
+        failedCount: number,
+
+        isPrivate: boolean
     ): Promise<Scheme.TransportConnection> {
         return this.create({
             blockchainId,
@@ -63,6 +77,8 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
             isFailing,
             lastFailedAt,
             failedCount,
+
+            isPrivate,
 
             createdAt: new Date()
         });
@@ -86,6 +102,23 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
         status: Scheme.TransportConnectionStatus
     ) {
         await this.updateRaw({ id }, {
+            $set: {
+                status
+            }
+        });
+
+        return;
+    }
+
+    public async setStatusByIds(
+        ids: Array<string>,
+        status: Scheme.TransportConnectionStatus
+    ) {
+        await this.updateRaw({
+            id: {
+                $in: ids
+            }
+        }, {
             $set: {
                 status
             }
@@ -124,6 +157,18 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
                 lastFailedAt: at
             }
         });
+
+        return;
+    }
+
+    public async removeById(id: string): Promise<void> {
+        await this.removeRaw({ id });
+
+        return;
+    }
+
+    public async removeByIds(ids: Array<string>): Promise<void> {
+        await this.removeRaw({ id: { $in: ids } });
 
         return;
     }

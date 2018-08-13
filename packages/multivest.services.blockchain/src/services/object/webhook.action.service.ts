@@ -1,6 +1,6 @@
-import {Hashtable, PluginManager, Service} from '@applicature/multivest.core';
+import {Hashtable, PluginManager, Service} from '@applicature-private/multivest.core';
 import WebhookActionItem = Scheme.WebhookActionItem;
-import { Plugin } from '@applicature/multivest.mongodb';
+import { Plugin } from '@applicature-private/multivest.mongodb';
 import { DaoIds } from '../../constants';
 import { WebhookActionDao } from '../../dao/webhook.action.dao';
 import { Scheme } from '../../types';
@@ -13,7 +13,7 @@ export class WebhookActionItemObjectService extends Service {
     }
 
     public async init(): Promise<void> {
-        const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
+        const mongodbPlugin = this.pluginManager.get('mongodb') as any as Plugin;
 
         this.webHookActionItemDao = await mongodbPlugin.getDao(DaoIds.WebhookAction) as WebhookActionDao;
     }

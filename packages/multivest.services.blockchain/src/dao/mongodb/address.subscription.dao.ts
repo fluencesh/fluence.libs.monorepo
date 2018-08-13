@@ -1,4 +1,4 @@
-import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { MongoDBDao } from '@applicature-private/multivest.mongodb';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { AddressSubscriptionDao } from '../address.subscription.dao';

@@ -1,4 +1,4 @@
-import {Dao, Hashtable} from '@applicature/multivest.core';
+import {Dao, Hashtable} from '@applicature-private/multivest.core';
 import { Scheme } from '../types';
 
 export abstract class WebhookActionDao extends Dao<Scheme.WebhookActionItem> {

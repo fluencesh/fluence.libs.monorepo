@@ -82,7 +82,7 @@ describe('contract dao', () => {
     });
 
     it('should get list of contracts by addresses', async () => {
-        const filtered = contracts.filter((c, index) => index < 5);
+        const filtered = contracts.filter((c) => contract.address === c.address);
 
         const got = await dao.listByAddresses(filtered.map((c) => c.address));
 

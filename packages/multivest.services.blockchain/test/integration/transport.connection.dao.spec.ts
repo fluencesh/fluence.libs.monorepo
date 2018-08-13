@@ -40,7 +40,7 @@ describe('transport connection dao', () => {
         expect(got).toEqual(transportConnection);
     });
 
-    it('should get transport connection by network and blockchain ids', async () => {
+    it('should get transport connection by network and blockchain id', async () => {
         const filtered = transportConnections.filter((tc) => {
             return tc.blockchainId === transportConnection.blockchainId
                 && tc.networkId === transportConnection.networkId;
@@ -49,6 +49,22 @@ describe('transport connection dao', () => {
         const got = await dao.listByBlockchainAndNetwork(
             transportConnection.blockchainId,
             transportConnection.networkId
+        );
+
+        expect(got).toEqual(filtered);
+    });
+
+    it('should get transport connection by network and blockchain id and status', async () => {
+        const filtered = transportConnections.filter((tc) => {
+            return tc.blockchainId === transportConnection.blockchainId
+                && tc.networkId === transportConnection.networkId
+                && tc.status === transportConnection.status;
+        });
+
+        const got = await dao.listByBlockchainAndNetworkAndStatus(
+            transportConnection.blockchainId,
+            transportConnection.networkId,
+            transportConnection.status
         );
 
         expect(got).toEqual(filtered);
@@ -70,7 +86,9 @@ describe('transport connection dao', () => {
 
             data.isFailing,
             data.lastFailedAt,
-            data.failedCount
+            data.failedCount,
+
+            data.isPrivate
         );
 
         const got = await dao.getById(created.id);
@@ -78,7 +96,7 @@ describe('transport connection dao', () => {
         expect(got).toEqual(created);
     });
 
-    it('should set new status', async () => {
+    it('should set new settings', async () => {
         transportConnection.settings = { [generateId()]: generateId() };
 
         await dao.setSettings(
@@ -104,6 +122,21 @@ describe('transport connection dao', () => {
         const got = await dao.getById(transportConnection.id);
 
         expect(got).toEqual(transportConnection);
+    });
+
+    it('should set new status by ids', async () => {
+        transportConnection.status = transportConnection.status === Scheme.TransportConnectionStatus.Enabled
+            ? Scheme.TransportConnectionStatus.Disabled
+            : Scheme.TransportConnectionStatus.Enabled;
+
+        await dao.setStatusByIds(
+            [ transportConnection.id ],
+            transportConnection.status
+        );
+
+        const got = await dao.getById(transportConnection.id);
+
+        expect(got.status).toEqual(transportConnection.status);
     });
 
     it('should set new failed status', async () => {
@@ -138,5 +171,29 @@ describe('transport connection dao', () => {
         const got = await dao.getById(transportConnection.id);
 
         expect(got).toEqual(transportConnection);
+    });
+
+    it('should remove transport connections by id', async () => {
+        await dao.removeById(transportConnection.id);
+
+        const got = await dao.getById(transportConnection.id);
+        expect(got).toBeNull();
+
+        transportConnections.splice(transportConnections.indexOf(got), 1);
+    });
+
+    it('should remove transport connections by ids', async () => {
+        const howManyToRemove = 3;
+        const transportConnectionToRemove = transportConnections.filter((tc, index) => index < howManyToRemove);
+        const idsToRemove = transportConnectionToRemove.map((tc) => tc.id);
+
+        await dao.removeByIds(idsToRemove);
+
+        const got = await Promise.all(idsToRemove.map((id) => dao.getById(id)));
+        got.forEach((tc) => {
+            expect(tc).toBeNull();
+        });
+
+        transportConnections.splice(0, howManyToRemove);
     });
 });

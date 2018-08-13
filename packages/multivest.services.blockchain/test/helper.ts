@@ -1,4 +1,4 @@
-import { Transaction } from '@applicature/multivest.core';
+import { Transaction } from '@fluencesh/multivest.core';
 import BigNumber from 'bignumber.js';
 import { createHash } from 'crypto';
 import { random } from 'lodash';
@@ -64,16 +64,16 @@ export function randomProject(): Scheme.Project {
 
         sharedSecret: `secret_${generateId()}`,
 
-        createdAt: new Date(),
-
         txMinConfirmations: random(0, 10),
-
+        
         token,
         salt,
         saltyToken,
 
+        createdAt: new Date(),
+        
         removedAt: null,
-        isRemoved: false
+        isRemoved: false,
     } as Scheme.Project;
 }
 
@@ -150,8 +150,10 @@ export function randomTransportConnection() {
         isFailing,
         lastFailedAt: isFailing ? new Date() : null,
         failedCount: isFailing ? random(0, 10) : 0,
+        
+        isPrivate: false,
 
-        createdAt: new Date()
+        createdAt: new Date(),
     } as Scheme.TransportConnection;
 }
 
@@ -202,7 +204,7 @@ export function randomEthereumEventLog(): Scheme.EthereumEventLog {
 
 export function randomContract() {
     return {
-        address: createHash('sha1').update(random(0, 1000).toString(), 'utf8').digest('hex'),
+        address: generateId(),
         abi: getRandomAbi(),
         projectId: generateId(),
         isFabric: !!random(0, 1),
@@ -251,11 +253,33 @@ export function randomTransactionScheme(): Transaction {
         blockHash: `0x${generate(RandomStringPresets.Hash256)}`,
         blockHeight: random(9999, 99999),
         blockTime: random(10, 100),
-        fee: new BigNumber(random(1, 10)),
+        fee: new BigNumber(random(1, 10)) as any,
         from: [ { address: `0x${generate(RandomStringPresets.Hash256)}` } ],
         to: [{
             address: `0x${generate(RandomStringPresets.Hash256)}`,
-            amount: new BigNumber(random(1, 10))
+            amount: new BigNumber(random(1, 10)) as any
         }]
     } as Transaction;
+}
+
+export function randomSession(): Scheme.Session {
+    const expiredAt = new Date();
+    expiredAt.setDate(expiredAt.getDate() + 7);
+
+    return {
+        clientId: generateId(),
+        projectId: generateId(),
+        createdAt: new Date(),
+        expiredAt,
+        loggedOutAt: null,
+    } as Scheme.Session;
+}
+
+export function randomProjectBlockchainSetup(projectId?: string, privateTransportConnectionId?: string) {
+    return {
+        blockchainId: 'blockchainId',
+        projectId: projectId || generateId(),
+        privateTransportConnectionId: privateTransportConnectionId || generateId(),
+        status: Scheme.ProjectBlockchainSetupStatus.Enabled
+    } as Scheme.ProjectBlockchainSetup;
 }

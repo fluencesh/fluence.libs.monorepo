@@ -1,5 +1,5 @@
-import { Hashtable } from '@applicature/multivest.core';
-import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { Hashtable } from '@fluencesh/multivest.core';
+import { MongoDBDao } from '@fluencesh/multivest.mongodb';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import {JobDao} from '../job.dao';

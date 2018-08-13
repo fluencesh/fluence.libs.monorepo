@@ -1,5 +1,5 @@
-import { PluginManager } from '@applicature/multivest.core';
-import { Plugin as MongoPlugin } from '@applicature/multivest.mongodb';
+import { PluginManager } from '@fluencesh/multivest.core';
+import { Plugin as MongoPlugin } from '@fluencesh/multivest.mongodb';
 
 const generate = (n: number, f: any) => {
     return Array(n).fill('').map(f);
@@ -8,12 +8,12 @@ const generate = (n: number, f: any) => {
 async function start() {
     const pluginManager = new PluginManager([
         {
-            path: '@applicature/multivest.mongodb',
+            path: '@fluencesh/multivest.mongodb',
         }
     ]);
 
     await pluginManager.init();
-    const mongoPlugin = pluginManager.get('mongodb') as MongoPlugin;
+    const mongoPlugin = pluginManager.get('mongodb') as any as MongoPlugin;
 }
 
 start();

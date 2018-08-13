@@ -1,5 +1,5 @@
-import { Transaction } from '@applicature/multivest.core';
-import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { Transaction } from '@fluencesh/multivest.core';
+import { MongoDBDao } from '@fluencesh/multivest.mongodb';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { ScheduledTxDao } from '../scheduled.tx.dao';

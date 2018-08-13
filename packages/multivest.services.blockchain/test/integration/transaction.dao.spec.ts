@@ -1,4 +1,4 @@
-import { Transaction } from '@applicature/multivest.core';
+import { Transaction } from '@fluencesh/multivest.core';
 import * as config from 'config';
 import { Db, MongoClient } from 'mongodb';
 import { v1 as generateId } from 'uuid';

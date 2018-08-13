@@ -1,4 +1,4 @@
-import { Dao } from '@applicature/multivest.core';
+import { Dao } from '@fluencesh/multivest.core';
 import { Scheme } from '../types';
 
 export abstract class ContractDao extends Dao<Scheme.ContractScheme> {

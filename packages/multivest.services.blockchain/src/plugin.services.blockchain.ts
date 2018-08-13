@@ -1,34 +1,42 @@
-import { Plugin, Service } from '@applicature/multivest.core';
-import { Plugin as MongodbPlugin } from '@applicature/multivest.mongodb';
+import { Plugin } from '@fluencesh/multivest.core';
+import { Plugin as MongodbPlugin } from '@fluencesh/multivest.mongodb';
 
-import { MongodbAddressSubscriptionDao } from './dao/mongodb/address.subscription.dao';
-import { MongodbClientDao } from './dao/mongodb/client.dao';
-import { MongoContractDao } from './dao/mongodb/contract.dao';
-import { MongodbContractPublicRequestDao } from './dao/mongodb/contract.public.request.dao';
-import { MongodbEthereumContractSubscriptionDao } from './dao/mongodb/ethereum.contract.subscription.dao';
-import { MongodbEthereumEventLogDao } from './dao/mongodb/ethereum.event.log.dao';
-import { MongodbJobDao } from './dao/mongodb/job.dao';
-import { MongodbProjectDao } from './dao/mongodb/project.dao';
-import { MongodbScheduledTxDao } from './dao/mongodb/scheduled.tx.dao';
-import { MongodbTransactionDao } from './dao/mongodb/transaction.dao';
-import { MongodbTransactionHashSubscriptionDao } from './dao/mongodb/transaction.hash.subscription.dao';
-import { MongodbTransportConnectionDao } from './dao/mongodb/transport.connection.dao';
-import { MongodbWebhookActionDao } from './dao/mongodb/webhook.action.dao';
+import {
+    MongoContractDao,
+    MongodbAddressSubscriptionDao,
+    MongodbClientDao,
+    MongodbContractPublicRequestDao,
+    MongodbEthereumContractSubscriptionDao,
+    MongodbEthereumEventLogDao,
+    MongodbJobDao,
+    MongodbProjectBlockchainSetupDao,
+    MongodbProjectDao,
+    MongodbScheduledTxDao,
+    MongodbSessionDao,
+    MongodbTransactionDao,
+    MongodbTransactionHashSubscriptionDao,
+    MongodbTransportConnectionDao,
+    MongodbWebhookActionDao,
+} from './dao';
 
-import { BlockchainRegistryService } from './services/blockchain/blockchain.registry.service';
-import { AddressSubscriptionService } from './services/object/address.subscription.service';
-import { ClientService } from './services/object/client.service';
-import { ContractPublicRequestService } from './services/object/contract.public.request.service';
-import { ContractService } from './services/object/contract.service';
-import { EthereumContractSubscriptionService } from './services/object/ethereum.contract.subscription.service';
-import { EthereumEventLogService } from './services/object/ethereum.event.log.service';
-import { JobService } from './services/object/job.service';
-import { ProjectService } from './services/object/project.service';
-import { TransactionHashSubscriptionService } from './services/object/transaction.hash.subscription.service';
-import { TransactionService } from './services/object/transaction.service';
-import { TransportConnectionService } from './services/object/transport.connection.service';
-import { WebhookActionItemObjectService } from './services/object/webhook.action.service';
-import { WebhookCallerService } from './services/webhook/webhook.caller.service';
+import {
+    AddressSubscriptionService,
+    BlockchainRegistryService,
+    ClientService,
+    ContractPublicRequestService,
+    ContractService,
+    EthereumContractSubscriptionService,
+    EthereumEventLogService,
+    JobService,
+    ProjectBlockchainSetupService,
+    ProjectService,
+    SessionService,
+    TransactionHashSubscriptionService,
+    TransactionService,
+    TransportConnectionService,
+    WebhookActionItemObjectService,
+    WebhookCallerService,
+} from './services';
 
 class BlockchainServicesPlugin extends Plugin<void> {
     public getPluginId() {
@@ -36,7 +44,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
     }
 
     public init() {
-        const mongoDbPlugin = this.pluginManager.get('mongodb') as MongodbPlugin;
+        const mongoDbPlugin = this.pluginManager.get('mongodb') as any as MongodbPlugin;
 
         mongoDbPlugin.addDao(MongodbAddressSubscriptionDao);
         mongoDbPlugin.addDao(MongodbClientDao);
@@ -51,6 +59,8 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbEthereumEventLogDao);
         mongoDbPlugin.addDao(MongodbContractPublicRequestDao);
         mongoDbPlugin.addDao(MongodbScheduledTxDao);
+        mongoDbPlugin.addDao(MongodbProjectBlockchainSetupDao);
+        mongoDbPlugin.addDao(MongodbSessionDao);
 
         this.registerService(AddressSubscriptionService);
         this.registerService(BlockchainRegistryService);
@@ -66,6 +76,8 @@ class BlockchainServicesPlugin extends Plugin<void> {
         this.registerService(EthereumContractSubscriptionService);
         this.registerService(EthereumEventLogService);
         this.registerService(ContractPublicRequestService);
+        this.registerService(ProjectBlockchainSetupService);
+        this.registerService(SessionService);
     }
 }
 

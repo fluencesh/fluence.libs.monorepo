@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es2017",
+        "target": "esnext",
         "module": "commonjs",
         "noImplicitAny": true,
         "removeComments": false,
@@ -10,7 +10,7 @@
         "skipLibCheck": true,
         "typeRoots": [
             "node_modules/@types",
-            "node_modules/@applicature/multivest.mongodb/@types"
+            "node_modules/@fluencesh/multivest.mongodb/@types"
         ]
     }
 }

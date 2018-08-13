@@ -1,6 +1,6 @@
 {
-  "name": "@applicature-restricted/multivest.services.blockchain",
-  "version": "0.2.37",
+  "name": "@fluencesh/multivest.services.blockchain",
+  "version": "0.2.43",
   "private": false,
   "license": "UNLICENSED",
   "description": "BlockPool Services Plugin",
@@ -15,22 +15,23 @@
   "scripts": {
     "build": "gulp clean && gulp build",
     "lint": "tslint '{src/**/*.ts,test/**/*.ts}'",
-    "precommit": "npm run lint ; npm run test:coverage ; npm run test:security",
+    "precommit": "npm run lint ; npm run test:ci",
     "test": "jest test/unit",
-    "test:integration": "jest test/integration",
-    "test:coverage": "jest test/unit --coverage --collectCoverageFrom=*/**/*.ts",
-    "test:ci": "jest test/unit --coverage --testResultsProcessor ./node_modules/jest-junit --collectCoverageFrom=*/**/*.ts",
-    "test:security": "nsp check"
+    "test:integration": "jest test/integration --forceExit --runInBand",
+    "test:ci": "jest --coverage --forceExit --runInBand",
+    "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN",
+    "test:lint": "tslint --force --out ./test-reports/tslint.json -t json --project ./tsconfig.json 'src/**/*.{ts,tsx}'"
   },
   "repository": {
     "type": "git",
     "url": "git@bitbucket.com:applicature/multivest.services.blockchain.git"
   },
   "dependencies": {
-    "@applicature/multivest.core": "^0.1.25",
-    "@applicature/multivest.mongodb": "^0.1.11",
+    "@fluencesh/multivest.core": "^0.1.27",
+    "@fluencesh/multivest.mongodb": "^0.2.1",
     "agenda": "^1.0.3",
     "axios": "^0.18.0",
+    "bignumber.js": "^7.2.1",
     "config": "^1.29.2",
     "faker": "^4.1.0",
     "jsonwebtoken": "^8.2.1",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@types/agenda": "^1.0.1",
+    "@types/bignumber.js": "^5.0.0",
     "@types/config": "0.0.33",
     "@types/faker": "^4.1.2",
     "@types/jest": "^22.1.0",
@@ -61,11 +63,14 @@
     "husky": "^0.14.3",
     "jest": "^22.1.4",
     "jest-junit": "^3.4.1",
+    "jest-multi-test-result-processor": "^1.0.0",
+    "jest-sonar-reporter": "^2.0.0",
     "mongo-mock": "^3.0.0",
     "nsp": "^3.1.0",
+    "sonarqube-scanner": "^2.1.0",
     "ts-jest": "^22.0.1",
-    "tslint": "^5.9.1",
-    "typescript": "^2.6.2"
+    "tslint": "^5.11.0",
+    "typescript": "^2.9.2"
   },
   "files": [
     "dist/",
@@ -73,6 +78,16 @@
     "index.ts"
   ],
   "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "testEnvironment": "node",
+    "globals": {
+      "ts-jest": {
+        "skipBabel": true
+      }
+    },
+    "testResultsProcessor": "jest-multi-test-result-processor",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -80,9 +95,7 @@
     "moduleFileExtensions": [
       "ts",
       "tsx",
-      "js",
-      "json",
-      "node"
+      "js"
     ],
     "coveragePathIgnorePatterns": [
       "<rootDir>/.*?\\.d\\.ts$",
@@ -96,7 +109,18 @@
       "cobertura"
     ]
   },
+  "jest-multi-test-result-processor": {
+    "processors": [
+      "jest-junit",
+      "jest-sonar-reporter"
+    ]
+  },
+  "jestSonar": {
+    "reportPath": "./test-reports",
+    "reportFile": "test-report.xml",
+    "indent": 4
+  },
   "jest-junit": {
-    "output": "./coverage/junit.xml"
+    "output": "./test-reports/junit.xml"
   }
 }

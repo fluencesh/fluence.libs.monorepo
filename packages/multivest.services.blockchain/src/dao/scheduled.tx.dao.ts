@@ -1,4 +1,4 @@
-import { Dao, Transaction } from '@applicature/multivest.core';
+import { Dao, Transaction } from '@fluencesh/multivest.core';
 import { Scheme } from '../types';
 
 export abstract class ScheduledTxDao extends Dao<Scheme.ScheduledTx> {

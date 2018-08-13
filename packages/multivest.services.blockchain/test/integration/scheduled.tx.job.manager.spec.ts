@@ -1,4 +1,4 @@
-import { PluginManager } from '@applicature/multivest.core';
+import { PluginManager } from '@fluencesh/multivest.core';
 import * as config from 'config';
 import { random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
@@ -24,7 +24,7 @@ describe('scheduled tx job manager', () => {
 
     beforeAll(async () => {
         pm = new PluginManager([
-            { path: '@applicature/multivest.mongodb' },
+            { path: '@fluencesh/multivest.mongodb' },
             { path: resolve(__dirname, '../../src/plugin.services.blockchain') }
         ]);
 

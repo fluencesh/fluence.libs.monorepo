@@ -8,7 +8,7 @@ import { v1 as generateId } from 'uuid';
 
 import { randomClient } from '../helper';
 
-describe('address subscription dao', () => {
+describe('client dao', () => {
     let dao: MongodbClientDao;
     const clients: Array<Scheme.Client> = [];
     const clientsCount = 15;

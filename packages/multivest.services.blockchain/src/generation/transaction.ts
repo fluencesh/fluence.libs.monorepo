@@ -1,4 +1,4 @@
-import { Transaction } from '@applicature/multivest.core';
+import { Transaction } from '@fluencesh/multivest.core';
 import { BigNumber } from 'bignumber.js';
 import * as faker from 'faker';
 import { sample } from 'lodash';
@@ -17,7 +17,7 @@ export const randomTransactionRef = (): Transaction => {
         blockHash: `0x${generateId()}`,
         blockHeight: Math.floor(Math.random() * 100000000),
         blockTime: faker.date.past().getTime(),
-        fee: new BigNumber(String(Math.random() / 1000)),
+        fee: new BigNumber(String(Math.random() / 1000)) as any,
         from: [
             {
                 address: `0x${generateId()}`,
@@ -26,7 +26,7 @@ export const randomTransactionRef = (): Transaction => {
         to: [
             {
                 address: `0x${generateId()}`,
-                amount: new BigNumber(String(Math.random())),
+                amount: new BigNumber(String(Math.random())) as any,
             }
         ]
     };

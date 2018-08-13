@@ -59,6 +59,22 @@ describe('transport connection service', () => {
         expect(got).toEqual(filtered);
     });
 
+    it('should get transport connection by network and blockchain id and status', async () => {
+        const filtered = transportConnections.filter((tc) => {
+            return tc.blockchainId === transportConnection.blockchainId
+                && tc.networkId === transportConnection.networkId
+                && tc.status === transportConnection.status;
+        });
+
+        const got = await service.listByBlockchainAndNetworkAndStatus(
+            transportConnection.blockchainId,
+            transportConnection.networkId,
+            transportConnection.status
+        );
+
+        expect(got).toEqual(filtered);
+    });
+
     it('should create new transport connection', async () => {
         const data = randomTransportConnection();
 
@@ -75,7 +91,9 @@ describe('transport connection service', () => {
 
             data.isFailing,
             data.lastFailedAt,
-            data.failedCount
+            data.failedCount,
+
+            data.isPrivate
         );
 
         const got = await service.getById(created.id);
@@ -111,6 +129,21 @@ describe('transport connection service', () => {
         expect(got).toEqual(transportConnection);
     });
 
+    it('should set new status by ids', async () => {
+        transportConnection.status = transportConnection.status === Scheme.TransportConnectionStatus.Enabled
+            ? Scheme.TransportConnectionStatus.Disabled
+            : Scheme.TransportConnectionStatus.Enabled;
+
+        await service.setStatusByIds(
+            [ transportConnection.id ],
+            transportConnection.status
+        );
+
+        const got = await service.getById(transportConnection.id);
+
+        expect(got.status).toEqual(transportConnection.status);
+    });
+
     it('should set new failed status', async () => {
         transportConnection.isFailing = !transportConnection.isFailing;
         transportConnection.lastFailedAt = transportConnection.isFailing
@@ -143,5 +176,29 @@ describe('transport connection service', () => {
         const got = await service.getById(transportConnection.id);
 
         expect(got).toEqual(transportConnection);
+    });
+
+    it('should remove transport connections by id', async () => {
+        await service.removeById(transportConnection.id);
+
+        const got = await service.getById(transportConnection.id);
+        expect(got).toBeNull();
+
+        transportConnections.splice(transportConnections.indexOf(got), 1);
+    });
+
+    it('should remove transport connections by id', async () => {
+        const howManyToRemove = 3;
+        const transportConnectionToRemove = transportConnections.filter((tc, index) => index < howManyToRemove);
+        const idsToRemove = transportConnectionToRemove.map((tc) => tc.id);
+
+        await service.removeByIds(idsToRemove);
+
+        const got = await Promise.all(idsToRemove.map((id) => service.getById(id)));
+        got.forEach((tc) => {
+            expect(tc).toBeNull();
+        });
+
+        transportConnections.splice(0, howManyToRemove);
     });
 });

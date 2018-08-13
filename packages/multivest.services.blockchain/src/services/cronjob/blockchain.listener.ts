@@ -6,7 +6,7 @@ import {
     PluginManager,
     Recipient,
     Transaction,
-} from '@applicature/multivest.core';
+} from '@fluencesh/multivest.core';
 
 import { BigNumber } from 'bignumber.js';
 import * as logger from 'winston';
@@ -66,10 +66,10 @@ export abstract class BlockchainListener extends Job {
         const processedBlockHeight = await this.getProcessedBlock();
 
         if (processedBlockHeight) {
-            processingBlock = (new BigNumber(this.processedBlockHeight).add(1)).toNumber();
+            processingBlock = (new BigNumber(this.processedBlockHeight).plus(1)).toNumber();
         }
         else {
-            processingBlock = (new BigNumber(this.sinceBlock).add(1)).toNumber();
+            processingBlock = (new BigNumber(this.sinceBlock).plus(1)).toNumber();
         }
 
         const publicBlockHeight = await this.blockchainService.getBlockHeight();

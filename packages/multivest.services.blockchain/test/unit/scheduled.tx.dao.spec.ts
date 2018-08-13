@@ -1,4 +1,4 @@
-import { Transaction } from '@applicature/multivest.core';
+import { Transaction } from '@fluencesh/multivest.core';
 import { MongodbScheduledTxDao } from '../../src/dao/mongodb/scheduled.tx.dao';
 import { randomTransactionScheme } from '../helper';
 import { CollectionMock, DbMock } from '../mock/db.mock';

@@ -1,7 +1,7 @@
-import { PluginManager, Service } from '@applicature/multivest.core';
-import { Plugin } from '@applicature/multivest.mongodb';
+import { PluginManager, Service } from '@fluencesh/multivest.core';
+import { Plugin } from '@fluencesh/multivest.mongodb';
 import { DaoIds } from '../../constants';
-import { TransportConnectionDao } from '../../dao/transport.connection.dao';
+import { ProjectBlockchainSetupDao, TransportConnectionDao } from '../../dao';
 import { Scheme } from '../../types';
 
 export class TransportConnectionService extends Service {
@@ -16,7 +16,7 @@ export class TransportConnectionService extends Service {
     }
 
     public async init(): Promise<void> {
-        const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
+        const mongodbPlugin = this.pluginManager.get('mongodb') as any as Plugin;
 
         this.transportConnectionDao = await mongodbPlugin.getDao(DaoIds.TransportConnection) as TransportConnectionDao;
     }
@@ -35,6 +35,18 @@ export class TransportConnectionService extends Service {
         );
     }
 
+    public listByBlockchainAndNetworkAndStatus(
+        blockchainId: string,
+        networkId: string,
+        status: Scheme.TransportConnectionStatus
+    ): Promise<Array<Scheme.TransportConnection>> {
+        return this.transportConnectionDao.listByBlockchainAndNetworkAndStatus(
+            blockchainId,
+            networkId,
+            status
+        );
+    }
+
     public createTransportConnection(
         blockchainId: string,
         networkId: string,
@@ -48,7 +60,9 @@ export class TransportConnectionService extends Service {
 
         isFailing: boolean,
         lastFailedAt: Date,
-        failedCount: number
+        failedCount: number,
+
+        isPrivate: boolean
     ): Promise<Scheme.TransportConnection> {
         return this.transportConnectionDao.createTransportConnection(
             blockchainId,
@@ -63,7 +77,9 @@ export class TransportConnectionService extends Service {
     
             isFailing,
             lastFailedAt,
-            failedCount
+            failedCount,
+
+            isPrivate
         );
     }
 
@@ -85,6 +101,15 @@ export class TransportConnectionService extends Service {
         return;
     }
 
+    public async setStatusByIds(
+        ids: Array<string>,
+        status: Scheme.TransportConnectionStatus
+    ) {
+        await this.transportConnectionDao.setStatusByIds(ids, status);
+
+        return;
+    }
+
     public async setFailed(
         id: string,
         isFailing: boolean,
@@ -101,6 +126,18 @@ export class TransportConnectionService extends Service {
         at: Date
     ) {
         await this.transportConnectionDao.setFailedByIds(ids, isFailing, at);
+
+        return;
+    }
+
+    public async removeById(id: string): Promise<void> {
+        await this.transportConnectionDao.removeById(id);
+
+        return;
+    }
+
+    public async removeByIds(idsToRemove: Array<string>): Promise<void> {
+        await this.transportConnectionDao.removeByIds(idsToRemove);
 
         return;
     }

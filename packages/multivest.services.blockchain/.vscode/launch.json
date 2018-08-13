@@ -9,7 +9,8 @@
             "args": [
                 "--config",
                 "${workspaceRoot}/test/jest.config.json",
-                "--runInBand"
+                "--runInBand",
+                "--forceExit"
             ],
             "runtimeArgs": [
                 "--nolazy"

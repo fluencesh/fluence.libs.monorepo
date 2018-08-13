@@ -17,5 +17,6 @@
         "node"
     ],
     "collectCoverage": false,
-    "coveragePathIgnorePatterns": ["/node_modules/", "coverage"]
+    "coveragePathIgnorePatterns": ["/node_modules/", "coverage"],
+    "testEnvironment": "node"
 }

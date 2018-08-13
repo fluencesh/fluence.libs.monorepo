@@ -4,7 +4,7 @@ import {
     PluginManager,
     Recipient,
     Transaction,
-} from '@applicature/multivest.core';
+} from '@fluencesh/multivest.core';
 import { v1 as generateId } from 'uuid';
 import { SubscriptionMetric } from '../../metrics/subscription.metric';
 import { WebhookMetric } from '../../metrics/webhook.metric';

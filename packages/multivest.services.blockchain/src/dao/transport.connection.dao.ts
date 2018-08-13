@@ -1,4 +1,4 @@
-import { Dao } from '@applicature/multivest.core';
+import { Dao } from '@fluencesh/multivest.core';
 import { Scheme } from '../types';
 
 export abstract class TransportConnectionDao extends Dao<Scheme.TransportConnection> {
@@ -9,6 +9,12 @@ export abstract class TransportConnectionDao extends Dao<Scheme.TransportConnect
     public abstract listByBlockchainAndNetwork(
         blockchainId: string,
         networkId: string
+    ): Promise<Array<Scheme.TransportConnection>>;
+
+    public abstract listByBlockchainAndNetworkAndStatus(
+        blockchainId: string,
+        networkId: string,
+        status: Scheme.TransportConnectionStatus
     ): Promise<Array<Scheme.TransportConnection>>;
 
     public abstract createTransportConnection(
@@ -24,7 +30,9 @@ export abstract class TransportConnectionDao extends Dao<Scheme.TransportConnect
 
         isFailing: boolean,
         lastFailedAt: Date,
-        failedCount: number
+        failedCount: number,
+
+        isPrivate: boolean
     ): Promise<Scheme.TransportConnection>;
 
     public abstract async setSettings(
@@ -37,9 +45,15 @@ export abstract class TransportConnectionDao extends Dao<Scheme.TransportConnect
         status: Scheme.TransportConnectionStatus
     ): Promise<void>;
 
+    public abstract async setStatusByIds(
+        ids: Array<string>,
+        status: Scheme.TransportConnectionStatus
+    ): Promise<void>;
+
     public abstract async setFailed(
         id: string,
-        isFailed: boolean, at: Date
+        isFailed: boolean,
+        at: Date
     ): Promise<void>;
 
     public abstract async setFailedByIds(
@@ -47,4 +61,7 @@ export abstract class TransportConnectionDao extends Dao<Scheme.TransportConnect
         isFailing: boolean,
         at: Date
     ): Promise<void>;
+
+    public abstract async removeById(id: string): Promise<void>;
+    public abstract async removeByIds(ids: Array<string>): Promise<void>;
 }

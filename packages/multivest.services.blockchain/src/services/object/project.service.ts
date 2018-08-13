@@ -1,5 +1,5 @@
-import { MultivestError, PluginManager, Service } from '@applicature/multivest.core';
-import { Plugin } from '@applicature/multivest.mongodb';
+import { MultivestError, PluginManager, Service } from '@fluencesh/multivest.core';
+import { Plugin } from '@fluencesh/multivest.mongodb';
 import * as config from 'config';
 import { createHash } from 'crypto';
 import * as jwt from 'jsonwebtoken';
@@ -10,6 +10,7 @@ import { Errors } from '../../errors';
 import { Scheme } from '../../types';
 import { AddressSubscriptionService } from './address.subscription.service';
 import { EthereumContractSubscriptionService } from './ethereum.contract.subscription.service';
+import { ProjectBlockchainSetupService } from './project.blockchain.setup.service';
 import { TransactionHashSubscriptionService } from './transaction.hash.subscription.service';
 
 const generateRandomHash = () => generate({ charset: '0123456789abcdef', length: 64 });
@@ -25,13 +26,10 @@ export class ProjectService extends Service {
     protected addressSubscriptionService: AddressSubscriptionService;
     protected transactionHashSubscriptionService: TransactionHashSubscriptionService;
     protected contractSubscriptionService: EthereumContractSubscriptionService;
-
-    constructor(pluginManager: PluginManager) {
-        super(pluginManager);
-    }
+    protected projectBlockchainSetupService: ProjectBlockchainSetupService;
 
     public async init(): Promise<void> {
-        const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
+        const mongodbPlugin = this.pluginManager.get('mongodb') as any as Plugin;
 
         this.projectDao = await mongodbPlugin.getDao(DaoIds.Project) as ProjectDao;
 
@@ -41,6 +39,8 @@ export class ProjectService extends Service {
             .getServiceByClass(TransactionHashSubscriptionService) as TransactionHashSubscriptionService;
         this.contractSubscriptionService = this.pluginManager
             .getServiceByClass(EthereumContractSubscriptionService) as EthereumContractSubscriptionService;
+        this.projectBlockchainSetupService = this.pluginManager
+            .getServiceByClass(ProjectBlockchainSetupService) as ProjectBlockchainSetupService;
     }
 
     public getServiceId(): string {
@@ -168,18 +168,23 @@ export class ProjectService extends Service {
     }
 
     public async setStatus(projectId: string, status: Scheme.ProjectStatus): Promise<void> {
-        const isActive = status === Scheme.ProjectStatus.Active;
+        let isActive: boolean;
+        let setupStatus: Scheme.ProjectBlockchainSetupStatus;
+        if (status === Scheme.ProjectStatus.Active) {
+            isActive = true;
+            setupStatus = Scheme.ProjectBlockchainSetupStatus.Enabled;
+        } else {
+            isActive = false;
+            setupStatus = Scheme.ProjectBlockchainSetupStatus.Disabled;
+        }
 
         await Promise.all([
             this.projectDao.setStatus(projectId, status),
-            this.modifySubscriptionStatus(projectId, isActive)
+            this.modifySubscriptionStatus(projectId, isActive),
+            this.projectBlockchainSetupService.setStatusByProjectId(projectId, setupStatus)
         ]);
 
         return;
-    }
-
-    public async removeProject(projectId: string): Promise<void> {
-        await this.projectDao.removeProject(projectId);
     }
 
     public async changeToken(projectId: string): Promise<Scheme.Project> {
@@ -207,6 +212,19 @@ export class ProjectService extends Service {
             .update(token)
             .update(salt)
             .digest('hex');
+    }
+
+    public async removeProject(projectId: string): Promise<void> {
+        // FIXME: should be wrapped into transaction
+        await Promise.all([
+            this.projectDao.removeProject(projectId),
+            this.projectBlockchainSetupService.setStatusByProjectId(
+                projectId,
+                Scheme.ProjectBlockchainSetupStatus.Disabled
+            )
+        ]);
+
+        return;
     }
 
     private createToken(): TokenData {

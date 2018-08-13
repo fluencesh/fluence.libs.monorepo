@@ -1,6 +1,6 @@
-import * as Blockchain from '@applicature/multivest.core';
-import { Hashtable } from '@applicature/multivest.core';
-import { MongoScheme } from '@applicature/multivest.mongodb';
+import * as Blockchain from '@fluencesh/multivest.core';
+import { Hashtable } from '@fluencesh/multivest.core';
+import { MongoScheme } from '@fluencesh/multivest.mongodb';
 
 // tslint:disable-next-line:no-namespace
 export namespace Scheme {
@@ -177,6 +177,8 @@ export namespace Scheme {
 
         status: TransportConnectionStatus;
 
+        isPrivate: boolean;
+
         isFailing: boolean;
         lastFailedAt: Date;
         failedCount: number;
@@ -290,5 +292,26 @@ export namespace Scheme {
         headers: Hashtable<string>;
         statusCode: number;
         statusMessage: string;
+    }
+
+    export interface Session extends MongoScheme {
+        clientId: string;
+        projectId?: string;
+
+        createdAt: Date;
+        expiredAt: Date;
+        loggedOutAt: Date;
+    }
+
+    export enum ProjectBlockchainSetupStatus {
+        Enabled = 'ENABLED',
+        Disabled = 'DISABLED',
+    }
+
+    export interface ProjectBlockchainSetup extends MongoScheme {
+        projectId: string;
+        blockchainId: string;
+        privateTransportConnectionId?: string;
+        status: ProjectBlockchainSetupStatus;
     }
 }

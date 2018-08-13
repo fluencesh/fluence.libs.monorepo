@@ -1,4 +1,4 @@
-import {Block, PluginManager, Service, Transaction} from '@applicature/multivest.core';
+import { Block, PluginManager, Service, Transaction } from '@fluencesh/multivest.core';
 import { BigNumber } from 'bignumber.js';
 import { Scheme } from '../../..';
 

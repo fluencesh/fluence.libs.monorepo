@@ -1,4 +1,4 @@
-import { MongoDBDao } from '@applicature/multivest.mongodb';
+import { MongoDBDao } from '@fluencesh/multivest.mongodb';
 import * as logger from 'winston';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';

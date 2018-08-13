@@ -1,7 +1,12 @@
-import { Block, MultivestError, PluginManager, Service, Transaction } from '@applicature/multivest.core';
-import { Hashtable } from '@applicature/multivest.core';
+import {
+    Block,
+    Hashtable,
+    MultivestError,
+    PluginManager,
+    Service,
+    Transaction,
+} from '@fluencesh/multivest.core';;
 import { BigNumber } from 'bignumber.js';
-import * as logger from 'winston';
 import { BlockchainMetric } from '../../metrics/blockchain.metric';
 import { Scheme } from '../../types';
 import { TransportConnectionService } from '../object/transport.connection.service';
@@ -9,6 +14,7 @@ import { BlockchainTransport } from './blockchain.transport';
 
 export abstract class ManagedBlockchainTransportService extends Service implements BlockchainTransport {
     protected transportServices: Array<BlockchainTransport>;
+    protected publicTransportServices: Array<BlockchainTransport>;
     protected reference: BlockchainTransport;
     protected validityCheckDuration: number;
     protected lastCheckAt: number;
@@ -44,13 +50,16 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         this.transportConnectionService =
             this.pluginManager.getService('transport.connection.service') as TransportConnectionService;
 
-        const connections = await this.transportConnectionService.listByBlockchainAndNetwork(
+        // TODO: test it
+        const connections = await this.transportConnectionService.listByBlockchainAndNetworkAndStatus(
             this.getBlockchainId(),
-            this.getNetworkId()
+            this.getNetworkId(),
+            Scheme.TransportConnectionStatus.Enabled
         );
 
         this.transportServices = this.prepareTransportServices(connections);
-        this.reference = this.transportServices[0];
+        this.publicTransportServices = this.transportServices.filter((ts) => !ts.getTransportConnection().isPrivate);
+        this.reference = this.publicTransportServices[0];
     }
 
     public getTransportConnection(): Scheme.TransportConnection {
@@ -61,38 +70,38 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         return this.networkId;
     }
 
-    public async getBlockByHash(hash: string) {
-        const activeTransport = await this.getActiveTransportService();
+    public async getBlockByHash(hash: string, transportId?: string) {
+        const activeTransport = await this.getActiveTransportService(transportId);
 
         return activeTransport.getBlockByHash(hash);
     }
 
-    public async getBlockHeight(): Promise<number> {
-        const activeTransport = await this.getActiveTransportService();
+    public async getBlockHeight(transportId?: string): Promise<number> {
+        const activeTransport = await this.getActiveTransportService(transportId);
 
         return activeTransport.getBlockHeight();
     }
 
-    public async getBlockByHeight(blockHeight: number): Promise<Block> {
-        const activeTransport = await this.getActiveTransportService();
+    public async getBlockByHeight(blockHeight: number, transportId?: string): Promise<Block> {
+        const activeTransport = await this.getActiveTransportService(transportId);
 
         return activeTransport.getBlockByHeight(blockHeight);
     }
 
-    public async getTransactionByHash(txHash: string): Promise<Transaction> {
-        const activeTransport = await this.getActiveTransportService();
+    public async getTransactionByHash(txHash: string, transportId?: string): Promise<Transaction> {
+        const activeTransport = await this.getActiveTransportService(transportId);
 
         return activeTransport.getTransactionByHash(txHash);
     }
 
-    public async sendRawTransaction(txHex: string): Promise<Transaction> {
-        const activeTransport = await this.getActiveTransportService();
+    public async sendRawTransaction(txHex: string, transportId?: string): Promise<Transaction> {
+        const activeTransport = await this.getActiveTransportService(transportId);
 
         return activeTransport.sendRawTransaction(txHex);
     }
 
-    public async getBalance(address: string, minConf: number): Promise<BigNumber> {
-        const activeTransport = await this.getActiveTransportService();
+    public async getBalance(address: string, minConf: number, transportId?: string): Promise<BigNumber> {
+        const activeTransport = await this.getActiveTransportService(transportId);
 
         return activeTransport.getBalance(address, minConf);
     }
@@ -107,6 +116,10 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         let referenceBlockHeight;
         try {
             referenceBlockHeight = await this.reference.getBlockHeight();
+
+            if (referenceBlockHeight === null) {
+                throw new MultivestError('Invalid response');
+            }
         } catch (ex) {
             throw new MultivestError(`Can not update transports' status. Original message: ${ex.message}`);
         }
@@ -165,13 +178,22 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         }
     }
 
-    protected async getActiveTransportService(): Promise<BlockchainTransport> {
+    // THINK: what should be done if all transports are inactive?
+    // THINK: what should be done if specified transport is inactive?
+    protected async getActiveTransportService(transportId?: string): Promise<BlockchainTransport> {
         await this.updateValid();
 
         this.collectActiveNodeMetrics();
         this.collectCallsMetrics();
 
-        return this.transportServices.find((transportService) => {
+        if (transportId) {
+            return this.transportServices.find((transportService) => {
+                return this.activeTransports[transportService.getTransportId()]
+                    && transportService.getTransportConnection().id === transportId;
+            }) || null;
+        }
+
+        return this.publicTransportServices.find((transportService) => {
             return this.activeTransports[transportService.getTransportId()];
         }) || null;
     }

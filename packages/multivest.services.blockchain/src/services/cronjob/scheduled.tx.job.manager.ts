@@ -1,4 +1,4 @@
-import { PluginManager, Service, Transaction } from '@applicature/multivest.core';
+import { PluginManager, Service, Transaction } from '@fluencesh/multivest.core';
 import { Scheme } from '../../types';
 import { BlockchainService } from '../blockchain/blockchain.service';
 import { ScheduledTxJob } from './scheduled.tx.job';

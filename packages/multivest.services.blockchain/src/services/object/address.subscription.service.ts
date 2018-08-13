@@ -1,5 +1,5 @@
-import { PluginManager, Service } from '@applicature/multivest.core';
-import { Plugin } from '@applicature/multivest.mongodb';
+import { PluginManager, Service } from '@fluencesh/multivest.core';
+import { Plugin } from '@fluencesh/multivest.mongodb';
 import { DaoIds } from '../../constants';
 import { AddressSubscriptionDao } from '../../dao/address.subscription.dao';
 import { Scheme } from '../../types';
@@ -12,7 +12,7 @@ export class AddressSubscriptionService extends Service {
     }
 
     public async init(): Promise<void> {
-        const mongodbPlugin = this.pluginManager.get('mongodb') as Plugin;
+        const mongodbPlugin = this.pluginManager.get('mongodb') as any as Plugin;
 
         this.subscriptionDao = await mongodbPlugin.getDao(DaoIds.AddressSubscription) as AddressSubscriptionDao;
     }

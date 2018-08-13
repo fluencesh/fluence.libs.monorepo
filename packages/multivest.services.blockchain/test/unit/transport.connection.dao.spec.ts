@@ -40,6 +40,20 @@ describe('transport connection dao', () => {
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
+    it('listByBlockchainAndNetwork() transfers correct arguments', async () => {
+        const blockchainId = 'blockchainId';
+        const networkId = 'networkId';
+        const status = Scheme.TransportConnectionStatus.Enabled;
+        await dao.listByBlockchainAndNetworkAndStatus(blockchainId, networkId, status);
+
+        expect(collection.find).toHaveBeenCalledWith({
+            blockchainId: 'blockchainId',
+            networkId: 'networkId',
+            status
+        });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
     it('createTransportConnection() transfers correct arguments', async () => {
         const data = randomTransportConnection();
 
@@ -56,7 +70,9 @@ describe('transport connection dao', () => {
 
             data.isFailing,
             data.lastFailedAt,
-            data.failedCount
+            data.failedCount,
+
+            data.isPrivate
         );
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);
@@ -101,6 +117,25 @@ describe('transport connection dao', () => {
                 }
             }
         );
+        expect(collection.updateMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('setStatus() transfers correct arguments', async () => {
+        const ids = ['id'];
+        const status = Scheme.TransportConnectionStatus.Disabled;
+
+        await dao.setStatusByIds(
+            ids,
+            status
+        );
+
+        expect(collection.updateMany).toHaveBeenCalledWith({
+            id: { $in: ids }
+        }, {
+            $set: {
+                status
+            }
+        });
         expect(collection.updateMany).toHaveBeenCalledTimes(1);
     });
 
@@ -150,5 +185,21 @@ describe('transport connection dao', () => {
             }
         );
         expect(collection.updateMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('removeById() transfers correct arguments', async () => {
+        const id = 'id';
+        await dao.removeById(id);
+
+        expect(collection.deleteMany).toHaveBeenCalledWith({ id });
+        expect(collection.deleteMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('removeByIds() transfers correct arguments', async () => {
+        const ids = ['1', '2', '3'];
+        await dao.removeByIds(ids);
+
+        expect(collection.deleteMany).toHaveBeenCalledWith({ id: { $in: ids } });
+        expect(collection.deleteMany).toHaveBeenCalledTimes(1);
     });
 });

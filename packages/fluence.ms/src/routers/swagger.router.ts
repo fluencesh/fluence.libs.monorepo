@@ -15,13 +15,12 @@ export class SwaggerRouter {
 
     constructor(
         pluginManager: PluginManager,
-        authMiddleware: AuthMiddleware,
-        pathToSwaggerFile: string
+        authMiddleware: AuthMiddleware
     ) {
-        this.controller = new SwaggerController(pathToSwaggerFile);
+        this.controller = new SwaggerController();
         this.authMiddleware = authMiddleware;
 
-        this.validationService = pluginManager.getService('validation.default.service');
+        this.validationService = pluginManager.getService('validation.service');
         this.validationService.setValidation('Swagger.GetSwaggerFile', SwaggerValidation.GetSwaggerFile);
     }
 

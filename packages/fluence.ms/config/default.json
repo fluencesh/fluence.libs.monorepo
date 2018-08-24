@@ -1,2 +1,9 @@
 {
+    "multivest": {
+        "middleware": {
+            "awsAuth": {
+                "pathToAuthLambdaContext": "apiGateway.event.requestContext.authorizer"
+            }
+        }
+    }
 }

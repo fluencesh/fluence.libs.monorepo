@@ -1,4 +1,5 @@
 import { MultivestError } from '@applicature-private/multivest.core';
+import * as config from 'config';
 import { NextFunction, Response } from 'express';
 import { get } from 'lodash';
 import { Errors } from '../errors';
@@ -7,12 +8,14 @@ import { AuthMiddleware } from './auth.middleware';
 
 export class AwsAuthMiddleware extends AuthMiddleware {
     public async attachProjectAndClient(req: AwsRequest, res: Response, next: NextFunction) {
-        req.relatedClient = get(req, 'apiGateway.context.client', null);
-        req.project = get(req, 'apiGateway.context.project', null);
+        const pathToAuthLambdaContext = config.has('multivest.middleware.awsAuth.pathToAuthLambdaContext')
+            ? config.get<string>('multivest.middleware.awsAuth.pathToAuthLambdaContext')
+            : 'apiGateway.event.requestContext.authorizer';
 
-        if (!req.relatedClient) {
-            return next(new MultivestError(Errors.FORBIDDEN, 403));
-        }
+        const authLambdaContext = get(req, pathToAuthLambdaContext, {});
+
+        req.relatedClient = authLambdaContext.client || null;
+        req.project = authLambdaContext.project || null;
 
         next();
     }

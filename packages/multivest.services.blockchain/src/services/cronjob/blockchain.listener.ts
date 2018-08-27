@@ -10,7 +10,6 @@ import {
 
 import { BigNumber } from 'bignumber.js';
 import * as logger from 'winston';
-import { WebhookMetric } from '../../metrics/webhook.metric';
 import { Scheme } from '../../types';
 import { BlockchainService } from '../blockchain/blockchain.service';
 import { JobService } from '../object/job.service';

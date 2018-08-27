@@ -112,17 +112,14 @@ describe('ethereum contract subscription service', () => {
             data.clientId,
             data.projectId,
             data.compatibleStandard,
-            data.blockChainId,
+            data.blockchainId,
             data.networkId,
             data.address,
             data.minConfirmations,
             data.abi,
             data.abiEvents,
             data.subscribedEvents,
-            data.subscribeAllEvents,
-            data.subscribed,
-            data.isProjectActive,
-            data.isClientActive
+            data.subscribeAllEvents
         );
 
         const got = (await service.listByProjectId(data.projectId))[0];
@@ -143,17 +140,14 @@ describe('ethereum contract subscription service', () => {
             data.clientId,
             data.projectId,
             data.compatibleStandard,
-            data.blockChainId,
+            data.blockchainId,
             data.networkId,
             data.address,
             data.minConfirmations,
             data.abi,
             data.abiEvents,
             data.subscribedEvents,
-            data.subscribeAllEvents,
-            data.subscribed,
-            data.isProjectActive,
-            data.isClientActive
+            data.subscribeAllEvents
         );
 
         const got = (await service.listByProjectId(data.projectId))[0];
@@ -172,17 +166,14 @@ describe('ethereum contract subscription service', () => {
                 data.clientId,
                 data.projectId,
                 data.compatibleStandard,
-                data.blockChainId,
+                data.blockchainId,
                 data.networkId,
                 data.address,
                 data.minConfirmations,
                 data.abi,
                 data.abiEvents,
                 data.subscribedEvents,
-                data.subscribeAllEvents,
-                data.subscribed,
-                data.isProjectActive,
-                data.isClientActive
+                data.subscribeAllEvents
             );
 
             expect(1).toEqual(0);

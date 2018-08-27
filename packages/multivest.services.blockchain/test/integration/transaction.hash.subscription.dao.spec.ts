@@ -168,13 +168,10 @@ describe('transaction hash subscription dao', () => {
         const created = await dao.createSubscription(
             data.clientId,
             data.projectId,
-            data.blockChainId,
+            data.blockchainId,
             data.networkId,
             data.hash,
-            data.minConfirmations,
-            data.subscribed,
-            data.isProjectActive,
-            data.isClientActive
+            data.minConfirmations
         );
 
         const got = await dao.getById(created.id);

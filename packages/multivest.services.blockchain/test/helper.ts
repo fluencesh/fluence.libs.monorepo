@@ -1,7 +1,11 @@
-import { Transaction } from '@applicature-private/multivest.core';
+import { Transaction, Constructable } from '@applicature-private/multivest.core';
+import { MongoDBDao } from '@applicature-private/multivest.mongodb';
 import BigNumber from 'bignumber.js';
+import * as config from 'config';
 import { createHash } from 'crypto';
+import * as faker from 'faker';
 import { random } from 'lodash';
+import { Db, MongoClient } from 'mongodb';
 import { generate } from 'randomstring';
 import { v1 as generateId } from 'uuid';
 import { RandomStringPresets } from '../src/constants';
@@ -11,20 +15,20 @@ export function randomAddressSubscription(): Scheme.AddressSubscription {
     return {
         clientId: generateId(),
         projectId: generateId(),
-        blockChainId: generateId(),
+        blockchainId: generateId(),
         networkId: generateId(),
         address: generateId(),
         minConfirmations: random(10, 100),
-        subscribed: random(0, 1, true) > .5,
-        isProjectActive: random(0, 1, true) > .5,
-        isClientActive: random(0, 1, true) > .5,
+        subscribed: true,
+        isProjectActive: true,
+        isClientActive: true,
         createdAt: new Date(),
     } as Scheme.AddressSubscription;
 }
 
 export function randomTransactionSubscription(): Scheme.TransactionHashSubscription {
     return {
-        blockChainId: generateId(),
+        blockchainId: generateId(),
         clientId: generateId(),
         hash: `0x${generateId()}`,
         isClientActive: true,
@@ -38,10 +42,12 @@ export function randomTransactionSubscription(): Scheme.TransactionHashSubscript
 
 export function randomClient(): Scheme.Client {
     return {
-        ethereumAddress: generateId(),
-        status: random(0, 1, true) > .5 ? Scheme.ClientStatus.Active : Scheme.ClientStatus.Inactive,
+        email: faker.internet.email(),
+        passwordHash: createHash('sha1').update(faker.internet.password()).digest('hex'),
+        status: Scheme.ClientStatus.Active,
         createdAt: new Date(),
-        isAdmin: false
+        isAdmin: false,
+        isVerified: true
     } as Scheme.Client;
 }
 
@@ -282,4 +288,77 @@ export function randomProjectBlockchainSetup(projectId?: string, privateTranspor
         privateTransportConnectionId: privateTransportConnectionId || generateId(),
         status: Scheme.ProjectBlockchainSetupStatus.Enabled
     } as Scheme.ProjectBlockchainSetup;
+}
+
+export function randomOraclize(projectId: string = generateId(), ) {
+    return {
+        clientId: generateId(),
+        projectId,
+        blockchainId: generateId(),
+        networkId: generateId(),
+        minConfirmations: random(10, 100),
+        subscribed: true,
+        isProjectActive: true,
+        isClientActive: true,
+        createdAt: new Date(),
+
+        eventHash: `0x${generateId()}`,
+        eventName: generateId(),
+        eventInputTypes: [],
+        webhookUrl: `https://www.${generateId()}.com.uk`,
+    } as Scheme.OraclizeSubscription;
+}
+
+export function randomSubscriptionBlockChecker() {
+    const typesKeys = Object.keys(Scheme.SubscriptionBlockRecheckType);
+    const blockHeight = random(500000, 1000000);
+
+    return {
+        id: generateId(),
+        subscriptionId: generateId(),
+        blockchainId: generateId(),
+        networkId: generateId(),
+        type: Scheme.SubscriptionBlockRecheckType[(typesKeys[random(0, typesKeys.length - 1)] as any)],
+        blockHash: generateId(),
+        blockHeight,
+        invokeOnBlockHeight: blockHeight + 10,
+        webhookActionItem: randomWebhookAction()
+    } as Scheme.SubscriptionBlockRecheck;
+}
+
+export async function clearDb(collections: Array<string>, db?: Db) {
+    db = db || await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+
+    await Promise.all(
+        collections.map((collection) => db.collection(collection).remove({}))
+    );
+
+    await db.close();
+}
+
+let connection: Db;
+export async function createDao<T extends MongoDBDao<any>>(daoConstructor: Constructable<T>): Promise<T> {
+    if (!connection) {
+        connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+    }
+
+    const dao = new daoConstructor(connection);
+    return dao;
+}
+
+export async function createEntities(
+    dao: MongoDBDao<any>,
+    entityGenerator: () => object,
+    target: Array<any>
+) {
+    await dao.remove({});
+
+    for (let i = 0; i < target.length; i++) {
+        const data = entityGenerator();
+        target[i] = await dao.create(data);
+    }
+}
+
+export function getRandomItem<T>(items: Array<T>): T {
+    return items[random(0, items.length - 1)];
 }

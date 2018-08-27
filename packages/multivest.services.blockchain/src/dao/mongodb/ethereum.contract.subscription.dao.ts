@@ -18,13 +18,13 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
         return {} as Scheme.EthereumContractSubscription;
     }
 
-    public async createContractSubscription(
+    public async createSubscription(
         clientId: string,
         projectId: string,
 
         compatibleStandard: Scheme.EthereumContractCompatibleStandard,
 
-        blockChainId: string,
+        blockchainId: string,
         networkId: string,
 
         address: string,
@@ -35,11 +35,7 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
         abiEvents: Array<string>,
 
         subscribedEvents: Array<string>,
-        subscribeAllEvents: boolean,
-
-        subscribed: boolean = true,
-        isProjectActive: boolean = true,
-        isClientActive: boolean = true
+        subscribeAllEvents: boolean
     ): Promise<Scheme.EthereumContractSubscription> {
         return this.create({
             clientId,
@@ -47,7 +43,7 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
 
             compatibleStandard,
 
-            blockChainId,
+            blockchainId,
             networkId,
 
             address,
@@ -60,12 +56,8 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
             subscribedEvents,
             subscribeAllEvents,
 
-            subscribed,
-
-            isProjectActive,
-            isClientActive,
-
-            createdAt: new Date()
+            subscribed: true,
+            createdAt: new Date(),
         });
     }
 
@@ -77,8 +69,8 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
         return this.getRaw({
             id: contractId,
             subscribed: true,
+            isProjectActive: true,
             isClientActive: true,
-            isProjectActive: true
         });
     }
 
@@ -90,8 +82,8 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
         return this.listRaw({
             projectId,
             subscribed: true,
+            isProjectActive: true,
             isClientActive: true,
-            isProjectActive: true
         });
     }
 
@@ -105,8 +97,8 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
         return this.listRaw({
             clientId,
             subscribed: true,
+            isProjectActive: true,
             isClientActive: true,
-            isProjectActive: true
         });
     }
 
@@ -122,8 +114,8 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
         return this.listRaw({
             address: { $in: addresses },
             subscribed: true,
+            isProjectActive: true,
             isClientActive: true,
-            isProjectActive: true
         });
     }
 
@@ -161,8 +153,8 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
         }
 
         filters.subscribed = true;
-        filters.isClientActive = true;
         filters.isProjectActive = true;
+        filters.isClientActive = true;
 
         return this.listRaw(filters);
     }
@@ -183,26 +175,40 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
         return;
     }
 
-    public async setProjectActive(
-        projectId: string,
-        isActive: boolean
-    ): Promise<void> {
-        await this.updateRaw({ projectId }, {
+    public async setSubscribedByClientId(clientId: string, subscribed: boolean): Promise<void> {
+        await this.updateRaw({ clientId }, {
             $set: {
-                isProjectActive: isActive
+                subscribed
             }
         });
 
         return;
     }
 
-    public async setClientActive(
-        clientId: string,
-        isActive: boolean
-    ): Promise<void> {
+    public async setSubscribedByProjectId(projectId: string, subscribed: boolean): Promise<void> {
+        await this.updateRaw({ projectId }, {
+            $set: {
+                subscribed
+            }
+        });
+
+        return;
+    }
+
+    public async setClientActive(clientId: string, isActive: boolean): Promise<void> {
         await this.updateRaw({ clientId }, {
             $set: {
                 isClientActive: isActive
+            }
+        });
+
+        return;
+    }
+
+    public async setProjectActive(projectId: string, isActive: boolean): Promise<void> {
+        await this.updateRaw({ projectId }, {
+            $set: {
+                isProjectActive: isActive
             }
         });
 

@@ -111,21 +111,18 @@ describe('ethereum contract subscription dao', () => {
 
     it('createContractSubscription() transfers correct arguments', async () => {
         const data = randomEthereumContractSubscription();
-        await dao.createContractSubscription(
+        await dao.createSubscription(
             data.clientId,
             data.projectId,
             data.compatibleStandard,
-            data.blockChainId,
+            data.blockchainId,
             data.networkId,
             data.address,
             data.minConfirmations,
             data.abi,
             data.abiEvents,
             data.subscribedEvents,
-            data.subscribeAllEvents,
-            data.subscribed,
-            data.isProjectActive,
-            data.isClientActive
+            data.subscribeAllEvents
         );
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);

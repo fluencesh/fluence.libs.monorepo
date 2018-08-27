@@ -1,8 +1,4 @@
-import * as config from 'config';
-import { random } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
 import { MongodbClientDao } from '../../src/dao/mongodb/client.dao';
-import { Scheme } from '../../src/types';
 import { randomClient } from '../helper';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
@@ -29,10 +25,20 @@ describe('client dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
-    it('getByEthereumAddress() transfers correct arguments', async () => {
-        const got = await dao.getByEthereumAddress('ethereumAddress');
+    it('getByEmail() transfers correct arguments', async () => {
+        const email = 'email';
+        await dao.getByEmail(email);
 
-        expect(collection.findOne).toHaveBeenCalledWith({ ethereumAddress: 'ethereumAddress' });
+        expect(collection.findOne).toHaveBeenCalledWith({ email });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
+    it('getByEmailAndPasswordHash() transfers correct arguments', async () => {
+        const email = 'email';
+        const passwordHash = 'passwordHash';
+        await dao.getByEmailAndPasswordHash(email, passwordHash);
+
+        expect(collection.findOne).toHaveBeenCalledWith({ email, passwordHash });
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
@@ -52,9 +58,21 @@ describe('client dao', () => {
         expect(collection.updateMany).toHaveBeenCalledTimes(1);
     });
 
+    it('setVerificationStatus() transfers correct arguments', async () => {
+        const isVerified = true;
+        const id = 'id';
+
+        await dao.setVerificationStatus(id, isVerified);
+
+        expect(collection.updateMany).toHaveBeenCalledWith({ id }, {
+            $set: { isVerified }
+        });
+        expect(collection.updateMany).toHaveBeenCalledTimes(1);
+    });
+
     it('createClient() transfers correct arguments', async () => {
         const data = randomClient();
-        await dao.createClient(data.ethereumAddress, data.status, data.isAdmin);
+        await dao.createClient(data.email, data.passwordHash, data.isAdmin);
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);
     });

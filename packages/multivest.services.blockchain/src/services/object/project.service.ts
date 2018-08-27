@@ -10,6 +10,7 @@ import { Errors } from '../../errors';
 import { Scheme } from '../../types';
 import { AddressSubscriptionService } from './address.subscription.service';
 import { EthereumContractSubscriptionService } from './ethereum.contract.subscription.service';
+import { OraclizeSubscriptionService } from './oraclize.subscription.service';
 import { ProjectBlockchainSetupService } from './project.blockchain.setup.service';
 import { TransactionHashSubscriptionService } from './transaction.hash.subscription.service';
 
@@ -26,6 +27,7 @@ export class ProjectService extends Service {
     protected addressSubscriptionService: AddressSubscriptionService;
     protected transactionHashSubscriptionService: TransactionHashSubscriptionService;
     protected contractSubscriptionService: EthereumContractSubscriptionService;
+    protected oraclizeSubscriptionService: OraclizeSubscriptionService;
     protected projectBlockchainSetupService: ProjectBlockchainSetupService;
 
     public async init(): Promise<void> {
@@ -39,6 +41,8 @@ export class ProjectService extends Service {
             .getServiceByClass(TransactionHashSubscriptionService) as TransactionHashSubscriptionService;
         this.contractSubscriptionService = this.pluginManager
             .getServiceByClass(EthereumContractSubscriptionService) as EthereumContractSubscriptionService;
+        this.oraclizeSubscriptionService = this.pluginManager
+            .getServiceByClass(OraclizeSubscriptionService) as OraclizeSubscriptionService;
         this.projectBlockchainSetupService = this.pluginManager
             .getServiceByClass(ProjectBlockchainSetupService) as ProjectBlockchainSetupService;
     }
@@ -243,7 +247,8 @@ export class ProjectService extends Service {
         return Promise.all([
             this.addressSubscriptionService.setProjectActive(projectId, isActive),
             this.transactionHashSubscriptionService.setProjectActive(projectId, isActive),
-            this.contractSubscriptionService.setProjectActive(projectId, isActive)
+            this.contractSubscriptionService.setProjectActive(projectId, isActive),
+            this.oraclizeSubscriptionService.setProjectActive(projectId, isActive),
         ]);
     }
 }

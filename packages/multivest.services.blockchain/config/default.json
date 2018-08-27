@@ -1,18 +1,14 @@
 {
-  "multivest": {
-    "mongodb": {
-      "url": "mongodb://localhost/multivest",
-      "options": null
-    },
-    "metric": {
-      "help": {
-        "blockchainCalls": "collects blockchain calls metric",
-        "client": "collects client metric",
-        "project": "collects project metric",
-        "nodeHealth": "collects node health metric",
-        "webhook": "collects webhook metric",
-        "subscription": "collects subscription metric"
-      }
+    "multivest": {
+        "mongodb": {
+            "url": "mongodb://localhost/multivest",
+            "options": {}
+        },
+        "clientVerification": {
+            "jwt": {
+                "secret": "secret",
+                "expiresInMs": 3600000
+            }
+        }
     }
-  }
 }

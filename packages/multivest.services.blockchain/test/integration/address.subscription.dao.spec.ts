@@ -4,7 +4,6 @@ import { MongodbAddressSubscriptionDao } from '../../src/dao/mongodb/address.sub
 import { Scheme } from '../../src/types';
 
 import { random } from 'lodash';
-import { v1 as generateId } from 'uuid';
 
 import { randomAddressSubscription } from '../helper';
 
@@ -168,13 +167,10 @@ describe('address subscription dao', () => {
         const fresh = await dao.createSubscription(
             data.clientId,
             data.projectId,
-            data.blockChainId,
+            data.blockchainId,
             data.networkId,
             data.address,
-            data.minConfirmations,
-            data.subscribed,
-            data.isProjectActive,
-            data.isClientActive
+            data.minConfirmations
         );
         const got = await dao.getById(fresh.id);
         expect(got).toEqual(fresh);

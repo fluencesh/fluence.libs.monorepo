@@ -116,13 +116,10 @@ describe('Address subscription dao', () => {
         await dao.createSubscription(
             data.clientId,
             data.projectId,
-            data.blockChainId,
+            data.blockchainId,
             data.networkId,
             data.hash,
-            data.minConfirmations,
-            data.subscribed,
-            data.isProjectActive,
-            data.isClientActive
+            data.minConfirmations
         );
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);

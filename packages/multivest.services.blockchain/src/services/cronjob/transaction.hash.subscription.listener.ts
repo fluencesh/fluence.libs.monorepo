@@ -5,8 +5,6 @@ import {
     Transaction,
 } from '@applicature-private/multivest.core';
 import { v1 as generateId } from 'uuid';
-import { SubscriptionMetric } from '../../metrics/subscription.metric';
-import { WebhookMetric } from '../../metrics/webhook.metric';
 import { Scheme } from '../../types';
 import { BlockchainService } from '../blockchain/blockchain.service';
 import WebhookActionItem = Scheme.WebhookActionItem;
@@ -107,13 +105,9 @@ export class TransactionHashSubscriptionListener extends BlockchainListener {
 
                     createdAt: new Date()
                 } as WebhookActionItem);
-
-                SubscriptionMetric.getInstance().addressFound();
             });
 
             await this.webhookService.fill(webhookActions);
-
-            WebhookMetric.getInstance().created(webhookActions.length);
         }
 
         return;

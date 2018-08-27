@@ -11,9 +11,14 @@ export namespace Scheme {
     }
 
     export interface Client extends MongoScheme {
-        ethereumAddress: string;
         status: ClientStatus;
+
+        email: string;
+        passwordHash: string;
+
         isAdmin: boolean;
+        isVerified: boolean;
+
         createdAt: Date;
     }
 
@@ -53,16 +58,15 @@ export namespace Scheme {
         clientId: string;
         projectId: string;
 
-        blockChainId: string;
+        blockchainId: string;
         networkId: string;
 
         minConfirmations: number;
-
         subscribed: boolean;
-        isProjectActive: boolean;
-        isClientActive: boolean;
-
         createdAt: Date;
+
+        isClientActive: boolean;
+        isProjectActive: boolean;
     }
 
     export interface AddressSubscription extends Subscription {
@@ -313,5 +317,31 @@ export namespace Scheme {
         blockchainId: string;
         privateTransportConnectionId?: string;
         status: ProjectBlockchainSetupStatus;
+    }
+
+    export interface OraclizeSubscription extends Scheme.Subscription {
+        eventHash: string;
+        eventName: string;
+        eventInputTypes: Array<string>;
+        webhookUrl: string;
+    }
+
+    export enum SubscriptionBlockRecheckType {
+        Address = 'Address',
+        Transaction = 'Transaction',
+        ContractEvent = 'ContractEvent',
+        ContractFabricCreation = 'ContractFabricCreation',
+        Oraclize = 'Oraclize',
+    }
+
+    export interface SubscriptionBlockRecheck extends MongoScheme {
+        invokeOnBlockHeight: number;
+        blockchainId: string;
+        networkId: string;
+        subscriptionId: string;
+        type: SubscriptionBlockRecheckType;
+        blockHash: string;
+        blockHeight: number;
+        webhookActionItem: WebhookActionItem;
     }
 }

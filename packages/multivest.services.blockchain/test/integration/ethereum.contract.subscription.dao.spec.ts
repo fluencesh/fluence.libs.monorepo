@@ -105,21 +105,18 @@ describe('ethereum contract subscription dao', () => {
 
     it('should create new ethereum contract subscription', async () => {
         const data = randomEthereumContractSubscription();
-        const created = await dao.createContractSubscription(
+        const created = await dao.createSubscription(
             data.clientId,
             data.projectId,
             data.compatibleStandard,
-            data.blockChainId,
+            data.blockchainId,
             data.networkId,
             data.address,
             data.minConfirmations,
             data.abi,
             data.abiEvents,
             data.subscribedEvents,
-            data.subscribeAllEvents,
-            data.subscribed,
-            data.isProjectActive,
-            data.isClientActive
+            data.subscribeAllEvents
         );
 
         const got = (await dao.listByProjectId(data.projectId))[0];

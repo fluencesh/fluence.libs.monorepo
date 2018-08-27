@@ -38,36 +38,33 @@ export class MongodbSessionDao extends MongoDBDao<Scheme.Session> implements Ses
     public async getByIdActiveOnly(sessionId: string): Promise<Scheme.Session> {
         return this.getRaw({
             id: sessionId,
-            expiredAt: { $gt: new Date() }
+            expiredAt: { $gt: new Date() },
+            loggedOutAt: null
         });
     }
 
-    public async getByClientIdAndProjectId(clientId: string, projectId: string): Promise<Scheme.Session> {
+    public async getByClientId(clientId: string): Promise<Scheme.Session> {
         return this.getRaw({
             clientId,
-            projectId,
         });
     }
 
-    public async getByClientIdAndProjectIdActiveOnly(clientId: string, projectId: string): Promise<Scheme.Session> {
+    public async getByClientIdActiveOnly(clientId: string): Promise<Scheme.Session> {
         return this.getRaw({
             clientId,
-            projectId,
-            expiredAt: { $gt: new Date() }
+            expiredAt: { $gt: new Date() },
+            loggedOutAt: null
         });
     }
 
-    public async listByClientId(clientId: string): Promise<Array<Scheme.Session>> {
-        return this.listRaw({
-            clientId
+    public async setExpiredAt(sessionId: string, expiredAt: Date): Promise<void> {
+        await this.updateRaw({ id: sessionId }, {
+            $set: {
+                expiredAt
+            }
         });
-    }
 
-    public async listByClientIdActiveOnly(clientId: string): Promise<Array<Scheme.Session>> {
-        return this.listRaw({
-            clientId,
-            expiredAt: { $gt: new Date() }
-        });
+        return;
     }
 
     public async logOut(sessionId: string): Promise<void> {

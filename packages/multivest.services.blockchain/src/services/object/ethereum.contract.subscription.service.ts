@@ -40,11 +40,7 @@ export class EthereumContractSubscriptionService extends Service {
         abiEvents: Array<string>,
 
         subscribedEvents: Array<string>,
-        subscribeAllEvents: boolean,
-
-        subscribed: boolean = true,
-        isProjectActive: boolean = true,
-        isClientActive: boolean = true
+        subscribeAllEvents: boolean
     ): Promise<Scheme.EthereumContractSubscription> {
         const abiEventsList = abi
             .filter((method) => method.type === 'event')
@@ -56,11 +52,18 @@ export class EthereumContractSubscriptionService extends Service {
         }
 
         return this.ethereumContractSubscriptionDao
-            .createContractSubscription(
-                clientId, projectId,
+            .createSubscription(
+                clientId,
+                projectId,
                 compatibleStandard,
-                blockChainId, networkId, address, minConfirmations,
-                abi, abiEvents, subscribedEvents, subscribeAllEvents, subscribed, isProjectActive, isClientActive
+                blockChainId,
+                networkId,
+                address,
+                minConfirmations,
+                abi,
+                abiEvents,
+                subscribedEvents,
+                subscribeAllEvents
             );
     }
 
@@ -131,6 +134,20 @@ export class EthereumContractSubscriptionService extends Service {
         return this.ethereumContractSubscriptionDao.setSubscribedEventsAndAllEvents(
             contractId, subscribedEvents, subscribeAllEvents
         );
+    }
+
+    public async setSubscribedByProjectId(
+        projectId: string,
+        subscribed: boolean
+    ): Promise<void> {
+        return this.ethereumContractSubscriptionDao.setSubscribedByProjectId(projectId, subscribed);
+    }
+
+    public async setSubscribedByClientId(
+        clientId: string,
+        subscribed: boolean
+    ): Promise<void> {
+        return this.ethereumContractSubscriptionDao.setSubscribedByClientId(clientId, subscribed);
     }
 
     public async setClientActive(

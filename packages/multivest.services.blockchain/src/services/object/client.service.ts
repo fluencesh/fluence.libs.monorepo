@@ -1,10 +1,15 @@
-import { PluginManager, Service } from '@fluencesh/multivest.core';
+import { MultivestError, Service } from '@fluencesh/multivest.core';
 import { Plugin } from '@fluencesh/multivest.mongodb';
+import * as config from 'config';
+import { createHash } from 'crypto';
+import { sign, verify } from 'jsonwebtoken';
 import { DaoIds } from '../../constants';
 import { ClientDao } from '../../dao/client.dao';
+import { Errors } from '../../errors';
 import { Scheme } from '../../types';
 import { AddressSubscriptionService } from './address.subscription.service';
 import { EthereumContractSubscriptionService } from './ethereum.contract.subscription.service';
+import { OraclizeSubscriptionService } from './oraclize.subscription.service';
 import { TransactionHashSubscriptionService } from './transaction.hash.subscription.service';
 
 export class ClientService extends Service {
@@ -12,10 +17,10 @@ export class ClientService extends Service {
     protected addressSubscriptionService: AddressSubscriptionService;
     protected transactionHashSubscriptionService: TransactionHashSubscriptionService;
     protected contractSubscriptionService: EthereumContractSubscriptionService;
-
-    constructor(pluginManager: PluginManager) {
-        super(pluginManager);
-    }
+    protected oraclizeSubscriptionService: OraclizeSubscriptionService;
+    
+    private jwtExpiresInMs: number = config.get<number>('multivest.clientVerification.jwt.expiresInMs');
+    private jwtSecret: string = config.get<string>('multivest.clientVerification.jwt.secret');
 
     public async init(): Promise<void> {
         const mongodbPlugin = this.pluginManager.get('mongodb') as any as Plugin;
@@ -28,6 +33,8 @@ export class ClientService extends Service {
             .getServiceByClass(TransactionHashSubscriptionService) as TransactionHashSubscriptionService;
         this.contractSubscriptionService = this.pluginManager
             .getServiceByClass(EthereumContractSubscriptionService) as EthereumContractSubscriptionService;
+        this.oraclizeSubscriptionService = this.pluginManager
+            .getServiceByClass(OraclizeSubscriptionService) as OraclizeSubscriptionService;
     }
 
     public getServiceId(): string {
@@ -35,19 +42,27 @@ export class ClientService extends Service {
     }
 
     public async createClient(
-        ethereumAddress: string,
-        status: Scheme.ClientStatus,
+        email: string,
+        password: string,
         isAdmin: boolean
     ): Promise<Scheme.Client> {
-        return this.clientDao.createClient(ethereumAddress, status, isAdmin);
+        const passwordHash = this.generatePasswordHash(password);
+
+        return this.clientDao.createClient(email, passwordHash, isAdmin);
     }
 
     public async getById(clientId: string): Promise<Scheme.Client> {
         return this.clientDao.getById(clientId);
     }
 
-    public getByEthereumAddress(ethereumAddress: string): Promise<Scheme.Client> {
-        return this.clientDao.getByEthereumAddress(ethereumAddress);
+    public getByEmail(email: string): Promise<Scheme.Client> {
+        return this.clientDao.getByEmail(email);
+    }
+
+    public getByEmailAndPassword(email: string, password: string): Promise<Scheme.Client> {
+        const passwordHash = this.generatePasswordHash(password);
+
+        return this.clientDao.getByEmailAndPasswordHash(email, passwordHash);
     }
 
     public clientsList() {
@@ -64,11 +79,41 @@ export class ClientService extends Service {
         return;
     }
 
+    public async verifyClient(jwt: string): Promise<void> {
+        const clientId = this.tryParseJwtToClientId(jwt);
+        const client = await this.clientDao.getById(clientId);
+        if (!client) {
+            throw new MultivestError(Errors.CLIENT_NOT_FOUND);
+        }
+
+        await this.clientDao.setVerificationStatus(clientId, true);
+
+        return;
+    }
+
+    public convertClientIdToJwt(clientId: string): string {
+        return sign({ clientId }, this.jwtSecret, { expiresIn: this.jwtExpiresInMs });
+    }
+
+    private tryParseJwtToClientId(jwt: string): string {
+        try {
+            const { clientId } = verify(jwt, this.jwtSecret) as { clientId: string };
+            return clientId;
+        } catch (ex) {
+            throw new MultivestError(Errors.INVALID_JWT);
+        }
+    }
+
     private async modifySubscriptionStatus(clientId: string, isActive: boolean): Promise<any> {
         return Promise.all([
             this.addressSubscriptionService.setClientActive(clientId, isActive),
             this.transactionHashSubscriptionService.setClientActive(clientId, isActive),
-            this.contractSubscriptionService.setClientActive(clientId, isActive)
+            this.contractSubscriptionService.setClientActive(clientId, isActive),
+            this.oraclizeSubscriptionService.setClientActive(clientId, isActive),
         ]);
+    }
+
+    private generatePasswordHash(password: string): string {
+        return createHash('sha1').update(password).digest('hex');
     }
 }

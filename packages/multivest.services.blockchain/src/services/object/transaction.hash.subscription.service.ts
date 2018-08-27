@@ -76,10 +76,7 @@ export class TransactionHashSubscriptionService extends Service {
         blockChainId: string,
         networkId: string,
         hash: string,
-        minConfirmations: number,
-        subscribed: boolean = true,
-        isProjectActive: boolean = true,
-        isClientActive: boolean = true
+        minConfirmations: number
     ): Promise<Scheme.TransactionHashSubscription> {
         return this.transactionHashSubscriptionDao.createSubscription(
             clientId,
@@ -87,10 +84,7 @@ export class TransactionHashSubscriptionService extends Service {
             blockChainId,
             networkId,
             hash,
-            minConfirmations,
-            subscribed,
-            isProjectActive,
-            isClientActive
+            minConfirmations
         );
     }
 
@@ -101,11 +95,18 @@ export class TransactionHashSubscriptionService extends Service {
         return this.transactionHashSubscriptionDao.setSubscribed(subscriptionId, subscribed);
     }
 
-    public async setProjectActive(
+    public async setSubscribedByProjectId(
         projectId: string,
-        isActive: boolean
+        subscribed: boolean
     ): Promise<void> {
-        return this.transactionHashSubscriptionDao.setProjectActive(projectId, isActive);
+        return this.transactionHashSubscriptionDao.setSubscribedByProjectId(projectId, subscribed);
+    }
+
+    public async setSubscribedByClientId(
+        clientId: string,
+        subscribed: boolean
+    ): Promise<void> {
+        return this.transactionHashSubscriptionDao.setSubscribedByClientId(clientId, subscribed);
     }
 
     public async setClientActive(
@@ -113,5 +114,12 @@ export class TransactionHashSubscriptionService extends Service {
         isActive: boolean
     ): Promise<void> {
         return this.transactionHashSubscriptionDao.setClientActive(clientId, isActive);
+    }
+
+    public async setProjectActive(
+        projectId: string,
+        isActive: boolean
+    ): Promise<void> {
+        return this.transactionHashSubscriptionDao.setProjectActive(projectId, isActive);
     }
 }

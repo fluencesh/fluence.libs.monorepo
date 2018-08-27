@@ -9,11 +9,13 @@ export enum DaoIds {
     Project = 'project',
     ProjectBlockchainSetup = 'project.blockchain.setup',
     Session = 'session',
+    SubscriptionBlockRecheck = 'subscription.block.recheck',
     ScheduledTx = 'scheduled.tx',
     Transaction = 'transaction',
     TransactionHashSubscription = 'transaction.hash.subscription',
     TransportConnection = 'transport.connections',
-    WebhookAction = 'webhook'
+    WebhookAction = 'webhook',
+    Oraclize = 'oraclize',
 }
 
 export enum DaoCollectionNames {
@@ -27,11 +29,13 @@ export enum DaoCollectionNames {
     Project = 'projects',
     ProjectBlockchainSetup = 'projectBlockchainSetups',
     Session = 'sessions',
+    SubscriptionBlockRecheck = 'subscriptionBlockRechecks',
     ScheduledTx = 'scheduledTxs',
     Transaction = 'transactions',
     TransactionHashSubscription = 'transactionHashSubscriptions',
     TransportConnection = 'transportConnections',
-    WebhookAction = 'webhooks'
+    WebhookAction = 'webhooks',
+    Oraclize = 'oraclizeSubscriptions',
 }
 
 export const RandomStringPresets = {

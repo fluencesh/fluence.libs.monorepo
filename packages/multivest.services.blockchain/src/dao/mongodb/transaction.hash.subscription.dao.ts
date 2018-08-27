@@ -2,9 +2,12 @@ import { MongoDBDao } from '@fluencesh/multivest.mongodb';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { TransactionHashSubscriptionDao } from '../transaction.hash.subscription.dao';
+import { MongodbSubscriptionDao } from './subscription.dao';
 
-export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.TransactionHashSubscription>
-        implements TransactionHashSubscriptionDao {
+export class MongodbTransactionHashSubscriptionDao
+        extends MongodbSubscriptionDao<Scheme.TransactionHashSubscription>
+        implements TransactionHashSubscriptionDao
+{
     public getDaoId() {
         return DaoIds.TransactionHashSubscription;
     }
@@ -20,28 +23,21 @@ export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.Tra
     public createSubscription(
         clientId: string,
         projectId: string,
-        blockChainId: string,
+        blockchainId: string,
         networkId: string,
         hash: string,
-        minConfirmations: number,
-        subscribed: boolean = true,
-        isProjectActive: boolean = true,
-        isClientActive: boolean = true
+        minConfirmations: number
     ): Promise<Scheme.TransactionHashSubscription> {
         return this.create({
             clientId,
             projectId,
-            blockChainId,
+            blockchainId,
             networkId,
 
             hash,
             minConfirmations,
 
-            subscribed,
-
-            isProjectActive,
-            isClientActive,
-
+            subscribed: true,
             createdAt: new Date()
         });
     }
@@ -51,11 +47,9 @@ export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.Tra
     }
 
     public getByIdActiveOnly(id: string) {
-        return this.get({
+        return this.getRaw({
             id,
             subscribed: true,
-            isClientActive: true,
-            isProjectActive: true
         });
     }
 
@@ -67,8 +61,6 @@ export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.Tra
         return this.listRaw({
             clientId,
             subscribed: true,
-            isClientActive: true,
-            isProjectActive: true
         });
     }
 
@@ -80,8 +72,6 @@ export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.Tra
         return this.listRaw({
             projectId,
             subscribed: true,
-            isClientActive: true,
-            isProjectActive: true
         });
     }
 
@@ -95,8 +85,6 @@ export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.Tra
         return this.listRaw({
             hash: { $in: hashes },
             subscribed: true,
-            isClientActive: true,
-            isProjectActive: true
         });
     }
 
@@ -122,8 +110,6 @@ export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.Tra
             clientId,
             projectId,
             subscribed: true,
-            isClientActive: true,
-            isProjectActive: true
         });
     }
 
@@ -137,26 +123,20 @@ export class MongodbTransactionHashSubscriptionDao extends MongoDBDao<Scheme.Tra
         return;
     }
 
-    public async setProjectActive(
-        projectId: string,
-        isActive: boolean
-    ): Promise<void> {
-        await this.updateRaw({ projectId }, {
+    public async setSubscribedByClientId(clientId: string, subscribed: boolean): Promise<void> {
+        await this.updateRaw({ clientId }, {
             $set: {
-                isProjectActive: isActive
+                subscribed
             }
         });
 
         return;
     }
 
-    public async setClientActive(
-        clientId: string,
-        isActive: boolean
-    ): Promise<void> {
-        await this.updateRaw({ clientId }, {
+    public async setSubscribedByProjectId(projectId: string, subscribed: boolean): Promise<void> {
+        await this.updateRaw({ projectId }, {
             $set: {
-                isClientActive: isActive
+                subscribed
             }
         });
 

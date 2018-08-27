@@ -41,8 +41,14 @@ describe('client dao', () => {
         expect(got).toEqual(client);
     });
 
-    it('should get by ethereum address', async () => {
-        const got = await dao.getByEthereumAddress(client.ethereumAddress);
+    it('should get by email', async () => {
+        const got = await dao.getByEmail(client.email);
+
+        expect(got).toEqual(client);
+    });
+
+    it('should get by email and password hash', async () => {
+        const got = await dao.getByEmailAndPasswordHash(client.email, client.passwordHash);
 
         expect(got).toEqual(client);
     });
@@ -58,11 +64,25 @@ describe('client dao', () => {
         expect(got).toEqual(client);
     });
 
+    it('should set verification status', async () => {
+        const isVerified = !client.isVerified;
+
+        await dao.setVerificationStatus(client.id, isVerified);
+        const got = await dao.getById(client.id);
+
+        expect(got.isVerified).toEqual(isVerified);
+
+        client.isVerified = isVerified;
+    });
+
     it('should create new client', async () => {
         const data = randomClient();
-        const got = await dao.createClient(data.ethereumAddress, data.status, data.isAdmin);
+        const got = await dao.createClient(data.email, data.passwordHash, data.isAdmin);
 
-        const incomparableFields = ['createdAt', '_id', 'id'];
-        expect(omit(got, incomparableFields)).toEqual(omit(data, incomparableFields));
+        expect(got.email).toEqual(data.email);
+        expect(got.passwordHash).toEqual(data.passwordHash);
+        expect(got.isAdmin).toEqual(data.isAdmin);
+
+        clients.push(got);
     });
 });

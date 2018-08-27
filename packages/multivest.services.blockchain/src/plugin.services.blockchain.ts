@@ -9,6 +9,7 @@ import {
     MongodbEthereumContractSubscriptionDao,
     MongodbEthereumEventLogDao,
     MongodbJobDao,
+    MongodbOraclizeSubscriptionDao,
     MongodbProjectBlockchainSetupDao,
     MongodbProjectDao,
     MongodbScheduledTxDao,
@@ -17,6 +18,7 @@ import {
     MongodbTransactionHashSubscriptionDao,
     MongodbTransportConnectionDao,
     MongodbWebhookActionDao,
+    MongodbSubscriptionBlockRecheckDao,
 } from './dao';
 
 import {
@@ -28,6 +30,7 @@ import {
     EthereumContractSubscriptionService,
     EthereumEventLogService,
     JobService,
+    OraclizeSubscriptionService,
     ProjectBlockchainSetupService,
     ProjectService,
     SessionService,
@@ -36,6 +39,7 @@ import {
     TransportConnectionService,
     WebhookActionItemObjectService,
     WebhookCallerService,
+    SubscriptionBlockRecheckService,
 } from './services';
 
 class BlockchainServicesPlugin extends Plugin<void> {
@@ -49,6 +53,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbAddressSubscriptionDao);
         mongoDbPlugin.addDao(MongodbClientDao);
         mongoDbPlugin.addDao(MongodbJobDao);
+        mongoDbPlugin.addDao(MongodbOraclizeSubscriptionDao);
         mongoDbPlugin.addDao(MongodbProjectDao);
         mongoDbPlugin.addDao(MongodbTransactionDao);
         mongoDbPlugin.addDao(MongodbTransactionHashSubscriptionDao);
@@ -61,11 +66,13 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbScheduledTxDao);
         mongoDbPlugin.addDao(MongodbProjectBlockchainSetupDao);
         mongoDbPlugin.addDao(MongodbSessionDao);
+        mongoDbPlugin.addDao(MongodbSubscriptionBlockRecheckDao);
 
         this.registerService(AddressSubscriptionService);
         this.registerService(BlockchainRegistryService);
         this.registerService(ClientService);
         this.registerService(JobService);
+        this.registerService(OraclizeSubscriptionService);
         this.registerService(ProjectService);
         this.registerService(TransactionService);
         this.registerService(TransactionHashSubscriptionService);
@@ -78,6 +85,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         this.registerService(ContractPublicRequestService);
         this.registerService(ProjectBlockchainSetupService);
         this.registerService(SessionService);
+        this.registerService(SubscriptionBlockRecheckService);
     }
 }
 

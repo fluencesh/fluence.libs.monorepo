@@ -1,10 +1,10 @@
-import { MongoDBDao } from '@fluencesh/multivest.mongodb';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { AddressSubscriptionDao } from '../address.subscription.dao';
 import Subscription = Scheme.AddressSubscription;
+import { MongodbSubscriptionDao } from './subscription.dao';
 
-export class MongodbAddressSubscriptionDao extends MongoDBDao<Scheme.AddressSubscription>
+export class MongodbAddressSubscriptionDao extends MongodbSubscriptionDao<Scheme.AddressSubscription>
         implements AddressSubscriptionDao {
 
     public getDaoId() {
@@ -22,74 +22,24 @@ export class MongodbAddressSubscriptionDao extends MongoDBDao<Scheme.AddressSubs
     public async createSubscription(
         clientId: string,
         projectId: string,
-        blockChainId: string,
+        blockchainId: string,
         networkId: string,
         address: string,
-        minConfirmations: number,
-        subscribed: boolean = true,
-        isProjectActive: boolean = true,
-        isClientActive: boolean = true
+        minConfirmations: number
     ): Promise<Scheme.AddressSubscription> {
         return this.create({
             clientId,
             projectId,
-            blockChainId,
+            blockchainId,
             networkId,
 
             address,
             minConfirmations,
 
-            subscribed,
-
-            isProjectActive,
-            isClientActive,
-
-            createdAt: new Date()
-        });
-    }
-
-    public async getById(id: string): Promise<Scheme.AddressSubscription> {
-        return this.getRaw({
-            id
-        });
-    }
-
-    public async getByIdActiveOnly(id: string): Promise<Scheme.AddressSubscription> {
-        return this.getRaw({
-            id,
             subscribed: true,
+            isProjectActive: true,
             isClientActive: true,
-            isProjectActive: true
-        });
-    }
-
-    public async listByProjectId(projectId: string): Promise<Array<Scheme.AddressSubscription>> {
-        return this.listRaw({
-            projectId
-        });
-    }
-
-    public async listByProjectIdActiveOnly(projectId: string): Promise<Array<Scheme.AddressSubscription>> {
-        return this.listRaw({
-            projectId,
-            subscribed: true,
-            isClientActive: true,
-            isProjectActive: true
-        });
-    }
-
-    public async listByClientId(clientId: string): Promise<Array<Scheme.AddressSubscription>> {
-        return this.listRaw({
-            clientId
-        });
-    }
-
-    public async listByClientIdActiveOnly(clientId: string): Promise<Array<Scheme.AddressSubscription>> {
-        return this.listRaw({
-            clientId,
-            subscribed: true,
-            isClientActive: true,
-            isProjectActive: true
+            createdAt: new Date(),
         });
     }
 
@@ -103,8 +53,8 @@ export class MongodbAddressSubscriptionDao extends MongoDBDao<Scheme.AddressSubs
         return this.listRaw({
             address: { $in: addresses },
             subscribed: true,
+            isProjectActive: true,
             isClientActive: true,
-            isProjectActive: true
         });
     }
 
@@ -130,47 +80,8 @@ export class MongodbAddressSubscriptionDao extends MongoDBDao<Scheme.AddressSubs
             clientId,
             projectId,
             subscribed: true,
+            isProjectActive: true,
             isClientActive: true,
-            isProjectActive: true
         });
-    }
-
-    public async setSubscribed(
-        id: string,
-        subscribed: boolean
-    ): Promise<void> {
-        await this.updateRaw({ id }, {
-            $set: {
-                subscribed
-            }
-        });
-
-        return;
-    }
-
-    public async setProjectActive(
-        projectId: string,
-        isActive: boolean
-    ): Promise<void> {
-        await this.updateRaw({ projectId }, {
-            $set: {
-                isProjectActive: isActive
-            }
-        });
-
-        return;
-    }
-
-    public async setClientActive(
-        clientId: string,
-        isActive: boolean
-    ): Promise<void> {
-        await this.updateRaw({ clientId }, {
-            $set: {
-                isClientActive: isActive
-            }
-        });
-
-        return;
     }
 }

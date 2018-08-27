@@ -1,8 +1,4 @@
-import * as config from 'config';
-import { random } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
 import { MongodbAddressSubscriptionDao } from '../../src/dao/mongodb/address.subscription.dao';
-import { Scheme } from '../../src/types';
 import { randomAddressSubscription } from '../helper';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
@@ -184,13 +180,10 @@ describe('Address subscription dao', () => {
         await dao.createSubscription(
             data.clientId,
             data.projectId,
-            data.blockChainId,
+            data.blockchainId,
             data.networkId,
             data.address,
-            data.minConfirmations,
-            data.subscribed,
-            data.isProjectActive,
-            data.isClientActive
+            data.minConfirmations
         );
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);

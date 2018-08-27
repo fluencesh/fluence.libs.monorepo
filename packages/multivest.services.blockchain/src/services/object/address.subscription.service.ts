@@ -24,21 +24,21 @@ export class AddressSubscriptionService extends Service {
     public async createSubscription(
         clientId: string,
         projectId: string,
-        blockChainId: string,
+        blockchainId: string,
         networkId: string,
         address: string,
-        minConfirmations: number,
-        subscribed: boolean = true,
-        isProjectActive: boolean = true,
-        isClientActive: boolean = true
+        minConfirmations: number
     ): Promise<Scheme.AddressSubscription> {
         return this.subscriptionDao
             .createSubscription(
-                clientId, projectId,
-                blockChainId, networkId,
+                clientId,
+                projectId,
+
+                blockchainId,
+                networkId,
+
                 address,
-                minConfirmations,
-                subscribed, isProjectActive, isClientActive
+                minConfirmations
             );
     }
 
@@ -99,11 +99,18 @@ export class AddressSubscriptionService extends Service {
         return this.subscriptionDao.setSubscribed(id, subscribed);
     }
 
-    public async setProjectActive(
+    public async setSubscribedByProjectId(
         projectId: string,
-        isActive: boolean
+        subscribed: boolean
     ): Promise<void> {
-        return this.subscriptionDao.setProjectActive(projectId, isActive);
+        return this.subscriptionDao.setSubscribedByProjectId(projectId, subscribed);
+    }
+
+    public async setSubscribedByClientId(
+        clientId: string,
+        subscribed: boolean
+    ): Promise<void> {
+        return this.subscriptionDao.setSubscribedByClientId(clientId, subscribed);
     }
 
     public async setClientActive(
@@ -111,5 +118,12 @@ export class AddressSubscriptionService extends Service {
         isActive: boolean
     ): Promise<void> {
         return this.subscriptionDao.setClientActive(clientId, isActive);
+    }
+
+    public async setProjectActive(
+        projectId: string,
+        isActive: boolean
+    ): Promise<void> {
+        return this.subscriptionDao.setProjectActive(projectId, isActive);
     }
 }

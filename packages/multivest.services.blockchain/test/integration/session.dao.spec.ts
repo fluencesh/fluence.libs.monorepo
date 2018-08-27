@@ -45,28 +45,16 @@ describe('session dao', () => {
         expect(got).toEqual(session);
     });
 
-    it('should get by client and project ids', async () => {
-        const got = await dao.getByClientIdAndProjectId(session.clientId, session.projectId);
+    it('should get by client id', async () => {
+        const got = await dao.getByClientId(session.clientId);
 
         expect(got).toEqual(session);
     });
 
     it('should get by client and project ids (active only)', async () => {
-        const got = await dao.getByClientIdAndProjectIdActiveOnly(session.clientId, session.projectId);
+        const got = await dao.getByClientIdActiveOnly(session.clientId);
 
         expect(got).toEqual(session);
-    });
-
-    it('should get list by client id', async () => {
-        const got = await dao.listByClientId(session.clientId);
-
-        expect(got).toEqual([ session ]);
-    });
-
-    it('should get list by client id (active only)', async () => {
-        const got = await dao.listByClientIdActiveOnly(session.clientId);
-
-        expect(got).toEqual([ session ]);
     });
 
     it('should set log out time', async () => {
@@ -76,6 +64,16 @@ describe('session dao', () => {
         expect(got.loggedOutAt).not.toBeNull();
 
         session.loggedOutAt = got.loggedOutAt;
+    });
+
+    it('should set new expired at date', async () => {
+        const expiredAt = new Date();
+        await dao.setExpiredAt(session.id, expiredAt);
+        const got = await dao.getById(session.id);
+
+        expect(got.expiredAt.toString()).toEqual(expiredAt.toString());
+
+        session.expiredAt = got.expiredAt;
     });
 
     it('should create new session', async () => {

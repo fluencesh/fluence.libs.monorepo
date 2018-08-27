@@ -5,9 +5,8 @@ import {
     PluginManager,
     Service,
     Transaction,
-} from '@fluencesh/multivest.core';;
+} from '@fluencesh/multivest.core';
 import { BigNumber } from 'bignumber.js';
-import { BlockchainMetric } from '../../metrics/blockchain.metric';
 import { Scheme } from '../../types';
 import { TransportConnectionService } from '../object/transport.connection.service';
 import { BlockchainTransport } from './blockchain.transport';
@@ -183,9 +182,6 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
     protected async getActiveTransportService(transportId?: string): Promise<BlockchainTransport> {
         await this.updateValid();
 
-        this.collectActiveNodeMetrics();
-        this.collectCallsMetrics();
-
         if (transportId) {
             return this.transportServices.find((transportService) => {
                 return this.activeTransports[transportService.getTransportId()]
@@ -196,32 +192,5 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         return this.publicTransportServices.find((transportService) => {
             return this.activeTransports[transportService.getTransportId()];
         }) || null;
-    }
-
-    protected collectActiveNodeMetrics(): void {
-        if (!this.enableMetric) {
-            return;
-        }
-
-        const metricInstance = BlockchainMetric.getInstance(this.getBlockchainId(), this.getNetworkId());
-
-        const activeNodes = Object.keys(this.activeTransports).length;
-        metricInstance.activeNodes(activeNodes);
-
-        const healthyNodes = Object.keys(this.activeTransports).filter((key) => this.activeTransports[key]).length;
-        metricInstance.activeNodes(healthyNodes);
-
-        const unhealthyNodes = Object.keys(this.activeTransports).filter((key) => !this.activeTransports[key]).length;
-        metricInstance.unhealthyNodes(unhealthyNodes);
-    }
-
-    protected collectCallsMetrics(): void {
-        if (!this.enableMetric) {
-            return;
-        }
-
-        const metricInstance = BlockchainMetric.getInstance(this.getBlockchainId(), this.getNetworkId());
-
-        metricInstance.called();
     }
 }

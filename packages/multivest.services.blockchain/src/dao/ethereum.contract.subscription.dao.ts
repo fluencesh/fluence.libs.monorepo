@@ -1,8 +1,8 @@
-import { Dao } from '@fluencesh/multivest.core';
 import { Scheme } from '../types';
+import { SubscriptionDao } from './subscription.dao';
 
-export abstract class EthereumContractSubscriptionDao extends Dao<Scheme.EthereumContractSubscription> {
-    public abstract async createContractSubscription(
+export abstract class EthereumContractSubscriptionDao extends SubscriptionDao<Scheme.EthereumContractSubscription> {
+    public abstract async createSubscription(
         clientId: string,
         projectId: string,
 
@@ -19,22 +19,9 @@ export abstract class EthereumContractSubscriptionDao extends Dao<Scheme.Ethereu
         abiEvents: Array<string>,
 
         subscribedEvents: Array<string>,
-        subscribeAllEvents: boolean,
-
-        subscribed?: boolean,
-        isProjectActive?: boolean,
-        isClientActive?: boolean
+        subscribeAllEvents: boolean
     ): Promise<Scheme.EthereumContractSubscription>;
 
-    public abstract async getById(contractId: string): Promise<Scheme.EthereumContractSubscription>;
-    public abstract async getByIdActiveOnly(contractId: string): Promise<Scheme.EthereumContractSubscription>;
-
-    public abstract async listByProjectId(projectId: string): Promise<Array<Scheme.EthereumContractSubscription>>;
-    public abstract async listByProjectIdActiveOnly(projectId: string)
-        : Promise<Array<Scheme.EthereumContractSubscription>>;
-    public abstract async listByClientId(clientId: string): Promise<Array<Scheme.EthereumContractSubscription>>;
-    public abstract async listByClientIdActiveOnly(clientId: string)
-        : Promise<Array<Scheme.EthereumContractSubscription>>;
     public abstract async listBySubscribedAddresses(
         addresses: Array<string>
     ): Promise<Array<Scheme.EthereumContractSubscription>>;
@@ -52,24 +39,9 @@ export abstract class EthereumContractSubscriptionDao extends Dao<Scheme.Ethereu
         projectId: string
     ): Promise<Array<Scheme.EthereumContractSubscription>>;
 
-    public abstract async setSubscribed(
-        id: string,
-        subscribed: boolean
-    ): Promise<void>;
-
     public abstract async setSubscribedEventsAndAllEvents(
         contractId: string,
         subscribedEvents: Array<string>,
         subscribeAllEvents: boolean
-    ): Promise<void>;
-
-    public abstract async setProjectActive(
-        projectId: string,
-        isActive: boolean
-    ): Promise<void>;
-
-    public abstract async setClientActive(
-        clientId: string,
-        isActive: boolean
     ): Promise<void>;
 }

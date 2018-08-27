@@ -26,30 +26,15 @@ export class SessionService extends Service {
 
     public async createSession(
         expiredAt: Date,
-        clientId: string,
-        projectId?: string
+        clientId: string
     ): Promise<Scheme.Session> {
-        const promises = [];
-
-        // THINK: If user is inactive, then session still should be created?
-        promises.push(this.clientDao.getById(clientId));
-        if (projectId) {
-            promises.push(this.projectDao.getByIdActiveOnly(projectId));
-        }
-
-        const [ client, project ] = await Promise.all(
-            promises as [ Promise<Scheme.Client>, Promise<Scheme.Project> ]
-        );
+        const client = await this.clientDao.getById(clientId);
 
         if (!client) {
             throw new MultivestError(Errors.CLIENT_NOT_FOUND);
-        } else if (projectId && !project) {
-            throw new MultivestError(Errors.PROJECT_NOT_FOUND);
-        } else if (projectId && project.status === Scheme.ProjectStatus.Inactive) {
-            throw new MultivestError(Errors.PROJECT_IS_INACTIVE);
         }
 
-        return this.sessionDao.createSession(expiredAt, clientId, projectId);
+        return this.sessionDao.createSession(expiredAt, clientId);
     }
 
     public async getById(sessionId: string): Promise<Scheme.Session> {
@@ -60,15 +45,23 @@ export class SessionService extends Service {
         return this.sessionDao.getByIdActiveOnly(sessionId);
     }
 
-    public async getByClientIdAndProjectId(clientId: string, projectId: string): Promise<Scheme.Session> {
-        return this.sessionDao.getByClientIdAndProjectId(clientId, projectId);
+    public async getByClientId(clientId: string): Promise<Scheme.Session> {
+        return this.sessionDao.getByClientId(clientId);
     }
 
-    public async getByClientIdAndProjectIdActiveOnly(clientId: string, projectId: string): Promise<Scheme.Session> {
-        return this.sessionDao.getByClientIdAndProjectIdActiveOnly(clientId, projectId);
+    public async getByClientIdActiveOnly(clientId: string): Promise<Scheme.Session> {
+        return this.sessionDao.getByClientIdActiveOnly(clientId);
+    }
+
+    public async setExpiredAt(sessionId: string, expiredAt: Date): Promise<void> {
+        await this.sessionDao.setExpiredAt(sessionId, expiredAt);
+
+        return;
     }
 
     public async logOut(sessionId: string) {
-        return this.sessionDao.logOut(sessionId);
+        await this.sessionDao.logOut(sessionId);
+
+        return;
     }
 }

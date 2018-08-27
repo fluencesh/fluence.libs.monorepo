@@ -37,38 +37,19 @@ describe('session dao', () => {
     
     it('getByClientIdAndProjectId() transfers correct arguments', async () => {
         const clientId = 'clientId';
-        const projectId = 'projectId';
 
-        await dao.getByClientIdAndProjectId(clientId, projectId);
+        await dao.getByClientId(clientId);
 
-        expect(collection.findOne).toHaveBeenCalledWith({ clientId, projectId });
+        expect(collection.findOne).toHaveBeenCalledWith({ clientId });
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
     it('getByClientIdAndProjectIdActiveOnly() transfers correct arguments', async () => {
         const clientId = 'clientId';
-        const projectId = 'projectId';
 
-        await dao.getByClientIdAndProjectIdActiveOnly(clientId, projectId);
+        await dao.getByClientIdActiveOnly(clientId);
 
         expect(collection.findOne).toHaveBeenCalledTimes(1);
-    });
-
-    it('listByClientId() transfers correct arguments', async () => {
-        const clientId = 'clientId';
-
-        await dao.listByClientId(clientId);
-
-        expect(collection.find).toHaveBeenCalledWith({ clientId });
-        expect(collection.find).toHaveBeenCalledTimes(1);
-    });
-
-    it('listByClientIdActiveOnly() transfers correct arguments', async () => {
-        const clientId = 'clientId';
-
-        await dao.listByClientIdActiveOnly(clientId);
-
-        expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
     it('logOut() transfers correct arguments', async () => {
@@ -77,6 +58,20 @@ describe('session dao', () => {
         await dao.logOut(sessionId);
 
         expect(collection.updateMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('setExpiredAt() transfers correct arguments', async () => {
+        const sessionId = 'sessionId';
+        const expiredAt = new Date();
+
+        await dao.setExpiredAt(sessionId, expiredAt);
+
+        expect(collection.updateMany).toHaveBeenCalledTimes(1);
+        expect(collection.updateMany).toHaveBeenCalledWith({ id: sessionId }, {
+            $set: {
+                expiredAt
+            }
+        });
     });
 
     it('createSession() transfers correct arguments', async () => {

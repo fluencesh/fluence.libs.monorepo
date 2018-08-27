@@ -5,7 +5,6 @@ import {
     Transaction,
 } from '@fluencesh/multivest.core';
 
-import { WebhookMetric } from '../../metrics/webhook.metric';
 import { Scheme } from '../../types';
 import WebhookActionItem = Scheme.WebhookActionItem;
 import { WebhookActionItemObjectService } from '../object/webhook.action.service';
@@ -46,8 +45,6 @@ export class WebhookCaller extends Job {
         );
 
         for (const item of webHookLimit) {
-            this.checkAndSendDelayReport(item);
-
             await this.processWebhook(item);
         }
 
@@ -111,18 +108,12 @@ export class WebhookCaller extends Job {
                 );
             }
 
-            if (error || response.statusCode > 399) {
-                WebhookMetric.getInstance().unsuccessfulCall();
-            } else {
-                WebhookMetric.getInstance().successfulCall();
-
+            if (!error && response.statusCode < 400) {
                 await this.processResponse(response);
             }
         }
         catch (error) {
-            // @TODO: log it
-
-            WebhookMetric.getInstance().unsuccessfulCall();
+            // TODO: log it
         }
 
         return;
@@ -137,23 +128,5 @@ export class WebhookCaller extends Job {
             Scheme.WebhookTriggerType.Address, Scheme.WebhookTriggerType.EthereumContractEvent,
             Scheme.WebhookTriggerType.ScheduledTransaction, Scheme.WebhookTriggerType.Transaction
         ];
-    }
-
-    private checkAndSendDelayReport(item: WebhookActionItem) {
-        const now = Date.now();
-        const createdAt = +item.createdAt;
-        const delay = now - createdAt;
-
-        if (delay >= 60) {
-            WebhookMetric.getInstance().sixtySecondsDelay();
-        } else if (delay >= 10) {
-            WebhookMetric.getInstance().tenSecondsDelay();
-        } else if (delay >= 5) {
-            WebhookMetric.getInstance().fiveSecondsDelay();
-        } else if (delay >= 3) {
-            WebhookMetric.getInstance().threeSecondDelay();
-        } else if (delay >= 1) {
-            WebhookMetric.getInstance().oneSecondDelay();
-        }
     }
 }

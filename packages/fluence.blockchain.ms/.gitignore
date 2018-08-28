@@ -11,3 +11,4 @@ coverage
 /dist
 package-lock.json
 /.history
+/test-reports

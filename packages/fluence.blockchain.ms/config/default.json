@@ -1,3 +1,15 @@
 {
-
+    "aws": {
+        "region": "us-east-1",
+        "sqs": {
+            "apiVersion": "2012-11-05",
+            "queue": {
+                "delaySeconds": "60",
+                "messageRetentionPeriod": "86400"
+            },
+            "message": {
+                "delaySeconds": "10"
+            }
+        }
+    }
 }

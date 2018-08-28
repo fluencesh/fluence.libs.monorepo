@@ -4,7 +4,7 @@ const transactionMock = {
     gasPrice: new BigNumber(0),
     gasLimit: new BigNumber(0),
 };
-const blockMock = { transactions: [] };
+const blockMock: any = { transactions: [] };
 const transactionReceiptMock = {};
 
 export const ProviderMock = {
@@ -21,4 +21,4 @@ export const ProviderMock = {
     getTransactionReceipt: jest.fn().mockImplementation(() => transactionReceiptMock),
     getTransactionCount: jest.fn().mockImplementation(() => 1),
     callContractMethod: jest.fn().mockImplementation(() => []),
-};
+} as any;

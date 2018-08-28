@@ -1,13 +1,5 @@
-import { MongodbTransportConnectionDao, Scheme } from '@applicature-restricted/multivest.services.blockchain';
-import { PluginManager } from '@applicature/multivest.core';
-import BigNumber from 'bignumber.js';
-import * as config from 'config';
-import { utils } from 'ethers';
-import { has } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
 import { EthersEthereumTransportService } from '../../src/services/transports/ethers.ethereum.transport';
-import { ManagedEthereumTransportService } from '../../src/services/transports/managed.ethereum.transport.service';
-import { EthereumBlock, EthereumEvent, EthereumTopic, EthereumTopicFilter, EthereumTransaction } from '../../src/types';
+import { EthereumTopicFilter, EthereumTransaction } from '../../src/types';
 import { ProviderMock } from '../mock/ethers.provider.mock';
 import { PluginManagerMock } from '../mock/plugin.manager.mock';
 import { TransportConnectionMock } from '../mock/transport.connection.mock';

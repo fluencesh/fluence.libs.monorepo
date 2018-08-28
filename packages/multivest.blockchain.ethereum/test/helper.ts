@@ -1,10 +1,11 @@
 
-import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
+import { Scheme } from '@fluencesh/multivest.services.blockchain';
+import * as config from 'config';
 import { createHash } from 'crypto';
 import { random } from 'lodash';
+import { Db, MongoClient } from 'mongodb';
 import { generate } from 'randomstring';
 import { v1 as generateId } from 'uuid';
-import { OraclizeStatus, OraclizeSubscription } from '../src/types';
 
 export function randomAddressSubscription(): Scheme.AddressSubscription {
     return {
@@ -126,17 +127,6 @@ export function randomWebhookAction(): Scheme.WebhookActionItem {
     } as Scheme.WebhookActionItem;
 }
 
-export function randomOraclize(projectId: string = generateId(), ) {
-    return {
-        projectId,
-        eventHash: `0x${generateId()}`,
-        eventName: generateId(),
-        eventInputTypes: [],
-        webhookUrl: `https://www.${generateId()}.com.uk`,
-        status: OraclizeStatus.ENABLED,
-    } as OraclizeSubscription;
-}
-
 export function randomProject(): Scheme.Project {
     const salt = generate({ length: 64, charset: '1234567890abcdef' });
     const token = generate({ length: 64, charset: '1234567890abcdef' });
@@ -167,4 +157,14 @@ export function randomProject(): Scheme.Project {
         removedAt: null,
         isRemoved: false
     } as Scheme.Project;
+}
+
+export async function clearDb(collections: Array<string>, db?: Db) {
+    db = db || await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+
+    await Promise.all(
+        collections.map((collection) => db.collection(collection).remove({}))
+    );
+
+    await db.close();
 }

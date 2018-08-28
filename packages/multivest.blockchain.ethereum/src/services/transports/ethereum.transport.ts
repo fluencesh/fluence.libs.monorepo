@@ -1,4 +1,4 @@
-import { BlockchainTransport, Scheme } from '@applicature-restricted/multivest.services.blockchain';
+import { BlockchainTransport, Scheme } from '@fluencesh/multivest.services.blockchain';
 import { BigNumber } from 'bignumber.js';
 import {
     ETHEREUM,

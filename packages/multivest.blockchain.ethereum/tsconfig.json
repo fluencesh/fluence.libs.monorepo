@@ -3,34 +3,14 @@
         "target": "esnext",
         "module": "commonjs",
         "noImplicitAny": true,
-        "removeComments": true,
+        "removeComments": false,
         "sourceMap": true,
-        "rootDir": "./src",
-        "outDir": "./dist",
-        "mapRoot": "./dist",
         "declaration": true,
-        "baseUrl": "./",
-        "paths": {
-            "web3": [
-                "@types/web3/index.d.ts"
-            ],
-            "ethers": [
-                "@types/ethers/index.d.ts"
-            ],
-            "ethereumjs-tx": [
-                "@types/ethereumjs-tx/index.d.ts"
-            ],
-            "ethereumjs-abi": [
-                "@types/ethereumjs-abi/index.d.ts"
-            ]
-        },
+        "outDir": "./dist",
+        "skipLibCheck": true,
         "typeRoots": [
             "./node_modules/@types",
             "./@types"
         ]
-    },
-    "exclude": [
-        "./node_modules",
-        "./test/**/*"
-    ]
+    }
 }

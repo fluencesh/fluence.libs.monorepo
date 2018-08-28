@@ -1,15 +1,14 @@
-import { JobService, ProjectService, Scheme } from '@applicature-restricted/multivest.services.blockchain';
-import { Hashtable, PluginManager } from '@applicature/multivest.core';
+import { Hashtable, PluginManager } from '@fluencesh/multivest.core';
+import {
+    JobService, OraclizeSubscriptionService, ProjectService, Scheme
+} from '@fluencesh/multivest.services.blockchain';
 import { set } from 'lodash';
 import { v1 as generateId } from 'uuid';
 import {
     EthereumBlock,
-    EthereumTopic,
-    OraclizeStatus,
-    OraclizeSubscription
+    EthereumTopic
 } from '../../types';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
-import { OraclizeSubscriptionService } from '../objects/oraclize.subscription.service';
 import { EthereumBlockchainListener } from './ethereum.blockchain.listener';
 
 export class OraclizeJob extends EthereumBlockchainListener {
@@ -40,7 +39,7 @@ export class OraclizeJob extends EthereumBlockchainListener {
 
         const eventsList = logs.reduce((events: Array<string>, log) => events.concat(log.topics), []);
 
-        const subscriptions = await this.oraclizeService.listByEventHashesAndStatus(eventsList, OraclizeStatus.ENABLED);
+        const subscriptions = await this.oraclizeService.listByEventHashesAndStatus(eventsList, true);
         if (!subscriptions.length) {
             return;
         }
@@ -80,7 +79,7 @@ export class OraclizeJob extends EthereumBlockchainListener {
         block: EthereumBlock,
         confirmations: number,
         log: EthereumTopic,
-        subscription: OraclizeSubscription
+        subscription: Scheme.OraclizeSubscription
     ): Scheme.WebhookActionItem {
         const decodedData = this.decodeData(subscription.eventInputTypes, log.data);
 

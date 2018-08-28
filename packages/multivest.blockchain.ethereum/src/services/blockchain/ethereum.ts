@@ -1,9 +1,9 @@
+import { MultivestError } from '@fluencesh/multivest.core';
 import {
     BlockchainService,
     Scheme,
     Signature
-} from '@applicature-restricted/multivest.services.blockchain';
-import { MultivestError } from '@applicature/multivest.core';
+} from '@fluencesh/multivest.services.blockchain';
 import { BigNumber } from 'bignumber.js';
 import * as EthereumTx from 'ethereumjs-tx';
 import * as EthereumUtil from 'ethereumjs-util';
@@ -17,10 +17,10 @@ import {
     EthereumTransactionReceipt,
     ethereumValidNetworks,
 } from '../../types';
-import { EthereumTransport } from '../transports/ethereum.transport';
+import { ManagedEthereumTransportService } from '../transports/managed.ethereum.transport.service';
 
 export class EthereumBlockchainService extends BlockchainService {
-    protected blockchainTransport: EthereumTransport;
+    protected blockchainTransport: ManagedEthereumTransportService;
 
     public getServiceId() {
         return ServiceIds.EthereumBlockchainService;

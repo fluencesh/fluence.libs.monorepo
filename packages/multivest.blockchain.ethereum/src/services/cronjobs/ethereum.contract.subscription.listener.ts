@@ -1,22 +1,15 @@
 import {
+    Hashtable,
+    PluginManager,
+} from '@fluencesh/multivest.core';
+import {
     ContractService,
     EthereumContractSubscriptionService,
     JobService,
     ProjectService,
     Scheme,
-    SubscriptionMetric,
     WebhookActionItemObjectService,
-} from '@applicature-restricted/multivest.services.blockchain';
-import {
-    Block,
-    Hashtable,
-    PluginManager,
-    Transaction,
-} from '@applicature/multivest.core';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import * as config from 'config';
-import * as abi from 'ethereumjs-abi';
-import { sha3 } from 'ethereumjs-util';
+} from '@fluencesh/multivest.services.blockchain';
 import { set } from 'lodash';
 import { v1 as generateId } from 'uuid';
 import {
@@ -104,8 +97,6 @@ export class EthereumContractSubscriptionListener extends EthereumBlockchainList
 
         if (webhookActions.length) {
             await this.webhookService.fill(webhookActions);
-
-            SubscriptionMetric.getInstance().eventFound(webhookActions.length);
         }
 
         return;

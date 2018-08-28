@@ -1,5 +1,5 @@
-import { Scheme, WebhookCaller } from '@applicature-restricted/multivest.services.blockchain';
-import { PluginManager, Transaction } from '@applicature/multivest.core';
+import { PluginManager, Transaction } from '@fluencesh/multivest.core';
+import { Scheme, WebhookCaller } from '@fluencesh/multivest.services.blockchain';
 import * as logger from 'winston';
 import { Errors } from '../../errors';
 import { EthereumBlockchainService } from '../blockchain/ethereum';

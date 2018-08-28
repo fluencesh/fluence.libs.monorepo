@@ -11,6 +11,7 @@ export enum ServiceIds {
     EthereumBlockchainService = 'ethereum.blockchain.service',
     EthersEthereumTransportService = 'ethers.ethereum.transport.service',
     ManagedEthereumTransportService = 'managed.ethereum.transport.service',
+    BatchService = 'batch.service',
 }
 
 export enum TransportIds {

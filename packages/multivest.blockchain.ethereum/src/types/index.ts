@@ -1,8 +1,8 @@
-import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
-import { Transaction } from '@applicature/multivest.core';
-import { Hashtable } from '@applicature/multivest.core';
-import { Block } from '@applicature/multivest.core';
-import { MongoScheme } from '@applicature/multivest.mongodb';
+import {
+    Block,
+    Hashtable,
+    Transaction
+} from '@fluencesh/multivest.core';
 import BigNumber from 'bignumber.js';
 
 export const ETHEREUM = 'ETHEREUM';
@@ -83,20 +83,6 @@ export interface EthereumTopicFilter {
     toBlock?: number;
     address?: string;
     topics?: Array<string>;
-}
-
-export enum OraclizeStatus {
-    ENABLED = 'ENABLED',
-    DISABLED = 'DISABLED',
-}
-
-export interface OraclizeSubscription extends MongoScheme {
-    projectId: string;
-    eventHash: string;
-    eventName: string;
-    eventInputTypes: Array<string>;
-    webhookUrl: string;
-    status: OraclizeStatus;
 }
 
 //#region SW types

@@ -1,9 +1,10 @@
+import { PluginManager } from '@applicature-private/multivest.core';
 import {
     ContractService,
+    DaoCollectionNames,
     MongodbTransportConnectionDao,
     Scheme,
-} from '@applicature-restricted/multivest.services.blockchain';
-import { PluginManager } from '@applicature/multivest.core';
+} from '@applicature-private/multivest.services.blockchain';
 import BigNumber from 'bignumber.js';
 import * as config from 'config';
 import { utils } from 'ethers';
@@ -12,6 +13,7 @@ import { Db, MongoClient } from 'mongodb';
 import { EthereumBlockchainService } from '../../src/services/blockchain/ethereum';
 import { ManagedEthereumTransportService } from '../../src/services/transports/managed.ethereum.transport.service';
 import { EthereumBlock, EthereumEvent, EthereumTopic, EthereumTopicFilter, EthereumTransaction } from '../../src/types';
+import { clearDb } from '../helper';
 
 describe('ethereum blockchain', () => {
     let blockchainService: EthereumBlockchainService;
@@ -25,8 +27,8 @@ describe('ethereum blockchain', () => {
 
     async function initPluginManager() {
         pluginManager = new PluginManager([
-            { path: '@applicature/multivest.mongodb' },
-            { path: '@applicature-restricted/multivest.services.blockchain' },
+            { path: '@applicature-private/multivest.mongodb' },
+            { path: '@applicature-private/multivest.services.blockchain' },
         ]);
 
         await pluginManager.init();
@@ -38,21 +40,25 @@ describe('ethereum blockchain', () => {
 
     async function createTransportConnections() {
         const transportConnections: Array<Scheme.TransportConnection> = [
-            {
-                blockchainId: 'ETHEREUM',
-                networkId: NETWORK_ID,
-                providerId: 'json-rpc',
-                settings: {
-                    url: 'http://94.130.216.246:8545'
-                }
-            } as Scheme.TransportConnection,
+            // {
+            //     blockchainId: 'ETHEREUM',
+            //     networkId: NETWORK_ID,
+            //     providerId: 'json-rpc',
+            //     settings: {
+            //         url: 'http://94.130.216.246:8545'
+            //     },
+            //     isPrivate: false,
+            //     status: Scheme.TransportConnectionStatus.Enabled
+            // } as Scheme.TransportConnection,
             {
                 blockchainId: 'ETHEREUM',
                 networkId: NETWORK_ID,
                 providerId: 'json-rpc',
                 settings: {
                     url: 'https://rinkeby.infura.io/bXMBS9zEadMgfXd0Y3G1',
-                }
+                },
+                isPrivate: false,
+                status: Scheme.TransportConnectionStatus.Enabled
             } as Scheme.TransportConnection
         ];
 
@@ -67,7 +73,8 @@ describe('ethereum blockchain', () => {
             tc.status,
             tc.isFailing,
             tc.lastFailedAt,
-            tc.failedCount
+            tc.failedCount,
+            tc.isPrivate
         )));
     }
 
@@ -109,11 +116,15 @@ describe('ethereum blockchain', () => {
         expect(typeof block.network === 'string').toBeTruthy();
         expect(typeof block.parentHash === 'string').toBeTruthy();
         expect(typeof block.time === 'number').toBeTruthy();
-        expect(block.transactions instanceof Array).toBeTruthy();
+        expect(Array.isArray(block.transactions)).toBeTruthy();
     }
 
     beforeAll(async () => {
         await initDb();
+        await clearDb([
+            DaoCollectionNames.Contract,
+            DaoCollectionNames.TransportConnection,
+        ]);
         await initPluginManager();
         await createTransportConnections();
         await initBlockchainService();

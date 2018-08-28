@@ -1,4 +1,4 @@
-import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
+import { Scheme } from '@applicature-private/multivest.services.blockchain';
 
 export const TransportConnectionMock = {
     networkId: 'rinkeby',

@@ -1,4 +1,4 @@
-import { PluginManager } from '@applicature/multivest.core';
+import { PluginManager } from '@applicature-private/multivest.core';
 
 export const PluginManagerMock = {
     getServiceByClass: () => ({})

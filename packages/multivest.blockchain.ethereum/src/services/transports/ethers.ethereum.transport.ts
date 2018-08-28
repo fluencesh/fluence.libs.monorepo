@@ -1,5 +1,5 @@
-import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
-import { Block, MultivestError, PluginManager, Service, Transaction } from '@applicature/multivest.core';
+import { Block, MultivestError, PluginManager, Service, Transaction } from '@applicature-private/multivest.core';
+import { Scheme } from '@applicature-private/multivest.services.blockchain';
 import { BigNumber } from 'bignumber.js';
 import { Contract, providers } from 'ethers';
 import { get } from 'lodash';
@@ -204,7 +204,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         // NOTICE: if output length === 1 then result will be a value.
         // NOTICE: if output length > 1 then result will be an Array.
 
-        result = (result instanceof Array ? result : [ result ]);
+        result = result instanceof Array ? result : [ result ];
 
         if (!abiItem) {
             return result.map((value: any) => value.toString());

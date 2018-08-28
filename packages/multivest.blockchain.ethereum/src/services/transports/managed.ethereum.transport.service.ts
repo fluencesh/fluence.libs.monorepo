@@ -1,7 +1,7 @@
 import {
   ManagedBlockchainTransportService,
   Scheme,
-} from '@applicature-restricted/multivest.services.blockchain';
+} from '@applicature-private/multivest.services.blockchain';
 import { BigNumber } from 'bignumber.js';
 import { ServiceIds, TransportIds } from '../../constants';
 import {

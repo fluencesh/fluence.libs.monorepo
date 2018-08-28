@@ -4,6 +4,12 @@
             "url": "mongodb://localhost/multivest",
             "options": null
         },
+        "clientVerification": {
+            "jwt": {
+                "secret": "secret",
+                "expiresInMs": 3600000
+            }
+        },
         "blockchain": {
             "ethereum": {
                 "providers": {

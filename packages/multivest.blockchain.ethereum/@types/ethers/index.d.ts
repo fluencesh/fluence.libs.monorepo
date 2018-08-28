@@ -1,4 +1,4 @@
-import { BigNumber } from '../../../multivest.services.blockchain/node_modules/bignumber.js';
+import { BigNumber } from 'bignumber.js';
 
 declare module 'ethers' {
   class Contract {

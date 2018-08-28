@@ -1,9 +1,8 @@
-import {Hashtable} from '@applicature/multivest.core';
-
+import { Hashtable } from '@applicature-private/multivest.core';
 import {
     JsonRpcProxy
-} from '@applicature-restricted/multivest.services.blockchain';
-import {AxiosRequestConfig} from 'axios';
+} from '@applicature-private/multivest.services.blockchain';
+import { AxiosRequestConfig } from 'axios';
 
 export class EthereumJsonRpcProxy extends JsonRpcProxy {
     constructor(url: string) {

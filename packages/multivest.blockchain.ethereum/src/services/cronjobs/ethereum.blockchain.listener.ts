@@ -1,5 +1,5 @@
-import { BlockchainListener, JobService, Scheme } from '@applicature-restricted/multivest.services.blockchain';
-import { Hashtable, PluginManager } from '@applicature/multivest.core';
+import { Hashtable, PluginManager } from '@applicature-private/multivest.core';
+import { BlockchainListener, JobService, Scheme } from '@applicature-private/multivest.services.blockchain';
 import * as abi from 'ethereumjs-abi';
 import { sha3 } from 'ethereumjs-util';
 import { set } from 'lodash';

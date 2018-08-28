@@ -1,6 +1,6 @@
 {
-  "name": "@applicature-restricted/multivest.blockchain.ethereum",
-  "version": "0.2.37",
+  "name": "@applicature-private/multivest.blockchain.ethereum",
+  "version": "0.2.39-beta.1",
   "private": false,
   "license": "UNLICENSED",
   "description": "Ethereum Blockchain Plugin",
@@ -13,27 +13,22 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "gulp clean && gulp build",
+    "build": "gulp build",
     "lint": "tslint '{src/**/*.ts,test/**/*.ts}'",
-    "precommit": "npm run lint ; npm run test:coverage ; npm run test:security",
-    "test": "jest test/unit",
-    "test:integration": "jest test/integration",
-    "test:e2e": "jest test/e2e",
-    "test:coverage": "jest test/unit --coverage --collectCoverageFrom=*/**/*.ts",
-    "test:ci": "jest test/unit --coverage --testResultsProcessor ./node_modules/jest-junit --collectCoverageFrom=*/**/*.ts",
-    "test:security": "nsp check"
+    "precommit": "test:ci",
+    "test": "jest",
+    "test:ci": "jest --coverage --runInBand --forceExit",
+    "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN",
+    "test:lint": "tslint --force --out ./test-reports/tslint.json -t json --project ./tsconfig.json 'src/**/*.{ts,tsx}'"
   },
   "repository": {
     "type": "git",
     "url": "git@bitbucket.com:applicature/multivest.blockchain.ethereum.git"
   },
-  "publishConfig": {
-    "registry": "https://artifacts-dev.zubko.biz/repository/applicature-restricted/"
-  },
   "dependencies": {
-    "@applicature-restricted/multivest.services.blockchain": "^0.2.37",
-    "@applicature/multivest.core": "^0.1.25",
-    "@applicature/multivest.mongodb": "^0.1.16",
+    "@applicature-private/multivest.core": "^0.1.27",
+    "@applicature-private/multivest.mongodb": "^0.2.1",
+    "@applicature-private/multivest.services.blockchain": "^0.2.46-beta.1",
     "axios": "^0.18.0",
     "bignumber.js": "^4.1.0",
     "config": "^1.30.0",
@@ -52,6 +47,7 @@
     "@types/bignumber.js": "^5.0.0",
     "@types/body-parser": "^1.17.0",
     "@types/config": "0.0.33",
+    "@types/cors": "^2.8.4",
     "@types/ethereumjs-util": "^5.1.1",
     "@types/express": "^4.11.1",
     "@types/jest": "^22.2.3",
@@ -62,6 +58,7 @@
     "@types/uuid": "^3.4.3",
     "@types/winston": "^2.3.9",
     "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
     "express": "^4.16.3",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.4.0",
@@ -70,14 +67,17 @@
     "gulp-typescript": "^3.2.3",
     "jest": "^21.2.1",
     "jest-junit": "^3.7.0",
+    "jest-multi-test-result-processor": "^1.0.0",
+    "jest-sonar-reporter": "^2.0.0",
     "lodash": "^4.17.10",
     "nsp": "^3.2.1",
     "randomstring": "^1.1.5",
+    "sonarqube-scanner": "^2.1.0",
     "source-map-support": "^0.5.5",
     "ts-jest": "^21.2.4",
     "ts-node": "^4.1.0",
     "tslint": "^5.9.1",
-    "typescript": "^2.8.3"
+    "typescript": "^2.9.2"
   },
   "files": [
     "@types/",
@@ -85,6 +85,16 @@
     "src/"
   ],
   "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "testEnvironment": "node",
+    "globals": {
+      "ts-jest": {
+        "skipBabel": true
+      }
+    },
+    "testResultsProcessor": "jest-multi-test-result-processor",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -92,9 +102,7 @@
     "moduleFileExtensions": [
       "ts",
       "tsx",
-      "js",
-      "json",
-      "node"
+      "js"
     ],
     "coveragePathIgnorePatterns": [
       "<rootDir>/.*?\\.d\\.ts$",
@@ -108,7 +116,18 @@
       "cobertura"
     ]
   },
+  "jest-multi-test-result-processor": {
+    "processors": [
+      "jest-junit",
+      "jest-sonar-reporter"
+    ]
+  },
+  "jestSonar": {
+    "reportPath": "./test-reports",
+    "reportFile": "test-report.xml",
+    "indent": 4
+  },
   "jest-junit": {
-    "output": "./coverage/junit.xml"
+    "output": "./test-reports/junit.xml"
   }
 }

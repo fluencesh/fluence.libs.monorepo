@@ -26,15 +26,21 @@ export class SessionService extends Service {
 
     public async createSession(
         expiredAt: Date,
-        clientId: string
+        clientId: string,
+        projectId: string = null
     ): Promise<Scheme.Session> {
-        const client = await this.clientDao.getById(clientId);
+        const [ client, project ] = [
+            this.clientDao.getById(clientId),
+            projectId ? this.projectDao.getById(projectId) : null
+        ] as [ Promise<Scheme.Client>, Promise<Scheme.Project> ];
 
         if (!client) {
             throw new MultivestError(Errors.CLIENT_NOT_FOUND);
+        } else if (projectId && !project) {
+            throw new MultivestError(Errors.PROJECT_NOT_FOUND);
         }
 
-        return this.sessionDao.createSession(expiredAt, clientId);
+        return this.sessionDao.createSession(expiredAt, clientId, projectId);
     }
 
     public async getById(sessionId: string): Promise<Scheme.Session> {
@@ -45,12 +51,12 @@ export class SessionService extends Service {
         return this.sessionDao.getByIdActiveOnly(sessionId);
     }
 
-    public async getByClientId(clientId: string): Promise<Scheme.Session> {
-        return this.sessionDao.getByClientId(clientId);
+    public async getByClientIdAndProjectId(clientId: string): Promise<Scheme.Session> {
+        return this.sessionDao.getByClientIdAndProjectId(clientId);
     }
 
-    public async getByClientIdActiveOnly(clientId: string): Promise<Scheme.Session> {
-        return this.sessionDao.getByClientIdActiveOnly(clientId);
+    public async getByClientIdAndProjectIdActiveOnly(clientId: string, projectId: string): Promise<Scheme.Session> {
+        return this.sessionDao.getByClientIdAndProjectIdActiveOnly(clientId, projectId);
     }
 
     public async setExpiredAt(sessionId: string, expiredAt: Date): Promise<void> {

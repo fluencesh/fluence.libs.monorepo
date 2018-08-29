@@ -45,14 +45,18 @@ describe('session dao', () => {
         expect(got).toEqual(session);
     });
 
-    it('should get by client id', async () => {
-        const got = await dao.getByClientId(session.clientId);
+    it('should get by client id and project id', async () => {
+        const got = await dao.getByClientIdAndProjectId(session.clientId, session.projectId);
 
         expect(got).toEqual(session);
     });
 
     it('should get by client and project ids (active only)', async () => {
-        const got = await dao.getByClientIdActiveOnly(session.clientId);
+        if (session.loggedOutAt) {
+            return;
+        }
+
+        const got = await dao.getByClientIdAndProjectIdActiveOnly(session.clientId, session.projectId);
 
         expect(got).toEqual(session);
     });

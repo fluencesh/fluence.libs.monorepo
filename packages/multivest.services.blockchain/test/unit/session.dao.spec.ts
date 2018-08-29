@@ -37,17 +37,19 @@ describe('session dao', () => {
     
     it('getByClientIdAndProjectId() transfers correct arguments', async () => {
         const clientId = 'clientId';
+        const projectId = 'projectId';
 
-        await dao.getByClientId(clientId);
+        await dao.getByClientIdAndProjectId(clientId, projectId);
 
-        expect(collection.findOne).toHaveBeenCalledWith({ clientId });
+        expect(collection.findOne).toHaveBeenCalledWith({ clientId, projectId });
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
     it('getByClientIdAndProjectIdActiveOnly() transfers correct arguments', async () => {
         const clientId = 'clientId';
+        const projectId = 'projectId';
 
-        await dao.getByClientIdActiveOnly(clientId);
+        await dao.getByClientIdAndProjectIdActiveOnly(clientId, projectId);
 
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });

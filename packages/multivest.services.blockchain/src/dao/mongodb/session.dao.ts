@@ -43,15 +43,20 @@ export class MongodbSessionDao extends MongoDBDao<Scheme.Session> implements Ses
         });
     }
 
-    public async getByClientId(clientId: string): Promise<Scheme.Session> {
+    public async getByClientIdAndProjectId(clientId: string, projectId: string = null): Promise<Scheme.Session> {
         return this.getRaw({
             clientId,
+            projectId,
         });
     }
 
-    public async getByClientIdActiveOnly(clientId: string): Promise<Scheme.Session> {
+    public async getByClientIdAndProjectIdActiveOnly(
+        clientId: string,
+        projectId: string = null
+    ): Promise<Scheme.Session> {
         return this.getRaw({
             clientId,
+            projectId,
             expiredAt: { $gt: new Date() },
             loggedOutAt: null
         });

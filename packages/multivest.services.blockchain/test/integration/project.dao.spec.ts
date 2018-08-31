@@ -122,13 +122,15 @@ describe('project dao', () => {
                 && p.webhookUrl === project.webhookUrl
                 && p.status === project.status
                 && p.sharedSecret === project.sharedSecret
+                && p.clientId === project.clientId
             );
 
         const got = await dao.listByFilters(
             project.name,
             project.sharedSecret,
             project.status,
-            project.webhookUrl
+            project.webhookUrl,
+            project.clientId
         );
 
         expect(got).toEqual(filtered);
@@ -141,6 +143,7 @@ describe('project dao', () => {
                 && p.webhookUrl === project.webhookUrl
                 && p.status === project.status
                 && p.sharedSecret === project.sharedSecret
+                && p.clientId === project.clientId
             );
 
         if (filtered.length) {
@@ -151,7 +154,8 @@ describe('project dao', () => {
             project.name,
             project.sharedSecret,
             project.status,
-            project.webhookUrl
+            project.webhookUrl,
+            project.clientId
         );
 
         expect(got).toEqual(filtered);

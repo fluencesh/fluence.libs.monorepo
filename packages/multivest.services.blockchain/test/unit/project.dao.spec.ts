@@ -93,13 +93,15 @@ describe('project dao', () => {
             sharedSecret: 'sharedSecret',
             status: 'status' as any,
             webhookUrl: 'webhookUrl',
+            clientId: 'id'
         } as Partial<Scheme.Project>;
 
-        const got = await dao.listByFilters(
+        await dao.listByFilters(
             filters.name,
             filters.sharedSecret,
             filters.status,
-            filters.webhookUrl
+            filters.webhookUrl,
+            filters.clientId
         );
 
         expect(collection.find).toHaveBeenCalledWith(filters);
@@ -112,13 +114,15 @@ describe('project dao', () => {
             sharedSecret: 'sharedSecret',
             status: 'status' as any,
             webhookUrl: 'webhookUrl',
+            clientId: 'id',
         } as Partial<Scheme.Project>;
 
-        const got = await dao.listByFiltersActiveOnly(
+        await dao.listByFiltersActiveOnly(
             filters.name,
             filters.sharedSecret,
             filters.status,
-            filters.webhookUrl
+            filters.webhookUrl,
+            filters.clientId
         );
 
         expect(collection.find).toHaveBeenCalledWith(

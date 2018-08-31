@@ -64,4 +64,10 @@ export class MongodbClientDao extends MongoDBDao<Scheme.Client> implements Clien
 
         return;
     }
+
+    public async removeById(clientId: string): Promise<void> {
+        await this.remove({ id: clientId });
+
+        return;
+    }
 }

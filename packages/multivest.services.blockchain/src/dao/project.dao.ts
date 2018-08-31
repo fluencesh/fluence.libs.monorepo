@@ -26,13 +26,15 @@ export abstract class ProjectDao extends Dao<Scheme.Project> {
         name?: string,
         sharedSecret?: string,
         status?: Scheme.ProjectStatus,
-        webhookUrl?: string
+        webhookUrl?: string,
+        clientId?: string
     ): Promise<Array<Scheme.Project>>;
     public abstract async listByFiltersActiveOnly(
         name?: string,
         sharedSecret?: string,
         status?: Scheme.ProjectStatus,
-        webhookUrl?: string
+        webhookUrl?: string,
+        clientId?: string
     ): Promise<Array<Scheme.Project>>;
 
     public abstract async setNameAndWebhookUrlAndStatus(

@@ -76,4 +76,12 @@ describe('client dao', () => {
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);
     });
+
+    it('removeById() transfers correct arguments', async () => {
+        const id = 'id';
+        await dao.removeById(id);
+
+        expect(collection.deleteMany).toHaveBeenCalledTimes(1);
+        expect(collection.deleteMany).toHaveBeenCalledWith({ id });
+    });
 });

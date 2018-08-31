@@ -85,4 +85,13 @@ describe('client dao', () => {
 
         clients.push(got);
     });
+
+    it('should remove by id', async () => {
+        await dao.removeById(client.id);
+        const got = await dao.getById(client.id);
+
+        expect(got).toBeNull();
+
+        clients.splice(clients.indexOf(client), 1);
+    });
 });

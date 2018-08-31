@@ -19,8 +19,9 @@ export class ClientService extends Service {
     protected contractSubscriptionService: EthereumContractSubscriptionService;
     protected oraclizeSubscriptionService: OraclizeSubscriptionService;
     
-    private jwtExpiresInMs: number = config.get<number>('multivest.clientVerification.jwt.expiresInMs');
-    private jwtSecret: string = config.get<string>('multivest.clientVerification.jwt.secret');
+    private jwtExpiresInMs: number;
+    private jwtSecret: string;
+    private mayProcessJwt: boolean;
 
     public async init(): Promise<void> {
         const mongodbPlugin = this.pluginManager.get('mongodb') as any as Plugin;
@@ -35,6 +36,17 @@ export class ClientService extends Service {
             .getServiceByClass(EthereumContractSubscriptionService) as EthereumContractSubscriptionService;
         this.oraclizeSubscriptionService = this.pluginManager
             .getServiceByClass(OraclizeSubscriptionService) as OraclizeSubscriptionService;
+   
+        if (
+            config.has('multivest.clientVerification.jwt.expiresInMs')
+            && config.has('multivest.clientVerification.jwt.secret')
+        ) {
+            this.mayProcessJwt = true;
+            this.jwtExpiresInMs = config.get<number>('multivest.clientVerification.jwt.expiresInMs');
+            this.jwtSecret = config.get<string>('multivest.clientVerification.jwt.secret');
+        } else {
+            this.mayProcessJwt = false;
+        }
     }
 
     public getServiceId(): string {
@@ -80,6 +92,10 @@ export class ClientService extends Service {
     }
 
     public async verifyClient(jwt: string): Promise<void> {
+        if (!this.mayProcessJwt) {
+            throw new MultivestError(Errors.SERVICE_NOT_CONFIGURED_FOR_PROCESSING_JWT);
+        }
+
         const clientId = this.tryParseJwtToClientId(jwt);
         const client = await this.clientDao.getById(clientId);
         if (!client) {
@@ -92,10 +108,24 @@ export class ClientService extends Service {
     }
 
     public convertClientIdToJwt(clientId: string): string {
+        if (!this.mayProcessJwt) {
+            throw new MultivestError(Errors.SERVICE_NOT_CONFIGURED_FOR_PROCESSING_JWT);
+        }
+        
         return sign({ clientId }, this.jwtSecret, { expiresIn: this.jwtExpiresInMs });
     }
 
+    public async removeById(clientId: string): Promise<void> {
+        await this.clientDao.removeById(clientId);
+
+        return;
+    }
+
     private tryParseJwtToClientId(jwt: string): string {
+        if (!this.mayProcessJwt) {
+            throw new MultivestError(Errors.SERVICE_NOT_CONFIGURED_FOR_PROCESSING_JWT);
+        }
+
         try {
             const { clientId } = verify(jwt, this.jwtSecret) as { clientId: string };
             return clientId;

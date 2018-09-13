@@ -1,4 +1,4 @@
-import { ProjectRequest } from '@applicature-private/fluence.ms';
+import { Controller, ProjectRequest } from '@applicature-private/fluence.ms';
 import { Block, MultivestError, PluginManager, Transaction } from '@applicature-private/multivest.core';
 import {
     BlockchainService,
@@ -11,14 +11,13 @@ import { NextFunction, Response } from 'express';
 import { isNaN } from 'lodash';
 import { Errors } from '../errors';
 
-export abstract class AbstractBlockchainController {
-    protected pluginManager: PluginManager;
+export abstract class AbstractBlockchainController extends Controller {
     protected blockchainService: BlockchainService;
     protected projectService: ProjectService;
     protected clientService: ClientService;
 
     constructor(pluginManager: PluginManager, blockchainService: BlockchainService) {
-        this.pluginManager = pluginManager;
+        super(pluginManager);
 
         this.blockchainService = blockchainService;
         this.projectService = pluginManager.getServiceByClass(ProjectService) as ProjectService;
@@ -47,12 +46,20 @@ export abstract class AbstractBlockchainController {
             const height = Number(req.query.number);
             
             if (!isNaN(height)) {
-                block = await this.blockchainService.getBlockByHeight(height);
+                try {
+                    block = await this.blockchainService.getBlockByHeight(height);
+                } catch (ex) {
+                    return this.handleError(ex, next);
+                }
             } else {
                 return next(new MultivestError(Errors.INVALID_BLOCK_NUMBER, 400));
             }
         } else if (req.query.hash) {
-            block = await this.blockchainService.getBlockByHash(req.query.hash);
+            try {
+                block = await this.blockchainService.getBlockByHash(req.query.hash);
+            } catch (ex) {
+                return this.handleError(ex, next);
+            }
         }
 
         if (!block) {
@@ -67,7 +74,12 @@ export abstract class AbstractBlockchainController {
     public async getTransactionByHash(req: ProjectRequest, res: Response, next: NextFunction): Promise<void> {
         const hash = req.params.hash;
 
-        const transaction = await this.blockchainService.getTransactionByHash(hash);
+        let transaction: Transaction;
+        try {
+            transaction = await this.blockchainService.getTransactionByHash(hash);
+        } catch (ex) {
+            return this.handleError(ex, next);
+        }
 
         if (!transaction) {
             return next(new MultivestError(Errors.TRANSACTION_NOT_FOUND, 404));
@@ -81,7 +93,12 @@ export abstract class AbstractBlockchainController {
     public async submitRawTransaction(req: ProjectRequest, res: Response, next: NextFunction): Promise<void> {
         const hex = req.body.hex;
 
-        const transaction = await this.blockchainService.sendRawTransaction(hex, req.project.id);
+        let transaction: Transaction;
+        try {
+            transaction = await this.blockchainService.sendRawTransaction(hex, req.project.id);
+        } catch (ex) {
+            return this.handleError(ex, next);
+        }
 
         if (!transaction) {
             return next(new MultivestError(Errors.TRANSACTION_NOT_FOUND, 404));
@@ -100,7 +117,12 @@ export abstract class AbstractBlockchainController {
             return next(new MultivestError(Errors.ADDRESS_IS_INVALID, 400));
         }
 
-        const balance = await this.blockchainService.getBalance(address, minConf);
+        let balance: BigNumber;
+        try {
+            balance = await this.blockchainService.getBalance(address, minConf);
+        } catch (ex) {
+            return this.handleError(ex, next);
+        }
 
         if (!balance) {
             return next(new MultivestError(Errors.ADDRESS_NOT_FOUND, 404));

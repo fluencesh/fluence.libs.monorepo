@@ -3,9 +3,15 @@ import { Scheme } from '@applicature-private/multivest.services.blockchain';
 import { OptionsJson } from 'body-parser';
 import { NextFunction, Request, Response, Router } from 'express';
 
+export interface ProjectSession extends Scheme.Session {
+    project: Scheme.Project;
+    client: Scheme.Client;
+}
+
 export interface ProjectRequest extends Request {
     project: Scheme.Project;
     relatedClient: Scheme.Client;
+    session: ProjectSession;
 }
 
 export interface AwsRequest extends ProjectRequest {

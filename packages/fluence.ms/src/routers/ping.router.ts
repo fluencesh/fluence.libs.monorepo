@@ -1,5 +1,6 @@
+import { PluginManager } from '@applicature-private/multivest.core';
 import { NextFunction, Request, Response, Router } from 'express';
-import { BaseUrl, Get, Response as SwResponse } from 'swapi/dist';
+import { BaseUrl, Get, Response as SwResponse } from 'swapi';
 import { PingRouterUrls } from '../constants';
 import { PingController } from '../controllers/ping.controller';
 
@@ -7,8 +8,8 @@ import { PingController } from '../controllers/ping.controller';
 export class PingRouter {
     private controller: PingController;
 
-    constructor() {
-        this.controller = new PingController();
+    constructor(pluginManager: PluginManager) {
+        this.controller = new PingController(pluginManager);
     }
 
     public getRouter(): Router {

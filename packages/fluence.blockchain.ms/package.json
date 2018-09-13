@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.blockchain.ms",
-  "version": "0.0.2-beta.6",
+  "version": "0.0.3-beta.0",
   "private": false,
   "license": "UNLICENSED",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -25,7 +25,7 @@
     "url": ""
   },
   "dependencies": {
-    "@fluencesh/fluence.ms": "0.0.3-beta.6",
+    "@fluencesh/fluence.ms": "0.0.6-beta.6",
     "@fluencesh/multivest.core": "^0.1.27",
     "@fluencesh/multivest.mongodb": "^0.2.1",
     "@fluencesh/multivest.services.blockchain": "^0.2.46-beta.6",

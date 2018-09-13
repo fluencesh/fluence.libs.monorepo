@@ -14,8 +14,13 @@ export class AwsAuthMiddleware extends AuthMiddleware {
 
         const authLambdaContext = get(req, pathToAuthLambdaContext, {});
 
-        req.relatedClient = authLambdaContext.client || null;
-        req.project = authLambdaContext.project || null;
+        req.relatedClient = authLambdaContext.requestClient || null;
+        req.project = authLambdaContext.requestProject || null;
+        req.session = authLambdaContext.session || null;
+        if (req.session) {
+            req.session.client = authLambdaContext.sessionClient || null;
+            req.session.project = authLambdaContext.sessionProject || null;
+        }
 
         next();
     }

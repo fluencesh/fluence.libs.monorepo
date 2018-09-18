@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/multivest.blockchain.ethereum",
-  "version": "0.2.39-beta.1",
+  "version": "0.2.40-beta.1",
   "private": false,
   "license": "UNLICENSED",
   "description": "Ethereum Blockchain Plugin",
@@ -28,7 +28,7 @@
   "dependencies": {
     "@fluencesh/multivest.core": "^0.1.27",
     "@fluencesh/multivest.mongodb": "^0.2.1",
-    "@fluencesh/multivest.services.blockchain": "^0.2.46-beta.1",
+    "@fluencesh/multivest.services.blockchain": "^0.2.50-beta.1",
     "axios": "^0.18.0",
     "bignumber.js": "^4.1.0",
     "config": "^1.30.0",

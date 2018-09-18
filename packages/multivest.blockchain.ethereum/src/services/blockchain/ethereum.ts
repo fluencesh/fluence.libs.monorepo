@@ -38,7 +38,7 @@ export class EthereumBlockchainService extends BlockchainService {
         return 'ETH';
     }
 
-    public async getHDAddress(index: number): Promise<string> {
+    public async getHDAddress(index: number, transportId?: string): Promise<string> {
         throw new MultivestError('not implemented');
     }
 
@@ -103,49 +103,67 @@ export class EthereumBlockchainService extends BlockchainService {
         return serializedTx.toString('hex');
     }
 
-    public getGasPrice(): Promise<BigNumber> {
-        return this.blockchainTransport.getGasPrice();
+    public getGasPrice(transportId?: string): Promise<BigNumber> {
+        return this.blockchainTransport.getGasPrice(transportId);
     }
 
-    public getCode(address: string) {
-        return this.blockchainTransport.getCode(address);
+    public getCode(address: string, transportId?: string) {
+        return this.blockchainTransport.getCode(address, transportId);
     }
 
-    public getLogs(filters: EthereumTopicFilter): Promise<Array<EthereumTopic>> {
-        return this.blockchainTransport.getLogs(filters);
+    public getLogs(filters: EthereumTopicFilter, transportId?: string): Promise<Array<EthereumTopic>> {
+        return this.blockchainTransport.getLogs(filters, transportId);
     }
 
-    public getTransactionReceipt(txHex: string): Promise<EthereumTransactionReceipt> {
-        return this.blockchainTransport.getTransactionReceipt(txHex);
+    public getTransactionReceipt(txHex: string, transportId?: string): Promise<EthereumTransactionReceipt> {
+        return this.blockchainTransport.getTransactionReceipt(txHex, transportId);
     }
 
-    public call(tx: EthereumTransaction) {
-        return this.blockchainTransport.call(tx);
+    public call(tx: EthereumTransaction, transportId?: string) {
+        return this.blockchainTransport.call(tx, transportId);
     }
 
     public callContractMethod(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = []
+        inputValues: Array<string> = [],
+        transportId?: string
     ) {
-        return this.blockchainTransport.callContractMethod(contractEntity, methodName, inputTypes, inputValues);
+        return this.blockchainTransport.callContractMethod(
+            contractEntity,
+            methodName,
+            inputTypes,
+            inputValues,
+            transportId
+        );
     }
 
     public contractMethodGasEstimate(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = []
+        inputValues: Array<string> = [],
+        transportId?: string
     ) {
-        return this.blockchainTransport.contractMethodGasEstimate(contractEntity, methodName, inputTypes, inputValues);
+        return this.blockchainTransport.contractMethodGasEstimate(
+            contractEntity,
+            methodName,
+            inputTypes,
+            inputValues,
+            transportId
+        );
     }
 
-    public estimateGas(tx: EthereumTransaction) {
-        return this.blockchainTransport.estimateGas(tx);
+    public estimateGas(tx: EthereumTransaction, transportId?: string) {
+        return this.blockchainTransport.estimateGas(tx, transportId);
     }
 
-    public getAddressTransactionsCount(address: string, blockTag?: number | string): Promise<number> {
-        return this.blockchainTransport.getAddressTransactionsCount(address, blockTag);
+    public getAddressTransactionsCount(
+        address: string,
+        blockTag?: number | string,
+        transportId?: string
+    ): Promise<number> {
+        return this.blockchainTransport.getAddressTransactionsCount(address, blockTag, transportId);
     }
 }

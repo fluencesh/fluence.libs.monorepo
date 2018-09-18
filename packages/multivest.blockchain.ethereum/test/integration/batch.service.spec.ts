@@ -140,7 +140,7 @@ describe('batch service', () => {
         await db.close();
     });
 
-    it('should batch call contract\'s method (with input & multiply output)', async () => {
+    it.skip('should batch call contract\'s method (with input & multiply output)', async () => {
         const methodName = 'allOf';
         // tslint:disable-next-line:no-shadowed-variable
         const methodAbi = randomContract.abi.find((methodAbi) => methodAbi.name === methodName);

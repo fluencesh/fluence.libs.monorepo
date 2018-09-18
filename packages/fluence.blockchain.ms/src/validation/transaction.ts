@@ -7,14 +7,14 @@ export namespace TransactionValidation {
         },
         query: {
             projectId: Joi.string().optional(),
-            token: Joi.string().optional()
+            transportConnectionId: Joi.string().optional()
         }
     };
 
     export const GetByHash = {
         query: {
             projectId: Joi.string().optional(),
-            token: Joi.string().optional()
+            transportConnectionId: Joi.string().optional()
         }
     };
 
@@ -24,7 +24,7 @@ export namespace TransactionValidation {
         },
         query: {
             projectId: Joi.string().optional(),
-            token: Joi.string().optional()
+            transportConnectionId: Joi.string().optional()
         }
     };
 }

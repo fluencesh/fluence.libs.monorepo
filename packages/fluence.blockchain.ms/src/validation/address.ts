@@ -7,7 +7,7 @@ export namespace AddressValidation {
         },
         query: {
             projectId: Joi.string().optional(),
-            token: Joi.string().optional()
+            transportConnectionId: Joi.string().optional()
         }
     };
 }

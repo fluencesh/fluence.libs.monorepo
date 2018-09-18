@@ -6,7 +6,7 @@ export namespace BlockValidation {
             hash: Joi.string().optional(),
             number: Joi.string().optional(),
             projectId: Joi.string().optional(),
-            token: Joi.string().optional()
+            transportConnectionId: Joi.string().optional()
         }
     };
 }

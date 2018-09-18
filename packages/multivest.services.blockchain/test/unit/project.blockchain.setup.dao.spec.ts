@@ -27,6 +27,24 @@ describe('setup dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
+    it('getByIdAndProjectId() transfers correct arguments', async () => {
+        const id = 'id';
+        const projectId = 'projectId';
+        await dao.getByIdAndProjectId(id, projectId);
+
+        expect(collection.findOne).toHaveBeenCalledWith({ id, projectId });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
+    it('getByTransportConnectionIdAndProjectId() transfers correct arguments', async () => {
+        const projectId = 'projectId';
+        const privateTransportConnectionId = 'privateTransportConnectionId';
+        await dao.getByTransportConnectionIdAndProjectId(privateTransportConnectionId, projectId);
+
+        expect(collection.findOne).toHaveBeenCalledWith({ privateTransportConnectionId, projectId });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
     it('listByProjectId() transfers correct arguments', async () => {
         const projectId = 'projectId';
         await dao.listByProjectId(projectId);

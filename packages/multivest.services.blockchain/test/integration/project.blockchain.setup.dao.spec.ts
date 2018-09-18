@@ -46,6 +46,15 @@ describe('setup dao', () => {
         expect(got).toEqual(setup);
     });
 
+    it('should get by transport connection id and project id', async () => {
+        const got = await dao.getByTransportConnectionIdAndProjectId(
+            setup.privateTransportConnectionId,
+            setup.projectId
+        );
+
+        expect(got).toEqual(setup);
+    });
+
     it('should get list by project id', async () => {
         const filtered = setups.filter((s) => s.projectId === setup.projectId);
         const got = await dao.listByProjectId(setup.projectId);

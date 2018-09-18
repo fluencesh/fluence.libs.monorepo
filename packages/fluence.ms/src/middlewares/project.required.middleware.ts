@@ -3,10 +3,10 @@ import { NextFunction, Response } from 'express';
 import { Errors } from '../errors';
 import { ProjectRequest } from '../types';
 
-export class AnonymousForbiddenMiddleware {
+export class ProjectRequiredMiddleware {
     public verify(req: ProjectRequest, res: Response, next: NextFunction) {
-        if (req.relatedClient === null || req.session === null) {
-            return next(new MultivestError(Errors.AUTHORIZATION_REQUIRED, 401));
+        if (req.project === null) {
+            return next(new MultivestError(Errors.PROJECT_REQUIRED, 403));
         }
 
         next();

@@ -45,7 +45,7 @@ export abstract class BlockchainService extends Service {
 
     public abstract isValidNetwork(network: string): boolean;
     public abstract getSymbol(): string;
-    public abstract getHDAddress(index: number): Promise<string>;
+    public abstract getHDAddress(index: number, transportId?: string): Promise<string>;
     public abstract isValidAddress(address: string): boolean;
     public abstract signData(privateKey: Buffer, data: Buffer): Signature;
     public abstract signDataAndStringify(privateKey: Buffer, data: Buffer): string;

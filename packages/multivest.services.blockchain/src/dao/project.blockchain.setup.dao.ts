@@ -13,6 +13,10 @@ export abstract class ProjectBlockchainSetupDao extends Dao<Scheme.ProjectBlockc
         setupId: string,
         projectId: string
     ): Promise<Scheme.ProjectBlockchainSetup>;
+    public abstract async getByTransportConnectionIdAndProjectId(
+        privateTransportConnectionId: string,
+        projectId: string
+    ): Promise<Scheme.ProjectBlockchainSetup>;
 
     public abstract async listByProjectId(projectId: string): Promise<Array<Scheme.ProjectBlockchainSetup>>;
     public abstract async listByProjectIdAndBlockchainId(

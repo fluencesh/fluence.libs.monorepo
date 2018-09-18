@@ -33,6 +33,16 @@ export class ProjectBlockchainSetupService extends Service {
         return this.setupDao.getByIdAndProjectId(setupId, projectId);
     }
 
+    public getByTransportConnectionIdAndProjectId(
+        privateTransportConnectionId: string,
+        projectId: string
+    ): Promise<Scheme.ProjectBlockchainSetup> {
+        return this.setupDao.getByTransportConnectionIdAndProjectId(
+            privateTransportConnectionId,
+            projectId
+        );
+    }
+
     public listByProjectId(projectId: string): Promise<Array<Scheme.ProjectBlockchainSetup>> {
         return this.setupDao.listByProjectId(projectId);
     }

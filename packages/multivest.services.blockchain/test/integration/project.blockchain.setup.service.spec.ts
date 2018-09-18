@@ -48,6 +48,21 @@ describe('setup service', () => {
         expect(got).toEqual(setup);
     });
 
+    it('should get by id and project id', async () => {
+        const got = await service.getByIdAndProjectId(setup.id, setup.projectId);
+
+        expect(got).toEqual(setup);
+    });
+
+    it('should get by transport connection id and project id', async () => {
+        const got = await service.getByTransportConnectionIdAndProjectId(
+            setup.privateTransportConnectionId,
+            setup.projectId
+        );
+
+        expect(got).toEqual(setup);
+    });
+
     it('should get list by project id', async () => {
         const filtered = setups.filter((s) => s.projectId === setup.projectId);
         const got = await service.listByProjectId(setup.projectId);

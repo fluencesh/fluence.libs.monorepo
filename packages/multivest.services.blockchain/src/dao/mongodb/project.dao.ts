@@ -96,7 +96,7 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
         sharedSecret?: string,
         status?: Scheme.ProjectStatus,
         webhookUrl?: string,
-        clientId?: string,
+        clientId?: string
     ): Promise<Array<Scheme.Project>> {
         const filters: Partial<Scheme.Project> = {};
         if (name) {

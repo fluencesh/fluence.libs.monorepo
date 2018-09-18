@@ -12,17 +12,19 @@ export class AbstractBlockchainRouter {
     protected validationService: any;
     protected blockchainController: AbstractBlockchainController;
     protected authMiddleware: AuthMiddleware;
+    protected blockchainUrlPrefix: string;
 
     constructor(
         pluginManager: PluginManager,
         blockchainController: AbstractBlockchainController,
-        authMiddleware: AuthMiddleware
+        authMiddleware: AuthMiddleware,
+        blockchainUrlPrefix: string = ''
     ) {
         this.blockchainController = blockchainController;
+        this.authMiddleware = authMiddleware;
+        this.blockchainUrlPrefix = blockchainUrlPrefix.replace(/\/$/, '');
 
         this.validationService = pluginManager.getService('validation.service');
-
-        this.authMiddleware = authMiddleware;
 
         this.validationService.setValidation('Block.Get', BlockValidation.Get);
         this.validationService.setValidation('Transaction.GetByHash', TransactionValidation.GetByHash);
@@ -34,14 +36,14 @@ export class AbstractBlockchainRouter {
         const router = express.Router();
 
         router.get(
-            AbstractBlockchainRouteUrls.GetBlocks,
+            this.blockchainUrlPrefix + AbstractBlockchainRouteUrls.GetBlocks,
             this.validationService.requestValidation('Block.Get'),
             (req: ProjectRequest, res, next) => this.authMiddleware.attachProjectAndClient(req, res, next),
             (req: ProjectRequest, res, next) => this.getBlockByHashOrNumber(req, res, next)
         );
 
         router.get(
-            AbstractBlockchainRouteUrls.GetTransactionByHash,
+            this.blockchainUrlPrefix + AbstractBlockchainRouteUrls.GetTransactionByHash,
             this.validationService.requestValidation('Transaction.GetByHash'),
             (req: ProjectRequest, res, next) => this.authMiddleware.attachProjectAndClient(req, res, next),
             (req: ProjectRequest, res, next) => this.getTransactionByHash(req, res, next)
@@ -49,14 +51,14 @@ export class AbstractBlockchainRouter {
 
         // TODO: test
         router.post(
-            AbstractBlockchainRouteUrls.SendTransaction,
+            this.blockchainUrlPrefix + AbstractBlockchainRouteUrls.SendTransaction,
             this.validationService.requestValidation('Transaction.Send'),
             (req: ProjectRequest, res, next) => this.authMiddleware.attachProjectAndClient(req, res, next),
             (req: ProjectRequest, res, next) => this.submitRawTransaction(req, res, next)
         );
 
         router.get(
-            AbstractBlockchainRouteUrls.GetBalanceOfAddress,
+            this.blockchainUrlPrefix + AbstractBlockchainRouteUrls.GetBalanceOfAddress,
             this.validationService.requestValidation('Address.GetAddressBalance'),
             (req: ProjectRequest, res, next) => this.authMiddleware.attachProjectAndClient(req, res, next),
             (req: ProjectRequest, res, next) => this.getAddressBalance(req, res, next)

@@ -3,8 +3,9 @@ import { Block, MultivestError, PluginManager, Transaction } from '@applicature-
 import {
     BlockchainService,
     ClientService,
+    ProjectBlockchainSetupService,
     ProjectService,
-    Scheme
+    Scheme,
 } from '@applicature-private/multivest.services.blockchain';
 import BigNumber from 'bignumber.js';
 import { NextFunction, Response } from 'express';
@@ -15,6 +16,7 @@ export abstract class AbstractBlockchainController extends Controller {
     protected blockchainService: BlockchainService;
     protected projectService: ProjectService;
     protected clientService: ClientService;
+    protected projectBlockchainSetupService: ProjectBlockchainSetupService;
 
     constructor(pluginManager: PluginManager, blockchainService: BlockchainService) {
         super(pluginManager);
@@ -22,6 +24,8 @@ export abstract class AbstractBlockchainController extends Controller {
         this.blockchainService = blockchainService;
         this.projectService = pluginManager.getServiceByClass(ProjectService) as ProjectService;
         this.clientService = pluginManager.getServiceByClass(ClientService) as ClientService;
+        this.projectBlockchainSetupService =
+            pluginManager.getServiceByClass(ProjectBlockchainSetupService) as ProjectBlockchainSetupService;
     }
 
     public abstract convertBlockDTO(block: Block): any;
@@ -37,17 +41,22 @@ export abstract class AbstractBlockchainController extends Controller {
         };
     }
 
-    public async getBlockByHashOrNumber(req: ProjectRequest, res: Response, next: NextFunction):
-        Promise<void>
-    {
+    public async getBlockByHashOrNumber(req: ProjectRequest, res: Response, next: NextFunction): Promise<void> {
         let block;
+
+        let transportConnectionId: string;
+        try {
+            transportConnectionId = await this.extractTransportConnectionId(req);
+        } catch (ex) {
+            this.handleError(ex, next);
+        }
 
         if (req.query.number) {
             const height = Number(req.query.number);
             
             if (!isNaN(height)) {
                 try {
-                    block = await this.blockchainService.getBlockByHeight(height);
+                    block = await this.blockchainService.getBlockByHeight(height, transportConnectionId);
                 } catch (ex) {
                     return this.handleError(ex, next);
                 }
@@ -56,7 +65,7 @@ export abstract class AbstractBlockchainController extends Controller {
             }
         } else if (req.query.hash) {
             try {
-                block = await this.blockchainService.getBlockByHash(req.query.hash);
+                block = await this.blockchainService.getBlockByHash(req.query.hash, transportConnectionId);
             } catch (ex) {
                 return this.handleError(ex, next);
             }
@@ -74,9 +83,16 @@ export abstract class AbstractBlockchainController extends Controller {
     public async getTransactionByHash(req: ProjectRequest, res: Response, next: NextFunction): Promise<void> {
         const hash = req.params.hash;
 
+        let transportConnectionId: string;
+        try {
+            transportConnectionId = await this.extractTransportConnectionId(req);
+        } catch (ex) {
+            this.handleError(ex, next);
+        }
+
         let transaction: Transaction;
         try {
-            transaction = await this.blockchainService.getTransactionByHash(hash);
+            transaction = await this.blockchainService.getTransactionByHash(hash, transportConnectionId);
         } catch (ex) {
             return this.handleError(ex, next);
         }
@@ -93,9 +109,16 @@ export abstract class AbstractBlockchainController extends Controller {
     public async submitRawTransaction(req: ProjectRequest, res: Response, next: NextFunction): Promise<void> {
         const hex = req.body.hex;
 
+        let transportConnectionId: string;
+        try {
+            transportConnectionId = await this.extractTransportConnectionId(req);
+        } catch (ex) {
+            this.handleError(ex, next);
+        }
+
         let transaction: Transaction;
         try {
-            transaction = await this.blockchainService.sendRawTransaction(hex, req.project.id);
+            transaction = await this.blockchainService.sendRawTransaction(hex, req.project.id, transportConnectionId);
         } catch (ex) {
             return this.handleError(ex, next);
         }
@@ -117,9 +140,16 @@ export abstract class AbstractBlockchainController extends Controller {
             return next(new MultivestError(Errors.ADDRESS_IS_INVALID, 400));
         }
 
+        let transportConnectionId: string;
+        try {
+            transportConnectionId = await this.extractTransportConnectionId(req);
+        } catch (ex) {
+            this.handleError(ex, next);
+        }
+
         let balance: BigNumber;
         try {
-            balance = await this.blockchainService.getBalance(address, minConf);
+            balance = await this.blockchainService.getBalance(address, minConf, transportConnectionId);
         } catch (ex) {
             return this.handleError(ex, next);
         }
@@ -134,4 +164,29 @@ export abstract class AbstractBlockchainController extends Controller {
     }
 
     public abstract callTroughJsonRpc(req: ProjectRequest, res: Response, next: NextFunction): Promise<void>;
+
+    protected async extractTransportConnectionId(req: ProjectRequest): Promise<string | undefined> {
+        const projectId: string = req.project.id;
+        const transportConnectionId: string = req.query.transportConnectionId;
+        if (transportConnectionId) {
+            const valid = await this.isTransportConnectionIdValid(transportConnectionId, projectId);
+            if (!valid) {
+                throw new MultivestError(Errors.UNKNOWN_TRANSPORT_CONNECTION, 404);
+            }
+
+            return transportConnectionId;
+        }
+
+        return;
+    }
+
+    protected async isTransportConnectionIdValid(
+        transportConnectionId: string,
+        projectId: string
+    ) {
+        const privateProjectSetup = await this.projectBlockchainSetupService
+            .getByTransportConnectionIdAndProjectId(transportConnectionId, projectId);
+
+        return privateProjectSetup !== null;
+    }
 }

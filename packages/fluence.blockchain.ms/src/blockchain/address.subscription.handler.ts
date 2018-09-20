@@ -2,6 +2,7 @@ import { Block, Hashtable, PluginManager, Recipient, Transaction } from '@fluenc
 import {
     AddressSubscriptionService,
     BlockchainService,
+    MetricService,
     Scheme,
 } from '@fluencesh/multivest.services.blockchain';
 import * as logger from 'winston';
@@ -17,9 +18,10 @@ export class AddressSubscriptionHandler extends BlockchainHandler {
 
     constructor(
         pluginManager: PluginManager,
-        blockchainService: BlockchainService
+        blockchainService: BlockchainService,
+        metricService?: MetricService,
     ) {
-        super(pluginManager, blockchainService);
+        super(pluginManager, blockchainService, metricService);
 
         this.subscriptionService =
             pluginManager.getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;
@@ -83,7 +85,24 @@ export class AddressSubscriptionHandler extends BlockchainHandler {
         }
 
         if (webhookActions.length) {
-            await this.webhookService.fill(webhookActions);
+            const promises = [
+                this.webhookService.fill(webhookActions)
+            ];
+
+            if (this.metricService) {
+                const today = new Date();
+
+                promises.push(
+                    this.metricService.addressFoundInBlock(
+                        this.blockchainService.getBlockchainId(),
+                        this.blockchainService.getNetworkId(),
+                        webhookActions.length,
+                        today
+                    )
+                );
+            }
+
+            await Promise.all(promises);
         }
 
         return;

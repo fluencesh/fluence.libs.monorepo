@@ -5,6 +5,7 @@ import {
 } from '@fluencesh/multivest.core';
 import {
     BlockchainService,
+    MetricService,
     ProjectService,
     Scheme,
     SubscriptionBlockRecheckService,
@@ -26,9 +27,12 @@ export abstract class BlockchainHandler {
     protected webhookService: WebhookActionItemObjectService;
     protected subscriptionBlockRecheckService: SubscriptionBlockRecheckService;
 
+    protected metricService: MetricService;
+
     constructor(
         pluginManager: PluginManager,
-        blockchainService: BlockchainService
+        blockchainService: BlockchainService,
+        metricService?: MetricService,
     ) {
         this.pluginManager = pluginManager;
         this.blockchainService = blockchainService;
@@ -41,14 +45,25 @@ export abstract class BlockchainHandler {
             pluginManager.getServiceByClass(WebhookActionItemObjectService) as WebhookActionItemObjectService;
         this.subscriptionBlockRecheckService =
             pluginManager.getServiceByClass(SubscriptionBlockRecheckService) as SubscriptionBlockRecheckService;
+
+        this.metricService = metricService;
     }
 
     public async processBlockAndUnconfirmedBlocks(
         lastBlockHeight: number,
         block: Block
     ): Promise<void> {
-        await this.processBlock(lastBlockHeight, block);
-        await this.processUnconfirmedBlocks(block.height);
+        try {
+            await this.processBlock(lastBlockHeight, block);
+        } catch (ex) {
+            logger.error(`Can't process block [${ block.hash }]. Reason: ${ ex.message }`);
+        }
+
+        try {
+            await this.processUnconfirmedBlocks(block.height);
+        } catch (ex) {
+            logger.error(`Can't process unconfirmed blocks. Reason: ${ ex.message }`);
+        }
 
         return;
     }
@@ -141,13 +156,19 @@ export abstract class BlockchainHandler {
     }
 
     protected async processUnconfirmedBlocks(processedBlockHeight: number): Promise<void> {
-        const subscriptionBlockRechecks =
-            await this.subscriptionBlockRecheckService.listByBlockHeightAndBlockchainInfoAndType(
-                processedBlockHeight,
-                this.blockchainId,
-                this.networkId,
-                this.getSubscriptionBlockRecheckType()
-            );
+        let subscriptionBlockRechecks;
+        try {
+            subscriptionBlockRechecks =
+                await this.subscriptionBlockRecheckService.listByBlockHeightAndBlockchainInfoAndType(
+                    processedBlockHeight,
+                    this.blockchainId,
+                    this.networkId,
+                    this.getSubscriptionBlockRecheckType()
+                );
+        } catch (ex) {
+            logger.error(`Can't load block rechecks. Reason: ${ ex.message }`);
+            return;
+        }
 
         const webhooks: Array<Scheme.WebhookActionItem> = [];
         const failedSubscriptionBlockRechecks: Array<string> = [];

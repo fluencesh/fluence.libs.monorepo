@@ -12,17 +12,18 @@ import {
     MongodbOraclizeSubscriptionDao,
     MongodbProjectBlockchainSetupDao,
     MongodbProjectDao,
+    MongodbPrometheusMetricDao,
     MongodbScheduledTxDao,
     MongodbSessionDao,
+    MongodbSubscriptionBlockRecheckDao,
     MongodbTransactionDao,
     MongodbTransactionHashSubscriptionDao,
     MongodbTransportConnectionDao,
     MongodbWebhookActionDao,
-    MongodbSubscriptionBlockRecheckDao,
 } from './dao';
-
 import {
     AddressSubscriptionService,
+    AwsMetricService,
     BlockchainRegistryService,
     ClientService,
     ContractPublicRequestService,
@@ -33,13 +34,14 @@ import {
     OraclizeSubscriptionService,
     ProjectBlockchainSetupService,
     ProjectService,
+    PrometheusMetricService,
     SessionService,
+    SubscriptionBlockRecheckService,
     TransactionHashSubscriptionService,
     TransactionService,
     TransportConnectionService,
     WebhookActionItemObjectService,
     WebhookCallerService,
-    SubscriptionBlockRecheckService,
 } from './services';
 
 class BlockchainServicesPlugin extends Plugin<void> {
@@ -67,7 +69,10 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbProjectBlockchainSetupDao);
         mongoDbPlugin.addDao(MongodbSessionDao);
         mongoDbPlugin.addDao(MongodbSubscriptionBlockRecheckDao);
+        mongoDbPlugin.addDao(MongodbPrometheusMetricDao);
 
+        this.registerService(AwsMetricService);
+        this.registerService(PrometheusMetricService);
         this.registerService(AddressSubscriptionService);
         this.registerService(BlockchainRegistryService);
         this.registerService(ClientService);

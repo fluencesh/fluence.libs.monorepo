@@ -37,7 +37,7 @@ describe('scheduled tx job manager', () => {
         const clientDao = new MongodbClientDao(connection);
         const randomClientEntity = randomClient();
         client = await clientDao.createClient(
-            randomClientEntity.ethereumAddress,
+            randomClientEntity.email,
             randomClientEntity.status,
             randomClientEntity.isAdmin
         );

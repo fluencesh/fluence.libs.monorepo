@@ -59,6 +59,10 @@ export abstract class BlockchainService extends Service {
         return this.blockchainTransport.getNetworkId();
     }
 
+    public getStatistic(): Scheme.ManagedBlockchainTransportStatistic {
+        return this.blockchainTransport.getStatistic();
+    }
+
     public async getBlockHeight(transportId?: string): Promise<number> {
         return this.blockchainTransport.getBlockHeight(transportId);
     }

@@ -46,6 +46,23 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
         });
     }
 
+    public async listByBlockchainAndNetworkAndStatusAndCreatedAt(
+        blockchainId: string,
+        networkId: string,
+        status: Scheme.TransportConnectionStatus,
+        createdAt: Date,
+        createdAtComparisonOperator: Scheme.ComparisonOperators
+    ) {
+        return this.listRaw({
+            blockchainId,
+            networkId,
+            status,
+            createdAt: {
+                [ createdAtComparisonOperator ]: createdAt
+            }
+        });
+    }
+
     public createTransportConnection(
         blockchainId: string,
         networkId: string,

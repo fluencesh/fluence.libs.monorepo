@@ -1,4 +1,4 @@
-import { Transaction, Constructable } from '@fluencesh/multivest.core';
+import { Constructable, Transaction } from '@fluencesh/multivest.core';
 import { MongoDBDao } from '@fluencesh/multivest.mongodb';
 import BigNumber from 'bignumber.js';
 import * as config from 'config';
@@ -324,6 +324,14 @@ export function randomSubscriptionBlockChecker() {
         invokeOnBlockHeight: blockHeight + 10,
         webhookActionItem: randomWebhookAction()
     } as Scheme.SubscriptionBlockRecheck;
+}
+
+export function generateRandomPrometheusMetric(): Scheme.PrometheusMetric {
+    return {
+        id: generateId(),
+        name: generate(),
+        value: random(0, 1000)
+    };
 }
 
 export async function clearDb(collections: Array<string>, db?: Db) {

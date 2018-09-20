@@ -1,6 +1,6 @@
 {
   "name": "@applicature-private/multivest.blockchain.ethereum",
-  "version": "0.2.40-beta.1",
+  "version": "0.2.41-beta.2",
   "private": false,
   "license": "UNLICENSED",
   "description": "Ethereum Blockchain Plugin",
@@ -28,7 +28,7 @@
   "dependencies": {
     "@applicature-private/multivest.core": "^0.1.27",
     "@applicature-private/multivest.mongodb": "^0.2.1",
-    "@applicature-private/multivest.services.blockchain": "^0.2.50-beta.1",
+    "@applicature-private/multivest.services.blockchain": "^0.2.51-beta.3",
     "axios": "^0.18.0",
     "bignumber.js": "^4.1.0",
     "config": "^1.30.0",

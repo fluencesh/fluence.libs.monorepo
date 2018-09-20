@@ -1,6 +1,7 @@
 import { Block, Hashtable, PluginManager, Transaction } from '@applicature-private/multivest.core';
 import {
     BlockchainService,
+    MetricService,
     Scheme,
     TransactionHashSubscriptionService,
 } from '@applicature-private/multivest.services.blockchain';
@@ -12,9 +13,10 @@ export class TransactionSubscriptionHandler extends BlockchainHandler {
 
     constructor(
         pluginManager: PluginManager,
-        blockchainService: BlockchainService
+        blockchainService: BlockchainService,
+        metricService?: MetricService,
     ) {
-        super(pluginManager, blockchainService);
+        super(pluginManager, blockchainService, metricService);
 
         this.subscriptionService =
             pluginManager.getServiceByClass(TransactionHashSubscriptionService) as TransactionHashSubscriptionService;
@@ -65,7 +67,24 @@ export class TransactionSubscriptionHandler extends BlockchainHandler {
             }
 
             if (webhookActions.length) {
-                await this.webhookService.fill(webhookActions);
+                const promises = [
+                    this.webhookService.fill(webhookActions)
+                ];
+    
+                if (this.metricService) {
+                    const today = new Date();
+    
+                    promises.push(
+                        this.metricService.addressFoundInBlock(
+                            this.blockchainService.getBlockchainId(),
+                            this.blockchainService.getNetworkId(),
+                            webhookActions.length,
+                            today
+                        )
+                    );
+                }
+    
+                await Promise.all(promises);
             }
         }
 

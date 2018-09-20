@@ -3,6 +3,7 @@ import { Block, MultivestError, PluginManager, Transaction } from '@applicature-
 import {
     BlockchainService,
     ClientService,
+    MetricService,
     ProjectBlockchainSetupService,
     ProjectService,
     Scheme,
@@ -10,6 +11,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { NextFunction, Response } from 'express';
 import { isNaN } from 'lodash';
+import * as logger from 'winston';
 import { Errors } from '../errors';
 
 export abstract class AbstractBlockchainController extends Controller {
@@ -17,11 +19,17 @@ export abstract class AbstractBlockchainController extends Controller {
     protected projectService: ProjectService;
     protected clientService: ClientService;
     protected projectBlockchainSetupService: ProjectBlockchainSetupService;
+    protected metricService: MetricService;
 
-    constructor(pluginManager: PluginManager, blockchainService: BlockchainService) {
+    constructor(
+        pluginManager: PluginManager,
+        blockchainService: BlockchainService,
+        metricService?: MetricService,
+    ) {
         super(pluginManager);
 
         this.blockchainService = blockchainService;
+        this.metricService = metricService;
         this.projectService = pluginManager.getServiceByClass(ProjectService) as ProjectService;
         this.clientService = pluginManager.getServiceByClass(ClientService) as ClientService;
         this.projectBlockchainSetupService =
@@ -116,11 +124,39 @@ export abstract class AbstractBlockchainController extends Controller {
             this.handleError(ex, next);
         }
 
+        const today = new Date();
+
         let transaction: Transaction;
         try {
             transaction = await this.blockchainService.sendRawTransaction(hex, req.project.id, transportConnectionId);
         } catch (ex) {
+            if (this.metricService) {
+                try {
+                    await this.metricService.transactionsUnsuccessfullySent(
+                        this.blockchainService.getBlockchainId(),
+                        this.blockchainService.getNetworkId(),
+                        1,
+                        today
+                    );
+                } catch (ex) {
+                    logger.error(`Cant save metric. Reason: ${ ex.message }`);
+                }
+            }
+
             return this.handleError(ex, next);
+        }
+
+        if (this.metricService) {
+            try {
+                await this.metricService.transactionsSuccessfullySent(
+                    this.blockchainService.getBlockchainId(),
+                    this.blockchainService.getNetworkId(),
+                    1,
+                    today
+                );
+            } catch (ex) {
+                logger.error(`Cant save metric. Reason: ${ ex.message }`);
+            }
         }
 
         if (!transaction) {

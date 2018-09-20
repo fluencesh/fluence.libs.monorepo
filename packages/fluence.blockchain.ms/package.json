@@ -1,6 +1,6 @@
 {
   "name": "@applicature-private/fluence.blockchain.ms",
-  "version": "0.0.5-beta.0",
+  "version": "0.0.6-beta.3",
   "private": false,
   "license": "UNLICENSED",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -25,10 +25,10 @@
     "url": ""
   },
   "dependencies": {
-    "@applicature-private/fluence.ms": "0.0.6-beta.6",
+    "@applicature-private/fluence.ms": "0.0.8-beta.4",
     "@applicature-private/multivest.core": "^0.1.27",
     "@applicature-private/multivest.mongodb": "^0.2.1",
-    "@applicature-private/multivest.services.blockchain": "^0.2.50-beta.1",
+    "@applicature-private/multivest.services.blockchain": "^0.2.51-beta.3",
     "@types/agenda": "^2.0.2",
     "aws-sdk": "^2.290.0",
     "bignumber.js": "^7.2.1",

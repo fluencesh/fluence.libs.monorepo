@@ -47,6 +47,22 @@ export class TransportConnectionService extends Service {
         );
     }
 
+    public listByBlockchainAndNetworkAndStatusAndCreatedAt(
+        blockchainId: string,
+        networkId: string,
+        status: Scheme.TransportConnectionStatus,
+        createdAt: Date,
+        createdAtComparisonOperator: Scheme.ComparisonOperators
+    ): Promise<Array<Scheme.TransportConnection>> {
+        return this.transportConnectionDao.listByBlockchainAndNetworkAndStatusAndCreatedAt(
+            blockchainId,
+            networkId,
+            status,
+            createdAt,
+            createdAtComparisonOperator
+        );
+    }
+
     public createTransportConnection(
         blockchainId: string,
         networkId: string,

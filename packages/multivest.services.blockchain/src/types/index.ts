@@ -4,7 +4,6 @@ import { MongoScheme } from '@applicature-private/multivest.mongodb';
 
 // tslint:disable-next-line:no-namespace
 export namespace Scheme {
-
     export enum ClientStatus {
         Active = 'ACTIVE',
         Inactive = 'INACTIVE'
@@ -343,5 +342,28 @@ export namespace Scheme {
         blockHash: string;
         blockHeight: number;
         webhookActionItem: WebhookActionItem;
+    }
+
+    export interface PrometheusMetric extends MongoScheme {
+        name: string;
+        value: number;
+    }
+
+    export enum ComparisonOperators {
+        Gt = '$gt',
+        Gte = '$gte',
+        Lt = '$lt',
+        Lte = '$lte',
+        Eq = '$eq',
+        Ne = '$ne',
+        In = '$in',
+        Nin = '$nin',
+    }
+
+    export interface ManagedBlockchainTransportStatistic {
+        connectionsCount: number;
+        healthyConnectionsCount: number;
+        unhealthyConnectionsCount: number;
+        wasCalledTimes: number;
     }
 }

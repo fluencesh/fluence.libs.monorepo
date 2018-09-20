@@ -9,6 +9,10 @@
                 "secret": "secret",
                 "expiresInMs": 3600000
             }
+        },
+        "metrics": {
+            "enable": false,
+            "type": "AWS"
         }
     }
 }

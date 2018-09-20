@@ -17,6 +17,14 @@ export abstract class TransportConnectionDao extends Dao<Scheme.TransportConnect
         status: Scheme.TransportConnectionStatus
     ): Promise<Array<Scheme.TransportConnection>>;
 
+    public abstract listByBlockchainAndNetworkAndStatusAndCreatedAt(
+        blockchainId: string,
+        networkId: string,
+        status: Scheme.TransportConnectionStatus,
+        createdAt: Date,
+        createdAtComparisonOperator: Scheme.ComparisonOperators
+    ): Promise<Array<Scheme.TransportConnection>>;
+
     public abstract createTransportConnection(
         blockchainId: string,
         networkId: string,

@@ -7,7 +7,9 @@ import {
     Transaction,
 } from '@applicature-private/multivest.core';
 import { BigNumber } from 'bignumber.js';
+import * as logger from 'winston';
 import { Scheme } from '../../types';
+import { MetricService } from '../metrics';
 import { TransportConnectionService } from '../object/transport.connection.service';
 import { BlockchainTransport } from './blockchain.transport';
 
@@ -21,14 +23,14 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
     protected activeTransports: Hashtable<boolean>;
     protected transportConnectionService: TransportConnectionService;
     protected networkId: string;
-    protected enableMetric: boolean;
+    protected lastTransportConnectionsSearchAt: Date;
+    protected wasCalledTimes: number;
 
     constructor(
         pluginManager: PluginManager,
         networkId: string,
         validityCheckDuration: number = 10000,
-        allowedNumberOfBlockToDelay = 5,
-        enableMetric = true
+        allowedNumberOfBlockToDelay = 5
     ) {
         super(pluginManager);
 
@@ -36,10 +38,10 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         this.validityCheckDuration = validityCheckDuration;
         this.lastCheckAt = 0;
         this.allowedNumberOfBlockToDelay = allowedNumberOfBlockToDelay;
-        this.enableMetric = enableMetric;
         this.activeTransports = {};
 
         this.transportConnectionService = new TransportConnectionService(pluginManager);
+        this.wasCalledTimes = 0;
     }
 
     public abstract getBlockchainId(): string;
@@ -49,6 +51,7 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         this.transportConnectionService =
             this.pluginManager.getService('transport.connection.service') as TransportConnectionService;
 
+        this.lastTransportConnectionsSearchAt = new Date();
         // TODO: test it
         const connections = await this.transportConnectionService.listByBlockchainAndNetworkAndStatus(
             this.getBlockchainId(),
@@ -67,6 +70,25 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
 
     public getNetworkId(): string {
         return this.networkId;
+    }
+
+    public getStatistic(): Scheme.ManagedBlockchainTransportStatistic {
+        const connectionsCount = this.transportServices.length;
+        const healthyConnectionsCount = Object
+            .keys(this.activeTransports)
+            .filter((key) => this.activeTransports[key]).length;
+        const unhealthyConnectionsCount = connectionsCount - healthyConnectionsCount;
+
+        const statistic: Scheme.ManagedBlockchainTransportStatistic = {
+            connectionsCount,
+            healthyConnectionsCount,
+            unhealthyConnectionsCount,
+            wasCalledTimes: this.wasCalledTimes
+        };
+
+        this.wasCalledTimes = 0;
+
+        return statistic;
     }
 
     public async getBlockByHash(hash: string, transportId?: string) {
@@ -111,6 +133,12 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
     protected async updateValid() {
         const today = new Date();
         const now = +today;
+
+        try {
+            await this.loadNewTransportConnections();
+        } catch (ex) {
+            logger.error(`Cant load new connections. Reason: ${ ex.message }`);
+        }
 
         let referenceBlockHeight;
         try {
@@ -182,6 +210,8 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
     protected async getActiveTransportService(transportId?: string): Promise<BlockchainTransport> {
         await this.updateValid();
 
+        this.wasCalledTimes++;
+
         if (transportId) {
             return this.transportServices.find((transportService) => {
                 return this.activeTransports[transportService.getTransportId()]
@@ -192,5 +222,27 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         return this.publicTransportServices.find((transportService) => {
             return this.activeTransports[transportService.getTransportId()];
         }) || null;
+    }
+
+    protected async loadNewTransportConnections(): Promise<void> {
+        const today = new Date();
+
+        const newTransportConnections = await this.transportConnectionService
+            .listByBlockchainAndNetworkAndStatusAndCreatedAt(
+                this.getBlockchainId(),
+                this.getNetworkId(),
+                Scheme.TransportConnectionStatus.Enabled,
+                today,
+                Scheme.ComparisonOperators.Gt
+            );
+
+        this.transportServices.push(...this.prepareTransportServices(newTransportConnections));
+        this.publicTransportServices.push(
+            ...this.transportServices.filter((ts) => !ts.getTransportConnection().isPrivate)
+        );
+
+        this.lastTransportConnectionsSearchAt = today;
+
+        return;
     }
 }

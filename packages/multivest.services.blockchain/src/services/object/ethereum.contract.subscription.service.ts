@@ -48,7 +48,7 @@ export class EthereumContractSubscriptionService extends Service {
 
         const subscribedEventsIsIncorrect = !!subscribedEvents.find((event) => !abiEventsList.includes(event));
         if (subscribedEventsIsIncorrect) {
-            throw new MultivestError(Errors.SUBSCRIBED_EVENTS_ARE_INVALID, 400);
+            throw new MultivestError(Errors.SUBSCRIBED_EVENTS_ARE_INVALID);
         }
 
         return this.ethereumContractSubscriptionDao

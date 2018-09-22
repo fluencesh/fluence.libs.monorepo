@@ -8,7 +8,6 @@ export * from './job.dao';
 export * from './oraclize.subscription.dao';
 export * from './project.blockchain.setup.dao';
 export * from './project.dao';
-export * from './prometheus.metric.dao';
 export * from './scheduled.tx.dao';
 export * from './session.dao';
 export * from './subscription.block.recheck';

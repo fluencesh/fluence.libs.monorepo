@@ -63,7 +63,7 @@ export class ScheduledTxService extends Service {
 
             return;
         } else {
-            throw new MultivestError(Errors.INVALID_CRON_EXPRESSION, 400);
+            throw new MultivestError(Errors.INVALID_CRON_EXPRESSION);
         }
     }
 

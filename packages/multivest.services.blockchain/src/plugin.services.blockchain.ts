@@ -1,6 +1,5 @@
 import { Plugin } from '@fluencesh/multivest.core';
 import { Plugin as MongodbPlugin } from '@fluencesh/multivest.mongodb';
-
 import {
     MongoContractDao,
     MongodbAddressSubscriptionDao,
@@ -12,7 +11,6 @@ import {
     MongodbOraclizeSubscriptionDao,
     MongodbProjectBlockchainSetupDao,
     MongodbProjectDao,
-    MongodbPrometheusMetricDao,
     MongodbScheduledTxDao,
     MongodbSessionDao,
     MongodbSubscriptionBlockRecheckDao,
@@ -23,7 +21,6 @@ import {
 } from './dao';
 import {
     AddressSubscriptionService,
-    AwsMetricService,
     BlockchainRegistryService,
     ClientService,
     ContractPublicRequestService,
@@ -34,7 +31,6 @@ import {
     OraclizeSubscriptionService,
     ProjectBlockchainSetupService,
     ProjectService,
-    PrometheusMetricService,
     SessionService,
     SubscriptionBlockRecheckService,
     TransactionHashSubscriptionService,
@@ -69,10 +65,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbProjectBlockchainSetupDao);
         mongoDbPlugin.addDao(MongodbSessionDao);
         mongoDbPlugin.addDao(MongodbSubscriptionBlockRecheckDao);
-        mongoDbPlugin.addDao(MongodbPrometheusMetricDao);
 
-        this.registerService(AwsMetricService);
-        this.registerService(PrometheusMetricService);
         this.registerService(AddressSubscriptionService);
         this.registerService(BlockchainRegistryService);
         this.registerService(ClientService);

@@ -1,8 +1,8 @@
+import { MetricService } from '@applicature-private/fluence.metric.services';
 import { Block, Hashtable, PluginManager, Recipient, Transaction } from '@applicature-private/multivest.core';
 import {
     AddressSubscriptionService,
     BlockchainService,
-    MetricService,
     Scheme,
 } from '@applicature-private/multivest.services.blockchain';
 import * as logger from 'winston';

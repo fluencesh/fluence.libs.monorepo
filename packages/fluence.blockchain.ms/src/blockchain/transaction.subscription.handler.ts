@@ -1,7 +1,7 @@
+import { MetricService } from '@applicature-private/fluence.metric.services';
 import { Block, Hashtable, PluginManager, Transaction } from '@applicature-private/multivest.core';
 import {
     BlockchainService,
-    MetricService,
     Scheme,
     TransactionHashSubscriptionService,
 } from '@applicature-private/multivest.services.blockchain';

@@ -1,13 +1,14 @@
+import { MetricService } from '@applicature-private/fluence.metric.services';
 import { Controller, ProjectRequest } from '@applicature-private/fluence.ms';
-import { Block, MultivestError, PluginManager, Transaction } from '@applicature-private/multivest.core';
+import { Block, PluginManager, Transaction } from '@applicature-private/multivest.core';
 import {
     BlockchainService,
     ClientService,
-    MetricService,
     ProjectBlockchainSetupService,
     ProjectService,
     Scheme,
 } from '@applicature-private/multivest.services.blockchain';
+import { WebMultivestError } from '@applicature-private/multivest.web';
 import BigNumber from 'bignumber.js';
 import { NextFunction, Response } from 'express';
 import { isNaN } from 'lodash';
@@ -69,7 +70,7 @@ export abstract class AbstractBlockchainController extends Controller {
                     return this.handleError(ex, next);
                 }
             } else {
-                return next(new MultivestError(Errors.INVALID_BLOCK_NUMBER, 400));
+                return next(new WebMultivestError(Errors.INVALID_BLOCK_NUMBER, 400));
             }
         } else if (req.query.hash) {
             try {
@@ -80,7 +81,7 @@ export abstract class AbstractBlockchainController extends Controller {
         }
 
         if (!block) {
-            return next(new MultivestError(Errors.BLOCK_NOT_FOUND, 404));
+            return next(new WebMultivestError(Errors.BLOCK_NOT_FOUND, 404));
         }
 
         const dto = this.convertBlockDTO(block);
@@ -106,7 +107,7 @@ export abstract class AbstractBlockchainController extends Controller {
         }
 
         if (!transaction) {
-            return next(new MultivestError(Errors.TRANSACTION_NOT_FOUND, 404));
+            return next(new WebMultivestError(Errors.TRANSACTION_NOT_FOUND, 404));
         }
 
         const dto = this.convertTransactionDTO(transaction);
@@ -160,7 +161,7 @@ export abstract class AbstractBlockchainController extends Controller {
         }
 
         if (!transaction) {
-            return next(new MultivestError(Errors.TRANSACTION_NOT_FOUND, 404));
+            return next(new WebMultivestError(Errors.TRANSACTION_NOT_FOUND, 404));
         }
 
         const dto = this.convertTransactionDTO(transaction);
@@ -173,7 +174,7 @@ export abstract class AbstractBlockchainController extends Controller {
         const minConf = req.params.minConf;
 
         if (!this.blockchainService.isValidAddress(address)) {
-            return next(new MultivestError(Errors.ADDRESS_IS_INVALID, 400));
+            return next(new WebMultivestError(Errors.ADDRESS_IS_INVALID, 400));
         }
 
         let transportConnectionId: string;
@@ -191,7 +192,7 @@ export abstract class AbstractBlockchainController extends Controller {
         }
 
         if (!balance) {
-            return next(new MultivestError(Errors.ADDRESS_NOT_FOUND, 404));
+            return next(new WebMultivestError(Errors.ADDRESS_NOT_FOUND, 404));
         }
 
         const dto = this.convertAddressBalanceDTO(address, balance);
@@ -207,7 +208,7 @@ export abstract class AbstractBlockchainController extends Controller {
         if (transportConnectionId) {
             const valid = await this.isTransportConnectionIdValid(transportConnectionId, projectId);
             if (!valid) {
-                throw new MultivestError(Errors.UNKNOWN_TRANSPORT_CONNECTION, 404);
+                throw new WebMultivestError(Errors.UNKNOWN_TRANSPORT_CONNECTION, 404);
             }
 
             return transportConnectionId;

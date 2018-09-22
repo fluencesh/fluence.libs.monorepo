@@ -1,9 +1,19 @@
 {
     "multivest": {
+        "mongodb": {
+            "url": "mongodb://localhost/multivest",
+            "options": {}
+        },
         "middleware": {
             "awsAuth": {
                 "pathToAuthLambdaContext": "apiGateway.event.requestContext.authorizer"
             }
+        }
+    },
+    "aws": {
+        "cloudWatch": {
+            "apiVersion": "2010-08-01",
+            "region": "us-east-1"
         }
     }
 }

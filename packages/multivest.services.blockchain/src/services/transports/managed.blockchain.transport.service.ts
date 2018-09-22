@@ -9,7 +9,6 @@ import {
 import { BigNumber } from 'bignumber.js';
 import * as logger from 'winston';
 import { Scheme } from '../../types';
-import { MetricService } from '../metrics';
 import { TransportConnectionService } from '../object/transport.connection.service';
 import { BlockchainTransport } from './blockchain.transport';
 

@@ -17,7 +17,7 @@ export class SwaggerRouter {
         pluginManager: PluginManager,
         authMiddleware: AuthMiddleware
     ) {
-        this.controller = new SwaggerController();
+        this.controller = new SwaggerController(pluginManager);
         this.authMiddleware = authMiddleware;
 
         this.validationService = pluginManager.getService('validation.service');

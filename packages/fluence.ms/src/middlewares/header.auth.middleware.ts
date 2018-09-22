@@ -1,5 +1,5 @@
-import { MultivestError } from '@fluencesh/multivest.core';
 import { Scheme } from '@fluencesh/multivest.services.blockchain';
+import { WebMultivestError } from '@fluencesh/multivest.web';
 import { NextFunction, Response } from 'express';
 import { Errors } from '../errors';
 import { ProjectRequest, ProjectSession } from '../types';
@@ -39,7 +39,7 @@ export class HeaderAuthMiddleware extends AuthMiddleware {
             try {
                 req.relatedClient = JSON.parse(clientRaw);
             } catch (ex) {
-                return next(new MultivestError(Errors.FORBIDDEN, 403));
+                return next(new WebMultivestError(Errors.FORBIDDEN, 403));
             }
         } else {
             req.relatedClient = null;
@@ -49,7 +49,7 @@ export class HeaderAuthMiddleware extends AuthMiddleware {
             try {
                 req.project = JSON.parse(projectRaw);
             } catch (ex) {
-                return next(new MultivestError(Errors.FORBIDDEN, 403));
+                return next(new WebMultivestError(Errors.FORBIDDEN, 403));
             }
         } else {
             req.project = null;
@@ -59,7 +59,7 @@ export class HeaderAuthMiddleware extends AuthMiddleware {
             try {
                 req.session = JSON.parse(sessionRaw);
             } catch (ex) {
-                return next(new MultivestError(Errors.FORBIDDEN, 403));
+                return next(new WebMultivestError(Errors.FORBIDDEN, 403));
             }
         } else {
             req.session = null;
@@ -69,7 +69,7 @@ export class HeaderAuthMiddleware extends AuthMiddleware {
             try {
                 req.session.client = JSON.parse(sessionClientRaw);
             } catch (ex) {
-                return next(new MultivestError(Errors.FORBIDDEN, 403));
+                return next(new WebMultivestError(Errors.FORBIDDEN, 403));
             }
         }
 
@@ -77,7 +77,7 @@ export class HeaderAuthMiddleware extends AuthMiddleware {
             try {
                 req.session.project = JSON.parse(sessionProjectRaw);
             } catch (ex) {
-                return next(new MultivestError(Errors.FORBIDDEN, 403));
+                return next(new WebMultivestError(Errors.FORBIDDEN, 403));
             }
         }
 

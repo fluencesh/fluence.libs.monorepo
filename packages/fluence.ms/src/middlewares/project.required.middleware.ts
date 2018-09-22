@@ -1,4 +1,4 @@
-import { MultivestError } from '@fluencesh/multivest.core';
+import { WebMultivestError } from '@fluencesh/multivest.web';
 import { NextFunction, Response } from 'express';
 import { Errors } from '../errors';
 import { ProjectRequest } from '../types';
@@ -6,7 +6,7 @@ import { ProjectRequest } from '../types';
 export class ProjectRequiredMiddleware {
     public verify(req: ProjectRequest, res: Response, next: NextFunction) {
         if (req.project === null) {
-            return next(new MultivestError(Errors.PROJECT_REQUIRED, 403));
+            return next(new WebMultivestError(Errors.PROJECT_REQUIRED, 403));
         }
 
         next();

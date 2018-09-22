@@ -1,4 +1,4 @@
-import { MultivestError } from '@fluencesh/multivest.core';
+import { WebMultivestError } from '@fluencesh/multivest.web';
 import { NextFunction, Response } from 'express';
 import { Errors } from '../errors';
 import { ProjectRequest } from '../types';
@@ -28,9 +28,9 @@ export class InvalidPathParamsChecker {
             }, {});
 
         if (clientId !== undefined && req.relatedClient && clientId !== req.relatedClient.id) {
-            return next(new MultivestError(Errors.CLIENT_ID_IN_PATH_AND_IN_QUERY_ARE_DIFFERENT, 400));
+            return next(new WebMultivestError(Errors.CLIENT_ID_IN_PATH_AND_IN_QUERY_ARE_DIFFERENT, 400));
         } else if (projectId !== undefined && req.project && projectId !== req.project.id) {
-            return next(new MultivestError(Errors.PROJECT_ID_IN_PATH_AND_IN_QUERY_ARE_DIFFERENT, 400));
+            return next(new WebMultivestError(Errors.PROJECT_ID_IN_PATH_AND_IN_QUERY_ARE_DIFFERENT, 400));
         }
 
         next();

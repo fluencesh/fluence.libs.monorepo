@@ -1,4 +1,5 @@
 import { MultivestError } from '@fluencesh/multivest.core';
+import { MongoScheme } from '@fluencesh/multivest.mongodb';
 import { Scheme } from '@fluencesh/multivest.services.blockchain';
 import { OptionsJson } from 'body-parser';
 import { NextFunction, Request, Response, Router } from 'express';
@@ -154,4 +155,9 @@ export interface MetricConfig {
 export interface SwStatsConfig {
     /** API specification in swagger format */
     swaggerSpec: any;
+}
+
+export interface PrometheusMetric extends MongoScheme {
+    name: string;
+    value: number;
 }

@@ -1,4 +1,3 @@
-import { MetricService } from '@applicature-private/fluence.metric.services';
 import { Controller, ProjectRequest } from '@applicature-private/fluence.ms';
 import { Block, PluginManager, Transaction } from '@applicature-private/multivest.core';
 import {
@@ -14,18 +13,19 @@ import { NextFunction, Response } from 'express';
 import { isNaN } from 'lodash';
 import * as logger from 'winston';
 import { Errors } from '../errors';
+import { BlockchainMetricService } from '../services';
 
 export abstract class AbstractBlockchainController extends Controller {
     protected blockchainService: BlockchainService;
     protected projectService: ProjectService;
     protected clientService: ClientService;
     protected projectBlockchainSetupService: ProjectBlockchainSetupService;
-    protected metricService: MetricService;
+    protected metricService: BlockchainMetricService;
 
     constructor(
         pluginManager: PluginManager,
         blockchainService: BlockchainService,
-        metricService?: MetricService,
+        metricService?: BlockchainMetricService,
     ) {
         super(pluginManager);
 

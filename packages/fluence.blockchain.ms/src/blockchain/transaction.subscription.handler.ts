@@ -1,4 +1,3 @@
-import { MetricService } from '@applicature-private/fluence.metric.services';
 import { Block, Hashtable, PluginManager, Transaction } from '@applicature-private/multivest.core';
 import {
     BlockchainService,
@@ -6,6 +5,7 @@ import {
     TransactionHashSubscriptionService,
 } from '@applicature-private/multivest.services.blockchain';
 import * as logger from 'winston';
+import { CronjobMetricService } from '../services';
 import { BlockchainHandler } from './blockchain.handler';
 
 export class TransactionSubscriptionHandler extends BlockchainHandler {
@@ -14,7 +14,7 @@ export class TransactionSubscriptionHandler extends BlockchainHandler {
     constructor(
         pluginManager: PluginManager,
         blockchainService: BlockchainService,
-        metricService?: MetricService,
+        metricService?: CronjobMetricService,
     ) {
         super(pluginManager, blockchainService, metricService);
 

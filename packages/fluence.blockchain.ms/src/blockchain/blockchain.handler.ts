@@ -14,6 +14,7 @@ import {
 import { set } from 'lodash';
 import { v1 as generateId } from 'uuid';
 import * as logger from 'winston';
+import { CronjobMetricService } from '../services';
 
 export abstract class BlockchainHandler {
     protected pluginManager: PluginManager;
@@ -27,12 +28,12 @@ export abstract class BlockchainHandler {
     protected webhookService: WebhookActionItemObjectService;
     protected subscriptionBlockRecheckService: SubscriptionBlockRecheckService;
 
-    protected metricService: MetricService;
+    protected metricService: CronjobMetricService;
 
     constructor(
         pluginManager: PluginManager,
         blockchainService: BlockchainService,
-        metricService?: MetricService,
+        metricService?: CronjobMetricService,
     ) {
         this.pluginManager = pluginManager;
         this.blockchainService = blockchainService;

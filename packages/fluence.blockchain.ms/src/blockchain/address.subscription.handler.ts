@@ -1,11 +1,10 @@
-import { MetricService } from '@fluencesh/fluence.metric.services';
 import { Block, Hashtable, PluginManager, Recipient, Transaction } from '@fluencesh/multivest.core';
 import {
     AddressSubscriptionService,
     BlockchainService,
     Scheme,
 } from '@fluencesh/multivest.services.blockchain';
-import * as logger from 'winston';
+import { CronjobMetricService } from '../services';
 import { BlockchainHandler } from './blockchain.handler';
 
 interface RecipientAndTx {
@@ -19,7 +18,7 @@ export class AddressSubscriptionHandler extends BlockchainHandler {
     constructor(
         pluginManager: PluginManager,
         blockchainService: BlockchainService,
-        metricService?: MetricService,
+        metricService?: CronjobMetricService,
     ) {
         super(pluginManager, blockchainService, metricService);
 

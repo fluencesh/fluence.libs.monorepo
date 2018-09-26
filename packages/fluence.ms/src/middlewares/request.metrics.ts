@@ -1,11 +1,11 @@
-import { MetricService } from '@fluencesh/fluence.metric.services';
 import { NextFunction, Request, Response } from 'express';
 import * as logger from 'winston';
+import { HttpRequestMetricService } from '../services';
 
 export class RequestMetrics {
-    private metricService: MetricService;
+    private metricService: HttpRequestMetricService;
 
-    constructor(metricService: MetricService) {
+    constructor(metricService: HttpRequestMetricService) {
         this.metricService = metricService;
     }
 

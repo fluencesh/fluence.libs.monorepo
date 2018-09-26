@@ -161,3 +161,8 @@ export interface PrometheusMetric extends MongoScheme {
     name: string;
     value: number;
 }
+
+export enum HttpRequestExecutionStatusMetricType {
+    Success = 'SUCCESS',
+    Fail = 'FAIL',
+}

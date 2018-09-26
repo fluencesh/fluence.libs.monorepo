@@ -1,11 +1,11 @@
-import { MetricService } from '@applicature-private/fluence.metric.services';
 import { NextFunction, Request, Response } from 'express';
+import { HttpRequestMetricService } from '../services';
 
 export class TimeoutMiddleware {
     private timeout: number;
-    private metricService: MetricService;
+    private metricService: HttpRequestMetricService;
 
-    public constructor(timeout: number, metricService: MetricService) {
+    public constructor(timeout: number, metricService: HttpRequestMetricService) {
         this.timeout = timeout;
         this.metricService = metricService;
     }

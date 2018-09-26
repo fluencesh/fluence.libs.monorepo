@@ -1,4 +1,3 @@
-export * from './metrics';
 export * from './admin.access.middleware';
 export * from './anonymous.forbidden.middleware';
 export * from './auth.middleware';
@@ -6,4 +5,5 @@ export * from './aws.auth.middleware';
 export * from './header.auth.middleware';
 export * from './invalid.path.params.checker';
 export * from './project.required.middleware';
+export * from './request.metrics';
 export * from './timeout.middleware';

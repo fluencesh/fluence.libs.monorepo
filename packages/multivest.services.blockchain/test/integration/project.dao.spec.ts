@@ -123,6 +123,7 @@ describe('project dao', () => {
                 && p.status === project.status
                 && p.sharedSecret === project.sharedSecret
                 && p.clientId === project.clientId
+                && p.isRemoved === project.isRemoved
             );
 
         const got = await dao.listByFilters(
@@ -130,32 +131,8 @@ describe('project dao', () => {
             project.sharedSecret,
             project.status,
             project.webhookUrl,
-            project.clientId
-        );
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should get by filters (active only)', async () => {
-        const filtered = getActiveProjects()
-            .filter((p) =>
-                p.name === project.name
-                && p.webhookUrl === project.webhookUrl
-                && p.status === project.status
-                && p.sharedSecret === project.sharedSecret
-                && p.clientId === project.clientId
-            );
-
-        if (filtered.length) {
-            return;
-        }
-
-        const got = await dao.listByFiltersActiveOnly(
-            project.name,
-            project.sharedSecret,
-            project.status,
-            project.webhookUrl,
-            project.clientId
+            project.clientId,
+            project.isRemoved
         );
 
         expect(got).toEqual(filtered);

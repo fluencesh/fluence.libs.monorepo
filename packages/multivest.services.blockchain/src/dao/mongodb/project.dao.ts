@@ -96,7 +96,8 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
         sharedSecret?: string,
         status?: Scheme.ProjectStatus,
         webhookUrl?: string,
-        clientId?: string
+        clientId?: string,
+        isRemoved?: boolean
     ): Promise<Array<Scheme.Project>> {
         const filters: Partial<Scheme.Project> = {};
         if (name) {
@@ -114,46 +115,14 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
         if (clientId) {
             filters.clientId = clientId;
         }
+        if (isRemoved === false || isRemoved === true) {
+            filters.isRemoved = isRemoved;
+        }
 
         if (!Object.keys(filters).length) {
             logger.warn('at least one filter should be specified');
             return [];
         }
-
-        return this.listRaw(filters);
-    }
-
-    public async listByFiltersActiveOnly(
-        name?: string,
-        sharedSecret?: string,
-        status?: Scheme.ProjectStatus,
-        webhookUrl?: string,
-        clientId?: string
-    ): Promise<Array<Scheme.Project>> {
-        const filters: Partial<Scheme.Project> = {};
-        if (name) {
-            filters.name = name;
-        }
-        if (sharedSecret) {
-            filters.sharedSecret = sharedSecret;
-        }
-        if (status) {
-            filters.status = status;
-        }
-        if (webhookUrl) {
-            filters.webhookUrl = webhookUrl;
-        }
-        if (clientId) {
-            filters.clientId = clientId;
-        }
-        if (!Object.keys(filters).length) {
-            logger.warn('at least one filter should be specified');
-
-            return [];
-        }
-
-        filters.status = Scheme.ProjectStatus.Active;
-        filters.isRemoved = false;
 
         return this.listRaw(filters);
     }

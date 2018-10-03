@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/multivest.services.blockchain",
-  "version": "0.2.51-beta.5",
+  "version": "0.2.52-beta.0",
   "private": false,
   "license": "UNLICENSED",
   "description": "BlockPool Services Plugin",

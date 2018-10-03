@@ -93,7 +93,8 @@ describe('project dao', () => {
             sharedSecret: 'sharedSecret',
             status: 'status' as any,
             webhookUrl: 'webhookUrl',
-            clientId: 'id'
+            clientId: 'id',
+            isRemoved: true,
         } as Partial<Scheme.Project>;
 
         await dao.listByFilters(
@@ -101,36 +102,11 @@ describe('project dao', () => {
             filters.sharedSecret,
             filters.status,
             filters.webhookUrl,
-            filters.clientId
+            filters.clientId,
+            filters.isRemoved
         );
 
         expect(collection.find).toHaveBeenCalledWith(filters);
-        expect(collection.find).toHaveBeenCalledTimes(1);
-    });
-
-    it('listByFiltersActiveOnly() transfers correct arguments', async () => {
-        const filters = {
-            name: 'name',
-            sharedSecret: 'sharedSecret',
-            status: 'status' as any,
-            webhookUrl: 'webhookUrl',
-            clientId: 'id',
-        } as Partial<Scheme.Project>;
-
-        await dao.listByFiltersActiveOnly(
-            filters.name,
-            filters.sharedSecret,
-            filters.status,
-            filters.webhookUrl,
-            filters.clientId
-        );
-
-        expect(collection.find).toHaveBeenCalledWith(
-            Object.assign(filters, {
-                status: Scheme.ProjectStatus.Active,
-                isRemoved: false
-            })
-        );
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 

@@ -122,30 +122,16 @@ export class ProjectService extends Service {
         sharedSecret?: string,
         status?: Scheme.ProjectStatus,
         webhookUrl?: string,
-        clientId?: string
+        clientId?: string,
+        isRemoved?: boolean
     ): Promise<Array<Scheme.Project>> {
         return this.projectDao.listByFilters(
             name,
             sharedSecret,
             status,
             webhookUrl,
-            clientId
-        );
-    }
-
-    public async listByFiltersActiveOnly(
-        name?: string,
-        sharedSecret?: string,
-        status?: Scheme.ProjectStatus,
-        webhookUrl?: string,
-        clientId?: string
-    ): Promise<Array<Scheme.Project>> {
-        return this.projectDao.listByFiltersActiveOnly(
-            name,
-            sharedSecret,
-            status,
-            webhookUrl,
-            clientId
+            clientId,
+            isRemoved
         );
     }
 

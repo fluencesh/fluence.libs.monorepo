@@ -6,12 +6,8 @@ import {
     JobDao,
     Scheme
 } from '@applicature-private/multivest.services.blockchain';
-import * as AWS from 'aws-sdk';
-import * as config from 'config';
 import * as logger from 'winston';
 import { BlockchainHandler } from './blockchain.handler';
-
-AWS.config.update({ region: config.get('aws.region') });
 
 export class BlockchainMonitor {
     protected blockchainService: BlockchainService;

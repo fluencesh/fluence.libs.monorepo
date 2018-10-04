@@ -10,7 +10,7 @@ import {
 import { WebMultivestError } from '@fluencesh/multivest.web';
 import BigNumber from 'bignumber.js';
 import { NextFunction, Response } from 'express';
-import { isNaN } from 'lodash';
+import { get, isNaN } from 'lodash';
 import * as logger from 'winston';
 import { Errors } from '../errors';
 import { BlockchainMetricService } from '../services';
@@ -171,7 +171,7 @@ export abstract class AbstractBlockchainController extends Controller {
 
     public async getAddressBalance(req: ProjectRequest, res: Response, next: NextFunction): Promise<void> {
         const address = req.params.address;
-        const minConf = req.params.minConf;
+        const minConf = req.query.minConf;
 
         if (!this.blockchainService.isValidAddress(address)) {
             return next(new WebMultivestError(Errors.ADDRESS_IS_INVALID, 400));
@@ -203,7 +203,12 @@ export abstract class AbstractBlockchainController extends Controller {
     public abstract callTroughJsonRpc(req: ProjectRequest, res: Response, next: NextFunction): Promise<void>;
 
     protected async extractTransportConnectionId(req: ProjectRequest): Promise<string | undefined> {
-        const projectId: string = req.project.id;
+        const projectId: string = get(req, 'project.id', null);
+
+        if (!projectId) {
+            return;
+        }
+
         const transportConnectionId: string = req.query.transportConnectionId;
         if (transportConnectionId) {
             const valid = await this.isTransportConnectionIdValid(transportConnectionId, projectId);

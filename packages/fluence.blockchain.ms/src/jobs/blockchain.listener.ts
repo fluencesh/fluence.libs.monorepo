@@ -1,10 +1,6 @@
 import { Job, PluginManager } from '@fluencesh/multivest.core';
 import { BlockchainService } from '@fluencesh/multivest.services.blockchain';
-import * as AWS from 'aws-sdk';
-import * as config from 'config';
 import { BlockchainHandler, BlockchainMonitor } from '../blockchain';
-
-AWS.config.update({ region: config.get('aws.region') });
 
 let blockchainId: string = null;
 let networkId: string = null;

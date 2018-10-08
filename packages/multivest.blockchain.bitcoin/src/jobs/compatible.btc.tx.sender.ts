@@ -1,11 +1,7 @@
-import { Scheme, TransactionDao } from '@applicature-restricted/multivest.services.blockchain';
-import { Dao, Hashtable, Job, PluginManager, Transaction } from '@applicature/multivest.core';
-import * as Agenda from 'agenda';
-import * as config from 'config';
+import { Dao, Hashtable, Job, PluginManager, Transaction } from '@fluencesh/multivest.core';
+import { Scheme, TransactionDao } from '@fluencesh/multivest.services.blockchain';
 import * as logger from 'winston';
-import { BitcoinTransport } from '../..';
 import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';
-import { ManagedBitcoinTransportService } from '../services/transports/managed.bitcoin.transport.service';
 import { AvailableNetwork } from '../types';
 
 export abstract class CompatibleBitcoinTransactionSender extends Job {

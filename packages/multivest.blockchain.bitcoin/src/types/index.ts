@@ -1,4 +1,4 @@
-import { Transaction } from '@applicature/multivest.core';
+import { Transaction } from '@fluencesh/multivest.core';
 import { BigNumber } from 'bignumber.js';
 
 export enum AvailableNetwork {

@@ -1,5 +1,5 @@
-import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
-import { Block, MultivestError, PluginManager, Service, Transaction } from '@applicature/multivest.core';
+import { Block, MultivestError, PluginManager, Service, Transaction } from '@fluencesh/multivest.core';
+import { Scheme } from '@fluencesh/multivest.services.blockchain';
 import { BigNumber } from 'bignumber.js';
 import {
     address as BitcoinLibAddress,

@@ -1,17 +1,15 @@
 
-import { BlockchainService, Signature } from '@applicature-restricted/multivest.services.blockchain';
-import { Block, MultivestError, PluginManager, Recipient, Sender, Transaction } from '@applicature/multivest.core';
+import { PluginManager, Transaction } from '@fluencesh/multivest.core';
+import { BlockchainService, Signature } from '@fluencesh/multivest.services.blockchain';
 import * as bitcoin from 'bitcoinjs-lib';
-import * as config from 'config';
 import { BITCOIN } from '../../constants';
-import { Errors } from '../../errors';
 import { AvailableNetwork } from '../../types';
-import { BitcoinTransport } from '../transports/bitcoin.transport';
+import { ManagedBitcoinTransportService } from '../transports/managed.bitcoin.transport.service';
 
 export class BitcoinBlockchainService extends BlockchainService {
-    protected blockchainTransport: BitcoinTransport;
+    protected blockchainTransport: ManagedBitcoinTransportService;
 
-    constructor(pluginManager: PluginManager, blockchainTransport: BitcoinTransport) {
+    constructor(pluginManager: PluginManager, blockchainTransport: ManagedBitcoinTransportService) {
         super(pluginManager, blockchainTransport);
     }
 

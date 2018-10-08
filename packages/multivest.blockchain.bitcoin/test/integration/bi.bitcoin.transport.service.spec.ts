@@ -1,5 +1,5 @@
-import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
-import { Block, Transaction } from '@applicature/multivest.core';
+import { Block, Transaction } from '@applicature-private/multivest.core';
+import { Scheme } from '@applicature-private/multivest.services.blockchain';
 import { BigNumber } from 'bignumber.js';
 import { BiBitcoinTransportService } from '../../src/services/transports/bi.bitcoin.transport';
 import { AvailableNetwork } from '../../src/types';

@@ -1,13 +1,13 @@
-import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
-import { Block, MultivestError, PluginManager, Service, Transaction } from '@applicature/multivest.core';
+import { Block, MultivestError, PluginManager, Transaction } from '@applicature-private/multivest.core';
+import { Scheme } from '@applicature-private/multivest.services.blockchain';
 import BigNumber from 'bignumber.js';
 import {
     Transaction as BitcoinLibTx,
 } from 'bitcoinjs-lib';
-import * as config from 'config';
 import { get, has } from 'lodash';
 import * as request from 'request-promise';
 import { resolve } from 'url';
+import * as logger from 'winston';
 import { STD_VALUE_MULTIPLIER } from '../../constants';
 import { Errors } from '../../errors';
 import { AvailableNetwork } from '../../types';
@@ -54,35 +54,73 @@ export class BiBitcoinTransportService extends AbstractBitcoinTransportService {
     }
 
     public async getBlockHeight(): Promise<number> {
-        const response = await this.getRequest('q/getblockcount');
-
-        return Number.parseInt(response);
+        try {
+            const response = await this.getRequest('q/getblockcount');
+            return Number.parseInt(response);
+        } catch (ex) {
+            logger.error(`Can't get block height. reason: ${ ex.message }`);
+            return null;
+        }
     }
 
     public async getBlockByHash(hash: string) {
         const preparedHash = this.prepareHash(hash);
 
-        const block = await this.getRequest(`rawblock/${ preparedHash }`);
+        try {
+            const block = await this.getRequest(`rawblock/${ preparedHash }`);
 
-        return this.convertBlock(block, true);
+            if (typeof block === 'string') {
+                throw new MultivestError(block);
+            }
+    
+            return this.convertBlock(block, true);
+        } catch (ex) {
+            logger.error(`Can't get block [${ hash }]. reason: ${ ex.message }`);
+            return null;
+        }
     }
 
     public async getBlockByHeight(blockHeight: number) {
-        const response: { blocks: Array<any> } = await this.getRequest(`/block-height/${ blockHeight }`);
+        try {
+            const response: { blocks: Array<any> } = await this.getRequest(`/block-height/${ blockHeight }`);
 
-        return this.convertBlock(response.blocks[0], true);
+            if (typeof response === 'string') {
+                throw new MultivestError(response);
+            } else if (typeof response.blocks[0] === 'string') {
+                throw new MultivestError(response.blocks[0]);
+            }
+    
+            return this.convertBlock(response.blocks[0], true);
+        } catch (ex) {
+            logger.error(`Can't get block by height [${ blockHeight }]. reason: ${ ex.message }`);
+            return null;
+        }
     }
 
     public async getTransactionByHash(txHash: string) {
         const preparedHash = this.prepareHash(txHash);
 
-        const tx = await this.getRequest(`/rawtx/${ preparedHash }`);
+        try {
+            const tx = await this.getRequest(`/rawtx/${ preparedHash }`);
 
-        return this.convertTransaction(tx);
+            if (typeof tx === 'string') {
+                throw new MultivestError(tx);
+            }
+    
+            return this.convertTransaction(tx);
+        } catch (ex) {
+            logger.error(`Can't get tx [${ txHash }]. reason: ${ ex.message }`);
+            return null;
+        }
     }
 
     public async sendRawTransaction(txHex: string): Promise<Transaction> {
-        await this.postRequest('pushtx', txHex);
+        try {
+            await this.postRequest('pushtx', txHex);
+        } catch (ex) {
+            logger.error(`Can't send tx. reason: ${ ex.message }`);
+            return null;
+        }
 
         const txHash = BitcoinLibTx.fromHex(txHex).getHash().toString('utf8');
 
@@ -94,14 +132,22 @@ export class BiBitcoinTransportService extends AbstractBitcoinTransportService {
     public async getBalance(address: string, minConf = 1) {
         const preparedAddress = this.prepareHash(address);
 
-        const response = await this.getRequest(`/q/addressbalance/${ preparedAddress }`, { confirmations: minConf });
-
-        return new BigNumber(response).div(STD_VALUE_MULTIPLIER);
+        try {
+            const response = await this.getRequest(
+                `/q/addressbalance/${ preparedAddress }`,
+                { confirmations: minConf }
+            );
+    
+            return new BigNumber(response).div(STD_VALUE_MULTIPLIER);
+        } catch (ex) {
+            logger.error(`Can't get balance of address [${ address }]. reason: ${ ex.message }`);
+            return null;
+        }
     }
 
     private convertBlock(block: any, deepConvert: boolean = false): Block {
         const convertedBlock = {
-            fee: new BigNumber(block.fee),
+            fee: new BigNumber(block.fee) as any,
             hash: `0x${block.hash}`,
             height: block.height,
             network: this.networkId,

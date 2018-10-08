@@ -1,13 +1,9 @@
 import {
     ManagedBlockchainTransportService,
     Scheme,
-    TransportConnectionService,
-} from '@applicature-restricted/multivest.services.blockchain';
-import { Hashtable, MultivestError, PluginManager, Service } from '@applicature/multivest.core';
+} from '@applicature-private/multivest.services.blockchain';
 import * as Ajv from 'ajv';
 import { BITCOIN } from '../../constants';
-import { Errors } from '../../errors';
-import { AvailableNetwork } from '../../types';
 import { BcBitcoinTransportService } from './bc.bitcoin.transport';
 import { BiBitcoinTransportService } from './bi.bitcoin.transport';
 import { BitcoinTransport } from './bitcoin.transport';

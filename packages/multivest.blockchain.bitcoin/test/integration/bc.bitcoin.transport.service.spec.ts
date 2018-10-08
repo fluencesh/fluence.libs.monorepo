@@ -1,5 +1,5 @@
-import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
-import { Block, Transaction } from '@applicature/multivest.core';
+import { Block, Transaction } from '@applicature-private/multivest.core';
+import { Scheme } from '@applicature-private/multivest.services.blockchain';
 import { BigNumber } from 'bignumber.js';
 import * as config from 'config';
 import { BcBitcoinTransportService } from '../../src/services/transports/bc.bitcoin.transport';
@@ -89,6 +89,12 @@ describe('bc bitcoin transport service ', () => {
         checkTx(tx);
     });
 
+    // FIXME:
+    // Error:
+    // code: -32601
+    // message: "Method not found"
+    // name: "RpcError"
+    // status:-32601
     it.skip('should get balance by address', async () => {
         const address = '0xmgadYuDvGwULgroRp2ZfM5CnH89HsAWv9t';
 

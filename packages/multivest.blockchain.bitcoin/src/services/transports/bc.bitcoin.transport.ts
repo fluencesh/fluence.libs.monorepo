@@ -1,8 +1,9 @@
-import { Scheme } from '@applicature-restricted/multivest.services.blockchain';
-import { Block, PluginManager, Service, Transaction } from '@applicature/multivest.core';
+import { Block, MultivestError, PluginManager, Transaction } from '@applicature-private/multivest.core';
+import { Scheme } from '@applicature-private/multivest.services.blockchain';
 import BigNumber from 'bignumber.js';
 import * as Client from 'bitcoin-core';
 import { get, has } from 'lodash';
+import * as logger from 'winston';
 import { STD_VALUE_MULTIPLIER } from '../../constants';
 import { AbstractBitcoinTransportService } from './abstract.bitcoin.transport';
 import { BitcoinTransport } from './bitcoin.transport';
@@ -27,17 +28,31 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
     public async getBalance(address: string, minConf: number = 1): Promise<BigNumber> {
         const preparedHash = this.prepareHash(address);
 
-        const balance = await this.client.getBalance(preparedHash, minConf);
-
-        return new BigNumber(balance);
+        try {
+            const balance = await this.client.getBalance(preparedHash, minConf);
+    
+            return new BigNumber(balance);
+        } catch (ex) {
+            logger.error(`Can't get balance of address [${ address }]. reason: ${ ex.message }`);
+            return null;
+        }
     }
 
     public async getBlockByHash(hash: string): Promise<Block> {
         const preparedHash = this.prepareHash(hash);
 
-        const block = await this.client.getBlockByHash(preparedHash, { extension: 'json' });
+        try {
+            const block = await this.client.getBlockByHash(preparedHash, { extension: 'json' });
+            
+            if (typeof block === 'string') {
+                throw new MultivestError(block);
+            }
 
-        return this.convertBlock(block);
+            return this.convertBlock(block);
+        } catch (ex) {
+            logger.error(`Can't get block [${ hash }]. reason: ${ ex.message }`);
+            return null;
+        }
     }
     
     public async getBlockByHeight(height: number): Promise<Block> {
@@ -47,20 +62,44 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
     }
 
     public async getBlockHeight(): Promise<number> {
-        return this.client.getBlockCount();
+        try {
+            const blockCount = await this.client.getBlockCount();
+
+            return blockCount;
+        } catch (ex) {
+            logger.error(`Can't get height of blocks. reason: ${ ex.message }`);
+            return null;
+        }
     }
 
     public async getTransactionByHash(txHash: string) {
         const preparedTxHash = this.prepareHash(txHash);
 
-        const tx = await this.getCoreTransactionByHash(preparedTxHash);
+        let tx: any;
+        try {
+            tx = await this.getCoreTransactionByHash(preparedTxHash);
+
+            if (typeof tx === 'string') {
+                throw new MultivestError(tx);
+            }
+        } catch (ex) {
+            logger.error(`Can't get tx [${ txHash }]. reason: ${ ex.message }`);
+            return null;
+        }
+
         const block = await this.getBlockByHash(tx.blockhash);
 
         return this.convertTransaction(tx, block);
     }
 
     public async sendRawTransaction(txHex: string): Promise<Transaction> {
-        const hash = await this.client.sendRawTransaction(txHex);
+        let hash: string;
+        try {
+            hash = await this.client.sendRawTransaction(txHex);
+        } catch (ex) {
+            logger.error(`Sending of tx was failed. reason: ${ ex.message }`);
+            return null;
+        }
 
         return this.getTransactionByHash(hash);
     }

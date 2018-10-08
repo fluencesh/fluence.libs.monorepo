@@ -1,5 +1,4 @@
-import { Plugin } from '@applicature/multivest.core';
-import { BitcoinTransactionSender } from './jobs/btc.tx.sender';
+import { Plugin } from '@applicature-private/multivest.core';
 
 class BitcoinBlockchainPlugin extends Plugin<void> {
     public getPluginId() {

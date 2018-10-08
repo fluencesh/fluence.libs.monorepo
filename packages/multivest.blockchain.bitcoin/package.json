@@ -26,9 +26,6 @@
     "type": "git",
     "url": "git@bitbucket.com:applicature/multivest.blockchain.bitcoin.git"
   },
-  "publishConfig": {
-    "registry": "https://artifacts-dev.zubko.biz/repository/applicature-restricted/"
-  },
   "dependencies": {
     "@applicature-private/multivest.core": "^2.1.0-beta.0",
     "@applicature-private/multivest.mongodb": "^0.2.1",

@@ -1,0 +1,3 @@
+export enum Errors {
+  RESPONSE_BODY_IS_INVALID = 'RESPONSE_BODY_IS_INVALID'
+}

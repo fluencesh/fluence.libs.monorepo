@@ -43,7 +43,7 @@ export class WebhookCallerService extends Service {
             },
 
             data: {
-                blockChainId: action.blockChainId,
+                blockchainId: action.blockchainId,
                 networkId: action.networkId,
 
                 blockHash: action.blockHash,
@@ -71,9 +71,14 @@ export class WebhookCallerService extends Service {
 
         try {
             response = await axios(options);
-        }
-        catch (err) {
+        } catch (err) {
             error = err;
+            response = {
+                data: null,
+                headers: {},
+                status: 502,
+                statusText: 'Bad Gateway'
+            } as AxiosResponse;
         }
 
         return {

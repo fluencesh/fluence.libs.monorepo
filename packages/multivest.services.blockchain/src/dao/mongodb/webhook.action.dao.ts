@@ -21,7 +21,7 @@ export class MongodbWebhookActionDao extends MongoDBDao<Scheme.WebhookActionItem
         clientId: string,
         projectId: string,
 
-        blockChainId: string,
+        blockchainId: string,
         networkId: string,
 
         blockHash: string,
@@ -45,7 +45,7 @@ export class MongodbWebhookActionDao extends MongoDBDao<Scheme.WebhookActionItem
             clientId,
             projectId,
 
-            blockChainId,
+            blockchainId,
             networkId,
 
             blockHash,
@@ -137,15 +137,15 @@ export class MongodbWebhookActionDao extends MongoDBDao<Scheme.WebhookActionItem
 
     public async addFailReport(id: string, fail: Scheme.WebhookFailedReport): Promise<void> {
         await this.updateRaw({ id }, {
-            $addToSet: {
-                fails: fail
+            $push: {
+                fails: fail,
+            },
+            $inc: {
+                failedCount: 1,
             },
             $set: {
-                failedCount: {
-                    $inc: 1
-                },
-                status: Scheme.WebhookReportItemStatus.Failed,
-                lastFailedAt: new Date()
+                status: 'FAILED',
+                lastFailedAt: new Date(),
             }
         });
 

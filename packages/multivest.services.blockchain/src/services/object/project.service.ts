@@ -31,20 +31,25 @@ export class ProjectService extends Service {
     protected projectBlockchainSetupService: ProjectBlockchainSetupService;
 
     public async init(): Promise<void> {
-        const mongodbPlugin = this.pluginManager.get('mongodb') as any as Plugin;
+        const mongodbPlugin = (this.pluginManager.get('mongodb') as any) as Plugin;
 
-        this.projectDao = await mongodbPlugin.getDao(DaoIds.Project) as ProjectDao;
+        this.projectDao = (await mongodbPlugin.getDao(DaoIds.Project)) as ProjectDao;
 
-        this.addressSubscriptionService = this.pluginManager
-            .getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;
-        this.transactionHashSubscriptionService = this.pluginManager
-            .getServiceByClass(TransactionHashSubscriptionService) as TransactionHashSubscriptionService;
-        this.contractSubscriptionService = this.pluginManager
-            .getServiceByClass(EthereumContractSubscriptionService) as EthereumContractSubscriptionService;
-        this.oraclizeSubscriptionService = this.pluginManager
-            .getServiceByClass(OraclizeSubscriptionService) as OraclizeSubscriptionService;
-        this.projectBlockchainSetupService = this.pluginManager
-            .getServiceByClass(ProjectBlockchainSetupService) as ProjectBlockchainSetupService;
+        this.addressSubscriptionService = this.pluginManager.getServiceByClass(
+            AddressSubscriptionService
+        ) as AddressSubscriptionService;
+        this.transactionHashSubscriptionService = this.pluginManager.getServiceByClass(
+            TransactionHashSubscriptionService
+        ) as TransactionHashSubscriptionService;
+        this.contractSubscriptionService = this.pluginManager.getServiceByClass(
+            EthereumContractSubscriptionService
+        ) as EthereumContractSubscriptionService;
+        this.oraclizeSubscriptionService = this.pluginManager.getServiceByClass(
+            OraclizeSubscriptionService
+        ) as OraclizeSubscriptionService;
+        this.projectBlockchainSetupService = this.pluginManager.getServiceByClass(
+            ProjectBlockchainSetupService
+        ) as ProjectBlockchainSetupService;
     }
 
     public getServiceId(): string {
@@ -122,17 +127,19 @@ export class ProjectService extends Service {
         sharedSecret?: string,
         status?: Scheme.ProjectStatus,
         webhookUrl?: string,
-        clientId?: string,
-        isRemoved?: boolean
+        clientId?: string
     ): Promise<Array<Scheme.Project>> {
-        return this.projectDao.listByFilters(
-            name,
-            sharedSecret,
-            status,
-            webhookUrl,
-            clientId,
-            isRemoved
-        );
+        return this.projectDao.listByFilters(name, sharedSecret, status, webhookUrl, clientId);
+    }
+
+    public async listByFiltersActiveOnly(
+        name?: string,
+        sharedSecret?: string,
+        status?: Scheme.ProjectStatus,
+        webhookUrl?: string,
+        clientId?: string
+    ): Promise<Array<Scheme.Project>> {
+        return this.projectDao.listByFiltersActiveOnly(name, sharedSecret, status, webhookUrl, clientId);
     }
 
     public async setNameAndWebhookUrlAndStatus(
@@ -148,17 +155,9 @@ export class ProjectService extends Service {
             subscriptionUpdate = this.modifySubscriptionStatus(projectId, isActive);
         }
 
-        const projectUpdate = this.projectDao.setNameAndWebhookUrlAndStatus(
-            projectId,
-            name,
-            webhookUrl,
-            status
-        );
+        const projectUpdate = this.projectDao.setNameAndWebhookUrlAndStatus(projectId, name, webhookUrl, status);
 
-        await Promise.all([
-            projectUpdate,
-            subscriptionUpdate
-        ]);
+        await Promise.all([projectUpdate, subscriptionUpdate]);
     }
 
     public async setStatus(projectId: string, status: Scheme.ProjectStatus): Promise<void> {
@@ -192,11 +191,7 @@ export class ProjectService extends Service {
         project.salt = tokenData.salt;
         project.saltyToken = tokenData.saltyToken;
 
-        this.projectDao.setToken(
-            project.id,
-            project.saltyToken,
-            project.salt
-        );
+        await this.projectDao.setToken(project.id, project.saltyToken, project.salt);
 
         return project;
     }
@@ -238,7 +233,7 @@ export class ProjectService extends Service {
             this.addressSubscriptionService.setProjectActive(projectId, isActive),
             this.transactionHashSubscriptionService.setProjectActive(projectId, isActive),
             this.contractSubscriptionService.setProjectActive(projectId, isActive),
-            this.oraclizeSubscriptionService.setProjectActive(projectId, isActive),
+            this.oraclizeSubscriptionService.setProjectActive(projectId, isActive)
         ]);
     }
 }

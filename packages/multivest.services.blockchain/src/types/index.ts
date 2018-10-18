@@ -1,6 +1,7 @@
 import * as Blockchain from '@applicature-private/multivest.core';
 import { Hashtable } from '@applicature-private/multivest.core';
 import { MongoScheme } from '@applicature-private/multivest.mongodb';
+import { BigNumber } from 'bignumber.js';
 
 // tslint:disable-next-line:no-namespace
 export namespace Scheme {
@@ -77,7 +78,7 @@ export namespace Scheme {
     }
 
     export interface Transaction extends MongoScheme {
-        ref: Partial<Blockchain.Transaction>;
+        ref: Partial<BlockchainTransaction>;
 
         blockChainId: string;
         networkId: string;
@@ -89,7 +90,7 @@ export namespace Scheme {
     export enum TransactionStatus {
         Created = 'CREATED',
         Sent = 'SENT',
-        Mined = 'MINED',
+        Mined = 'MINED'
     }
 
     export enum WebhookReportItemStatus {
@@ -112,7 +113,7 @@ export namespace Scheme {
         clientId: string;
         projectId: string;
 
-        blockChainId: string;
+        blockchainId: string;
         networkId: string;
 
         blockHash: string;
@@ -145,18 +146,18 @@ export namespace Scheme {
     export interface WebhookFailedReport {
         request: {
             method: string;
-            headers: Hashtable<string>,
+            headers: Hashtable<string>;
             data: Hashtable<any>;
         };
 
         response?: {
-            data: any,
+            data: any;
 
-            status: number,
+            status: number;
 
-            statusText: string,
+            statusText: string;
 
-            headers: Hashtable<string>
+            headers: Hashtable<string>;
         };
 
         error?: any;
@@ -187,6 +188,36 @@ export namespace Scheme {
         failedCount: number;
 
         createdAt: Date;
+    }
+
+    export interface BlockchainBlock {
+        height: number;
+        hash: string;
+        parentHash?: string;
+        difficulty?: number;
+        nonce: any;
+        size: number;
+        time: number;
+        network: string;
+        fee: BigNumber;
+        transactions: Array<BlockchainTransaction>;
+    }
+
+    export interface BlockchainTransaction {
+        hash: string;
+        blockHash?: string;
+        blockHeight?: number;
+        blockTime?: number;
+        fee: BigNumber;
+        from: Array<Sender>;
+        to: Array<Recipient>;
+    }
+    export interface Sender {
+        address: string;
+    }
+    export interface Recipient {
+        address: string;
+        amount: BigNumber;
     }
 
     export interface ContractScheme extends MongoScheme {
@@ -254,7 +285,7 @@ export namespace Scheme {
 
     export enum AdminResolutionStatus {
         APPROVE = 'APPROVE',
-        DISAPPROVE = 'DISAPPROVE',
+        DISAPPROVE = 'DISAPPROVE'
     }
 
     export interface ContractPublicRequest extends MongoScheme {
@@ -268,7 +299,7 @@ export namespace Scheme {
 
     export interface ScheduledTx extends MongoScheme {
         cronExpression: string;
-        tx: Blockchain.Transaction;
+        tx: BlockchainTransaction;
         projectId: string;
         privateKey: string;
     }
@@ -278,59 +309,12 @@ export namespace Scheme {
         FAILED = 'FAILED'
     }
 
-    export interface WebhookCallResult {
-        request: WebhookCallRequest;
-        response: WebhookCallResponse;
-        error: any;
-    }
-    
-    export interface WebhookCallRequest {
-        method: string;
-        headers: Hashtable<string>;
-        data: Hashtable<any>;
-    }
-    
-    export interface WebhookCallResponse {
-        body: string;
-        headers: Hashtable<string>;
-        statusCode: number;
-        statusMessage: string;
-    }
-
-    export interface Session extends MongoScheme {
-        clientId: string;
-        projectId?: string;
-
-        createdAt: Date;
-        expiredAt: Date;
-        loggedOutAt: Date;
-    }
-
-    export enum ProjectBlockchainSetupStatus {
-        Enabled = 'ENABLED',
-        Disabled = 'DISABLED',
-    }
-
-    export interface ProjectBlockchainSetup extends MongoScheme {
-        projectId: string;
-        blockchainId: string;
-        privateTransportConnectionId?: string;
-        status: ProjectBlockchainSetupStatus;
-    }
-
-    export interface OraclizeSubscription extends Scheme.Subscription {
-        eventHash: string;
-        eventName: string;
-        eventInputTypes: Array<string>;
-        webhookUrl: string;
-    }
-
     export enum SubscriptionBlockRecheckType {
         Address = 'Address',
         Transaction = 'Transaction',
         ContractEvent = 'ContractEvent',
         ContractFabricCreation = 'ContractFabricCreation',
-        Oraclize = 'Oraclize',
+        Oraclize = 'Oraclize'
     }
 
     export interface SubscriptionBlockRecheck extends MongoScheme {
@@ -357,7 +341,7 @@ export namespace Scheme {
         Eq = '$eq',
         Ne = '$ne',
         In = '$in',
-        Nin = '$nin',
+        Nin = '$nin'
     }
 
     export interface ManagedBlockchainTransportStatistic {
@@ -365,5 +349,52 @@ export namespace Scheme {
         healthyConnectionsCount: number;
         unhealthyConnectionsCount: number;
         wasCalledTimes: number;
+    }
+
+    export interface WebhookCallResult {
+        request: WebhookCallRequest;
+        response: WebhookCallResponse;
+        error: any;
+    }
+
+    export interface WebhookCallRequest {
+        method: string;
+        headers: Hashtable<string>;
+        data: Hashtable<any>;
+    }
+
+    export interface WebhookCallResponse {
+        body: string;
+        headers: Hashtable<string>;
+        statusCode: number;
+        statusMessage: string;
+    }
+
+    export interface Session extends MongoScheme {
+        clientId: string;
+        projectId?: string;
+
+        createdAt: Date;
+        expiredAt: Date;
+        loggedOutAt: Date;
+    }
+
+    export enum ProjectBlockchainSetupStatus {
+        Enabled = 'ENABLED',
+        Disabled = 'DISABLED'
+    }
+
+    export interface ProjectBlockchainSetup extends MongoScheme {
+        projectId: string;
+        blockchainId: string;
+        privateTransportConnectionId?: string;
+        status: ProjectBlockchainSetupStatus;
+    }
+
+    export interface OraclizeSubscription extends Scheme.Subscription {
+        eventHash: string;
+        eventName: string;
+        eventInputTypes: Array<string>;
+        webhookUrl: string;
     }
 }

@@ -76,7 +76,7 @@ describe('exchange dao', () => {
             data.clientId,
             data.projectId,
 
-            data.blockChainId,
+            data.blockchainId,
             data.networkId,
 
             data.blockHash,

@@ -102,7 +102,7 @@ export function randomWebhookAction(): Scheme.WebhookActionItem {
         clientId: generateId(),
         projectId: generateId(),
 
-        blockChainId: generateId(),
+        blockchainId: generateId(),
         networkId: generateId(),
 
         blockHash: generateId(),

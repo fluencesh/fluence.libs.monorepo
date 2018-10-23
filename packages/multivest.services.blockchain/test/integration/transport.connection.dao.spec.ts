@@ -3,7 +3,6 @@ import { random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
 import { v1 as generateId } from 'uuid';
 import { MongodbTransportConnectionDao } from '../../src/dao/mongodb/transport.connection.dao';
-import { randomJob } from '../../src/generation/jobs';
 import { Scheme } from '../../src/types';
 import { randomTransportConnection } from '../helper';
 
@@ -40,6 +39,16 @@ describe('transport connection dao', () => {
         expect(got).toEqual(transportConnection);
     });
 
+    it('should get transport connection by network, blockchain id and providerId', async () => {
+        const got = await dao.getByBlockchainIdAndNetworkIdAndProviderId(
+            transportConnection.blockchainId,
+            transportConnection.networkId,
+            transportConnection.providerId
+        );
+
+        expect(got).toEqual(transportConnection);
+    });
+
     it('should get transport connection by network and blockchain id', async () => {
         const filtered = transportConnections.filter((tc) => {
             return tc.blockchainId === transportConnection.blockchainId
@@ -65,6 +74,22 @@ describe('transport connection dao', () => {
             transportConnection.blockchainId,
             transportConnection.networkId,
             transportConnection.status
+        );
+
+        expect(got).toEqual(filtered);
+    });
+
+    it('should get transport connection by network and blockchain id and status', async () => {
+        const filtered = transportConnections.filter((tc) => {
+            return tc.blockchainId === transportConnection.blockchainId
+                && tc.networkId === transportConnection.networkId
+                && tc.isPredefinedBySystem === transportConnection.isPredefinedBySystem;
+        });
+
+        const got = await dao.listByIsPredefinedStatusAndBlockchainInfo(
+            transportConnection.isPredefinedBySystem,
+            transportConnection.blockchainId,
+            transportConnection.networkId
         );
 
         expect(got).toEqual(filtered);

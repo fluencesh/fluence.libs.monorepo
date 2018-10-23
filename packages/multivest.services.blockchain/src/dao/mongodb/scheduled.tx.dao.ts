@@ -20,13 +20,19 @@ export class MongodbScheduledTxDao extends MongoDBDao<Scheme.ScheduledTx> implem
     public createScheduledTx(
         projectId: string,
         cronExpression: string,
+
         tx: Transaction,
+        blockchainId: string,
+        networkId: string,
         privateKey: string
     ): Promise<Scheme.ScheduledTx> {
         return this.create({
             projectId,
             cronExpression,
+
             tx,
+            blockchainId,
+            networkId,
             privateKey
         });
     }
@@ -45,13 +51,17 @@ export class MongodbScheduledTxDao extends MongoDBDao<Scheme.ScheduledTx> implem
 
     public async setCronExpression(id: string, cronExpression: string): Promise<void> {
         await this.update({ id }, { cronExpression });
-
-        return;
     }
 
     public async setTransaction(id: string, tx: Transaction): Promise<void> {
         await this.update({ id }, { tx });
+    }
 
-        return;
+    public async setRelatedJobId(id: string, relatedJobId: string): Promise<void> {
+        await this.updateRaw({ id }, {
+            $set: {
+                relatedJobId
+            }
+        });
     }
 }

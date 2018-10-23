@@ -179,8 +179,6 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
         }
 
         await this.updateRaw({ id: projectId }, { $set: data });
-
-        return;
     }
 
     public async setStatus(projectId: string, status: Scheme.ProjectStatus): Promise<void> {
@@ -194,8 +192,6 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
                 }
             }
         );
-
-        return;
     }
 
     public async setToken(projectId: string, saltyToken: string, salt: string) {
@@ -208,8 +204,6 @@ export class MongodbProjectDao extends MongoDBDao<Scheme.Project> implements Pro
                 }
             }
         );
-
-        return;
     }
 
     public async removeProject(projectId: string): Promise<void> {

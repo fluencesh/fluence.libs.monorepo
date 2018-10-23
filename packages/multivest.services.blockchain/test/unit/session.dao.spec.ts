@@ -29,35 +29,61 @@ describe('session dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
-    it('getByIdActiveOnly() transfers correct arguments', async () => {
-        await dao.getByIdActiveOnly('id');
+    it('getByIdAndTypeActiveOnly() transfers correct arguments', async () => {
+        const id = 'id';
+        const type = Scheme.SessionType.ProjectApiKey;
+        await dao.getByIdAndTypeActiveOnly(id, type);
 
         expect(collection.findOne).toHaveBeenCalledTimes(1);
+        expect(collection.findOne).toHaveBeenCalledWith({ id, loggedOutAt: null, type });
     });
     
-    it('getByClientIdAndProjectId() transfers correct arguments', async () => {
+    it('listByUserInfo() transfers correct arguments', async () => {
         const clientId = 'clientId';
         const projectId = 'projectId';
 
-        await dao.getByClientIdAndProjectId(clientId, projectId);
+        await dao.listByUserInfo(clientId, projectId);
 
-        expect(collection.findOne).toHaveBeenCalledWith({ clientId, projectId });
-        expect(collection.findOne).toHaveBeenCalledTimes(1);
+        expect(collection.find).toHaveBeenCalledWith({ clientId, projectId });
+        expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
-    it('getByClientIdAndProjectIdActiveOnly() transfers correct arguments', async () => {
+    it('listByTypeAndUserInfoActiveOnly() transfers correct arguments', async () => {
         const clientId = 'clientId';
         const projectId = 'projectId';
+        const type = Scheme.SessionType.ProjectApiKey;
 
-        await dao.getByClientIdAndProjectIdActiveOnly(clientId, projectId);
+        await dao.listByTypeAndUserInfoActiveOnly(type, clientId, projectId);
 
-        expect(collection.findOne).toHaveBeenCalledTimes(1);
+        expect(collection.find).toHaveBeenCalledTimes(1);
+        expect(collection.find).toHaveBeenCalledWith({
+            clientId,
+            projectId,
+            type,
+            loggedOutAt: null
+        });
     });
 
-    it('logOut() transfers correct arguments', async () => {
+    it('disableUserSession() transfers correct arguments', async () => {
         const sessionId = 'sessionId';
 
-        await dao.logOut(sessionId);
+        await dao.disableUserSession(sessionId);
+
+        expect(collection.updateMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('disableUserSession() transfers correct arguments', async () => {
+        const sessionId = 'sessionId';
+
+        await dao.disableUserApiKey(sessionId);
+
+        expect(collection.updateMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('disableProjectApiKey() transfers correct arguments', async () => {
+        const sessionId = 'sessionId';
+
+        await dao.disableProjectApiKey(sessionId);
 
         expect(collection.updateMany).toHaveBeenCalledTimes(1);
     });
@@ -69,16 +95,30 @@ describe('session dao', () => {
         await dao.setExpiredAt(sessionId, expiredAt);
 
         expect(collection.updateMany).toHaveBeenCalledTimes(1);
-        expect(collection.updateMany).toHaveBeenCalledWith({ id: sessionId }, {
+        expect(collection.updateMany).toHaveBeenCalledWith({ id: sessionId, type: Scheme.SessionType.UserSession }, {
             $set: {
                 expiredAt
             }
         });
     });
 
-    it('createSession() transfers correct arguments', async () => {
+    it('createUserSession() transfers correct arguments', async () => {
         const data = randomSession();
-        await dao.createSession(data.expiredAt, data.clientId, data.projectId);
+        await dao.createUserSession(data.clientId, data.expiredAt);
+
+        expect(collection.insertOne).toHaveBeenCalledTimes(1);
+    });
+
+    it('createUserSession() transfers correct arguments', async () => {
+        const data = randomSession();
+        await dao.createUserApiKey(data.clientId);
+
+        expect(collection.insertOne).toHaveBeenCalledTimes(1);
+    });
+
+    it('createProjectApiKey() transfers correct arguments', async () => {
+        const data = randomSession();
+        await dao.createProjectApiKey(data.clientId, data.projectId);
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);
     });

@@ -143,6 +143,10 @@ describe('contract public request service', () => {
             return !relatedContract.isPublic;
         });
 
+        if (!req) {
+            return;
+        }
+
         req.adminId = generateId();
         req.adminResolution = 'adminResolution';
         req.adminResolutionStatus = Scheme.AdminResolutionStatus.APPROVE;

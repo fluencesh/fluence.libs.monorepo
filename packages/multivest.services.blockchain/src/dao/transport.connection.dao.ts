@@ -6,6 +6,12 @@ export abstract class TransportConnectionDao extends Dao<Scheme.TransportConnect
         id: string
     ): Promise<Scheme.TransportConnection>;
 
+    public abstract getByBlockchainIdAndNetworkIdAndProviderId(
+        blockchainId: string,
+        networkId: string,
+        providerId: string
+    ): Promise<Scheme.TransportConnection>;
+
     public abstract listByBlockchainAndNetwork(
         blockchainId: string,
         networkId: string
@@ -25,6 +31,12 @@ export abstract class TransportConnectionDao extends Dao<Scheme.TransportConnect
         createdAtComparisonOperator: Scheme.ComparisonOperators
     ): Promise<Array<Scheme.TransportConnection>>;
 
+    public abstract listByIsPredefinedStatusAndBlockchainInfo(
+        isPredefinedBySystem: boolean,
+        blockchainId?: string,
+        networkId?: string
+    ): Promise<Array<Scheme.TransportConnection>>;
+
     public abstract createTransportConnection(
         blockchainId: string,
         networkId: string,
@@ -40,7 +52,9 @@ export abstract class TransportConnectionDao extends Dao<Scheme.TransportConnect
         lastFailedAt: Date,
         failedCount: number,
 
-        isPrivate: boolean
+        isPrivate: boolean,
+
+        isPredefinedBySystem?: boolean
     ): Promise<Scheme.TransportConnection>;
 
     public abstract async setSettings(

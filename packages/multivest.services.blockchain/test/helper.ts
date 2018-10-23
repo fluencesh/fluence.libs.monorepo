@@ -249,7 +249,10 @@ export function randomScheduledTx() {
         cronExpression: '* * * * * * *',
         tx: randomTransactionScheme(),
         projectId: generateId(),
-        privateKey: generate(RandomStringPresets.Hash256)
+        blockchainId: generateId(),
+        networkId: generateId(),
+        privateKey: generate(RandomStringPresets.Hash256),
+        relatedJobId: generateId()
     } as Scheme.ScheduledTx;
 }
 
@@ -268,9 +271,13 @@ export function randomTransactionScheme(): Transaction {
     } as Transaction;
 }
 
-export function randomSession(): Scheme.Session {
-    const expiredAt = new Date();
-    expiredAt.setDate(expiredAt.getDate() + 7);
+export function randomSession(type?: Scheme.SessionType): Scheme.Session {
+    type = type || random(0, 1) ? Scheme.SessionType.ProjectApiKey : Scheme.SessionType.UserSession;
+
+    const expiredAt = type === Scheme.SessionType.UserSession ? new Date() : null;
+    if (expiredAt) {
+        expiredAt.setDate(expiredAt.getDate() + 7);
+    }
 
     return {
         clientId: generateId(),
@@ -278,6 +285,7 @@ export function randomSession(): Scheme.Session {
         createdAt: new Date(),
         expiredAt,
         loggedOutAt: null,
+        type,
     } as Scheme.Session;
 }
 

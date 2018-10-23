@@ -16,17 +16,44 @@ export class MongodbSessionDao extends MongoDBDao<Scheme.Session> implements Ses
         return {} as Scheme.Session;
     }
 
-    public async createSession(
-        expiredAt: Date,
+    public async createUserSession(
         clientId: string,
-        projectId: string = null
+        expiredAt: Date
+    ): Promise<Scheme.Session> {
+        return this.create({
+            clientId,
+            
+            expiredAt,
+            createdAt: new Date(),
+            type: Scheme.SessionType.UserSession,
+            loggedOutAt: null
+        });
+    }
+
+    public async createUserApiKey(
+        clientId: string
+    ): Promise<Scheme.Session> {
+        return this.create({
+            clientId,
+            
+            expiredAt: null,
+            createdAt: new Date(),
+            type: Scheme.SessionType.UserApiKey,
+            loggedOutAt: null
+        });
+    }
+
+    public async createProjectApiKey(
+        clientId: string,
+        projectId: string
     ): Promise<Scheme.Session> {
         return this.create({
             clientId,
             projectId,
             
-            expiredAt,
+            expiredAt: null,
             createdAt: new Date(),
+            type: Scheme.SessionType.ProjectApiKey,
             loggedOutAt: null
         });
     }
@@ -35,50 +62,77 @@ export class MongodbSessionDao extends MongoDBDao<Scheme.Session> implements Ses
         return this.getRaw({ id: sessionId });
     }
 
-    public async getByIdActiveOnly(sessionId: string): Promise<Scheme.Session> {
-        return this.getRaw({
+    public async getByIdAndTypeActiveOnly(sessionId: string, type: Scheme.SessionType): Promise<Scheme.Session> {
+        const filters: any = {
             id: sessionId,
-            expiredAt: { $gt: new Date() },
+            type,
             loggedOutAt: null
-        });
+        };
+
+        if (type === Scheme.SessionType.UserSession) {
+            filters.expiredAt = { $gt: new Date() };
+        }
+
+        return this.getRaw(filters);
     }
 
-    public async getByClientIdAndProjectId(clientId: string, projectId: string = null): Promise<Scheme.Session> {
-        return this.getRaw({
+    public async listByUserInfo(clientId: string, projectId: string = null): Promise<Array<Scheme.Session>> {
+        return this.listRaw({
             clientId,
             projectId,
         });
     }
 
-    public async getByClientIdAndProjectIdActiveOnly(
+    public async listByTypeAndUserInfoActiveOnly(
+        type: Scheme.SessionType,
         clientId: string,
         projectId: string = null
-    ): Promise<Scheme.Session> {
-        return this.getRaw({
+    ): Promise<Array<Scheme.Session>> {
+        const filters: any = {
             clientId,
             projectId,
-            expiredAt: { $gt: new Date() },
+            type,
             loggedOutAt: null
-        });
+        };
+
+        if (type === Scheme.SessionType.UserSession) {
+            filters.expiredAt = { $gt: new Date() };
+        }
+
+        return this.listRaw(filters);
     }
 
     public async setExpiredAt(sessionId: string, expiredAt: Date): Promise<void> {
-        await this.updateRaw({ id: sessionId }, {
+        await this.updateRaw({
+            id: sessionId,
+            type: Scheme.SessionType.UserSession
+        }, {
             $set: {
                 expiredAt
             }
         });
-
-        return;
     }
 
-    public async logOut(sessionId: string): Promise<void> {
-        await this.updateRaw({ id: sessionId }, {
+    public async disableUserSession(sessionId: string): Promise<void> {
+        await this.disableSession(sessionId, Scheme.SessionType.UserSession);
+    }
+
+    public async disableUserApiKey(sessionId: string): Promise<void> {
+        await this.disableSession(sessionId, Scheme.SessionType.UserApiKey);
+    }
+
+    public async disableProjectApiKey(sessionId: string): Promise<void> {
+        await this.disableSession(sessionId, Scheme.SessionType.ProjectApiKey);
+    }
+
+    private async disableSession(sessionId: string, type: Scheme.SessionType): Promise<void> {
+        await this.updateRaw({
+            id: sessionId,
+            type
+        }, {
             $set: {
                 loggedOutAt: new Date()
             }
         });
-
-        return;
     }
 }

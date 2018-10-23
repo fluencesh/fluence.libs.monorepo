@@ -64,8 +64,6 @@ export class MongodbProjectBlockchainSetupDao
                 status
             }
         });
-
-        return;
     }
 
     public async setStatusByProjectId(projectId: string, status: Scheme.ProjectBlockchainSetupStatus): Promise<void> {
@@ -74,19 +72,13 @@ export class MongodbProjectBlockchainSetupDao
                 status
             }
         });
-
-        return;
     }
 
     public async removeById(setupId: string): Promise<void> {
         await this.remove({ id: setupId });
-
-        return;
     }
 
     public async removeByProjectId(projectId: string): Promise<void> {
         await this.remove({ projectId });
-
-        return;
     }
 }

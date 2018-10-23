@@ -8,6 +8,7 @@ import {
 } from '@fluencesh/multivest.core';
 import { BigNumber } from 'bignumber.js';
 import * as logger from 'winston';
+import { Errors } from '../../errors';
 import { Scheme } from '../../types';
 import { TransportConnectionService } from '../object/transport.connection.service';
 import { BlockchainTransport } from './blockchain.transport';
@@ -211,16 +212,23 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
 
         this.wasCalledTimes++;
 
+        let transport: BlockchainTransport = null;
         if (transportId) {
-            return this.transportServices.find((transportService) => {
+            transport = this.transportServices.find((transportService) => {
                 return this.activeTransports[transportService.getTransportId()]
                     && transportService.getTransportConnection().id === transportId;
-            }) || null;
+            });
+        } else {
+            transport = this.publicTransportServices.find((transportService) => {
+                return this.activeTransports[transportService.getTransportId()];
+            });
         }
 
-        return this.publicTransportServices.find((transportService) => {
-            return this.activeTransports[transportService.getTransportId()];
-        }) || null;
+        if (!transport) {
+            throw new MultivestError(Errors.SPECIFIED_TRANSPORT_NOT_FOUND);
+        }
+
+        return transport;
     }
 
     protected async loadNewTransportConnections(): Promise<void> {
@@ -241,7 +249,5 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         );
 
         this.lastTransportConnectionsSearchAt = today;
-
-        return;
     }
 }

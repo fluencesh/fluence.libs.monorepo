@@ -1,16 +1,15 @@
-import { Hashtable, PluginManager, Service } from '@fluencesh/multivest.core';
-import { TransportConnectionService } from '../object/transport.connection.service';
+import { MultivestError, PluginManager, Service } from '@fluencesh/multivest.core';
+import { Errors } from '../../errors';
+import { Scheme } from '../../types';
 import { BlockchainService } from './blockchain.service';
 
 export class BlockchainRegistryService extends Service {
-    private registry: Hashtable<BlockchainService>;
-    private transportConnectionService: TransportConnectionService;
+    private registry: Map<Scheme.BlockchainInfo, BlockchainService>;
 
     constructor(pluginManager: PluginManager) {
         super(pluginManager);
 
-        this.registry = {};
-        this.transportConnectionService = new TransportConnectionService(pluginManager);
+        this.registry = new Map();
     }
 
     public getServiceId() {
@@ -18,38 +17,46 @@ export class BlockchainRegistryService extends Service {
     }
 
     public register(blockchainId: string, networkId: string, blockchainService: BlockchainService): void {
-        this.registry[this.generateBlockchainServiceName(blockchainId, networkId)] = blockchainService;
+        const key = this.generateKey(blockchainId, networkId);
+        this.registry.set(key, blockchainService);
     }
 
-    public hasBlockchainService(blockchainId: string): boolean {
-        return this.registry.hasOwnProperty(blockchainId);
-    }
-
-    public getBlockchainService(
-        blockchainId: string,
-        networkId: string,
-        blockchainServiceType: typeof BlockchainService
-    ): BlockchainService {
-        const blockchainServiceId = this.generateBlockchainServiceName(blockchainId, networkId);
-
-        if (!this.hasBlockchainService(blockchainServiceId)) {
-            const blockchainServices: Array<BlockchainService> =
-                this.pluginManager.getServicesByClass(blockchainServiceType as any) as Array<BlockchainService>;
-
-            const blockchainService = blockchainServices.find((bs) =>
-                bs.getBlockchainId() === blockchainId
-                && bs.getNetworkId() === networkId
-            );
-
-            if (blockchainService) {
-                this.registry[this.generateBlockchainServiceName(blockchainId, networkId)] = blockchainService;
+    public hasBlockchainService(blockchainId: string, networkId: string): boolean {
+        for (const [ key ] of this.registry) {
+            if (key.blockchainId === blockchainId && key.networkId === networkId) {
+                return true;
             }
         }
 
-        return this.registry[blockchainServiceId];
+        return false;
     }
 
-    private generateBlockchainServiceName(blockchainId: string, networkId: string) {
-        return `${blockchainId}.${networkId}`;
+    public getByBlockchainInfo<T extends BlockchainService>(
+        blockchainId: string,
+        networkId: string
+    ): T {
+        for (const [ key, value ] of this.registry) {
+            if (key.blockchainId === blockchainId && key.networkId === networkId) {
+                return value as T;
+            }
+        }
+
+        throw new MultivestError(Errors.BLOCKCHAIN_SERVICE_DOES_NOT_IN_REGISTRY);
+    }
+
+    public listByBlockchainId<T extends BlockchainService>(blockchainId: string): Array<T> {
+        const services = [] as Array<T>;
+
+        for (const [ key, value ] of this.registry) {
+            if (key.blockchainId === blockchainId) {
+                services.push(value as T);
+            }
+        }
+
+        return services;
+    }
+
+    private generateKey(blockchainId: string, networkId: string): Scheme.BlockchainInfo {
+        return { blockchainId, networkId };
     }
 }

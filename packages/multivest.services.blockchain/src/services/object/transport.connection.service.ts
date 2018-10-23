@@ -1,7 +1,7 @@
 import { PluginManager, Service } from '@fluencesh/multivest.core';
 import { Plugin } from '@fluencesh/multivest.mongodb';
 import { DaoIds } from '../../constants';
-import { ProjectBlockchainSetupDao, TransportConnectionDao } from '../../dao';
+import { TransportConnectionDao } from '../../dao';
 import { Scheme } from '../../types';
 
 export class TransportConnectionService extends Service {
@@ -25,6 +25,18 @@ export class TransportConnectionService extends Service {
         return this.transportConnectionDao.getById(id);
     }
 
+    public getByBlockchainIdAndNetworkIdAndProviderId(
+        blockchainId: string,
+        networkId: string,
+        providerId: string
+    ): Promise<Scheme.TransportConnection> {
+        return this.transportConnectionDao.getByBlockchainIdAndNetworkIdAndProviderId(
+            blockchainId,
+            networkId,
+            providerId
+        );
+    }
+
     public listByBlockchainAndNetwork(
         blockchainId: string,
         networkId: string
@@ -44,6 +56,18 @@ export class TransportConnectionService extends Service {
             blockchainId,
             networkId,
             status
+        );
+    }
+
+    public listByIsPredefinedStatusAndBlockchainInfo(
+        isPredefinedBySystem: boolean,
+        blockchainId?: string,
+        networkId?: string
+    ): Promise<Array<Scheme.TransportConnection>> {
+        return this.transportConnectionDao.listByIsPredefinedStatusAndBlockchainInfo(
+            isPredefinedBySystem,
+            blockchainId,
+            networkId
         );
     }
 
@@ -104,8 +128,6 @@ export class TransportConnectionService extends Service {
         settings: any
     ) {
         await this.transportConnectionDao.setSettings(id, settings);
-
-        return;
     }
 
     public async setStatus(
@@ -113,8 +135,6 @@ export class TransportConnectionService extends Service {
         status: Scheme.TransportConnectionStatus
     ) {
         await this.transportConnectionDao.setStatus(id, status);
-
-        return;
     }
 
     public async setStatusByIds(
@@ -122,8 +142,6 @@ export class TransportConnectionService extends Service {
         status: Scheme.TransportConnectionStatus
     ) {
         await this.transportConnectionDao.setStatusByIds(ids, status);
-
-        return;
     }
 
     public async setFailed(
@@ -132,8 +150,6 @@ export class TransportConnectionService extends Service {
         at: Date
     ) {
         await this.transportConnectionDao.setFailed(id, isFailing, at);
-
-        return;
     }
 
     public async setFailedByIds(
@@ -142,19 +158,13 @@ export class TransportConnectionService extends Service {
         at: Date
     ) {
         await this.transportConnectionDao.setFailedByIds(ids, isFailing, at);
-
-        return;
     }
 
     public async removeById(id: string): Promise<void> {
         await this.transportConnectionDao.removeById(id);
-
-        return;
     }
 
     public async removeByIds(idsToRemove: Array<string>): Promise<void> {
         await this.transportConnectionDao.removeByIds(idsToRemove);
-
-        return;
     }
 }

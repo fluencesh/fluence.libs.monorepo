@@ -85,8 +85,6 @@ export class MongoContractDao extends MongoDBDao<Scheme.ContractScheme> implemen
                 }
             }
         );
-
-        return;
     }
 
     public async markAsFabric(contractId: string): Promise<void> {

@@ -40,7 +40,5 @@ export class MongodbJobDao extends MongoDBDao<Scheme.Job> implements JobDao {
                 }
             }
         );
-
-        return;
     }
 }

@@ -30,6 +30,28 @@ describe('transport connection dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
+    it('getByBlockchainIdAndNetworkIdAndProviderId() transfers correct arguments', async () => {
+        const blockchainId = 'blockchainId';
+        const networkId = 'networkId';
+        const providerId = 'providerId';
+
+        await dao.getByBlockchainIdAndNetworkIdAndProviderId(blockchainId, networkId, providerId);
+
+        expect(collection.findOne).toHaveBeenCalledWith({ blockchainId, networkId, providerId });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
+    it('listByIsPredefinedStatusAndBlockchainInfo() transfers correct arguments', async () => {
+        const isPredefinedBySystem = false;
+        const blockchainId = 'blockchainId';
+        const networkId = 'networkId';
+
+        await dao.listByIsPredefinedStatusAndBlockchainInfo(isPredefinedBySystem, blockchainId, networkId);
+
+        expect(collection.find).toHaveBeenCalledWith({ blockchainId, networkId, isPredefinedBySystem });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
     it('listByBlockchainAndNetwork() transfers correct arguments', async () => {
         await dao.listByBlockchainAndNetwork('blockchainId', 'networkId');
 

@@ -75,8 +75,6 @@ export class ProjectBlockchainSetupService extends Service {
 
         // FIXME: should be wrapped into transaction
         await Promise.all(promises);
-
-        return;
     }
 
     // THINK: ManagedBlockchainTransportService should somehow react on this event
@@ -107,8 +105,6 @@ export class ProjectBlockchainSetupService extends Service {
 
         // FIXME: should be wrapped into transaction
         await Promise.all(promises);
-
-        return;
     }
 
     // THINK: ManagedBlockchainTransportService should somehow react on this event
@@ -123,8 +119,6 @@ export class ProjectBlockchainSetupService extends Service {
 
         // FIXME: should be wrapped into transaction
         await Promise.all(promises);
-
-        return;
     }
 
     // THINK: ManagedBlockchainTransportService should somehow react on this event
@@ -143,7 +137,5 @@ export class ProjectBlockchainSetupService extends Service {
 
         // FIXME: should be wrapped into transaction
         await Promise.all(promises);
-
-        return;
     }
 }

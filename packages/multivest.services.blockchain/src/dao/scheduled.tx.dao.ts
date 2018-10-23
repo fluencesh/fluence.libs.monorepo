@@ -5,7 +5,10 @@ export abstract class ScheduledTxDao extends Dao<Scheme.ScheduledTx> {
     public abstract createScheduledTx(
         projectId: string,
         cronExpression: string,
+
         tx: Transaction,
+        blockchainId: string,
+        networkId: string,
         privateKey: string
     ): Promise<Scheme.ScheduledTx>;
 
@@ -16,4 +19,5 @@ export abstract class ScheduledTxDao extends Dao<Scheme.ScheduledTx> {
 
     public abstract setCronExpression(id: string, cronExpression: string): Promise<void>;
     public abstract setTransaction(id: string, tx: Transaction): Promise<void>;
+    public abstract setRelatedJobId(id: string, relatedJobId: string): Promise<void>;
 }

@@ -24,50 +24,82 @@ export class SessionService extends Service {
         return 'session.service';
     }
 
-    public async createSession(
-        expiredAt: Date,
+    public async createUserSession(
         clientId: string,
-        projectId: string = null
+        expiredAt: Date
     ): Promise<Scheme.Session> {
-        const [ client, project ] = [
-            this.clientDao.getById(clientId),
-            projectId ? this.projectDao.getById(projectId) : null
-        ] as [ Promise<Scheme.Client>, Promise<Scheme.Project> ];
+        const client = await this.clientDao.getById(clientId);
 
         if (!client) {
             throw new MultivestError(Errors.CLIENT_NOT_FOUND);
-        } else if (projectId && !project) {
+        }
+
+        return this.sessionDao.createUserSession(clientId, expiredAt);
+    }
+
+    public async createUserApiKey(
+        clientId: string
+    ): Promise<Scheme.Session> {
+        const client = await this.clientDao.getById(clientId);
+
+        if (!client) {
+            throw new MultivestError(Errors.CLIENT_NOT_FOUND);
+        }
+
+        return this.sessionDao.createUserApiKey(clientId);
+    }
+
+    public async createProjectApiKey(
+        clientId: string,
+        projectId: string
+    ): Promise<Scheme.Session> {
+        const [ client, project ] = await Promise.all([
+            this.clientDao.getById(clientId),
+            this.projectDao.getById(projectId)
+        ]) as [ Scheme.Client, Scheme.Project ];
+
+        if (!client) {
+            throw new MultivestError(Errors.CLIENT_NOT_FOUND);
+        } else if (!project) {
             throw new MultivestError(Errors.PROJECT_NOT_FOUND);
         }
 
-        return this.sessionDao.createSession(expiredAt, clientId, projectId);
+        return this.sessionDao.createProjectApiKey(clientId, projectId);
     }
 
     public async getById(sessionId: string): Promise<Scheme.Session> {
         return this.sessionDao.getById(sessionId);
     }
 
-    public async getByIdActiveOnly(sessionId: string): Promise<Scheme.Session> {
-        return this.sessionDao.getByIdActiveOnly(sessionId);
+    public async getByIdAndTypeActiveOnly(sessionId: string, type: Scheme.SessionType): Promise<Scheme.Session> {
+        return this.sessionDao.getByIdAndTypeActiveOnly(sessionId, type);
     }
 
-    public async getByClientIdAndProjectId(clientId: string): Promise<Scheme.Session> {
-        return this.sessionDao.getByClientIdAndProjectId(clientId);
+    public async listByUserInfo(clientId: string, projectId: string = null): Promise<Array<Scheme.Session>> {
+        return this.sessionDao.listByUserInfo(clientId, projectId);
     }
 
-    public async getByClientIdAndProjectIdActiveOnly(clientId: string, projectId: string): Promise<Scheme.Session> {
-        return this.sessionDao.getByClientIdAndProjectIdActiveOnly(clientId, projectId);
+    public async listByTypeAndUserInfoActiveOnly(
+        type: Scheme.SessionType,
+        clientId: string,
+        projectId: string = null
+    ): Promise<Array<Scheme.Session>> {
+        return this.sessionDao.listByTypeAndUserInfoActiveOnly(type, clientId, projectId);
     }
 
     public async setExpiredAt(sessionId: string, expiredAt: Date): Promise<void> {
         await this.sessionDao.setExpiredAt(sessionId, expiredAt);
-
-        return;
     }
 
-    public async logOut(sessionId: string) {
-        await this.sessionDao.logOut(sessionId);
+    public async disableUserSession(sessionId: string) {
+        await this.sessionDao.disableUserSession(sessionId);
+    }
 
-        return;
+    public async disableUserApiKey(sessionId: string) {
+        await this.sessionDao.disableUserApiKey(sessionId);
+    }
+
+    public async disableProjectApiKey(sessionId: string) {
+        await this.sessionDao.disableProjectApiKey(sessionId);
     }
 }

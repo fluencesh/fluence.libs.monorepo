@@ -94,20 +94,14 @@ export class OraclizeSubscriptionService extends Service {
 
     public async setSubscribed(oraclizeId: string, subscribed: boolean): Promise<void> {
         await this.dao.setSubscribed(oraclizeId, subscribed);
-
-        return;
     }
 
     public async setSubscribedByProjectId(projectId: string, subscribed: boolean): Promise<void> {
         await this.dao.setSubscribedByProjectId(projectId, subscribed);
-
-        return;
     }
 
     public async setSubscribedByClientId(clientId: string, subscribed: boolean): Promise<void> {
         await this.dao.setSubscribedByClientId(clientId, subscribed);
-
-        return;
     }
 
     public async setClientActive(

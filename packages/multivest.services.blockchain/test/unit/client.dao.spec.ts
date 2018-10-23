@@ -70,6 +70,18 @@ describe('client dao', () => {
         expect(collection.updateMany).toHaveBeenCalledTimes(1);
     });
 
+    it('setVerificationStatus() transfers correct arguments', async () => {
+        const isAdmin = true;
+        const id = 'id';
+
+        await dao.setAdminStatus(id, isAdmin);
+
+        expect(collection.updateMany).toHaveBeenCalledWith({ id }, {
+            $set: { isAdmin }
+        });
+        expect(collection.updateMany).toHaveBeenCalledTimes(1);
+    });
+
     it('createClient() transfers correct arguments', async () => {
         const data = randomClient();
         await dao.createClient(data.email, data.passwordHash, data.isAdmin);

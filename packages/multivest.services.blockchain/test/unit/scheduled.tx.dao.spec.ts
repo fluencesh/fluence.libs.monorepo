@@ -45,7 +45,14 @@ describe('address subscription dao', () => {
     });
 
     it('`createScheduledTx` should pass correct params', async () => {
-        await dao.createScheduledTx('projectId', '* * * ? * * *', {} as Transaction, '');
+        const projectId = 'projectId';
+        const cronExpression = '* * * ? * * *';
+        const tx = {} as Transaction;
+        const blockchainId = 'blockchainId';
+        const networkId = 'networkId';
+        const privateKey = 'privateKey';
+    
+        await dao.createScheduledTx(projectId, cronExpression, tx, blockchainId, networkId, privateKey);
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);
     });
@@ -67,6 +74,16 @@ describe('address subscription dao', () => {
         await dao.setCronExpression(id, cronExpression);
 
         expect(collection.updateMany).toHaveBeenCalledWith({ id }, { $set: { cronExpression } });
+        expect(collection.updateMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('`setCronExpression` should pass correct params', async () => {
+        const relatedJobId = 'relatedJobId';
+        const id = 'id';
+
+        await dao.setRelatedJobId(id, relatedJobId);
+
+        expect(collection.updateMany).toHaveBeenCalledWith({ id }, { $set: { relatedJobId } });
         expect(collection.updateMany).toHaveBeenCalledTimes(1);
     });
 });

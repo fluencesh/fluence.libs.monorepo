@@ -82,8 +82,6 @@ export class SubscriptionBlockRecheckService extends Service {
             id,
             incrementOn
         );
-
-        return;
     }
 
     public async incInvokeOnBlockHeightByIds(
@@ -94,8 +92,6 @@ export class SubscriptionBlockRecheckService extends Service {
             ids,
             incrementOn
         );
-
-        return;
     }
 
     public async setInvokeOnBlockHeightById(
@@ -106,19 +102,13 @@ export class SubscriptionBlockRecheckService extends Service {
             id,
             invokeOnBlockHeight
         );
-
-        return;
     }
 
     public async removeById(id: string): Promise<void> {
         await this.dao.removeById(id);
-
-        return;
     }
 
     public async removeByIds(ids: Array<string>): Promise<void> {
         await this.dao.removeByIds(ids);
-
-        return;
     }
 }

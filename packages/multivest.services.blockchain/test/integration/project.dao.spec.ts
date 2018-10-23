@@ -43,9 +43,9 @@ describe('project dao', () => {
 
     beforeEach(() => {
         project = projects[random(0, projectsCount - 1)];
-        projectActive = getActiveProjects()[
-            random(0, getActiveProjects().length - 1)
-        ];
+
+        const activeProjects = getActiveProjects();
+        projectActive = activeProjects[random(0, activeProjects.length - 1)];
     });
 
     afterAll(async () => {
@@ -133,6 +133,8 @@ describe('project dao', () => {
             project.webhookUrl,
             project.clientId
         );
+
+        expect(got).toEqual(filtered);
     });
 
     it('should get by client id (active only)', async () => {
@@ -149,32 +151,14 @@ describe('project dao', () => {
         expect(got).toEqual(filtered);
     });
 
-    it('should get by filters', async () => {
-        const filtered = projects.filter(
-            (p) =>
-                p.name === project.name &&
-                p.webhookUrl === project.webhookUrl &&
-                p.status === project.status &&
-                p.sharedSecret === project.sharedSecret
-        );
-
-        const got = await dao.listByFilters(
-            project.name,
-            project.sharedSecret,
-            project.status,
-            project.webhookUrl
-        );
-
-        expect(got).toEqual(filtered);
-    });
-
     it('should get by filters (active only)', async () => {
         const filtered = getActiveProjects().filter(
             (p) =>
                 p.name === projectActive.name &&
                 p.webhookUrl === projectActive.webhookUrl &&
                 p.status === projectActive.status &&
-                p.sharedSecret === projectActive.sharedSecret
+                p.sharedSecret === projectActive.sharedSecret &&
+                p.isRemoved === false
         );
 
         const got = await dao.listByFiltersActiveOnly(
@@ -182,101 +166,6 @@ describe('project dao', () => {
             projectActive.sharedSecret,
             projectActive.status,
             projectActive.webhookUrl
-        );
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should create project', async () => {
-        const data = randomProject();
-
-        const created = await dao.createProject(
-            data.clientId,
-            data.name,
-            data.webhookUrl,
-            data.sharedSecret,
-            data.status,
-            data.txMinConfirmations,
-            data.saltyToken,
-            data.salt
-        );
-
-        const got = await dao.getById(created.id);
-
-        expect(got).toEqual(omit(created, 'token'));
-    });
-
-    it('should set new name, webhook url and status', async () => {
-        project.name = generateId();
-        project.webhookUrl = `https://www.${generateId()}.eu`;
-        project.status =
-            project.status === Scheme.ProjectStatus.Active
-                ? Scheme.ProjectStatus.Inactive
-                : Scheme.ProjectStatus.Active;
-
-        await dao.setNameAndWebhookUrlAndStatus(
-            project.id,
-            project.name,
-            project.webhookUrl,
-            project.status
-        );
-
-        const got = await dao.getById(project.id);
-
-        expect(got).toEqual(project);
-    });
-
-    it('should set new status', async () => {
-        project.status =
-            project.status === Scheme.ProjectStatus.Active
-                ? Scheme.ProjectStatus.Inactive
-                : Scheme.ProjectStatus.Active;
-
-        await dao.setStatus(project.id, project.status);
-
-        const got = await dao.getById(project.id);
-
-        expect(got).toEqual(project);
-    });
-
-    it('should set new token', async () => {
-        project.status =
-            project.status === Scheme.ProjectStatus.Active
-                ? Scheme.ProjectStatus.Inactive
-                : Scheme.ProjectStatus.Active;
-
-        const saltyToken = generateId();
-        const salt = generateId();
-        await dao.setToken(project.id, saltyToken, salt);
-
-        const got = await dao.getById(project.id);
-
-        expect(got.salt).toEqual(salt);
-        expect(got.saltyToken).toEqual(saltyToken);
-
-        project.salt = salt;
-        project.saltyToken = saltyToken;
-    });
-    it('should get by filters (active only)', async () => {
-        const filtered = getActiveProjects().filter(
-            (p) =>
-                p.name === project.name &&
-                p.webhookUrl === project.webhookUrl &&
-                p.status === project.status &&
-                p.sharedSecret === project.sharedSecret &&
-                p.clientId === project.clientId
-        );
-
-        if (filtered.length) {
-            return;
-        }
-
-        const got = await dao.listByFiltersActiveOnly(
-            project.name,
-            project.sharedSecret,
-            project.status,
-            project.webhookUrl,
-            project.clientId
         );
 
         expect(got).toEqual(filtered);

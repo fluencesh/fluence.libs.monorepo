@@ -75,6 +75,17 @@ describe('client dao', () => {
         client.isVerified = isVerified;
     });
 
+    it('should set admin status', async () => {
+        const isAdmin = !client.isAdmin;
+
+        await dao.setAdminStatus(client.id, isAdmin);
+        const got = await dao.getById(client.id);
+
+        expect(got.isVerified).toEqual(isAdmin);
+
+        client.isAdmin = isAdmin;
+    });
+
     it('should create new client', async () => {
         const data = randomClient();
         const got = await dao.createClient(data.email, data.passwordHash, data.isAdmin);

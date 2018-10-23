@@ -24,6 +24,18 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
         });
     }
 
+    public async getByBlockchainIdAndNetworkIdAndProviderId(
+        blockchainId: string,
+        networkId: string,
+        providerId: string
+    ): Promise<Scheme.TransportConnection> {
+        return this.getRaw({
+            blockchainId,
+            networkId,
+            providerId
+        });
+    }
+
     public async listByBlockchainAndNetwork(
         blockchainId: string,
         networkId: string
@@ -63,6 +75,23 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
         });
     }
 
+    public async listByIsPredefinedStatusAndBlockchainInfo(
+        isPredefinedBySystem: boolean,
+        blockchainId?: string,
+        networkId?: string
+    ) {
+        const filters: Partial<Scheme.TransportConnection> = { isPredefinedBySystem };
+
+        if (blockchainId) {
+            filters.blockchainId = blockchainId;
+        }
+        if (networkId) {
+            filters.networkId = networkId;
+        }
+
+        return this.list(filters);
+    }
+
     public createTransportConnection(
         blockchainId: string,
         networkId: string,
@@ -78,9 +107,11 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
         lastFailedAt: Date,
         failedCount: number,
 
-        isPrivate: boolean
+        isPrivate: boolean,
+
+        isPredefinedBySystem: boolean = null
     ): Promise<Scheme.TransportConnection> {
-        return this.create({
+        const data: Partial<Scheme.TransportConnection> = {
             blockchainId,
             networkId,
             providerId,
@@ -97,8 +128,14 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
 
             isPrivate,
 
-            createdAt: new Date()
-        });
+            createdAt: new Date(),
+        };
+
+        if (isPredefinedBySystem) {
+            data.isPredefinedBySystem = isPredefinedBySystem;
+        }
+
+        return this.create(data);
     }
 
     public async setSettings(
@@ -110,8 +147,6 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
                 settings
             }
         });
-
-        return;
     }
 
     public async setStatus(
@@ -123,8 +158,6 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
                 status
             }
         });
-
-        return;
     }
 
     public async setStatusByIds(
@@ -140,8 +173,6 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
                 status
             }
         });
-
-        return;
     }
 
     public async setFailed(
@@ -155,8 +186,6 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
                 lastFailedAt: at
             }
         });
-
-        return;
     }
 
     public async setFailedByIds(
@@ -174,19 +203,13 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
                 lastFailedAt: at
             }
         });
-
-        return;
     }
 
     public async removeById(id: string): Promise<void> {
         await this.removeRaw({ id });
-
-        return;
     }
 
     public async removeByIds(ids: Array<string>): Promise<void> {
         await this.removeRaw({ id: { $in: ids } });
-
-        return;
     }
 }

@@ -176,8 +176,6 @@ export class ProjectService extends Service {
             this.modifySubscriptionStatus(projectId, isActive),
             this.projectBlockchainSetupService.setStatusByProjectId(projectId, setupStatus)
         ]);
-
-        return;
     }
 
     public async changeToken(projectId: string): Promise<Scheme.Project> {
@@ -212,8 +210,6 @@ export class ProjectService extends Service {
                 Scheme.ProjectBlockchainSetupStatus.Disabled
             )
         ]);
-
-        return;
     }
 
     private createToken(): TokenData {

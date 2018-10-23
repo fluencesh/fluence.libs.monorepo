@@ -104,8 +104,6 @@ export abstract class MongodbSubscriptionDao<T extends Scheme.Subscription>
                 subscribed
             }
         });
-
-        return;
     }
 
     public async setSubscribedByClientId(clientId: string, subscribed: boolean): Promise<void> {
@@ -114,8 +112,6 @@ export abstract class MongodbSubscriptionDao<T extends Scheme.Subscription>
                 subscribed
             }
         });
-
-        return;
     }
 
     public async setSubscribedByProjectId(projectId: string, subscribed: boolean): Promise<void> {
@@ -124,8 +120,6 @@ export abstract class MongodbSubscriptionDao<T extends Scheme.Subscription>
                 subscribed
             }
         });
-
-        return;
     }
 
     public async setClientActive(clientId: string, isActive: boolean): Promise<void> {
@@ -134,8 +128,6 @@ export abstract class MongodbSubscriptionDao<T extends Scheme.Subscription>
                 isClientActive: isActive
             }
         });
-
-        return;
     }
 
     public async setProjectActive(projectId: string, isActive: boolean): Promise<void> {
@@ -144,7 +136,5 @@ export abstract class MongodbSubscriptionDao<T extends Scheme.Subscription>
                 isProjectActive: isActive
             }
         });
-
-        return;
     }
 }

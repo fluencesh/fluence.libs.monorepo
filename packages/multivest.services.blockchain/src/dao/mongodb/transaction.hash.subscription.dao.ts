@@ -119,8 +119,6 @@ export class MongodbTransactionHashSubscriptionDao
                 subscribed
             }
         });
-
-        return;
     }
 
     public async setSubscribedByClientId(clientId: string, subscribed: boolean): Promise<void> {
@@ -129,8 +127,6 @@ export class MongodbTransactionHashSubscriptionDao
                 subscribed
             }
         });
-
-        return;
     }
 
     public async setSubscribedByProjectId(projectId: string, subscribed: boolean): Promise<void> {
@@ -139,7 +135,5 @@ export class MongodbTransactionHashSubscriptionDao
                 subscribed
             }
         });
-
-        return;
     }
 }

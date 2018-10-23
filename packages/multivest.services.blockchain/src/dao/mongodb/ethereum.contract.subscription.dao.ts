@@ -161,8 +161,6 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
 
     public async setSubscribed(contractId: string, subscribed: boolean): Promise<void> {
         await this.updateRaw({ id: contractId }, { $set: { subscribed } });
-
-        return;
     }
 
     public async setSubscribedEventsAndAllEvents(
@@ -171,8 +169,6 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
         subscribeAllEvents: boolean
     ): Promise<void> {
         await this.updateRaw({ id: contractId }, { $set: { subscribedEvents, subscribeAllEvents } });
-
-        return;
     }
 
     public async setSubscribedByClientId(clientId: string, subscribed: boolean): Promise<void> {
@@ -181,8 +177,6 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
                 subscribed
             }
         });
-
-        return;
     }
 
     public async setSubscribedByProjectId(projectId: string, subscribed: boolean): Promise<void> {
@@ -191,8 +185,6 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
                 subscribed
             }
         });
-
-        return;
     }
 
     public async setClientActive(clientId: string, isActive: boolean): Promise<void> {
@@ -201,8 +193,6 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
                 isClientActive: isActive
             }
         });
-
-        return;
     }
 
     public async setProjectActive(projectId: string, isActive: boolean): Promise<void> {
@@ -211,7 +201,5 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
                 isProjectActive: isActive
             }
         });
-
-        return;
     }
 }

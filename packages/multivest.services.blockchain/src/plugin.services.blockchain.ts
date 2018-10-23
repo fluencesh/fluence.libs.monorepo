@@ -31,6 +31,7 @@ import {
     OraclizeSubscriptionService,
     ProjectBlockchainSetupService,
     ProjectService,
+    ScheduledTxService,
     SessionService,
     SubscriptionBlockRecheckService,
     TransactionHashSubscriptionService,
@@ -84,6 +85,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         this.registerService(ProjectBlockchainSetupService);
         this.registerService(SessionService);
         this.registerService(SubscriptionBlockRecheckService);
+        this.registerService(ScheduledTxService);
     }
 }
 

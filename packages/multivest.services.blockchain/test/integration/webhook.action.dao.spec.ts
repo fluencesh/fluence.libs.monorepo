@@ -17,6 +17,7 @@ describe('address subscription dao', () => {
 
     beforeAll(async () => {
         connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+
         dao = new MongodbWebhookActionDao(connection);
         dao.remove({});
 
@@ -30,8 +31,6 @@ describe('address subscription dao', () => {
     });
 
     afterAll(async () => {
-        await connection.db('multivest').collection('webhooks').remove({});
-
         connection.close();
     });
 

@@ -121,8 +121,6 @@ export class MongodbWebhookActionDao extends MongoDBDao<Scheme.WebhookActionItem
                 status
             }
         });
-
-        return;
     }
 
     public async setStatus(id: string, status: Scheme.WebhookReportItemStatus): Promise<void> {
@@ -131,8 +129,6 @@ export class MongodbWebhookActionDao extends MongoDBDao<Scheme.WebhookActionItem
                 status
             }
         });
-
-        return;
     }
 
     public async addFailReport(id: string, fail: Scheme.WebhookFailedReport): Promise<void> {
@@ -148,7 +144,5 @@ export class MongodbWebhookActionDao extends MongoDBDao<Scheme.WebhookActionItem
                 lastFailedAt: new Date(),
             }
         });
-
-        return;
     }
 }

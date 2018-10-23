@@ -57,12 +57,16 @@ describe('scheduled tx dao', () => {
             created.projectId,
             created.cronExpression,
             created.tx,
+            created.blockchainId,
+            created.networkId,
             created.privateKey
         );
 
         expect(got.projectId).toEqual(created.projectId);
         expect(got.cronExpression).toEqual(created.cronExpression);
         expect(got.tx).toEqual(created.tx);
+        expect(got.blockchainId).toEqual(created.blockchainId);
+        expect(got.networkId).toEqual(created.networkId);
         expect(got.privateKey).toEqual(created.privateKey);
     });
 
@@ -86,5 +90,15 @@ describe('scheduled tx dao', () => {
         const got = await dao.getById(scheduledTx.id);
 
         expect(got.cronExpression).toEqual(scheduledTx.cronExpression);
+    });
+
+    it('should set relatedJobId', async () => {
+        const relatedJobId = 'relatedJobId';
+        await dao.setRelatedJobId(scheduledTx.id, relatedJobId);
+
+        const got = await dao.getById(scheduledTx.id);
+        expect(got.relatedJobId).toEqual(relatedJobId);
+
+        scheduledTx.relatedJobId = relatedJobId;
     });
 });

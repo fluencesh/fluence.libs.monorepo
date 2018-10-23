@@ -45,6 +45,16 @@ describe('transport connection service', () => {
         expect(got).toEqual(transportConnection);
     });
 
+    it('should get transport connection by network, blockchain id and providerId', async () => {
+        const got = await service.getByBlockchainIdAndNetworkIdAndProviderId(
+            transportConnection.blockchainId,
+            transportConnection.networkId,
+            transportConnection.providerId
+        );
+
+        expect(got).toEqual(transportConnection);
+    });
+
     it('should get transport connection by network and blockchain ids', async () => {
         const filtered = transportConnections.filter((tc) => {
             return tc.blockchainId === transportConnection.blockchainId
@@ -70,6 +80,22 @@ describe('transport connection service', () => {
             transportConnection.blockchainId,
             transportConnection.networkId,
             transportConnection.status
+        );
+
+        expect(got).toEqual(filtered);
+    });
+
+    it('should get transport connection by network and blockchain id and status', async () => {
+        const filtered = transportConnections.filter((tc) => {
+            return tc.blockchainId === transportConnection.blockchainId
+                && tc.networkId === transportConnection.networkId
+                && tc.isPredefinedBySystem === transportConnection.isPredefinedBySystem;
+        });
+
+        const got = await service.listByIsPredefinedStatusAndBlockchainInfo(
+            transportConnection.isPredefinedBySystem,
+            transportConnection.blockchainId,
+            transportConnection.networkId
         );
 
         expect(got).toEqual(filtered);

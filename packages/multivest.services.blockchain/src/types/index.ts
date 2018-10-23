@@ -1,4 +1,3 @@
-import * as Blockchain from '@applicature-private/multivest.core';
 import { Hashtable } from '@applicature-private/multivest.core';
 import { MongoScheme } from '@applicature-private/multivest.mongodb';
 import { BigNumber } from 'bignumber.js';
@@ -188,6 +187,8 @@ export namespace Scheme {
         failedCount: number;
 
         createdAt: Date;
+
+        isPredefinedBySystem?: boolean;
     }
 
     export interface BlockchainBlock {
@@ -298,15 +299,25 @@ export namespace Scheme {
     }
 
     export interface ScheduledTx extends MongoScheme {
-        cronExpression: string;
-        tx: BlockchainTransaction;
         projectId: string;
+        cronExpression: string;
+
+        blockchainId: string;
+        networkId: string;
+        tx: BlockchainTransaction;
         privateKey: string;
+
+        relatedJobId: string;
     }
 
     export enum ScheduledTxExecutionStatus {
         SENT = 'SENT',
         FAILED = 'FAILED'
+    }
+
+    export interface ScheduledTxJobData {
+        scheduledTxId: string;
+        cronExpression: string;
     }
 
     export enum SubscriptionBlockRecheckType {
@@ -370,13 +381,20 @@ export namespace Scheme {
         statusMessage: string;
     }
 
+    export enum SessionType {
+        UserSession = 'UserSession',
+        UserApiKey = 'UserApiKey',
+        ProjectApiKey = 'ProjectApiKey',
+    }
+
     export interface Session extends MongoScheme {
         clientId: string;
         projectId?: string;
+        type: SessionType;
 
         createdAt: Date;
-        expiredAt: Date;
-        loggedOutAt: Date;
+        expiredAt?: Date;
+        loggedOutAt?: Date;
     }
 
     export enum ProjectBlockchainSetupStatus {
@@ -396,5 +414,10 @@ export namespace Scheme {
         eventName: string;
         eventInputTypes: Array<string>;
         webhookUrl: string;
+    }
+
+    export interface BlockchainInfo {
+        blockchainId: string;
+        networkId: string;
     }
 }

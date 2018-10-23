@@ -88,7 +88,5 @@ export class ContractPublicRequestService extends Service {
 
             await this.contractService.markAsPublic(request.contractId);
         }
-
-        return;
     }
 }

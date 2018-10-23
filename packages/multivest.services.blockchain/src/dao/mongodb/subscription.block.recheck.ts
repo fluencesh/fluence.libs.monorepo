@@ -81,8 +81,6 @@ export class MongodbSubscriptionBlockRecheckDao
                 invokeOnBlockHeight: incrementOn
             }
         });
-
-        return;
     }
 
     public async incInvokeOnBlockHeightByIds(ids: Array<string>, incrementOn: number = 1): Promise<void> {
@@ -97,8 +95,6 @@ export class MongodbSubscriptionBlockRecheckDao
                 }
             }
         );
-
-        return;
     }
 
     public async setInvokeOnBlockHeightById(id: string, invokeOnBlockHeight: number): Promise<void> {
@@ -107,14 +103,10 @@ export class MongodbSubscriptionBlockRecheckDao
                 invokeOnBlockHeight,
             }
         });
-
-        return;
     }
 
     public async removeById(id: string): Promise<void> {
         await this.removeRaw({ id });
-
-        return;
     }
 
     public async removeByIds(ids: Array<string>): Promise<void> {
@@ -123,7 +115,5 @@ export class MongodbSubscriptionBlockRecheckDao
                 $in: ids
             }
         });
-
-        return;
     }
 }

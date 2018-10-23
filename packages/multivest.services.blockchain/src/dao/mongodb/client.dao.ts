@@ -51,8 +51,6 @@ export class MongodbClientDao extends MongoDBDao<Scheme.Client> implements Clien
                 status
             }
         });
-
-        return;
     }
 
     public async setVerificationStatus(clientId: string, isVerified: boolean): Promise<void> {
@@ -61,13 +59,17 @@ export class MongodbClientDao extends MongoDBDao<Scheme.Client> implements Clien
                 isVerified
             }
         });
+    }
 
-        return;
+    public async setAdminStatus(clientId: string, isAdmin: boolean): Promise<void> {
+        await this.updateRaw({ id: clientId }, {
+            $set: {
+                isAdmin
+            }
+        });
     }
 
     public async removeById(clientId: string): Promise<void> {
         await this.remove({ id: clientId });
-
-        return;
     }
 }

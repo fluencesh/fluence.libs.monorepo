@@ -65,8 +65,6 @@ export class WebhookActionItemObjectService extends Service {
 
     public async fill(actionItems: Array<WebhookActionItem>): Promise<void> {
         await this.webHookActionItemDao.fill(actionItems);
-
-        return;
     }
 
     public async getById(id: string): Promise<Scheme.WebhookActionItem> {

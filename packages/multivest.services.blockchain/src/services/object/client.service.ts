@@ -87,8 +87,10 @@ export class ClientService extends Service {
             this.clientDao.setStatus(clientId, status),
             this.modifySubscriptionStatus(clientId, isActive)
         ]);
+    }
 
-        return;
+    public async setAdminStatus(clientId: string, isAdmin: boolean): Promise<void> {
+        await this.clientDao.setAdminStatus(clientId, isAdmin);
     }
 
     public async verifyClient(jwt: string): Promise<void> {
@@ -103,8 +105,6 @@ export class ClientService extends Service {
         }
 
         await this.clientDao.setVerificationStatus(clientId, true);
-
-        return;
     }
 
     public convertClientIdToJwt(clientId: string): string {
@@ -117,8 +117,6 @@ export class ClientService extends Service {
 
     public async removeById(clientId: string): Promise<void> {
         await this.clientDao.removeById(clientId);
-
-        return;
     }
 
     private tryParseJwtToClientId(jwt: string): string {

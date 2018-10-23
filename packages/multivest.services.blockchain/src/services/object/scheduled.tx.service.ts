@@ -1,21 +1,15 @@
-import { MultivestError, PluginManager, Service, Transaction } from '@applicature-private/multivest.core';
-import { CronExpressionValidation, DaoIds } from '../../constants';
+import { MultivestError, Service, Transaction } from '@applicature-private/multivest.core';
+import { Plugin as MongoPlugin } from '@applicature-private/multivest.mongodb';
+import { CronExpressionValidation, DaoIds, ScheduledTxJobName } from '../../constants';
+import { ClientDao, ProjectDao } from '../../dao';
 import { ScheduledTxDao } from '../../dao/scheduled.tx.dao';
 import { Errors } from '../../errors';
 import { Scheme } from '../../types';
-import { BlockchainService } from '../blockchain/blockchain.service';
-import { ScheduledTxJobManager } from '../cronjob/scheduled.tx.job.manager';
 
 export class ScheduledTxService extends Service {
-    private dao: ScheduledTxDao;
-    private scheduledTxJobManager: ScheduledTxJobManager;
-
-    constructor(pluginManager: PluginManager, blockchainService: BlockchainService) {
-        super(pluginManager);
-
-        this.dao = this.pluginManager.getDao(DaoIds.ScheduledTx) as ScheduledTxDao;
-        this.scheduledTxJobManager = new ScheduledTxJobManager(pluginManager, blockchainService);
-    }
+    private scheduledTxDao: ScheduledTxDao;
+    private projectDao: ProjectDao;
+    private clientDao: ClientDao;
 
     public getServiceId() {
         return 'scheduled.tx.service';
@@ -24,55 +18,91 @@ export class ScheduledTxService extends Service {
     public async init() {
         await super.init();
 
-        const scheduledTxs = await this.dao.list({});
-        await Promise.all(scheduledTxs.map((scheduledTx) => this.scheduledTxJobManager.createJob(scheduledTx)));
+        const mongoPlugin = this.pluginManager.get('mongodb') as any as MongoPlugin;
+
+        this.scheduledTxDao = await mongoPlugin.getDao(DaoIds.ScheduledTx) as ScheduledTxDao;
+        this.projectDao = await mongoPlugin.getDao(DaoIds.Project) as ProjectDao;
+        this.clientDao = await mongoPlugin.getDao(DaoIds.Client) as ClientDao;
     }
 
     public async createScheduledTx(
         projectId: string,
         cronExpression: string,
+
         tx: Transaction,
+        blockchainId: string,
+        networkId: string,
         privateKey: string
     ): Promise<Scheme.ScheduledTx> {
-        const scheduledTx = await this.dao.createScheduledTx(projectId, cronExpression, tx, privateKey);
-        await this.scheduledTxJobManager.createJob(scheduledTx);
+        try {
+            const project = await this.projectDao.getById(projectId);
+            if (!project) {
+                throw new MultivestError(Errors.PROJECT_NOT_FOUND);
+            }
 
-        return scheduledTx;
+            const client = await this.clientDao.getById(project.clientId);
+            if (!client) {
+                throw new MultivestError(Errors.CLIENT_NOT_FOUND);
+            }
+
+            const scheduledTx = await this.scheduledTxDao.createScheduledTx(
+                projectId,
+                cronExpression,
+                tx,
+                blockchainId,
+                networkId,
+                privateKey
+            );
+
+            const agenda = this.pluginManager.getJobExecutor();
+            try {
+                const jobData: Scheme.ScheduledTxJobData = {
+                    scheduledTxId: scheduledTx.id,
+                    cronExpression,
+                };
+
+                const job = agenda.create(ScheduledTxJobName, jobData) as any;
+                await job.save();
+
+                scheduledTx.relatedJobId = job.attrs._id.toHexString();
+            } catch (ex) {
+                throw new MultivestError(Errors.CANT_CREATE_AGENDA_JOB);
+            }
+
+            return scheduledTx;
+        } catch (ex) {
+            if (ex instanceof MultivestError) {
+                throw ex;
+            } else {
+                throw new MultivestError(Errors.DB_EXECUTION_ERROR);
+            }
+        }
+
     }
 
     public async getById(id: string): Promise<Scheme.ScheduledTx> {
-        return this.dao.getById(id);
+        return this.scheduledTxDao.getById(id);
     }
 
     public async getByIdAndProjectId(id: string, projectId: string): Promise<Scheme.ScheduledTx> {
-        return this.dao.getByIdAndProjectId(id, projectId);
+        return this.scheduledTxDao.getByIdAndProjectId(id, projectId);
     }
 
     public async listByProjectId(projectId: string): Promise<Array<Scheme.ScheduledTx>> {
-        return this.dao.listByProjectId(projectId);
+        return this.scheduledTxDao.listByProjectId(projectId);
     }
 
     public async setCronExpression(id: string, cronExpression: string) {
         const isValid = CronExpressionValidation.test(cronExpression);
 
         if (isValid) {
-            await this.dao.setCronExpression(id, cronExpression);
-
-            const job = this.scheduledTxJobManager.getJobByScheduledTxId(id);
-            await this.scheduledTxJobManager.changeCronExpression(job.getJobId(), cronExpression);
-
-            return;
+            await this.scheduledTxDao.setCronExpression(id, cronExpression);
         } else {
             throw new MultivestError(Errors.INVALID_CRON_EXPRESSION);
         }
     }
 
     public async setTransaction(id: string, tx: Transaction): Promise<void> {
-        await this.dao.setTransaction(id, tx);
-
-        const job = this.scheduledTxJobManager.getJobByScheduledTxId(id);
-        await this.scheduledTxJobManager.changeTransaction(job.getJobId(), tx);
-
-        return;
+        await this.scheduledTxDao.setTransaction(id, tx);
     }
 }

@@ -37,6 +37,6 @@
                 "webhook": "collects webhook metric",
                 "subscription": "collects subscription metric"
             }
-          }
+        }
     }
 }

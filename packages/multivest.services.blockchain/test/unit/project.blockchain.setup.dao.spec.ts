@@ -36,6 +36,14 @@ describe('setup dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
+    it('getByTransportConnectionId() transfers correct arguments', async () => {
+        const privateTransportConnectionId = 'privateTransportConnectionId';
+        await dao.getByTransportConnectionId(privateTransportConnectionId);
+
+        expect(collection.findOne).toHaveBeenCalledWith({ privateTransportConnectionId });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
     it('getByTransportConnectionIdAndProjectId() transfers correct arguments', async () => {
         const projectId = 'projectId';
         const privateTransportConnectionId = 'privateTransportConnectionId';

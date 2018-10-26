@@ -52,6 +52,14 @@ describe('setup dao', () => {
     expect(got).toEqual(setup);
   });
 
+  it('should get by transport connection id', async () => {
+    const got = await dao.getByTransportConnectionId(
+        setup.privateTransportConnectionId
+    );
+
+    expect(got).toEqual(setup);
+  });
+
   it('should get by transport connection id and project id', async () => {
     const got = await dao.getByTransportConnectionIdAndProjectId(
       setup.privateTransportConnectionId,
@@ -137,8 +145,6 @@ describe('setup dao', () => {
 
     const got = await dao.getById(setup.id);
     expect(got).toBeNull();
-
-    setups.splice(setups.indexOf(setup), 1);
   });
 
   it('should remove setup by projectId', async () => {

@@ -40,6 +40,12 @@ export class MongodbProjectBlockchainSetupDao
         return this.getRaw({ id: setupId, projectId });
     }
 
+    public async getByTransportConnectionId(
+        privateTransportConnectionId: string
+    ): Promise<Scheme.ProjectBlockchainSetup> {
+        return this.getRaw({ privateTransportConnectionId });
+    }
+
     public async getByTransportConnectionIdAndProjectId(
         privateTransportConnectionId: string,
         projectId: string

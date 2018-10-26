@@ -1,5 +1,4 @@
-import { Plugin, Service } from '@fluencesh/multivest.core';
-import { Plugin as MongodbPlugin } from '@fluencesh/multivest.mongodb';
+import { Plugin } from '@fluencesh/multivest.core';
 
 class EthereumBlockchainPlugin extends Plugin<any> {
     public getPluginId() {
@@ -7,6 +6,7 @@ class EthereumBlockchainPlugin extends Plugin<any> {
     }
 
     public init() {
+        return Promise.resolve();
     }
 }
 

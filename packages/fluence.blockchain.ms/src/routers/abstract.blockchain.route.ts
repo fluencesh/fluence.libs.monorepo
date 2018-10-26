@@ -1,5 +1,6 @@
-import { AuthMiddleware, ProjectRequest } from '@fluencesh/fluence.ms';
+import { AuthenticatedRequest, AuthMiddleware } from '@fluencesh/fluence.ms';
 import { PluginManager } from '@fluencesh/multivest.core';
+import { BlockchainService } from '@fluencesh/multivest.services.blockchain';
 import * as express from 'express';
 import { AbstractRouter, Body, Get, Post, Query, Response } from 'swapi/dist';
 import { AbstractBlockchainRouteUrls } from '../constants';
@@ -8,15 +9,15 @@ import { Errors } from '../errors';
 import { AddressValidation, BlockValidation, TransactionValidation } from '../validation';
 
 @AbstractRouter
-export class AbstractBlockchainRouter {
+export class AbstractBlockchainRouter<T extends BlockchainService> {
     protected validationService: any;
-    protected blockchainController: AbstractBlockchainController;
+    protected blockchainController: AbstractBlockchainController<T>;
     protected authMiddleware: AuthMiddleware;
     protected blockchainUrlPrefix: string;
 
     constructor(
         pluginManager: PluginManager,
-        blockchainController: AbstractBlockchainController,
+        blockchainController: AbstractBlockchainController<T>,
         authMiddleware: AuthMiddleware,
         blockchainUrlPrefix: string = ''
     ) {
@@ -38,30 +39,30 @@ export class AbstractBlockchainRouter {
         router.get(
             this.blockchainUrlPrefix + AbstractBlockchainRouteUrls.GetBlocks,
             this.validationService.requestValidation('Block.Get'),
-            (req: ProjectRequest, res, next) => this.authMiddleware.attachProjectAndClient(req, res, next),
-            (req: ProjectRequest, res, next) => this.getBlockByHashOrNumber(req, res, next)
+            (req: AuthenticatedRequest, res, next) => this.authMiddleware.attachProjectAndClient(req, res, next),
+            (req: AuthenticatedRequest, res, next) => this.getBlockByHashOrNumber(req, res, next)
         );
 
         router.get(
             this.blockchainUrlPrefix + AbstractBlockchainRouteUrls.GetTransactionByHash,
             this.validationService.requestValidation('Transaction.GetByHash'),
-            (req: ProjectRequest, res, next) => this.authMiddleware.attachProjectAndClient(req, res, next),
-            (req: ProjectRequest, res, next) => this.getTransactionByHash(req, res, next)
+            (req: AuthenticatedRequest, res, next) => this.authMiddleware.attachProjectAndClient(req, res, next),
+            (req: AuthenticatedRequest, res, next) => this.getTransactionByHash(req, res, next)
         );
 
         // TODO: test
         router.post(
             this.blockchainUrlPrefix + AbstractBlockchainRouteUrls.SendTransaction,
             this.validationService.requestValidation('Transaction.Send'),
-            (req: ProjectRequest, res, next) => this.authMiddleware.attachProjectAndClient(req, res, next),
-            (req: ProjectRequest, res, next) => this.submitRawTransaction(req, res, next)
+            (req: AuthenticatedRequest, res, next) => this.authMiddleware.attachProjectAndClient(req, res, next),
+            (req: AuthenticatedRequest, res, next) => this.submitRawTransaction(req, res, next)
         );
 
         router.get(
             this.blockchainUrlPrefix + AbstractBlockchainRouteUrls.GetBalanceOfAddress,
             this.validationService.requestValidation('Address.GetAddressBalance'),
-            (req: ProjectRequest, res, next) => this.authMiddleware.attachProjectAndClient(req, res, next),
-            (req: ProjectRequest, res, next) => this.getAddressBalance(req, res, next)
+            (req: AuthenticatedRequest, res, next) => this.authMiddleware.attachProjectAndClient(req, res, next),
+            (req: AuthenticatedRequest, res, next) => this.getAddressBalance(req, res, next)
         );
 
         return router;
@@ -76,7 +77,7 @@ export class AbstractBlockchainRouter {
     })
     @Response(404, 'string', false, Errors.BLOCK_NOT_FOUND)
     @Response(400, 'string', false, Errors.INVALID_BLOCK_NUMBER)
-    protected getBlockByHashOrNumber(req: ProjectRequest, res: express.Response, next: express.NextFunction) {
+    protected getBlockByHashOrNumber(req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) {
         this.blockchainController.getBlockByHashOrNumber(req, res, next);
     }
 
@@ -86,7 +87,7 @@ export class AbstractBlockchainRouter {
         token: 'string*',
     })
     @Response(404, 'string', false, Errors.TRANSACTION_NOT_FOUND)
-    protected getTransactionByHash(req: ProjectRequest, res: express.Response, next: express.NextFunction) {
+    protected getTransactionByHash(req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) {
         this.blockchainController.getTransactionByHash(req, res, next);
     }
 
@@ -97,7 +98,7 @@ export class AbstractBlockchainRouter {
     })
     @Body('hex', 'string*')
     @Response(404, 'string', false, Errors.TRANSACTION_NOT_FOUND)
-    protected submitRawTransaction(req: ProjectRequest, res: express.Response, next: express.NextFunction) {
+    protected submitRawTransaction(req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) {
         this.blockchainController.submitRawTransaction(req, res, next);
     }
 
@@ -108,7 +109,7 @@ export class AbstractBlockchainRouter {
     })
     @Response(400, 'string', false, Errors.ADDRESS_IS_INVALID)
     @Response(404, 'string', false, Errors.ADDRESS_NOT_FOUND)
-    protected getAddressBalance(req: ProjectRequest, res: express.Response, next: express.NextFunction) {
+    protected getAddressBalance(req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) {
         this.blockchainController.getAddressBalance(req, res, next);
     }
 
@@ -120,7 +121,7 @@ export class AbstractBlockchainRouter {
         params: 'object',
     })
     @Response(200, 'object')
-    protected callTroughJsonRpc(req: ProjectRequest, res: express.Response, next: express.NextFunction) {
+    protected callTroughJsonRpc(req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) {
         this.blockchainController.getAddressBalance(req, res, next);
     }
 }

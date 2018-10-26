@@ -1,5 +1,6 @@
 import { Plugin } from '@fluencesh/multivest.core';
-import { BlockchainMetricService, CronjobMetricService } from './services';
+import { BlockchainMonitorRegistry } from './blockchain';
+import { BlockchainMetricService } from './services';
 
 class FluenceBlockchainMs extends Plugin<void> {
     public getPluginId() {
@@ -8,7 +9,7 @@ class FluenceBlockchainMs extends Plugin<void> {
 
     public init(): void {
         this.registerService(BlockchainMetricService);
-        this.registerService(CronjobMetricService);
+        this.registerService(BlockchainMonitorRegistry);
     }
 }
 

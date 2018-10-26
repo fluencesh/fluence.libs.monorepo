@@ -28,7 +28,7 @@ export class BlockchainListenerJob extends Job {
     }
 
     public getJobId() {
-        return `blockchain.sqs.publisher.job.${ blockchainId }.${ networkId }`;
+        return `blockchain.listener.${ blockchainId }.${ networkId }`;
     }
 
     public async execute() {

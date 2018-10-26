@@ -1,4 +1,3 @@
-import { MetricService } from '@applicature-private/fluence.metric.services';
 import {
     Block,
     Hashtable,
@@ -104,7 +103,7 @@ export abstract class BlockchainHandler {
             projectId: project.id,
             webhookUrl: project.webhookUrl,
 
-            blockChainId: this.blockchainId,
+            blockchainId: this.blockchainId,
             networkId: this.networkId,
 
             blockHash: block.hash,

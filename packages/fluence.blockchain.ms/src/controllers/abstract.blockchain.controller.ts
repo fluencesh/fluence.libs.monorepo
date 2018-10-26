@@ -1,11 +1,14 @@
-import { Controller, ProjectRequest } from '@applicature-private/fluence.ms';
+import { AuthenticatedRequest, Controller } from '@applicature-private/fluence.ms';
 import { Block, PluginManager, Transaction } from '@applicature-private/multivest.core';
 import {
+    BlockchainRegistryService,
     BlockchainService,
     ClientService,
+    Errors as BlockchainServicesErrors,
     ProjectBlockchainSetupService,
     ProjectService,
     Scheme,
+    TransportConnectionService,
 } from '@applicature-private/multivest.services.blockchain';
 import { WebMultivestError } from '@applicature-private/multivest.web';
 import BigNumber from 'bignumber.js';
@@ -15,30 +18,35 @@ import * as logger from 'winston';
 import { Errors } from '../errors';
 import { BlockchainMetricService } from '../services';
 
-export abstract class AbstractBlockchainController extends Controller {
-    protected blockchainService: BlockchainService;
+export abstract class AbstractBlockchainController<T extends BlockchainService> extends Controller {
+    protected blockchainRegistry: BlockchainRegistryService;
     protected projectService: ProjectService;
     protected clientService: ClientService;
     protected projectBlockchainSetupService: ProjectBlockchainSetupService;
+    protected transportConnectionService: TransportConnectionService;
     protected metricService: BlockchainMetricService;
+    protected blockchainId: string;
 
     constructor(
         pluginManager: PluginManager,
-        blockchainService: BlockchainService,
+        blockchainRegistry: BlockchainRegistryService,
+        blockchainId: string,
         metricService?: BlockchainMetricService,
     ) {
         super(pluginManager);
 
-        this.blockchainService = blockchainService;
+        this.blockchainRegistry = blockchainRegistry;
+        this.blockchainId = blockchainId;
+
         this.metricService = metricService;
-        this.projectService = pluginManager.getServiceByClass(ProjectService) as ProjectService;
-        this.clientService = pluginManager.getServiceByClass(ClientService) as ClientService;
-        this.projectBlockchainSetupService =
-            pluginManager.getServiceByClass(ProjectBlockchainSetupService) as ProjectBlockchainSetupService;
+        this.projectService = pluginManager.getServiceByClass(ProjectService);
+        this.clientService = pluginManager.getServiceByClass(ClientService);
+        this.projectBlockchainSetupService = pluginManager.getServiceByClass(ProjectBlockchainSetupService);
+        this.transportConnectionService = pluginManager.getServiceByClass(TransportConnectionService);
     }
 
-    public abstract convertBlockDTO(block: Block): any;
-    public abstract convertTransactionDTO(transaction: Transaction): any;
+    public abstract convertBlockDTO(block: Scheme.BlockchainBlock): any;
+    public abstract convertTransactionDTO(transaction: Scheme.BlockchainTransaction): any;
     public abstract convertAddressBalanceDTO(address: string, balance: BigNumber): any;
 
     public convertScheduledTxDTO(scheduledTx: Scheme.ScheduledTx) {
@@ -50,14 +58,22 @@ export abstract class AbstractBlockchainController extends Controller {
         };
     }
 
-    public async getBlockByHashOrNumber(req: ProjectRequest, res: Response, next: NextFunction): Promise<void> {
-        let block;
+    public async getBlockByHashOrNumber(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+        let block: Scheme.BlockchainBlock;
 
-        let transportConnectionId: string;
+        let transportConnection: Scheme.TransportConnection;
         try {
-            transportConnectionId = await this.extractTransportConnectionId(req);
+            transportConnection = await this.extractTransportConnection(req);
         } catch (ex) {
-            this.handleError(ex, next);
+            return this.handleError(ex, next);
+        }
+
+        let blockchainService;
+        try {
+            const networkId = transportConnection.networkId;
+            blockchainService = this.getBlockchainService(networkId);
+        } catch (ex) {
+            return this.handleError(ex, next);
         }
 
         if (req.query.number) {
@@ -65,7 +81,8 @@ export abstract class AbstractBlockchainController extends Controller {
             
             if (!isNaN(height)) {
                 try {
-                    block = await this.blockchainService.getBlockByHeight(height, transportConnectionId);
+                    // FIXME: migrate to right types (should return Scheme.BlockchainBlock)
+                    block = await blockchainService.getBlockByHeight(height, transportConnection.id);
                 } catch (ex) {
                     return this.handleError(ex, next);
                 }
@@ -74,7 +91,8 @@ export abstract class AbstractBlockchainController extends Controller {
             }
         } else if (req.query.hash) {
             try {
-                block = await this.blockchainService.getBlockByHash(req.query.hash, transportConnectionId);
+                // FIXME: migrate to right types (should return Scheme.BlockchainBlock)
+                block = await blockchainService.getBlockByHash(req.query.hash, transportConnection.id);
             } catch (ex) {
                 return this.handleError(ex, next);
             }
@@ -89,19 +107,23 @@ export abstract class AbstractBlockchainController extends Controller {
         res.status(200).send(dto);
     }
 
-    public async getTransactionByHash(req: ProjectRequest, res: Response, next: NextFunction): Promise<void> {
+    public async getTransactionByHash(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
         const hash = req.params.hash;
 
-        let transportConnectionId: string;
+        let transportConnection: Scheme.TransportConnection;
         try {
-            transportConnectionId = await this.extractTransportConnectionId(req);
+            transportConnection = await this.extractTransportConnection(req);
         } catch (ex) {
-            this.handleError(ex, next);
+            return this.handleError(ex, next);
         }
 
-        let transaction: Transaction;
+        let transaction: Scheme.BlockchainTransaction;
         try {
-            transaction = await this.blockchainService.getTransactionByHash(hash, transportConnectionId);
+            const networkId = transportConnection.networkId;
+            // FIXME: migrate to right types (should return Scheme.BlockchainTransaction)
+            transaction = await this
+                .getBlockchainService(networkId)
+                .getTransactionByHash(hash, transportConnection.id);
         } catch (ex) {
             return this.handleError(ex, next);
         }
@@ -115,27 +137,36 @@ export abstract class AbstractBlockchainController extends Controller {
         res.status(200).send(dto);
     }
 
-    public async submitRawTransaction(req: ProjectRequest, res: Response, next: NextFunction): Promise<void> {
+    public async submitRawTransaction(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
         const hex = req.body.hex;
 
-        let transportConnectionId: string;
+        let transportConnection: Scheme.TransportConnection;
         try {
-            transportConnectionId = await this.extractTransportConnectionId(req);
+            transportConnection = await this.extractTransportConnection(req);
         } catch (ex) {
-            this.handleError(ex, next);
+            return this.handleError(ex, next);
         }
 
         const today = new Date();
 
-        let transaction: Transaction;
+        let blockchainService;
         try {
-            transaction = await this.blockchainService.sendRawTransaction(hex, req.project.id, transportConnectionId);
+            const networkId = transportConnection.networkId;
+            blockchainService = this.getBlockchainService(networkId);
+        } catch (ex) {
+            return this.handleError(ex, next);
+        }
+
+        let transaction: Scheme.BlockchainTransaction;
+        try {
+            // FIXME: migrate to right types (should return Scheme.BlockchainTransaction)
+            transaction = await blockchainService.sendRawTransaction(hex, req.project.id, transportConnection.id);
         } catch (ex) {
             if (this.metricService) {
                 try {
                     await this.metricService.transactionsUnsuccessfullySent(
-                        this.blockchainService.getBlockchainId(),
-                        this.blockchainService.getNetworkId(),
+                        blockchainService.getBlockchainId(),
+                        blockchainService.getNetworkId(),
                         1,
                         today
                     );
@@ -150,8 +181,8 @@ export abstract class AbstractBlockchainController extends Controller {
         if (this.metricService) {
             try {
                 await this.metricService.transactionsSuccessfullySent(
-                    this.blockchainService.getBlockchainId(),
-                    this.blockchainService.getNetworkId(),
+                    blockchainService.getBlockchainId(),
+                    blockchainService.getNetworkId(),
                     1,
                     today
                 );
@@ -169,24 +200,32 @@ export abstract class AbstractBlockchainController extends Controller {
         res.status(200).send(dto);
     }
 
-    public async getAddressBalance(req: ProjectRequest, res: Response, next: NextFunction): Promise<void> {
+    public async getAddressBalance(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
         const address = req.params.address;
         const minConf = req.query.minConf;
 
-        if (!this.blockchainService.isValidAddress(address)) {
-            return next(new WebMultivestError(Errors.ADDRESS_IS_INVALID, 400));
+        let transportConnection: Scheme.TransportConnection;
+        try {
+            transportConnection = await this.extractTransportConnection(req);
+        } catch (ex) {
+            return this.handleError(ex, next);
         }
 
-        let transportConnectionId: string;
+        let blockchainService;
         try {
-            transportConnectionId = await this.extractTransportConnectionId(req);
+            const networkId = transportConnection.networkId;
+            blockchainService = this.getBlockchainService(networkId);
         } catch (ex) {
-            this.handleError(ex, next);
+            return this.handleError(ex, next);
+        }
+
+        if (!blockchainService.isValidAddress(address)) {
+            return next(new WebMultivestError(Errors.ADDRESS_IS_INVALID, 400));
         }
 
         let balance: BigNumber;
         try {
-            balance = await this.blockchainService.getBalance(address, minConf, transportConnectionId);
+            balance = await blockchainService.getBalance(address, minConf, transportConnection.id);
         } catch (ex) {
             return this.handleError(ex, next);
         }
@@ -200,26 +239,21 @@ export abstract class AbstractBlockchainController extends Controller {
         res.status(200).send(dto);
     }
 
-    public abstract callTroughJsonRpc(req: ProjectRequest, res: Response, next: NextFunction): Promise<void>;
+    public abstract callTroughJsonRpc(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void>;
 
-    protected async extractTransportConnectionId(req: ProjectRequest): Promise<string | undefined> {
+    protected async extractTransportConnection(req: AuthenticatedRequest): Promise<Scheme.TransportConnection> {
         const projectId: string = get(req, 'project.id', null);
 
-        if (!projectId) {
-            return;
-        }
-
         const transportConnectionId: string = req.query.transportConnectionId;
-        if (transportConnectionId) {
-            const valid = await this.isTransportConnectionIdValid(transportConnectionId, projectId);
-            if (!valid) {
-                throw new WebMultivestError(Errors.UNKNOWN_TRANSPORT_CONNECTION, 404);
-            }
 
-            return transportConnectionId;
+        const valid = await this.isTransportConnectionIdValid(transportConnectionId, projectId);
+        if (!valid) {
+            throw new WebMultivestError(Errors.UNKNOWN_TRANSPORT_CONNECTION, 404);
         }
 
-        return;
+        const transportConnection = await this.transportConnectionService.getById(transportConnectionId);
+
+        return transportConnection;
     }
 
     protected async isTransportConnectionIdValid(
@@ -227,8 +261,26 @@ export abstract class AbstractBlockchainController extends Controller {
         projectId: string
     ) {
         const privateProjectSetup = await this.projectBlockchainSetupService
-            .getByTransportConnectionIdAndProjectId(transportConnectionId, projectId);
+            .getByTransportConnectionId(transportConnectionId);
 
-        return privateProjectSetup !== null;
+        if (privateProjectSetup) {
+            return privateProjectSetup.projectId === projectId;
+        }
+
+        return true;
+    }
+
+    protected getBlockchainService(networkId: string): T {
+        try {
+            const blockchainService = this.blockchainRegistry.getByBlockchainInfo(this.blockchainId, networkId) as T;
+
+            return blockchainService;
+        } catch (ex) {
+            if (ex.message === BlockchainServicesErrors.BLOCKCHAIN_SERVICE_DOES_NOT_IN_REGISTRY) {
+                throw new WebMultivestError(Errors.UNKNOWN_NETWORK, 400);
+            }
+
+            throw ex;
+        }
     }
 }

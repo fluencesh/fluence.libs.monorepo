@@ -1,7 +1,7 @@
 import { WebMultivestError } from '@fluencesh/multivest.web';
 import { NextFunction, Response } from 'express';
 import { Errors } from '../errors';
-import { ProjectRequest } from '../types';
+import { AuthenticatedRequest } from '../types';
 
 export class InvalidPathParamsChecker {
     private clientResourceName: string;
@@ -15,7 +15,7 @@ export class InvalidPathParamsChecker {
         this.projectResourceName = projectResourceName;
     }
 
-    public validate(req: ProjectRequest, res: Response, next: NextFunction) {
+    public validate(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         const { clientId, projectId } = req.originalUrl
             .split('/').reduce((clientProjectIds: any, pathPart, index, pathArray) => {
                 if (index !== 0 && pathArray[index - 1] === this.clientResourceName) {

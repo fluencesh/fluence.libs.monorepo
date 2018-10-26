@@ -4,7 +4,7 @@ export const sdkTemplateTs =
 export class <%= className %> {
     private ethereumService: EthereumService;
     private contractId: string;
-    private networkId: string;
+    private transportConnectionId: string;
 
     constructor(
         baseUrl: string,
@@ -13,12 +13,12 @@ export class <%= className %> {
         authProjectId: string,
 
         contractId: string,
-        networkId: string
+        transportConnectionId: string
     ) {
+        this.transportConnectionId = transportConnectionId;
         this.ethereumService = new EthereumService(baseUrl, authToken, authClientId, authProjectId);
 
         this.contractId = contractId;
-        this.networkId = networkId;
     }
     <% _.forEach(methods, function({ name, inputTypes, methodParamsSignature }) { %>
     public <%= name %>(<%= methodParamsSignature %>): Promise<any> {
@@ -28,11 +28,11 @@ export class <%= className %> {
         }
 
         return this.ethereumService.executeContractsMethod(
-            this.networkId,
             this.contractId,
             '<%= name %>',
             [ <%= inputTypes %> ],
-            values
+            values,
+            this.transportConnectionId
         );
     }
     <% }); %>

@@ -4,6 +4,7 @@ export const sdkTemplateTs =
 export class <%= className %> {
     private ethereumService: EthereumService;
     private contractId: string;
+    private networkId: string;
 
     constructor(
         baseUrl: string,
@@ -11,11 +12,13 @@ export class <%= className %> {
         authClientId: string,
         authProjectId: string,
 
-        contractId: string
+        contractId: string,
+        networkId: string
     ) {
         this.ethereumService = new EthereumService(baseUrl, authToken, authClientId, authProjectId);
 
         this.contractId = contractId;
+        this.networkId = networkId;
     }
     <% _.forEach(methods, function({ name, inputTypes, methodParamsSignature }) { %>
     public <%= name %>(<%= methodParamsSignature %>): Promise<any> {
@@ -25,6 +28,7 @@ export class <%= className %> {
         }
 
         return this.ethereumService.executeContractsMethod(
+            this.networkId,
             this.contractId,
             '<%= name %>',
             [ <%= inputTypes %> ],
@@ -42,6 +46,8 @@ export const sdkDeclaration =
         authToken: string,
         authClientId: string,
         authProjectId: string,
+        contractId: string,
+        networkId: string
     );
     <% _.forEach(methods, function({ name, methodParamsSignature }) { %>
     public <%= name %>(<%= methodParamsSignature %>): Promise<any>;

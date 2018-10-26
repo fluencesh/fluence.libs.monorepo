@@ -1,8 +1,9 @@
-import { Service } from '@applicature-private/multivest.core';
+import { Service, MultivestError } from '@applicature-private/multivest.core';
 import { DaoIds } from '../../constants';
 import { TransportConnectionDao } from '../../dao';
 import { ProjectBlockchainSetupDao } from '../../dao/project.blockchain.setup.dao';
 import { Scheme } from '../../types';
+import { Errors } from '../../errors';
 
 export class ProjectBlockchainSetupService extends Service {
     private setupDao: ProjectBlockchainSetupDao;
@@ -17,11 +18,17 @@ export class ProjectBlockchainSetupService extends Service {
         return 'project.blockchain.setup.service';
     }
 
-    public createSetup(
+    public async createSetup(
         projectId: string,
         blockchainId: string,
         privateTransportConnectionId?: string
     ): Promise<Scheme.ProjectBlockchainSetup> {
+        const exists = !!(await this.setupDao.getByTransportConnectionId(privateTransportConnectionId));
+
+        if (exists) {
+            throw new MultivestError(Errors.PROJECT_BLOCKCHAIN_SETUP_ALREADY_EXISTS);
+        }
+
         return this.setupDao.createSetup(projectId, blockchainId, privateTransportConnectionId);
     }
 
@@ -31,6 +38,12 @@ export class ProjectBlockchainSetupService extends Service {
 
     public getByIdAndProjectId(setupId: string, projectId: string): Promise<Scheme.ProjectBlockchainSetup> {
         return this.setupDao.getByIdAndProjectId(setupId, projectId);
+    }
+
+    public getByTransportConnectionId(
+        privateTransportConnectionId: string
+    ): Promise<Scheme.ProjectBlockchainSetup> {
+        return this.setupDao.getByTransportConnectionId(privateTransportConnectionId);
     }
 
     public getByTransportConnectionIdAndProjectId(

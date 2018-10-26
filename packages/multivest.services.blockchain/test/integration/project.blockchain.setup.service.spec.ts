@@ -54,6 +54,14 @@ describe('setup service', () => {
         expect(got).toEqual(setup);
     });
 
+    it('should get by transport connection id', async () => {
+        const got = await service.getByTransportConnectionId(
+            setup.privateTransportConnectionId
+        );
+
+        expect(got).toEqual(setup);
+    });
+
     it('should get by transport connection id and project id', async () => {
         const got = await service.getByTransportConnectionIdAndProjectId(
             setup.privateTransportConnectionId,

@@ -23,6 +23,10 @@ export class ScSdkGenerator {
         for (const method of abi) {
             const name = method.name;
 
+            if (!name || !method.inputs) {
+                continue;
+            }
+
             const inputTypes = method.inputs
                 .map((input) => `'${ input.type }'`)
                 .join(', ');

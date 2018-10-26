@@ -9,13 +9,13 @@ export interface ProjectSession extends Scheme.Session {
     client: Scheme.Client;
 }
 
-export interface ProjectRequest extends Request {
-    project: Scheme.Project;
+export interface AuthenticatedRequest extends Request {
+    project?: Scheme.Project;
     relatedClient: Scheme.Client;
     session: ProjectSession;
 }
 
-export interface AwsRequest extends ProjectRequest {
+export interface AwsAuthenticatedRequest extends AuthenticatedRequest {
     apiGateway: AwsRequestGateway;
 }
 

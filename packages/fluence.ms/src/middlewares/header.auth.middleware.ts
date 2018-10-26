@@ -2,7 +2,7 @@ import { Scheme } from '@applicature-private/multivest.services.blockchain';
 import { WebMultivestError } from '@applicature-private/multivest.web';
 import { NextFunction, Response } from 'express';
 import { Errors } from '../errors';
-import { ProjectRequest, ProjectSession } from '../types';
+import { AuthenticatedRequest, ProjectSession } from '../types';
 import { AuthMiddleware } from './auth.middleware';
 
 export class HeaderAuthMiddleware extends AuthMiddleware {
@@ -28,7 +28,7 @@ export class HeaderAuthMiddleware extends AuthMiddleware {
         this.sessionProjectHeader = sessionProjectHeader;
     }
 
-    public async attachProjectAndClient(req: ProjectRequest, res: Response, next: NextFunction) {
+    public async attachProjectAndClient(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         const projectRaw = req.header(this.projectHeader);
         const clientRaw = req.header(this.clientHeader);
         const sessionRaw = req.header(this.sessionHeader);

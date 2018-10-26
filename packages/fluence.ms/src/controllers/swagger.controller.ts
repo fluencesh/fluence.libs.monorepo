@@ -1,12 +1,12 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { generateSwaggerYaml } from 'swapi';
-import { ProjectRequest } from '../types';
+import { AuthenticatedRequest } from '../types';
 import { Controller } from './controller';
 
 export class SwaggerController extends Controller {
     private swaggerData: string;
 
-    public async getSwaggerFile(req: ProjectRequest, res: Response, next: NextFunction) {
+    public async getSwaggerFile(req: Request, res: Response, next: NextFunction) {
         if (!this.swaggerData) {
             try {
                 this.swaggerData = generateSwaggerYaml();

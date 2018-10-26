@@ -1,6 +1,6 @@
 {
   "name": "@applicature-private/fluence.ms",
-  "version": "0.0.10-beta.7",
+  "version": "0.0.11-beta.5",
   "private": false,
   "license": "UNLICENSED",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -27,7 +27,7 @@
   "dependencies": {
     "@applicature-private/fluence.metric.services": "0.0.2-beta.0",
     "@applicature-private/multivest.core": "^2.1.0-beta.0",
-    "@applicature-private/multivest.services.blockchain": "^0.2.53-beta.6",
+    "@applicature-private/multivest.services.blockchain": "^0.2.55-beta.0",
     "@applicature-private/multivest.web": "^0.2.6",
     "aws-sdk": "^2.316.0",
     "axios": "^0.18.0",

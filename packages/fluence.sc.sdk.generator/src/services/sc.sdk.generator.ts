@@ -54,9 +54,9 @@ export class ScSdkGenerator {
         return output;
     }
 
-    public convertToZip(data: SdkData, output: Writable): Promise<void> {
+    public convertToZip(data: SdkData, output: Writable, compressLevel: number = 0): Promise<void> {
         const archive = archiver('zip', {
-            zlib: { level: 9 }
+            zlib: { level: compressLevel }
         });
 
         return new Promise((resolve, reject) => {

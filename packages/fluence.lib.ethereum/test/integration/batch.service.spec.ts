@@ -1,4 +1,4 @@
-import { PluginManager } from '@fluencesh/multivest.core';
+import { PluginManager } from '@applicature/core.plugin-manager';
 import {
     ContractService,
     DaoCollectionNames,
@@ -11,9 +11,9 @@ import * as express from 'express';
 import { createServer, Server, ServerRequest, ServerResponse } from 'http';
 import { Db, MongoClient } from 'mongodb';
 import { promisify } from 'util';
-import { BatchService } from '../../src/services/blockchain/batch.service';
-import { EthereumBlockchainService } from '../../src/services/blockchain/ethereum';
-import { ManagedEthereumTransportService } from '../../src/services/transports/managed.ethereum.transport.service';
+import { BatchService } from '../../src/services/blockchain';
+import { EthereumBlockchainService } from '../../src/services/blockchain';
+import { ManagedEthereumTransportService } from '../../src/services/transports';
 import { clearDb } from '../helper';
 
 describe('batch service', () => {
@@ -34,7 +34,7 @@ describe('batch service', () => {
 
     async function initPluginManager() {
         pluginManager = new PluginManager([
-            { path: '@fluencesh/multivest.mongodb' },
+            { path: '@applicature/core.mongodb' },
             { path: '@fluencesh/multivest.services.blockchain' },
         ]);
 

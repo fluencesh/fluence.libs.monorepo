@@ -26,8 +26,8 @@
     "url": "git@bitbucket.com:applicature/fluence.libs-monorepo.git"
   },
   "dependencies": {
-    "@fluencesh/multivest.core": "^2.1.0-beta.0",
-    "@fluencesh/multivest.mongodb": "^0.2.1",
+    "@applicature/core.plugin-manager": "^2.0.0",
+    "@applicature/core.mongodb": "^2.0.0",
     "@fluencesh/multivest.services.blockchain": "^0.2.53-beta.5",
     "axios": "^0.18.0",
     "bignumber.js": "^4.1.0",

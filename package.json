@@ -26,11 +26,11 @@
     "url": "git@bitbucket.com:applicature/fluence.libs-monorepo.git"
   },
   "devDependencies": {
-    "husky": "^1.1.2",
     "lerna": "^3.4.3"
   },
   "dependencies": {
     "cors": "^2.8.4",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "husky": "^1.1.2"
   }
 }

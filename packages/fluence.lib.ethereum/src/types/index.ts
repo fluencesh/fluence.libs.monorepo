@@ -2,7 +2,7 @@ import {
     Block,
     Hashtable,
     Transaction
-} from '@applicature-private/multivest.core';
+} from '@applicature-private/core.plugin-manager';
 import BigNumber from 'bignumber.js';
 
 export const ETHEREUM = 'ETHEREUM';

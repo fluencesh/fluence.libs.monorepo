@@ -1,4 +1,4 @@
-import { Plugin } from '@applicature-private/multivest.core';
+import { Plugin } from '@applicature-private/core.plugin-manager';
 
 class EthereumBlockchainPlugin extends Plugin<any> {
     public getPluginId() {

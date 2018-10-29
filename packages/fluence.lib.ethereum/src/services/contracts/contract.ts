@@ -1,4 +1,4 @@
-import { Signature } from '@applicature-private/multivest.services.blockchain';
+import { Signature } from '@applicature-private/fluence.lib.services';
 import * as EthereumAbi from 'ethereumjs-abi';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
 

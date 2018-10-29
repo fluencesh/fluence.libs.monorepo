@@ -1,4 +1,4 @@
-import { Scheme } from '@fluencesh/multivest.services.blockchain';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 
 export const TransportConnectionMock = {
     networkId: 'rinkeby',

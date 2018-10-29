@@ -4,7 +4,7 @@ import {
     DaoCollectionNames,
     MongodbTransportConnectionDao,
     Scheme,
-} from '@fluencesh/multivest.services.blockchain';
+} from '@fluencesh/fluence.lib.services';
 import * as config from 'config';
 import * as cors from 'cors';
 import * as express from 'express';
@@ -35,7 +35,7 @@ describe('batch service', () => {
     async function initPluginManager() {
         pluginManager = new PluginManager([
             { path: '@applicature/core.mongodb' },
-            { path: '@fluencesh/multivest.services.blockchain' },
+            { path: '@fluencesh/fluence.lib.services' },
         ]);
 
         await pluginManager.init();

@@ -7,6 +7,7 @@ module.exports = {
             "skipBabel": true
         }
     },
+    // "testEnvironment": "node",
     "testResultsProcessor": "jest-multi-test-result-processor",
     "transform": {
         "^.+\\.tsx?$": "ts-jest"

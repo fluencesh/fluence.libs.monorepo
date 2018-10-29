@@ -1,7 +1,7 @@
-import { Hashtable } from '@fluencesh/multivest.core';
+import { Hashtable } from '@applicature/core.plugin-manager';
 import {
     JsonRpcProxy
-} from '@fluencesh/multivest.services.blockchain';
+} from '@fluencesh/fluence.lib.services';
 import { AxiosRequestConfig } from 'axios';
 
 export class EthereumJsonRpcProxy extends JsonRpcProxy {

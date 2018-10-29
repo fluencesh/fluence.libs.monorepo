@@ -1,5 +1,5 @@
 
-import { Scheme } from '@fluencesh/multivest.services.blockchain';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import * as config from 'config';
 import { createHash } from 'crypto';
 import { random } from 'lodash';

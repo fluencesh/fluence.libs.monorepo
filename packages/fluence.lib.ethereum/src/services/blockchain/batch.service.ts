@@ -1,5 +1,5 @@
-import { PluginManager, Service } from '@fluencesh/multivest.core';
-import { Scheme } from '@fluencesh/multivest.services.blockchain';
+import { PluginManager, Service } from '@applicature/core.plugin-manager';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import Axios, { AxiosRequestConfig } from 'axios';
 import { format } from 'util';
 import * as logger from 'winston';

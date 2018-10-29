@@ -1,7 +1,7 @@
 import {
   ManagedBlockchainTransportService,
   Scheme,
-} from '@fluencesh/multivest.services.blockchain';
+} from '@fluencesh/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import { ServiceIds, TransportIds } from '../../constants';
 import {

@@ -1,4 +1,4 @@
-import { Plugin } from '@fluencesh/multivest.core';
+import { Plugin } from '@applicature/core.plugin-manager';
 
 class EthereumBlockchainPlugin extends Plugin<any> {
     public getPluginId() {

@@ -1,5 +1,5 @@
-import { Block, MultivestError, PluginManager, Service, Transaction } from '@fluencesh/multivest.core';
-import { Scheme } from '@fluencesh/multivest.services.blockchain';
+import { Block, MultivestError, PluginManager, Service, Transaction } from '@applicature/core.plugin-manager';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import { Contract, providers } from 'ethers';
 import { get } from 'lodash';

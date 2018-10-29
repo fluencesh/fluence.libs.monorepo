@@ -2,7 +2,7 @@ import {
     Block,
     Hashtable,
     Transaction
-} from '@fluencesh/multivest.core';
+} from '@applicature/core.plugin-manager';
 import BigNumber from 'bignumber.js';
 
 export const ETHEREUM = 'ETHEREUM';

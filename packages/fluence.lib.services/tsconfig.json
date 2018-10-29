@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": ".",
+    "emitDecoratorMetadata": true
+  },
+  "include": [
+    "./src/**/*",
+    "./test/**/*"
+  ]
+}

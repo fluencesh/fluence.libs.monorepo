@@ -6,6 +6,7 @@
     "no-trailing-whitespace": [true, "ignore-blank-lines"],
     "object-literal-sort-keys": false,
     "one-line": false,
+    "ordered-imports": false,
     "quotemark": [true, "single"],
     "curly": false,
     "trailing-comma": [

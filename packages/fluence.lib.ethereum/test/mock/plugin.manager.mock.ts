@@ -1,4 +1,4 @@
-import { PluginManager } from '@fluencesh/multivest.core';
+import { PluginManager } from '@applicature/core.plugin-manager';
 
 export const PluginManagerMock = {
     getServiceByClass: () => ({})

@@ -2,18 +2,23 @@ import { PluginManager } from '@fluencesh/multivest.core';
 import { Plugin as MongoPlugin } from '@fluencesh/multivest.mongodb';
 
 const generate = (n: number, f: any) => {
-    return Array(n).fill('').map(f);
+    return Array(n)
+        .fill('')
+        .map(f);
 };
 
 async function start() {
     const pluginManager = new PluginManager([
         {
-            path: '@fluencesh/multivest.mongodb',
+            path: '@fluencesh/multivest.mongodb'
+        },
+        {
+            path: '@applicature/core.dynamodb'
         }
     ]);
 
     await pluginManager.init();
-    const mongoPlugin = pluginManager.get('mongodb') as any as MongoPlugin;
+    const mongoPlugin = (pluginManager.get('mongodb') as any) as MongoPlugin;
 }
 
 start();

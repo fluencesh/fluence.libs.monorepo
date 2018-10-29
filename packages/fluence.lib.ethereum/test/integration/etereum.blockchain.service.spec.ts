@@ -1,4 +1,4 @@
-import { PluginManager } from '@applicature-private/multivest.core';
+import { PluginManager } from '@applicature-private/core.plugin-manager';
 import {
     ContractService,
     DaoCollectionNames,
@@ -27,7 +27,7 @@ describe('ethereum blockchain', () => {
 
     async function initPluginManager() {
         pluginManager = new PluginManager([
-            { path: '@applicature-private/multivest.mongodb' },
+            { path: '@applicature-private/core.mongodb' },
             { path: '@applicature-private/multivest.services.blockchain' },
         ]);
 

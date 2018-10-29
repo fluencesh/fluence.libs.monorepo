@@ -3,10 +3,8 @@ import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { ProjectBlockchainSetupDao } from '../project.blockchain.setup.dao';
 
-export class MongodbProjectBlockchainSetupDao
-        extends MongoDBDao<Scheme.ProjectBlockchainSetup>
-        implements ProjectBlockchainSetupDao {
-
+export class MongodbProjectBlockchainSetupDao extends MongoDBDao<Scheme.ProjectBlockchainSetup>
+    implements ProjectBlockchainSetupDao {
     public getDaoId() {
         return DaoIds.ProjectBlockchainSetup;
     }
@@ -65,19 +63,29 @@ export class MongodbProjectBlockchainSetupDao
     }
 
     public async setStatus(setupId: string, status: Scheme.ProjectBlockchainSetupStatus): Promise<void> {
-        await this.updateRaw({ id: setupId }, {
-            $set: {
-                status
+        await this.updateRaw(
+            { id: setupId },
+            {
+                $set: {
+                    status
+                }
             }
-        });
+        );
+
+        return;
     }
 
     public async setStatusByProjectId(projectId: string, status: Scheme.ProjectBlockchainSetupStatus): Promise<void> {
-        await this.updateRaw({ projectId }, {
-            $set: {
-                status
+        await this.updateRaw(
+            { projectId },
+            {
+                $set: {
+                    status
+                }
             }
-        });
+        );
+
+        return;
     }
 
     public async removeById(setupId: string): Promise<void> {

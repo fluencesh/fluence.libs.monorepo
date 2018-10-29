@@ -6,6 +6,8 @@
         "removeComments": false,
         "sourceMap": true,
         "declaration": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "outDir": "./dist",
         "skipLibCheck": true,
         "typeRoots": [

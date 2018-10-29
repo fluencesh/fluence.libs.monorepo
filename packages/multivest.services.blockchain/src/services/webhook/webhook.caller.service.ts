@@ -1,5 +1,5 @@
 import { Hashtable, PluginManager, Service } from '@applicature-private/multivest.core';
-import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Scheme } from '../../types';
 import { WebhookActionItemObjectService } from '../object/webhook.action.service';
 
@@ -15,19 +15,16 @@ export class WebhookCallerService extends Service {
     public async init() {
         await super.init();
 
-        this.webhookObjectService =
-            this.pluginManager.getServiceByClass(WebhookActionItemObjectService) as WebhookActionItemObjectService;
+        this.webhookObjectService = this.pluginManager.getServiceByClass(
+            WebhookActionItemObjectService
+        ) as WebhookActionItemObjectService;
     }
 
     public getServiceId(): string {
         return 'service.webhooks';
     }
 
-    public async send(
-        action: Scheme.WebhookActionItem,
-        timeoutInMs: number
-    ): Promise<Scheme.WebhookCallResult> {
-
+    public async send(action: Scheme.WebhookActionItem, timeoutInMs: number): Promise<Scheme.WebhookCallResult> {
         // @TODO: calculate HASH
 
         const options: AxiosRequestConfig = {
@@ -56,6 +53,9 @@ export class WebhookCallerService extends Service {
                 txHash: action.txHash,
 
                 address: action.address,
+
+                projectId: action.projectId,
+                clientId: action.clientId,
 
                 type: action.type,
                 refId: action.refId, // AddressSubscription id or EthereumContractSubscription id

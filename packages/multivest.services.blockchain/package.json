@@ -27,7 +27,9 @@
         "url": "git@bitbucket.com:applicature/multivest.services.blockchain.git"
     },
     "dependencies": {
+        "@applicature-private/core.dynamodb": "^2.0.1",
         "@applicature-private/fluence.metric.services": "0.0.1-beta.1",
+        "@aws/dynamodb-data-mapper-annotations": "^0.7.3",
         "@applicature-private/multivest.core": "^2.1.0-beta.0",
         "@applicature-private/multivest.mongodb": "^0.2.4-beta.0",
         "agenda": "^1.0.3",

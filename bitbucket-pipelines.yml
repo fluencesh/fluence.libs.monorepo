@@ -28,6 +28,7 @@ pipelines:
       caches:
       - node
       script:
+      - npm run build
       - printf "//`node -p \"require('url').parse(process.env.NPM_REGISTRY_URL || 'https://registry.npmjs.org').host\"`/:_authToken=${NPM_TOKEN}\nregistry=${NPM_REGISTRY_URL:-https://registry.npmjs.org}\n" >> ~/.npmrc
       - git config --global user.email "bitbucket-bot@applicature.com"
       - git config --global user.name "Bitbucket Bot"

@@ -30,7 +30,6 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         super(pluginManager);
 
         this.transportConnection = transportConnection;
-
         this.network = this.transportConnection.networkId;
 
         if (ethereumValidNetworks.indexOf(this.network) === -1) {

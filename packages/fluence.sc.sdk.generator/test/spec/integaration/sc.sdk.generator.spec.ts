@@ -1,3 +1,4 @@
+import * as archiver from 'archiver';
 import { createWriteStream, exists, unlink } from 'fs';
 import { resolve } from 'path';
 import { promisify } from 'util';
@@ -31,7 +32,7 @@ describe('sc.sdk.generator spec', () => {
         expect(typeof sdk.tsText).toEqual('string');
     });
 
-    it.skip('should save zip via write stream', async () => {
+    it('should save zip via write stream', async () => {
         const sdk = generator.generate(abi);
 
         const ws = createWriteStream(zipPath);
@@ -39,5 +40,5 @@ describe('sc.sdk.generator spec', () => {
 
         const isExists = await promisify(exists)(zipPath);
         expect(isExists).toBeTruthy();
-    });
+    }, 90000);
 });

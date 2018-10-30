@@ -47,7 +47,7 @@ export const sdkDeclaration =
         authClientId: string,
         authProjectId: string,
         contractId: string,
-        networkId: string
+        transportConnectionId: string
     );
     <% _.forEach(methods, function({ name, methodParamsSignature }) { %>
     public <%= name %>(<%= methodParamsSignature %>): Promise<any>;

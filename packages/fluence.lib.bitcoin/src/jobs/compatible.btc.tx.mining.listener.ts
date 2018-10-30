@@ -1,12 +1,12 @@
 import { BlockchainListener } from '@applicature-restricted/multivest.blockchain';
-import { Block, Hashtable, Transaction } from '@applicature/multivest.core';
-import { Plugin as MongoPlugin } from '@applicature/multivest.mongodb';
-import { Scheme, TransactionDao } from '@applicature/multivest.mongodb.ico';
+import { Hashtable } from '@applicature/core.plugin-manager';
+import {Scheme, TransactionDao} from '@applicature-private/fluence.lib.services';
+import { Plugin as MongoPlugin } from '@applicature/core.mongodb';
 import * as logger from 'winston';
 
 export abstract class CompatibleBitcoinTxMiningListener extends BlockchainListener {
-    public async processBlock(block: Block) {
-        const txMapping: Hashtable<Transaction> = {};
+    public async processBlock(block: Scheme.BlockchainBlock) {
+        const txMapping: Hashtable<Scheme.BlockchainTransaction> = {};
         const mongoPlugin = this.pluginManager.get('mongodb') as MongoPlugin;
         const transactionDao = await mongoPlugin.getDao('transactions') as TransactionDao;
 

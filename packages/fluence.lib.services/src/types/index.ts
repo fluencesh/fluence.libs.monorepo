@@ -191,7 +191,7 @@ export namespace Scheme {
         isPredefinedBySystem?: boolean;
     }
 
-    export interface BlockchainBlock {
+    export interface BlockchainBlock<T extends BlockchainTransaction> {
         height: number;
         hash: string;
         parentHash?: string;
@@ -201,7 +201,7 @@ export namespace Scheme {
         time: number;
         network: string;
         fee: BigNumber;
-        transactions: Array<BlockchainTransaction>;
+        transactions: Array<T>;
     }
 
     export interface BlockchainTransaction {

@@ -1,4 +1,4 @@
-import { PluginManager } from '@applicature/multivest.core';
+import { PluginManager } from '@applicature/core.plugin-manager';
 import * as config from 'config';
 import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';
 import { CompatibleBitcoinTxMiningListener } from './compatible.btc.tx.mining.listener';

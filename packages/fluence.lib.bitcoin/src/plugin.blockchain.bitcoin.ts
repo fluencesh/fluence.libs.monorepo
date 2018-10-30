@@ -1,4 +1,4 @@
-import { Plugin } from '@applicature/multivest.core';
+import { Plugin } from '@applicature/core.plugin-manager';
 import { BitcoinTxMiningListener } from './jobs/btc.tx.mining.listener';
 import { BitcoinTransactionSender } from './jobs/btc.tx.sender';
 

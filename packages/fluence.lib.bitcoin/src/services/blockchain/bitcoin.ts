@@ -1,10 +1,8 @@
-import { BlockchainService } from '@applicature-restricted/multivest.blockchain';
 import {
-  Block,
-  Recipient,
-  Sender,
-  Transaction
-} from '@applicature/multivest.core';
+    BlockchainService,
+    Scheme,
+    Signature
+} from '@applicature-private/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import * as Client from 'bitcoin-core';
 import {
@@ -76,7 +74,7 @@ export class BitcoinBlockchainService extends BlockchainService {
     return this.client.getBlockCount();
   }
 
-  public parseBlock(block: OriginalBlock): Block {
+  public parseBlock(block: OriginalBlock): Scheme.BlockchainBlock {
     return {
       difficulty: block.difficulty,
       fee: null,
@@ -93,9 +91,9 @@ export class BitcoinBlockchainService extends BlockchainService {
     };
   }
 
-  public convertTransaction(block: OriginalBlock, tx: any): Transaction {
-    const senders: Array<Sender> = [];
-    const recipients: Array<Recipient> = [];
+  public convertTransaction(block: OriginalBlock, tx: any): Scheme.BlockchainTransaction {
+    const senders: Array<Scheme.Sender> = [];
+    const recipients: Array<Scheme.Recipient> = [];
     tx.vout.forEach((vout: any) => {
       if (
         vout.scriptPubKey &&
@@ -108,7 +106,8 @@ export class BitcoinBlockchainService extends BlockchainService {
         });
       }
     });
-    const result: Transaction = {
+
+    const result: Scheme.BlockchainTransaction = {
       blockHash: block.hash,
       blockHeight: block.height,
       blockTime: block.time,
@@ -120,9 +119,9 @@ export class BitcoinBlockchainService extends BlockchainService {
     return result;
   }
 
-  public parseTransaction(transaction: OriginalTransaction): Transaction {
-    const senders: Array<Sender> = [];
-    const recipients: Array<Recipient> = [];
+  public parseTransaction(transaction: OriginalTransaction): Scheme.BlockchainTransaction {
+    const senders: Array<Scheme.Sender> = [];
+    const recipients: Array<Scheme.Recipient> = [];
 
     transaction.details.forEach((item: any) => {
       if (item.category === 'send') {
@@ -163,7 +162,7 @@ export class BitcoinBlockchainService extends BlockchainService {
     return this.parseTransaction(tx);
   }
 
-  public async sendTransaction(transaction: Partial<Transaction>) {
+  public async sendTransaction(transaction: Partial<Scheme.BlockchainTransaction>) {
     return this.client.sendToAddress(
       transaction.to[0].address.toString(),
       transaction.to[0].amount.toString()

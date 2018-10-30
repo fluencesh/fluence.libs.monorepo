@@ -1,4 +1,4 @@
-import { Block, MultivestError, PluginManager, Service, Transaction } from '@applicature-private/core.plugin-manager';
+import { MultivestError, PluginManager, Service } from '@applicature-private/core.plugin-manager';
 import { Scheme } from '@applicature-private/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import { Contract, providers } from 'ethers';
@@ -51,19 +51,19 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         }
     }
 
-    public getNetworkId() {
+    public getNetworkId(): string {
         return this.network;
     }
 
-    public getServiceId() {
+    public getServiceId(): string {
         return ServiceIds.EthersEthereumTransportService;
     }
 
-    public getTransportId() {
+    public getTransportId(): string {
         return TransportIds.EthersEthereumTransportService;
     }
 
-    public getBlockchainId() {
+    public getBlockchainId(): string {
         return ETHEREUM;
     }
 
@@ -87,7 +87,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         return this.provider.getBlockNumber();
     }
 
-    public async getBlockByHeight(blockHeight: number): Promise<Block> {
+    public async getBlockByHeight(blockHeight: number): Promise<EthereumBlock> {
         const block = await this.provider.getBlock(blockHeight);
 
         block.transactions = await Promise.all(
@@ -204,19 +204,19 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         // NOTICE: if output length === 1 then result will be a value.
         // NOTICE: if output length > 1 then result will be an Array.
 
-        result = result instanceof Array ? result : [ result ];
-
+        result = abiItem.outputs.length > 1 ? result : [result];
         if (!abiItem) {
             return result.map((value: any) => value.toString());
         }
-        
+
         const dto: any = {};
         result.forEach((value: any, index: number) => {
-            const name = abiItem.outputs[index].name;
+            const output = abiItem.outputs[index];
+            const isArray = output.type.indexOf('[]') !== -1 && value instanceof Array;
+            const name = output.name;
 
-            dto[name] = value.toString();
+            dto[name] = isArray ? value.map((item: any) => item.toString()) : value.toString();
         });
-
         return dto;
     }
 

@@ -22,7 +22,7 @@ import { ManagedEthereumTransportService } from '../transports/managed.ethereum.
 export class EthereumBlockchainService extends BlockchainService {
     protected blockchainTransport: ManagedEthereumTransportService;
 
-    public getServiceId() {
+    public getServiceId(): string {
         return ServiceIds.EthereumBlockchainService;
     }
 

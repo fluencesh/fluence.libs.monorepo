@@ -77,8 +77,6 @@ export class EthersEthereumTransportService extends Service implements EthereumT
             block.transactions.map((txHash: string) => this.getTransactionByHash(txHash))
         );
 
-        block.height = get(block, 'transactions[0].height', null);
-
         return this.convertBlock(block);
     }
 

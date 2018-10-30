@@ -14,3 +14,4 @@ packages/*/lib
 /.history
 *.tgz
 *.log
+.DS_Store

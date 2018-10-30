@@ -7,5 +7,10 @@
   "include": [
     "./src/**/*",
     "./test/**/*"
+  ],
+  ,
+  "typeRoots": [
+    "./node_modules/@types",
+    "@types"
   ]
 }

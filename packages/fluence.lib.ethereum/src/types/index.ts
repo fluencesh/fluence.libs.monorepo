@@ -1,9 +1,6 @@
-import {
-    Block,
-    Hashtable,
-    Transaction
-} from '@applicature/core.plugin-manager';
+import {Hashtable} from '@applicature/core.plugin-manager';
 import BigNumber from 'bignumber.js';
+import {Scheme} from '@fluencesh/fluence.lib.services';
 
 export const ETHEREUM = 'ETHEREUM';
 
@@ -15,7 +12,7 @@ export const ethereumNetworkToChainId: Hashtable<number> = {
     kovan: 4
 };
 
-export interface EthereumTransaction extends Transaction {
+export interface EthereumTransaction extends Scheme.BlockchainTransaction {
     gasLimit?: BigNumber;
     gasPrice?: BigNumber;
     nonce?: number;
@@ -35,7 +32,7 @@ export interface EthereumEvent {
     transactionHash: string;
 }
 
-export interface EthereumBlock extends Block {
+export interface EthereumBlock extends Scheme.BlockchainBlock {
     sha3Uncles: string;
     logsBloom: string;
     transactionsRoot: string;

@@ -1,13 +1,9 @@
-import { Dao, Hashtable, Job, PluginManager } from '@applicature/multivest.core';
-import { IcoCompositeDao, Scheme, TransactionDao } from '@applicature/multivest.mongodb.ico';
-import * as Agenda from 'agenda';
-import * as config from 'config';
+import { Dao, Hashtable, Job, PluginManager } from '@applicature/core.plugin-manager';
+import { Scheme, TransactionDao } from '@applicature/fluence.lib.services';
 import * as logger from 'winston';
 import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';
 
 export abstract class CompatibleBitcoinTransactionSender extends Job {
-    private daos: Hashtable<IcoCompositeDao>;
-
     constructor(
         pluginManager: PluginManager,
         private blockchainService: BitcoinBlockchainService,
@@ -16,12 +12,8 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
         super(pluginManager);
     }
 
-    public async init() {
-        this.daos = await this.pluginManager.get('mongodb').getDaos() as Hashtable<IcoCompositeDao>;
-    }
-
     public async execute() {
-        const transactionDao = this.daos.transactions as TransactionDao;
+        const transactionDao = this.pluginManager.getDaoByClass(TransactionDao);
         const transactions = await transactionDao.listByNetworkAndStatus(
             this.blockchainService.getBlockchainId(),
             Scheme.TransactionStatus.Created
@@ -29,8 +21,6 @@ export abstract class CompatibleBitcoinTransactionSender extends Job {
 
         for (const transaction of transactions) {
             logger.info(`${this.getJobId()}: send transaction`, transaction);
-
-
 
             if (!transaction.ref.from[0].address) {
                 transaction.ref.from[0].address = this.sendFromAddress;

@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.ms.abstract.blockchain",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "private": false,
   "license": "UNLICENSED",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -28,8 +28,8 @@
     "@applicature/core.metrics": "^2.0.0",
     "@applicature/core.mongodb": "^2.0.0",
     "@applicature/core.web": "^2.0.0",
-    "@fluencesh/fluence.lib.services": "^2.0.3",
-    "@fluencesh/fluence.ms.abstract": "^2.0.3",
+    "@fluencesh/fluence.lib.services": "^2.0.5",
+    "@fluencesh/fluence.ms.abstract": "^2.0.5",
     "bignumber.js": "^7.2.1",
     "config": "^1.30.0",
     "lodash": "^4.17.11",

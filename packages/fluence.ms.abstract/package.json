@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.ms.abstract",
-  "version": "2.0.4",
+  "version": "2.0.6",
   "private": false,
   "license": "UNLICENSED",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -16,8 +16,7 @@
     "test": "jest",
     "test:ci": "jest --coverage --runInBand --forceExit",
     "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN",
-    "test:lint": "tslint --force --out ./test-reports/tslint.json -t json --project ./tsconfig.json 'src/**/*.{ts,tsx}'",
-    "install-packages": "npm install"
+    "test:lint": "tslint --force --out ./test-reports/tslint.json -t json --project ./tsconfig.json 'src/**/*.{ts,tsx}'"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,7 +28,7 @@
     "@applicature/core.metrics": "^2.0.0",
     "@applicature/core.plugin-manager": "^2.0.0",
     "@applicature/core.web": "^2.0.0",
-    "@fluencesh/fluence.lib.services": "^2.0.4",
+    "@fluencesh/fluence.lib.services": "^2.0.6",
     "aws-sdk": "^2.316.0",
     "axios": "^0.18.0",
     "bignumber.js": "^7.2.1",
@@ -85,38 +84,6 @@
     "index.d.ts",
     "index.js"
   ],
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "testEnvironment": "node",
-    "globals": {
-      "ts-jest": {
-        "skipBabel": true
-      }
-    },
-    "testResultsProcessor": "jest-multi-test-result-processor",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/.*?\\.d\\.ts$",
-      "<rootDir>/.*?\\.mock\\.ts$"
-    ],
-    "coverageReporters": [
-      "json",
-      "lcov",
-      "text",
-      "clover",
-      "cobertura"
-    ]
-  },
   "jest-multi-test-result-processor": {
     "processors": [
       "jest-junit",

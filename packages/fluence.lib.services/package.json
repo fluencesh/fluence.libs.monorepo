@@ -1,6 +1,6 @@
 {
     "name": "@fluencesh/fluence.lib.services",
-    "version": "2.0.4",
+    "version": "2.0.6",
     "private": false,
     "license": "UNLICENSED",
     "description": "Fluence Services Plugin",
@@ -19,8 +19,7 @@
         "test": "jest",
         "test:ci": "jest --coverage --forceExit",
         "test:lint": "tslint --force -t json --project ./tsconfig.json '{index.ts,src/**/*.ts,test/**/*.ts}'",
-        "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN",
-        "install-packages": "npm install"
+        "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN"
     },
     "repository": {
         "type": "git",

@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": ".",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": [
+    "./src/**/*",
+    "./test/**/*"
+  ],
+  "typeRoots": [
+    "./node_modules/@types",
+    "@types"
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.lib.ethereum",
-  "version": "2.0.4",
+  "version": "2.0.6",
   "private": false,
   "license": "UNLICENSED",
   "description": "Ethereum Blockchain Plugin",
@@ -19,8 +19,7 @@
     "test": "jest",
     "test:ci": "jest --coverage --forceExit",
     "test:lint": "tslint --force -t json --project ./tsconfig.json '{index.ts,src/**/*.ts,test/**/*.ts}'",
-    "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN",
-    "install-packages": "npm install"
+    "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN"
   },
   "repository": {
     "type": "git",
@@ -29,7 +28,7 @@
   "dependencies": {
     "@applicature/core.mongodb": "^2.0.0",
     "@applicature/core.plugin-manager": "^2.0.0",
-    "@fluencesh/fluence.lib.services": "^2.0.4",
+    "@fluencesh/fluence.lib.services": "^2.0.6",
     "axios": "^0.18.0",
     "bignumber.js": "^4.1.0",
     "config": "^1.30.0",

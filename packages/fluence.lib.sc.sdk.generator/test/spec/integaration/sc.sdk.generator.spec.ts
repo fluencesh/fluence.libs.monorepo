@@ -31,7 +31,7 @@ describe('sc.sdk.generator spec', () => {
         expect(typeof sdk.tsText).toEqual('string');
     });
 
-    it('should save zip via write stream', async () => {
+    it.skip('should save zip via write stream', async () => {
         const sdk = generator.generate(abi);
 
         const ws = createWriteStream(zipPath);

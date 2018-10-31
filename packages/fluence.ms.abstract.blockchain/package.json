@@ -16,7 +16,8 @@
     "test": "jest",
     "test:ci": "jest --coverage --runInBand --forceExit",
     "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN",
-    "test:lint": "tslint --force --out ./test-reports/tslint.json -t json --project ./tsconfig.json 'src/**/*.{ts,tsx}'"
+    "test:lint": "tslint --force --out ./test-reports/tslint.json -t json --project ./tsconfig.json 'src/**/*.{ts,tsx}'",
+    "install-package-lock-only": "npm i --package-lock-only"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -19,7 +19,8 @@
     "test": "exit 0",
     "test:ci": "exit 0",
     "test:lint": "tslint --force -t json --project ./tsconfig.json '{index.ts,src/**/*.ts,test/**/*.ts}'",
-    "test:sonar": "exit 0"
+    "test:sonar": "exit 0",
+    "install-package-lock-only": "npm i --package-lock-only"
   },
   "repository": {
     "type": "git",

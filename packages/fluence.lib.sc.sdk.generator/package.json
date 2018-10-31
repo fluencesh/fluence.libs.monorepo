@@ -1,31 +1,32 @@
 {
-  "name": "@fluencesh/fluence.sc.sdk.generator",
-  "version": "0.0.2-beta.6",
+  "name": "@fluencesh/fluence.lib.sc.sdk.generator",
+  "version": "2.0.6",
   "private": false,
   "license": "UNLICENSED",
+  "description": "Ethereum Blockchain Plugin",
   "author": "Andrew Zubko <andrew@applicature.com>",
   "engines": {
     "node": ">=4.8.0",
     "npm": ">=2.15.11",
     "yarn": ">=0.20.3"
   },
-  "scripts": {
-    "build": "gulp build",
-    "lint": "tslint '{src/**/*.ts,test/**/*.ts}'",
-    "precommit": "sh pipeline.emulation.sh",
-    "test": "jest",
-    "test:ci": "jest --coverage --runInBand --forceExit",
-    "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN",
-    "test:lint": "tslint --force --out ./test-reports/tslint.json -t json --project ./tsconfig.json 'src/**/*.{ts,tsx}'"
-  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "gulp build",
+    "lint": "tslint '{index.ts,src/**/*.ts,test/**/*.ts}'",
+    "precommit": "npm run lint ; npm run test:integration",
+    "test": "jest",
+    "test:ci": "jest --coverage --forceExit",
+    "test:lint": "tslint --force -t json --project ./tsconfig.json '{index.ts,src/**/*.ts,test/**/*.ts}'",
+    "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN",
+    "install-package-lock-only": "npm i --package-lock-only"
+  },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git@bitbucket.com:applicature/fluence.libs-monorepo.git"
   },
   "dependencies": {
-    "@fluencesh/fluence.sdk.js": "0.0.2-beta.1",
     "archiver": "^3.0.0",
     "config": "^1.30.0",
     "lodash": "^4.17.11",
@@ -56,43 +57,10 @@
     "tslint": "^5.9.1"
   },
   "files": [
+    "@types/",
     "dist/",
-    "src/",
-    "index.d.ts",
-    "index.js"
+    "src/"
   ],
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "testEnvironment": "node",
-    "globals": {
-      "ts-jest": {
-        "skipBabel": true
-      }
-    },
-    "testResultsProcessor": "jest-multi-test-result-processor",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/.*?\\.d\\.ts$",
-      "<rootDir>/.*?\\.mock\\.ts$"
-    ],
-    "coverageReporters": [
-      "json",
-      "lcov",
-      "text",
-      "clover",
-      "cobertura"
-    ]
-  },
   "jest-multi-test-result-processor": {
     "processors": [
       "jest-junit",

@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.lib.sc.sdk.generator",
-  "version": "2.0.6",
+  "version": "2.0.7-alpha.1",
   "private": false,
   "license": "UNLICENSED",
   "description": "Ethereum Blockchain Plugin",
@@ -30,8 +30,8 @@
     "archiver": "^3.0.0",
     "config": "^1.30.0",
     "lodash": "^4.17.11",
-    "winston": "^2.4.2",
-    "typescript": "^2.9.2"
+    "typescript": "^2.9.2",
+    "winston": "^2.4.2"
   },
   "devDependencies": {
     "@types/archiver": "^2.1.2",

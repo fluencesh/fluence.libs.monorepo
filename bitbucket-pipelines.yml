@@ -52,6 +52,7 @@ pipelines:
         - npm run test:sonar
         - git config --global user.email "bitbucket-bot@applicature.com"
         - git config --global user.name "Bitbucket Bot"
+        - git status
         - >-
           npm run lerna-publish -- "patch"  "--yes" "-m '[skip ci] chore(release): publish %s'"
         services:

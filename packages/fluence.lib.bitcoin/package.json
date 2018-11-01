@@ -16,10 +16,10 @@
     "build": "gulp build",
     "lint": "tslint '{index.ts,src/**/*.ts,test/**/*.ts}'",
     "precommit": "npm run lint ; npm run test:integration",
-    "test": "exit 0",
-    "test:ci": "exit 0",
+    "test": "jest ; exit 0",
+    "test:ci": "jest --coverage --forceExit; exit 0",
     "test:lint": "tslint --force -t json --project ./tsconfig.json '{index.ts,src/**/*.ts,test/**/*.ts}'",
-    "test:sonar": "exit 0"
+    "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$MULTIVEST_BACKEND_SONARCLOUD_TOKEN; exit 0"
   },
   "repository": {
     "type": "git",

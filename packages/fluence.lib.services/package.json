@@ -19,8 +19,7 @@
         "test": "jest",
         "test:ci": "jest --coverage --forceExit --runInBand",
         "test:lint": "tslint --force -t json --project ./tsconfig.json '{index.ts,src/**/*.ts,test/**/*.ts}'",
-        "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$MULTIVEST_BACKEND_SONARCLOUD_TOKEN",
-        "install-package-lock-only": "npm i --package-lock-only"
+        "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$MULTIVEST_BACKEND_SONARCLOUD_TOKEN"
     },
     "repository": {
         "type": "git",

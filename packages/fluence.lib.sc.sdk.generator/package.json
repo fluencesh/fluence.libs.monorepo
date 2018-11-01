@@ -17,7 +17,7 @@
     "lint": "tslint '{index.ts,src/**/*.ts,test/**/*.ts}'",
     "precommit": "npm run lint ; npm run test:integration",
     "test": "jest",
-    "test:ci": "jest --coverage --forceExit",
+    "test:ci": "jest --coverage --forceExit --runInBand",
     "test:lint": "tslint --force -t json --project ./tsconfig.json '{index.ts,src/**/*.ts,test/**/*.ts}'",
     "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN",
     "install-package-lock-only": "npm i --package-lock-only"

@@ -4,8 +4,7 @@ import { Scheme } from '../types';
 export abstract class SubscriptionBlockRecheckDao extends Dao<Scheme.SubscriptionBlockRecheck> {
     public abstract createBlockRecheck(
         subscriptionId: string,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         type: Scheme.SubscriptionBlockRecheckType,
         blockHash: string,
         blockHeight: number,
@@ -16,16 +15,14 @@ export abstract class SubscriptionBlockRecheckDao extends Dao<Scheme.Subscriptio
     public abstract getById(id: string): Promise<Scheme.SubscriptionBlockRecheck>;
 
     public abstract listByBlockHeight(height: number): Promise<Array<Scheme.SubscriptionBlockRecheck>>;
-    public abstract listByBlockHeightAndBlockchainIdAndNetworkId(
+    public abstract listByBlockHeightAndTransportConnectionId(
         height: number,
-        blockchainId: string,
-        networkId: string
+        transportConnectionId: string
     ): Promise<Array<Scheme.SubscriptionBlockRecheck>>;
 
-    public abstract listByBlockHeightAndBlockchainInfoAndType(
+    public abstract listByBlockHeightAndTransportConnectionIdAndType(
         height: number,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         type: Scheme.SubscriptionBlockRecheckType
     ): Promise<Array<Scheme.SubscriptionBlockRecheck>>;
 

@@ -73,16 +73,14 @@ export class TransactionHashSubscriptionService extends Service {
     public createSubscription(
         clientId: string,
         projectId: string,
-        blockChainId: string,
-        networkId: string,
+        transportConnectionId: string,
         hash: string,
         minConfirmations: number
     ): Promise<Scheme.TransactionHashSubscription> {
         return this.transactionHashSubscriptionDao.createSubscription(
             clientId,
             projectId,
-            blockChainId,
-            networkId,
+            transportConnectionId,
             hash,
             minConfirmations
         );

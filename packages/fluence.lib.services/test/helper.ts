@@ -17,8 +17,7 @@ export function randomAddressSubscription(): Scheme.AddressSubscription {
     return {
         clientId: generateId(),
         projectId: generateId(),
-        blockchainId: generateId(),
-        networkId: generateId(),
+        transportConnectionId: generateId(),
         address: generateId(),
         minConfirmations: random(10, 100),
         subscribed: true,
@@ -30,13 +29,12 @@ export function randomAddressSubscription(): Scheme.AddressSubscription {
 
 export function randomTransactionSubscription(): Scheme.TransactionHashSubscription {
     return {
-        blockchainId: generateId(),
         clientId: generateId(),
         hash: `0x${generateId()}`,
         isClientActive: true,
         isProjectActive: true,
         minConfirmations: 0,
-        networkId: generateId(),
+        transportConnectionId: generateId(),
         projectId: generateId(),
         subscribed: true,
     } as Scheme.TransactionHashSubscription;
@@ -258,7 +256,7 @@ export function randomScheduledTx() {
     } as Scheme.ScheduledTx;
 }
 
-export function randomTransactionScheme(): Transaction {
+export function randomTransactionScheme(): Scheme.BlockchainTransaction {
     return {
         id: '123',
         ref: '123',
@@ -276,7 +274,7 @@ export function randomTransactionScheme(): Transaction {
             address: `0x${generate(RandomStringPresets.Hash256)}`,
             amount: new BigNumber(random(1, 10)) as any
         }]
-    } as Transaction;
+    } as Scheme.BlockchainTransaction;
 }
 
 export function randomSession(type?: Scheme.SessionType): Scheme.Session {
@@ -310,8 +308,7 @@ export function randomOraclize(projectId: string = generateId(), ) {
     return {
         clientId: generateId(),
         projectId,
-        blockchainId: generateId(),
-        networkId: generateId(),
+        transportConnectionId: generateId(),
         minConfirmations: random(10, 100),
         subscribed: true,
         isProjectActive: true,
@@ -332,8 +329,7 @@ export function randomSubscriptionBlockChecker() {
     return {
         id: generateId(),
         subscriptionId: generateId(),
-        blockchainId: generateId(),
-        networkId: generateId(),
+        transportConnectionId: generateId(),
         type: Scheme.SubscriptionBlockRecheckType[(typesKeys[random(0, typesKeys.length - 1)] as any)],
         blockHash: generateId(),
         blockHeight,

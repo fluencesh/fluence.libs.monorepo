@@ -1,4 +1,3 @@
-import { Transaction } from '@applicature/core.plugin-manager';
 import * as config from 'config';
 import { Db, MongoClient } from 'mongodb';
 import { v1 as generateId } from 'uuid';
@@ -107,7 +106,7 @@ describe('transaction dao', () => {
             data.blockChainId,
             data.networkId,
             data.uniqId,
-            data.ref as Transaction,
+            data.ref as Scheme.BlockchainTransaction,
             data.status
         );
         const got = await dao.getByUniqId(data.uniqId);

@@ -1,5 +1,4 @@
 import { MongoDBDao } from '@applicature/core.mongodb';
-import { Transaction } from '@applicature/core.plugin-manager';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { TransactionDao } from '../transaction.dao';
@@ -19,7 +18,7 @@ export class MongodbTransactionDao extends MongoDBDao<Scheme.Transaction> implem
 
     public async createTransaction(
         blockChainId: string, networkId: string, uniqId: string,
-        transaction: Transaction, status: Scheme.TransactionStatus
+        transaction: Scheme.BlockchainTransaction, status: Scheme.TransactionStatus
     ): Promise<Scheme.Transaction> {
 
         return this.create({

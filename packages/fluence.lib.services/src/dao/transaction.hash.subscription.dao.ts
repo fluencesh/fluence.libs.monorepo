@@ -6,8 +6,7 @@ export abstract class TransactionHashSubscriptionDao extends SubscriptionDao<Sch
     public abstract async createSubscription(
         clientId: string,
         projectId: string,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         hash: string,
         minConfirmations: number
     ): Promise<Scheme.TransactionHashSubscription>;

@@ -5,8 +5,7 @@ export abstract class OraclizeSubscriptionDao extends SubscriptionDao<Scheme.Ora
     public abstract createSubscription(
         clientId: string,
         projectId: string,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         minConfirmations: number,
         eventHash: string,
         eventName: string,

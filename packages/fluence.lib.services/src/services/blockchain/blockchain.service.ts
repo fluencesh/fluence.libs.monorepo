@@ -1,9 +1,7 @@
 import {
-    Block,
     MultivestError,
     PluginManager,
     Service,
-    Transaction,
 } from '@applicature/core.plugin-manager';
 import { BigNumber } from 'bignumber.js';
 import { Errors } from '../../errors';
@@ -45,11 +43,11 @@ export abstract class BlockchainService extends Service {
 
     public abstract isValidNetwork(network: string): boolean;
     public abstract getSymbol(): string;
-    public abstract getHDAddress(index: number, transportId?: string): Promise<string>;
+    public abstract getHDAddress(index: number, transportConnectionId: string): Promise<string>;
     public abstract isValidAddress(address: string): boolean;
     public abstract signData(privateKey: Buffer, data: Buffer): Signature;
     public abstract signDataAndStringify(privateKey: Buffer, data: Buffer): string;
-    public abstract signTransaction(privateKey: Buffer, txData: Transaction): string;
+    public abstract signTransaction(privateKey: Buffer, txData: Scheme.BlockchainTransaction): string;
 
     public getBlockchainId(): string {
         return this.blockchainTransport.getBlockchainId();
@@ -63,39 +61,48 @@ export abstract class BlockchainService extends Service {
         return this.blockchainTransport.getStatistic();
     }
 
-    public async getBlockHeight(transportId?: string): Promise<number> {
-        return this.blockchainTransport.getBlockHeight(transportId);
+    public async getBlockHeight(transportConnectionId: string): Promise<number> {
+        return this.blockchainTransport.getBlockHeight(transportConnectionId);
     }
 
-    public async getBlockByHeight(blockHeight: number, transportId?: string): Promise<Block> {
-        return this.blockchainTransport.getBlockByHeight(blockHeight, transportId);
+    public async getBlockByHeight<T extends Scheme.BlockchainTransaction>(
+        blockHeight: number,
+        transportConnectionId: string
+    ): Promise<Scheme.BlockchainBlock<T>> {
+        return this.blockchainTransport.getBlockByHeight<T>(blockHeight, transportConnectionId);
     }
 
-    public async getBlockByHash(blockHash: string, transportId?: string): Promise<Block> {
-        return this.blockchainTransport.getBlockByHash(blockHash, transportId);
+    public async getBlockByHash<T extends Scheme.BlockchainTransaction>(
+        blockHash: string,
+        transportConnectionId: string
+    ): Promise<Scheme.BlockchainBlock<T>> {
+        return this.blockchainTransport.getBlockByHash<T>(blockHash, transportConnectionId);
     }
 
-    public async getTransactionByHash(txHash: string, transportId?: string): Promise<Transaction> {
-        return this.blockchainTransport.getTransactionByHash(txHash, transportId);
+    public async getTransactionByHash<T extends Scheme.BlockchainTransaction>(
+        txHash: string,
+        transportConnectionId: string
+    ): Promise<Scheme.BlockchainTransaction> {
+        return this.blockchainTransport.getTransactionByHash(txHash, transportConnectionId);
     }
 
     public async sendTransaction(
         privateKey: Buffer,
-        txData: Transaction,
-        projectId?: string,
-        transportId?: string
-    ): Promise<Transaction> {
+        txData: Scheme.BlockchainTransaction,
+        transportConnectionId: string,
+        projectId?: string
+    ): Promise<Scheme.BlockchainTransaction> {
         const txHex = await this.signTransaction(privateKey, txData);
 
-        return this.sendRawTransaction(txHex, projectId, transportId);
+        return this.sendRawTransaction(txHex, transportConnectionId, projectId);
     }
 
     public async sendRawTransaction(
         txHex: string,
-        projectId?: string,
-        transportId?: string
-    ): Promise<Transaction> {
-        const tx = await this.blockchainTransport.sendRawTransaction(txHex, transportId);
+        transportConnectionId: string,
+        projectId?: string
+    ): Promise<Scheme.BlockchainTransaction> {
+        const tx = await this.blockchainTransport.sendRawTransaction(txHex, transportConnectionId);
 
         if (projectId) {
             const project = await this.projectService.getById(projectId);
@@ -108,8 +115,7 @@ export abstract class BlockchainService extends Service {
                 await this.transactionHashSubscriptionService.createSubscription(
                     project.clientId,
                     project.id,
-                    this.getBlockchainId(),
-                    this.getNetworkId(),
+                    transportConnectionId,
                     txHex,
                     project.txMinConfirmations
                 );
@@ -119,7 +125,7 @@ export abstract class BlockchainService extends Service {
         return tx;
     }
 
-    public async getBalance(address: string, minConf: number, transportId?: string): Promise<BigNumber> {
-        return this.blockchainTransport.getBalance(address, minConf, transportId);
+    public async getBalance(address: string, minConf: number, transportConnectionId: string): Promise<BigNumber> {
+        return this.blockchainTransport.getBalance(address, minConf, transportConnectionId);
     }
 }

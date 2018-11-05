@@ -1,4 +1,4 @@
-import { BlockchainTransport, Scheme } from '@fluencesh/fluence.lib.services';
+import { BlockchainTransportProvider, Scheme } from '@fluencesh/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import {
     ETHEREUM,
@@ -8,7 +8,7 @@ import {
     EthereumTransactionReceipt,
 } from '../../types';
 
-export interface EthereumTransport extends BlockchainTransport {
+export interface EthereumTransportProvider extends BlockchainTransportProvider<EthereumTransaction> {
     call(transaction: EthereumTransaction): Promise<string>;
     estimateGas(transaction: EthereumTransaction): Promise<number>;
     getGasPrice(): Promise<BigNumber>;

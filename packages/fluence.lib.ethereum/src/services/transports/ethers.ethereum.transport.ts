@@ -13,7 +13,7 @@ import {
     EthereumTransactionReceipt,
     ethereumValidNetworks,
 } from '../../types';
-import { EthereumTransport } from './ethereum.transport';
+import { EthereumTransportProvider } from './ethereum.transport.provider';
 
 export enum Provider {
     JsonRpc = 'json-rpc',
@@ -21,7 +21,7 @@ export enum Provider {
     Infura = 'infura'
 }
 
-export class EthersEthereumTransportService extends Service implements EthereumTransport {
+export class EthersEthereumTransportService extends Service implements EthereumTransportProvider {
     private network: string;
     private provider: any;
     private transportConnection: Scheme.TransportConnection;
@@ -70,7 +70,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         return this.transportConnection;
     }
 
-    public async getBlockByHash(hash: string) {
+    public async getBlockByHash(hash: string): Promise<EthereumBlock> {
         const block = await this.provider.getBlock(hash);
 
         block.transactions = await Promise.all(
@@ -165,8 +165,8 @@ export class EthersEthereumTransportService extends Service implements EthereumT
     public async callContractMethod(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
-        inputTypes: Array<string> = [],
-        inputValues: Array<string> = []
+        inputTypes: Array<string>,
+        inputValues: Array<string>
     ) {
         const contract = new Contract(contractEntity.address, contractEntity.abi, this.provider);
 
@@ -228,7 +228,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
 
             network: ETHEREUM,
             size: block.size,
-            transactions: block.transactions,
+            transactions: block.transactions as Array<EthereumTransaction>,
             fee: null, // @TODO: define
 
             sha3Uncles: block.sha3Uncles,

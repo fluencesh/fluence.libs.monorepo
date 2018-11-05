@@ -1,28 +1,28 @@
 import { BigNumber } from 'bignumber.js';
 import { Scheme } from '../../types';
 
-export interface BlockchainTransport {
+export interface BlockchainTransport<Transaction extends Scheme.BlockchainTransaction> {
     getTransportId(): string;
     getBlockchainId(): string;
     getNetworkId(): string;
 
     getBlockHeight(transportConnectionId?: string): Promise<number>;
-    getBlockByHash<T extends Scheme.BlockchainTransaction>(
+    getBlockByHash(
         blockHash: string,
         transportConnectionId?: string
-    ): Promise<Scheme.BlockchainBlock<T>>;
-    getBlockByHeight<T extends Scheme.BlockchainTransaction>(
+    ): Promise<Scheme.BlockchainBlock<Transaction>>;
+    getBlockByHeight(
         blockHeight: number,
         transportConnectionId?: string
-    ): Promise<Scheme.BlockchainBlock<T>>;
-    getTransactionByHash<T extends Scheme.BlockchainTransaction>(
+    ): Promise<Scheme.BlockchainBlock<Transaction>>;
+    getTransactionByHash(
         txHash: string,
         transportConnectionId?: string
-    ): Promise<T>;
-    sendRawTransaction<T extends Scheme.BlockchainTransaction>(
+    ): Promise<Transaction>;
+    sendRawTransaction(
         txHex: string,
         transportConnectionId?: string
-    ): Promise<T>;
+    ): Promise<Transaction>;
     getBalance(
         address: string,
         minConf: number,

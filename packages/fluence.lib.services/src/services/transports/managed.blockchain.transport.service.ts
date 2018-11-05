@@ -12,10 +12,13 @@ import { TransportConnectionService } from '../object/transport.connection.servi
 import { ManagedBlockchainTransport } from './managed.blockchain.transport';
 import { BlockchainTransportProvider } from './blockchain.transport.provider';
 
-export abstract class ManagedBlockchainTransportService extends Service implements ManagedBlockchainTransport {
-    protected transportServices: Array<BlockchainTransportProvider>;
-    protected publicTransportServices: Array<BlockchainTransportProvider>;
-    protected reference: BlockchainTransportProvider;
+export abstract class ManagedBlockchainTransportService<Transaction extends Scheme.BlockchainTransaction>
+    extends Service
+    implements ManagedBlockchainTransport<Transaction> {
+
+    protected transportServices: Array<BlockchainTransportProvider<Transaction>>;
+    protected publicTransportServices: Array<BlockchainTransportProvider<Transaction>>;
+    protected reference: BlockchainTransportProvider<Transaction>;
     protected validityCheckDuration: number;
     protected lastCheckAt: number;
     protected allowedNumberOfBlockToDelay: number;
@@ -90,10 +93,10 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         return statistic;
     }
 
-    public async getBlockByHash<T extends Scheme.BlockchainTransaction>(hash: string, transportId: string) {
+    public async getBlockByHash(hash: string, transportId: string) {
         const activeTransport = await this.getActiveTransportService(transportId);
 
-        return activeTransport.getBlockByHash<T>(hash);
+        return activeTransport.getBlockByHash(hash);
     }
 
     public async getBlockHeight(transportId: string): Promise<number> {
@@ -102,23 +105,23 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         return activeTransport.getBlockHeight();
     }
 
-    public async getBlockByHeight<T extends Scheme.BlockchainTransaction>(blockHeight: number, transportId: string) {
+    public async getBlockByHeight(blockHeight: number, transportId: string) {
         const activeTransport = await this.getActiveTransportService(transportId);
 
-        return activeTransport.getBlockByHeight<T>(blockHeight);
+        return activeTransport.getBlockByHeight(blockHeight);
     }
 
-    public async getTransactionByHash<T extends Scheme.BlockchainTransaction>(
+    public async getTransactionByHash(
         txHash: string, transportId: string) {
         const activeTransport = await this.getActiveTransportService(transportId);
 
-        return activeTransport.getTransactionByHash<T>(txHash);
+        return activeTransport.getTransactionByHash(txHash);
     }
 
-    public async sendRawTransaction<T extends Scheme.BlockchainTransaction>(txHex: string, transportId: string) {
+    public async sendRawTransaction(txHex: string, transportId: string) {
         const activeTransport = await this.getActiveTransportService(transportId);
 
-        return activeTransport.sendRawTransaction<T>(txHex);
+        return activeTransport.sendRawTransaction(txHex);
     }
 
     public async getBalance(address: string, minConf: number, transportId: string): Promise<BigNumber> {
@@ -128,7 +131,7 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
     }
 
     protected abstract prepareTransportServices(connections: Array<Scheme.TransportConnection>)
-        : Array<BlockchainTransportProvider>;
+        : Array<BlockchainTransportProvider<Transaction>>;
 
     protected async updateValid() {
         const today = new Date();
@@ -207,12 +210,12 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
 
     // THINK: what should be done if all transports are inactive?
     // THINK: what should be done if specified transport is inactive?
-    protected async getActiveTransportService(transportId: string): Promise<BlockchainTransportProvider> {
+    protected async getActiveTransportService(transportId: string): Promise<BlockchainTransportProvider<Transaction>> {
         await this.updateValid();
 
         this.wasCalledTimes++;
 
-        let transport: BlockchainTransportProvider = null;
+        let transport: BlockchainTransportProvider<Transaction> = null;
         if (transportId) {
             transport = this.transportServices.find((transportService) => {
                 return this.activeTransports[transportService.getTransportId()]

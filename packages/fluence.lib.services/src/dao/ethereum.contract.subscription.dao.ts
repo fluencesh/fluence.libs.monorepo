@@ -8,8 +8,7 @@ export abstract class EthereumContractSubscriptionDao extends SubscriptionDao<Sc
 
         compatibleStandard: Scheme.EthereumContractCompatibleStandard,
 
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
 
         address: string,
         minConfirmations: number,

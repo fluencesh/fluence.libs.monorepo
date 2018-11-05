@@ -24,8 +24,7 @@ export class AddressSubscriptionService extends Service {
     public async createSubscription(
         clientId: string,
         projectId: string,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         address: string,
         minConfirmations: number
     ): Promise<Scheme.AddressSubscription> {
@@ -34,8 +33,7 @@ export class AddressSubscriptionService extends Service {
                 clientId,
                 projectId,
 
-                blockchainId,
-                networkId,
+                transportConnectionId,
 
                 address,
                 minConfirmations

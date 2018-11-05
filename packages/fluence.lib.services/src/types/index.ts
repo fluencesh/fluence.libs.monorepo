@@ -57,8 +57,7 @@ export namespace Scheme {
         clientId: string;
         projectId: string;
 
-        blockchainId: string;
-        networkId: string;
+        transportConnectionId: string;
 
         minConfirmations: number;
         subscribed: boolean;
@@ -330,8 +329,7 @@ export namespace Scheme {
 
     export interface SubscriptionBlockRecheck extends MongoScheme {
         invokeOnBlockHeight: number;
-        blockchainId: string;
-        networkId: string;
+        transportConnectionId: string;
         subscriptionId: string;
         type: SubscriptionBlockRecheckType;
         blockHash: string;

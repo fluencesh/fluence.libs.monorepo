@@ -169,8 +169,7 @@ describe('address subscription dao', () => {
         const fresh = await dao.createSubscription(
             data.clientId,
             data.projectId,
-            data.blockchainId,
-            data.networkId,
+            data.transportConnectionId,
             data.address,
             data.minConfirmations
         );

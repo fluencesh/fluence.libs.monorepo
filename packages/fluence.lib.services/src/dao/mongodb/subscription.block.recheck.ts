@@ -21,8 +21,7 @@ export class MongodbSubscriptionBlockRecheckDao
 
     public async createBlockRecheck(
         subscriptionId: string,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         type: Scheme.SubscriptionBlockRecheckType,
         blockHash: string,
         blockHeight: number,
@@ -31,8 +30,7 @@ export class MongodbSubscriptionBlockRecheckDao
     ): Promise<Scheme.SubscriptionBlockRecheck> {
         return this.create({
             subscriptionId,
-            blockchainId,
-            networkId,
+            transportConnectionId,
             type,
             blockHash,
             blockHeight,
@@ -49,28 +47,24 @@ export class MongodbSubscriptionBlockRecheckDao
         return this.list({ blockHeight: height });
     }
 
-    public async listByBlockHeightAndBlockchainIdAndNetworkId(
+    public async listByBlockHeightAndTransportConnectionId(
         height: number,
-        blockchainId: string,
-        networkId: string
+        transportConnectionId: string
     ) {
         return this.listRaw({
             blockHeight: height,
-            blockchainId,
-            networkId
+            transportConnectionId
         });
     }
 
-    public async listByBlockHeightAndBlockchainInfoAndType(
+    public async listByBlockHeightAndTransportConnectionIdAndType(
         height: number,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         type: Scheme.SubscriptionBlockRecheckType
     ) {
         return this.listRaw({
             blockHeight: height,
-            blockchainId,
-            networkId,
+            transportConnectionId,
             type,
         });
     }

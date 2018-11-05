@@ -22,16 +22,14 @@ export class MongodbAddressSubscriptionDao extends MongodbSubscriptionDao<Scheme
     public async createSubscription(
         clientId: string,
         projectId: string,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         address: string,
         minConfirmations: number
     ): Promise<Scheme.AddressSubscription> {
         return this.create({
             clientId,
             projectId,
-            blockchainId,
-            networkId,
+            transportConnectionId,
 
             address,
             minConfirmations,

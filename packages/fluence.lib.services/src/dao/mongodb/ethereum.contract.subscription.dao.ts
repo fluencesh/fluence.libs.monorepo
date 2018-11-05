@@ -24,8 +24,7 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
 
         compatibleStandard: Scheme.EthereumContractCompatibleStandard,
 
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
 
         address: string,
         minConfirmations: number,
@@ -43,8 +42,7 @@ export class MongodbEthereumContractSubscriptionDao extends MongoDBDao<Scheme.Et
 
             compatibleStandard,
 
-            blockchainId,
-            networkId,
+            transportConnectionId,
 
             address,
             minConfirmations,

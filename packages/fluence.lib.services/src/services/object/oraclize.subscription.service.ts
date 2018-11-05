@@ -21,8 +21,7 @@ export class OraclizeSubscriptionService extends Service {
     public async createSubscription(
         clientId: string,
         projectId: string,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         minConfirmations: number,
         eventName: string,
         eventInputTypes: Array<string>,
@@ -33,8 +32,7 @@ export class OraclizeSubscriptionService extends Service {
         return this.dao.createSubscription(
             clientId,
             projectId,
-            blockchainId,
-            networkId,
+            transportConnectionId,
             minConfirmations,
             eventHash,
             eventName,

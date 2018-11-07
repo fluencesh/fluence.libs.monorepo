@@ -190,6 +190,20 @@ export namespace Scheme {
         isPredefinedBySystem?: boolean;
     }
 
+    // TODO: FabricSmartContractCreation
+    export interface TransportConnectionSubscription extends TransportConnection {
+        addressSubscriptions: Array<AddressSubscription>;
+        contractSubscriptions: Array<EthereumContractSubscription>;
+        transactionHashSubscriptions: Array<TransactionHashSubscription>;
+        oraclizeSubscriptions: Array<OraclizeSubscription>;
+    }
+
+    export enum TransportConnectionSubscriptionStatus {
+        All = 'All',
+        Subscribed = 'Subscribed',
+        Unsubscribed = 'Unsubscribed',
+    }
+
     export interface BlockchainBlock<T extends BlockchainTransaction> {
         height: number;
         hash: string;

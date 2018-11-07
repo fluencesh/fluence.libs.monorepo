@@ -1,7 +1,9 @@
 {
   "multivest": {
     "mongodb": {
-      "url": "mongodb://mongodb/multivest",
+      "url": "mongodb://localhost/test-fluence-services",
+      "urlWithDbPrefix": "mongodb://localhost/test-fluence",
+      "dbName": "test-fluence-services",
       "options": null
     }
   }

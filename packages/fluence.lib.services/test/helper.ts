@@ -10,7 +10,7 @@ import { v1 as generateId } from 'uuid';
 import { RandomStringPresets } from '../src/constants';
 import { Scheme } from './../src/types';
 import Transaction = Scheme.Transaction;
-import {Constructable} from '@applicature/core.plugin-manager';
+import {Constructable, Dao} from '@applicature/core.plugin-manager';
 import TransactionStatus = Scheme.TransactionStatus;
 
 export function randomAddressSubscription(): Scheme.AddressSubscription {
@@ -346,28 +346,30 @@ export function generateRandomPrometheusMetric(): Scheme.PrometheusMetric {
     };
 }
 
-export async function clearDb(collections: Array<string>, db?: Db) {
-    db = db || await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+let db: Db;
+export async function createDao<T extends MongoDBDao<any>>(daoConstructor: Constructable<T>): Promise<T> {
+    if (!db) {
+        const connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+        db = connection.db(config.get('multivest.mongodb.dbName'));
+    }
+
+    const dao = new daoConstructor(db);
+    return dao;
+}
+
+export async function clearDb(collections: Array<string>) {
+    if (!db) {
+        const connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+        db = connection.db(config.get('multivest.mongodb.dbName'));
+    }
 
     await Promise.all(
         collections.map((collection) => db.collection(collection).remove({}))
     );
-
-    await db.close();
-}
-
-let connection: Db;
-export async function createDao<T extends MongoDBDao<any>>(daoConstructor: Constructable<T>): Promise<T> {
-    if (!connection) {
-        connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
-    }
-
-    const dao = new daoConstructor(connection);
-    return dao;
 }
 
 export async function createEntities(
-    dao: MongoDBDao<any>,
+    dao: Dao<any>,
     entityGenerator: () => object,
     target: Array<any>
 ) {

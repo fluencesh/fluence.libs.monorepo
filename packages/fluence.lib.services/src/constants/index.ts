@@ -15,6 +15,7 @@ export enum DaoIds {
     Transaction = 'transaction',
     TransactionHashSubscription = 'transaction.hash.subscription',
     TransportConnection = 'transport.connections',
+    TransportConnectionSubscription = 'transport.connection.subscription',
     WebhookAction = 'webhook',
     Oraclize = 'oraclize',
 }

@@ -16,4 +16,5 @@ export * from './subscription.dao';
 export * from './transaction.dao';
 export * from './transaction.hash.subscription.dao';
 export * from './transport.connection.dao';
+export * from './transport.connection.subscription.dao';
 export * from './webhook.action.dao';

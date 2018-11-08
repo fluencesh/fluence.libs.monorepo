@@ -4,7 +4,8 @@ module.exports = {
     ],
     "globals": {
         "ts-jest": {
-            "skipBabel": true
+            "skipBabel": true,
+            "diagnostics": false
         }
     },
     "testResultsProcessor": "jest-multi-test-result-processor",

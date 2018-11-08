@@ -18,7 +18,12 @@ import * as logger from 'winston';
 import { Errors } from '../errors';
 import { BlockchainMetricService } from '../services';
 
-export abstract class AbstractBlockchainController<T extends BlockchainService> extends Controller {
+export abstract class AbstractBlockchainController<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction> = Scheme.BlockchainBlock<Transaction>,
+    BlockchainServiceType extends BlockchainService<Transaction> = BlockchainService<Transaction>
+> extends Controller {
+
     protected blockchainRegistry: BlockchainRegistryService;
     protected projectService: ProjectService;
     protected clientService: ClientService;
@@ -45,7 +50,7 @@ export abstract class AbstractBlockchainController<T extends BlockchainService> 
         this.transportConnectionService = pluginManager.getServiceByClass(TransportConnectionService);
     }
 
-    public abstract convertBlockDTO(block: Scheme.BlockchainBlock): any;
+    public abstract convertBlockDTO(block: Block): any;
     public abstract convertTransactionDTO(transaction: Scheme.BlockchainTransaction): any;
     public abstract convertAddressBalanceDTO(address: string, balance: BigNumber): any;
 
@@ -59,7 +64,7 @@ export abstract class AbstractBlockchainController<T extends BlockchainService> 
     }
 
     public async getBlockByHashOrNumber(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
-        let block: Scheme.BlockchainBlock;
+        let block: Block;
 
         let transportConnection: Scheme.TransportConnection;
         try {
@@ -159,8 +164,7 @@ export abstract class AbstractBlockchainController<T extends BlockchainService> 
 
         let transaction: Scheme.BlockchainTransaction;
         try {
-            // FIXME: migrate to right types (should return Scheme.BlockchainTransaction)
-            transaction = await blockchainService.sendRawTransaction(hex, req.project.id, transportConnection.id);
+            transaction = await blockchainService.sendRawTransaction(hex, transportConnection.id, req.project.id);
         } catch (ex) {
             if (this.metricService) {
                 try {
@@ -270,9 +274,10 @@ export abstract class AbstractBlockchainController<T extends BlockchainService> 
         return true;
     }
 
-    protected getBlockchainService(networkId: string): T {
+    protected getBlockchainService(networkId: string): BlockchainServiceType {
         try {
-            const blockchainService = this.blockchainRegistry.getByBlockchainInfo(this.blockchainId, networkId) as T;
+            const blockchainService =
+                this.blockchainRegistry.getByBlockchainInfo(this.blockchainId, networkId) as BlockchainServiceType;
 
             return blockchainService;
         } catch (ex) {

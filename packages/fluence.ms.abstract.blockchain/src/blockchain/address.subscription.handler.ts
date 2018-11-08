@@ -1,36 +1,29 @@
-import { Hashtable, PluginManager } from '@applicature/core.plugin-manager';
+import { Hashtable } from '@applicature/core.plugin-manager';
 import {
-    AddressSubscriptionService,
-    BlockchainService,
     Scheme,
 } from '@fluencesh/fluence.lib.services';
-import { CronjobMetricService } from '../services';
-import { BlockchainHandler } from './blockchain.handler';
+import { BlockchainListenerHandler } from './blockchain.listener.handler';
 
 interface RecipientAndTx {
     recipient: Scheme.Recipient;
     tx: Scheme.BlockchainTransaction;
 }
 
-export class AddressSubscriptionHandler<T extends Scheme.BlockchainTransaction> extends BlockchainHandler {
-    private subscriptionService: AddressSubscriptionService;
-
-    constructor(
-        pluginManager: PluginManager,
-        blockchainService: BlockchainService,
-        metricService?: CronjobMetricService
-    ) {
-        super(pluginManager, blockchainService, metricService);
-
-        this.subscriptionService =
-            pluginManager.getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;
-    }
+export class AddressSubscriptionHandler extends BlockchainListenerHandler {
 
     public getSubscriptionBlockRecheckType() {
         return Scheme.SubscriptionBlockRecheckType.Address;
     }
 
-    public async processBlock(lastBlockHeight: number, block: Scheme.BlockchainBlock<T>) {
+    public getHandlerId() {
+        return 'address.subscription.handler';
+    }
+
+    public async processBlock(
+        lastBlockHeight: number,
+        block: Scheme.BlockchainBlock<Scheme.BlockchainTransaction>,
+        transportConnectionSubscription: Scheme.TransportConnectionSubscription
+    ) {
         const recipients: Array<string> = [];
         const recipientsMap: Hashtable<Array<RecipientAndTx>> = {};
         for (const tx of block.transactions) {
@@ -47,7 +40,9 @@ export class AddressSubscriptionHandler<T extends Scheme.BlockchainTransaction> 
             }
         }
 
-        const subscriptions = await this.subscriptionService.listBySubscribedAddressesActiveOnly(recipients);
+        const subscriptions = transportConnectionSubscription.addressSubscriptions
+            .filter((s) => recipientsMap[s.address] !== undefined);
+
         const projectIds = subscriptions.map((s) => s.projectId);
         const projectsMap: Hashtable<Scheme.Project> = await this.loadProjectHashmapByIds(projectIds);
         const webhookActions: Array<Scheme.WebhookActionItem> = [];
@@ -65,6 +60,8 @@ export class AddressSubscriptionHandler<T extends Scheme.BlockchainTransaction> 
                 };
 
                 const webhook = this.createWebhook(
+                    transportConnectionSubscription.blockchainId,
+                    transportConnectionSubscription.networkId,
                     block,
                     tx.hash,
                     project,
@@ -75,7 +72,13 @@ export class AddressSubscriptionHandler<T extends Scheme.BlockchainTransaction> 
                 );
 
                 if (subscription.minConfirmations > confirmations) {
-                    await this.createBlockRecheck(subscription, block, confirmations, webhook);
+                    await this.createBlockRecheck(
+                        subscription,
+                        transportConnectionSubscription.id,
+                        block,
+                        confirmations,
+                        webhook
+                    );
                     continue;
                 }
 
@@ -93,8 +96,8 @@ export class AddressSubscriptionHandler<T extends Scheme.BlockchainTransaction> 
 
                 promises.push(
                     this.metricService.addressFoundInBlock(
-                        this.blockchainService.getBlockchainId(),
-                        this.blockchainService.getNetworkId(),
+                        transportConnectionSubscription.blockchainId,
+                        transportConnectionSubscription.networkId,
                         webhookActions.length,
                         today
                     )

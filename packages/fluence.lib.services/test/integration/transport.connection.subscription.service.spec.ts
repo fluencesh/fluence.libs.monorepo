@@ -50,7 +50,8 @@ describe('transport connection subscription service spec', () => {
             DaoCollectionNames.AddressSubscription,
         ]);
 
-        service = pluginManager.getServiceByClass(TransportConnectionSubscriptionService);
+        service = pluginManager
+            .getService('transport.connection.subscription.service') as TransportConnectionSubscriptionService;
 
         const transportConnectionDao: TransportConnectionDao =
             pluginManager.getDao(DaoIds.TransportConnection) as TransportConnectionDao;

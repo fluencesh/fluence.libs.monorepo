@@ -1,5 +1,5 @@
 import { Plugin } from '@applicature/core.mongodb';
-import { PluginManager, Service, Transaction } from '@applicature/core.plugin-manager';
+import { PluginManager, Service } from '@applicature/core.plugin-manager';
 import { DaoIds } from '../../constants';
 import { TransactionDao } from '../../dao/transaction.dao';
 import { Scheme } from '../../types';
@@ -25,7 +25,7 @@ export class TransactionService extends Service {
         blockChainId: string,
         networkId: string,
         uniqId: string,
-        transaction: Transaction,
+        transaction: Scheme.BlockchainTransaction,
         status: Scheme.TransactionStatus
     ): Promise<Scheme.Transaction> {
         return this.transactionDao.createTransaction(blockChainId, networkId, uniqId, transaction, status);

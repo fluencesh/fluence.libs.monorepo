@@ -1,22 +1,24 @@
 import {
-    Block,
     Hashtable,
     MultivestError,
     PluginManager,
     Service,
-    Transaction,
 } from '@applicature/core.plugin-manager';
 import { BigNumber } from 'bignumber.js';
 import * as logger from 'winston';
 import { Errors } from '../../errors';
 import { Scheme } from '../../types';
 import { TransportConnectionService } from '../object/transport.connection.service';
-import { BlockchainTransport } from './blockchain.transport';
+import { BlockchainTransportProvider, ManagedBlockchainTransport } from './interfaces';
 
-export abstract class ManagedBlockchainTransportService extends Service implements BlockchainTransport {
-    protected transportServices: Array<BlockchainTransport>;
-    protected publicTransportServices: Array<BlockchainTransport>;
-    protected reference: BlockchainTransport;
+export abstract class ManagedBlockchainTransportService<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>
+> extends Service implements ManagedBlockchainTransport<Transaction, Block> {
+
+    protected transportServices: Array<BlockchainTransportProvider<Transaction, Block>>;
+    protected publicTransportServices: Array<BlockchainTransportProvider<Transaction, Block>>;
+    protected reference: BlockchainTransportProvider<Transaction, Block>;
     protected validityCheckDuration: number;
     protected lastCheckAt: number;
     protected allowedNumberOfBlockToDelay: number;
@@ -128,7 +130,7 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
     }
 
     protected abstract prepareTransportServices(connections: Array<Scheme.TransportConnection>)
-        : Array<BlockchainTransport>;
+        : Array<BlockchainTransportProvider<Transaction, Block>>;
 
     protected async updateValid() {
         const today = new Date();
@@ -205,14 +207,14 @@ export abstract class ManagedBlockchainTransportService extends Service implemen
         }
     }
 
-    // THINK: what should be done if all transports are inactive?
-    // THINK: what should be done if specified transport is inactive?
-    protected async getActiveTransportService(transportId?: string): Promise<BlockchainTransport> {
+    protected async getActiveTransportService(
+        transportId?: string
+    ): Promise<BlockchainTransportProvider<Transaction, Block>> {
         await this.updateValid();
 
         this.wasCalledTimes++;
 
-        let transport: BlockchainTransport = null;
+        let transport: BlockchainTransportProvider<Transaction, Block> = null;
         if (transportId) {
             transport = this.transportServices.find((transportService) => {
                 return this.activeTransports[transportService.getTransportId()]

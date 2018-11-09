@@ -1,9 +1,7 @@
 import {
-    Block,
     MultivestError,
     PluginManager,
     Service,
-    Transaction,
 } from '@applicature/core.plugin-manager';
 import { BigNumber } from 'bignumber.js';
 import { Errors } from '../../errors';
@@ -19,15 +17,19 @@ export interface Signature {
     s: Buffer;
 }
 
-export abstract class BlockchainService extends Service {
-    protected blockchainTransport: ManagedBlockchainTransportService;
+export abstract class BlockchainService<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    ManagedBlockchainTransport extends ManagedBlockchainTransportService<Transaction, Block>
+> extends Service {
+    protected blockchainTransport: ManagedBlockchainTransport;
     protected projectService: ProjectService;
     protected clientService: ClientService;
     protected transactionHashSubscriptionService: TransactionHashSubscriptionService;
 
     constructor(
         pluginManager: PluginManager,
-        blockchainTransport: ManagedBlockchainTransportService
+        blockchainTransport: ManagedBlockchainTransport
     ) {
         super(pluginManager);
 

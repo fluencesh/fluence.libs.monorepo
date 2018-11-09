@@ -2,7 +2,6 @@ import { MultivestError, PluginManager, Service } from '@applicature-private/cor
 import { Scheme } from '@applicature-private/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import { Contract, providers } from 'ethers';
-import { get } from 'lodash';
 import { ServiceIds, TransportIds } from '../../constants';
 import {
     ETHEREUM,
@@ -13,7 +12,7 @@ import {
     EthereumTransactionReceipt,
     ethereumValidNetworks,
 } from '../../types';
-import { EthereumTransport } from './ethereum.transport';
+import { EthereumTransportProvider } from './interfaces';
 
 export enum Provider {
     JsonRpc = 'json-rpc',
@@ -21,7 +20,7 @@ export enum Provider {
     Infura = 'infura'
 }
 
-export class EthersEthereumTransportService extends Service implements EthereumTransport {
+export class EthersEthereumTransportService extends Service implements EthereumTransportProvider {
     private network: string;
     private provider: any;
     private transportConnection: Scheme.TransportConnection;

@@ -32,7 +32,7 @@ export interface EthereumEvent {
     transactionHash: string;
 }
 
-export interface EthereumBlock extends Scheme.BlockchainBlock {
+export interface EthereumBlock extends Scheme.BlockchainBlock<EthereumTransaction> {
     sha3Uncles: string;
     logsBloom: string;
     transactionsRoot: string;
@@ -44,7 +44,6 @@ export interface EthereumBlock extends Scheme.BlockchainBlock {
     gasLimit: BigNumber;
     gasUsed: BigNumber;
     uncles: string;
-    transactions: Array<EthereumTransaction>;
 }
 
 export interface EthereumTransactionReceipt {

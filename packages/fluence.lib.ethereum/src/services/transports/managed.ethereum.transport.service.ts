@@ -10,14 +10,14 @@ import {
     EthereumTopicFilter,
     EthereumTransaction,
     EthereumTransactionReceipt,
+    EthereumBlock,
 } from '../../types';
-import { EthereumTransport } from '../transports/ethereum.transport';
-import { EthersEthereumTransportService } from '../transports/ethers.ethereum.transport';
+import { EthereumTransportProvider } from './interfaces';
+import { EthersEthereumTransportService } from './ethers.ethereum.transport';
 
-export class ManagedEthereumTransportService extends ManagedBlockchainTransportService
-        implements EthereumTransport {
-    protected transportServices: Array<EthereumTransport>;
-    protected reference: EthereumTransport;
+export class ManagedEthereumTransportService
+    extends ManagedBlockchainTransportService<EthereumTransaction, EthereumBlock, EthereumTransportProvider>
+    implements ManagedEthereumTransportService {
 
     public getBlockchainId(): string {
         return ETHEREUM;
@@ -110,11 +110,5 @@ export class ManagedEthereumTransportService extends ManagedBlockchainTransportS
 
     protected prepareTransportServices(connections: Array<Scheme.TransportConnection>) {
         return connections.map((con) => new EthersEthereumTransportService(this.pluginManager, con));
-    }
-
-    protected async getActiveTransportService(transportConnectionId?: string): Promise<EthereumTransport> {
-        const activeTransportService = await super.getActiveTransportService(transportConnectionId);
-
-        return activeTransportService as EthereumTransport;
     }
 }

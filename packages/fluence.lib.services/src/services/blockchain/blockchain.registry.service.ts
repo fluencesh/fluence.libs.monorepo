@@ -2,9 +2,10 @@ import { MultivestError, PluginManager, Service } from '@applicature-private/cor
 import { Errors } from '../../errors';
 import { Scheme } from '../../types';
 import { BlockchainService } from './blockchain.service';
+import { ManagedBlockchainTransportService } from '../transports';
 
 export class BlockchainRegistryService extends Service {
-    private registry: Map<Scheme.BlockchainInfo, BlockchainService>;
+    private registry: Map<Scheme.BlockchainInfo, BlockchainService<any, any, any>>;
 
     constructor(pluginManager: PluginManager) {
         super(pluginManager);
@@ -16,8 +17,21 @@ export class BlockchainRegistryService extends Service {
         return 'blockchain.registry.service';
     }
 
-    public register(blockchainId: string, networkId: string, blockchainService: BlockchainService): void {
+    public register<
+        BlockchainServiceType extends BlockchainService<
+            Scheme.BlockchainTransaction,
+            Scheme.BlockchainBlock<Scheme.BlockchainTransaction>,
+            ManagedBlockchainTransportService<
+                Scheme.BlockchainTransaction,
+                Scheme.BlockchainBlock<Scheme.BlockchainTransaction>
+            >
+        >
+    >(blockchainService: BlockchainServiceType): void {
+        const blockchainId = blockchainService.getBlockchainId();
+        const networkId = blockchainService.getNetworkId();
+
         const key = this.generateKey(blockchainId, networkId);
+
         this.registry.set(key, blockchainService);
     }
 
@@ -31,25 +45,40 @@ export class BlockchainRegistryService extends Service {
         return false;
     }
 
-    public getByBlockchainInfo<T extends BlockchainService>(
-        blockchainId: string,
-        networkId: string
-    ): T {
+    public getByBlockchainInfo<
+        BlockchainServiceType extends BlockchainService<
+            Scheme.BlockchainTransaction,
+            Scheme.BlockchainBlock<Scheme.BlockchainTransaction>,
+            ManagedBlockchainTransportService<
+                Scheme.BlockchainTransaction,
+                Scheme.BlockchainBlock<Scheme.BlockchainTransaction>
+            >
+        >
+    >(blockchainId: string, networkId: string): BlockchainServiceType {
         for (const [ key, value ] of this.registry) {
             if (key.blockchainId === blockchainId && key.networkId === networkId) {
-                return value as T;
+                return value as BlockchainServiceType;
             }
         }
 
         throw new MultivestError(Errors.BLOCKCHAIN_SERVICE_DOES_NOT_IN_REGISTRY);
     }
 
-    public listByBlockchainId<T extends BlockchainService>(blockchainId: string): Array<T> {
-        const services = [] as Array<T>;
+    public listByBlockchainId<
+        BlockchainServiceType extends BlockchainService<
+            Scheme.BlockchainTransaction,
+            Scheme.BlockchainBlock<Scheme.BlockchainTransaction>,
+            ManagedBlockchainTransportService<
+                Scheme.BlockchainTransaction,
+                Scheme.BlockchainBlock<Scheme.BlockchainTransaction>
+            >
+        >
+    >(blockchainId: string): Array<BlockchainServiceType> {
+        const services = [] as Array<BlockchainServiceType>;
 
         for (const [ key, value ] of this.registry) {
             if (key.blockchainId === blockchainId) {
-                services.push(value as T);
+                services.push(value as BlockchainServiceType);
             }
         }
 

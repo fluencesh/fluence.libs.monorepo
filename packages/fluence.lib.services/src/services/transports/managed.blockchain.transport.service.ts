@@ -13,12 +13,13 @@ import { BlockchainTransportProvider, ManagedBlockchainTransport } from './inter
 
 export abstract class ManagedBlockchainTransportService<
     Transaction extends Scheme.BlockchainTransaction,
-    Block extends Scheme.BlockchainBlock<Transaction>
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends BlockchainTransportProvider<Transaction, Block>
 > extends Service implements ManagedBlockchainTransport<Transaction, Block> {
 
-    protected transportServices: Array<BlockchainTransportProvider<Transaction, Block>>;
-    protected publicTransportServices: Array<BlockchainTransportProvider<Transaction, Block>>;
-    protected reference: BlockchainTransportProvider<Transaction, Block>;
+    protected transportServices: Array<Provider>;
+    protected publicTransportServices: Array<Provider>;
+    protected reference: Provider;
     protected validityCheckDuration: number;
     protected lastCheckAt: number;
     protected allowedNumberOfBlockToDelay: number;
@@ -130,7 +131,7 @@ export abstract class ManagedBlockchainTransportService<
     }
 
     protected abstract prepareTransportServices(connections: Array<Scheme.TransportConnection>)
-        : Array<BlockchainTransportProvider<Transaction, Block>>;
+        : Array<Provider>;
 
     protected async updateValid() {
         const today = new Date();
@@ -209,12 +210,12 @@ export abstract class ManagedBlockchainTransportService<
 
     protected async getActiveTransportService(
         transportId?: string
-    ): Promise<BlockchainTransportProvider<Transaction, Block>> {
+    ): Promise<Provider> {
         await this.updateValid();
 
         this.wasCalledTimes++;
 
-        let transport: BlockchainTransportProvider<Transaction, Block> = null;
+        let transport: Provider = null;
         if (transportId) {
             transport = this.transportServices.find((transportService) => {
                 return this.activeTransports[transportService.getTransportId()]

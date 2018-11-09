@@ -9,7 +9,7 @@ import { Scheme } from '../../types';
 import { ClientService } from '../object/client.service';
 import { ProjectService } from '../object/project.service';
 import { TransactionHashSubscriptionService } from '../object/transaction.hash.subscription.service';
-import { ManagedBlockchainTransportService } from '../transports';
+import { ManagedBlockchainTransportService, BlockchainTransportProvider } from '../transports';
 
 export interface Signature {
     v: number;
@@ -20,7 +20,8 @@ export interface Signature {
 export abstract class BlockchainService<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
-    ManagedBlockchainTransport extends ManagedBlockchainTransportService<Transaction, Block>
+    Provider extends BlockchainTransportProvider<Transaction, Block>,
+    ManagedBlockchainTransport extends ManagedBlockchainTransportService<Transaction, Block, Provider>
 > extends Service {
     protected blockchainTransport: ManagedBlockchainTransport;
     protected projectService: ProjectService;

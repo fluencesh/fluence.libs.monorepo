@@ -16,10 +16,18 @@ import {
     EthereumTransaction,
     EthereumTransactionReceipt,
     ethereumValidNetworks,
+    EthereumBlock,
 } from '../../types';
 import { ManagedEthereumTransportService } from '../transports/managed.ethereum.transport.service';
+import { EthereumTransportProvider } from '../transports';
 
-export class EthereumBlockchainService extends BlockchainService {
+export class EthereumBlockchainService extends BlockchainService<
+    EthereumTransaction,
+    EthereumBlock,
+    EthereumTransportProvider,
+    ManagedEthereumTransportService
+> {
+
     protected blockchainTransport: ManagedEthereumTransportService;
 
     public getServiceId(): string {

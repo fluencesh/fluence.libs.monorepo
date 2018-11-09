@@ -2,14 +2,14 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "."
+    "rootDir": ".",
+    "typeRoots": [
+      "./node_modules/@types",
+      "@types"
+    ]
   },
   "include": [
     "./src/**/*",
     "./test/**/*"
-  ],
-  "typeRoots": [
-    "./node_modules/@types",
-    "@types"
   ]
 }

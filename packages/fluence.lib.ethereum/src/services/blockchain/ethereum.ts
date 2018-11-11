@@ -135,7 +135,7 @@ export class EthereumBlockchainService extends BlockchainService<
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = [],
+        inputValues: Array<string | Array<string>> = [],
         transportId?: string
     ) {
         return this.blockchainTransport.callContractMethod(
@@ -151,7 +151,7 @@ export class EthereumBlockchainService extends BlockchainService<
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = [],
+        inputValues: Array<string | Array<string>> = [],
         transportId?: string
     ) {
         return this.blockchainTransport.contractMethodGasEstimate(

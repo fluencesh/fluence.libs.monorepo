@@ -18,17 +18,17 @@ import {
     ethereumValidNetworks,
     EthereumBlock,
 } from '../../types';
-import { ManagedEthereumTransportService } from '../transports/managed.ethereum.transport.service';
+import { ManagedEthereumTransport } from '../transports/';
 import { EthereumTransportProvider } from '../transports';
 
 export class EthereumBlockchainService extends BlockchainService<
     EthereumTransaction,
     EthereumBlock,
     EthereumTransportProvider,
-    ManagedEthereumTransportService
+    ManagedEthereumTransport
 > {
 
-    protected blockchainTransport: ManagedEthereumTransportService;
+    protected blockchainTransport: ManagedEthereumTransport;
 
     public getServiceId(): string {
         return ServiceIds.EthereumBlockchainService;
@@ -172,6 +172,6 @@ export class EthereumBlockchainService extends BlockchainService<
         blockTag?: number | string,
         transportId?: string
     ): Promise<number> {
-        return this.blockchainTransport.getAddressTransactionsCount(address, blockTag, transportId);
+        return this.blockchainTransport.getAddressTransactionsCount(address, transportId, blockTag);
     }
 }

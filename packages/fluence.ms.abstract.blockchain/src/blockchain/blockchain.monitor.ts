@@ -4,20 +4,28 @@ import {
     BlockchainService,
     DaoIds,
     JobDao,
-    Scheme
+    Scheme,
+    BlockchainTransportProvider,
+    ManagedBlockchainTransportService
 } from '@fluencesh/fluence.lib.services';
 import * as logger from 'winston';
 import { BlockchainHandler } from './blockchain.handler';
 
-export class BlockchainMonitor {
-    protected blockchainService: BlockchainService;
+export class BlockchainMonitor<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends BlockchainTransportProvider<Transaction, Block>,
+    ManagedService extends ManagedBlockchainTransportService<Transaction, Block, Provider>,
+    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
+> {
+    protected blockchainService: BlockchainServiceType;
     protected pluginManager: PluginManager;
 
     private jobDao: JobDao;
     private job: Scheme.Job;
     private sinceBlock: number;
 
-    private handlers: Array<BlockchainHandler>;
+    private handlers: Array<BlockchainHandler<Transaction, Block, Provider, ManagedService, BlockchainServiceType>>;
 
     private get networkId() {
         return this.blockchainService.getNetworkId();
@@ -33,9 +41,9 @@ export class BlockchainMonitor {
 
     constructor(
         pluginManager: PluginManager,
-        blockchainService: BlockchainService,
+        blockchainService: BlockchainServiceType,
         sinceBlock: number,
-        handlers: Array<BlockchainHandler>
+        handlers: Array<BlockchainHandler<Transaction, Block, Provider, ManagedService, BlockchainServiceType>>
     ) {
         this.pluginManager = pluginManager;
         this.blockchainService = blockchainService;
@@ -126,7 +134,7 @@ export class BlockchainMonitor {
     }
 
     private async processBlocks(fromBlock: number, toBlock: number): Promise<void> {
-        const blockLoaders: Array<Promise<Scheme.BlockchainBlock>> = [];
+        const blockLoaders: Array<Promise<Block>> = [];
 
         if (this.job.params.failedBlocksNumbers.length) {
             logger.info(
@@ -164,7 +172,7 @@ export class BlockchainMonitor {
         );
     }
 
-    private async loadBlock(blockNo: number): Promise<Scheme.BlockchainBlock> {
+    private async loadBlock(blockNo: number): Promise<Block> {
         try {
             const block = await this.blockchainService.getBlockByHeight(blockNo);
 

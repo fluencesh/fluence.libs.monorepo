@@ -15,7 +15,7 @@ export abstract class ManagedBlockchainTransportService<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>
-> extends Service implements ManagedBlockchainTransport<Transaction, Block> {
+> extends Service implements ManagedBlockchainTransport<Transaction, Block, Provider> {
 
     protected transportServices: Array<Provider>;
     protected publicTransportServices: Array<Provider>;
@@ -130,8 +130,7 @@ export abstract class ManagedBlockchainTransportService<
         return activeTransport.getBalance(address, minConf);
     }
 
-    protected abstract prepareTransportServices(connections: Array<Scheme.TransportConnection>)
-        : Array<Provider>;
+    protected abstract prepareTransportServices(connections: Array<Scheme.TransportConnection>): Array<Provider>;
 
     protected async updateValid() {
         const today = new Date();

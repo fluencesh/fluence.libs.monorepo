@@ -8,8 +8,15 @@ import {
 } from '../../../types';
 import { Scheme, ManagedBlockchainTransport } from '@fluencesh/fluence.lib.services';
 import BigNumber from 'bignumber.js';
+import { EthereumTransportProvider } from './ethereum.transport.provider';
 
-export interface ManagedEthereumTransport extends ManagedBlockchainTransport<EthereumTransaction, EthereumBlock> {
+export interface ManagedEthereumTransport<
+    Provider extends EthereumTransportProvider = EthereumTransportProvider
+> extends ManagedBlockchainTransport<
+    EthereumTransaction,
+    EthereumBlock,
+    Provider
+> {
     call(transaction: EthereumTransaction, transportConnectionId: string): Promise<string>;
     estimateGas(transaction: EthereumTransaction, transportConnectionId: string): Promise<number>;
     getGasPrice(transportConnectionId: string): Promise<BigNumber>;

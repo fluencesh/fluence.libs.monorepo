@@ -4,7 +4,7 @@ import {
     BlockchainService,
     Scheme,
     BlockchainTransportProvider,
-    ManagedBlockchainTransportService,
+    ManagedBlockchainTransport,
 } from '@fluencesh/fluence.lib.services';
 import { CronjobMetricService } from '../services';
 import { BlockchainHandler } from './blockchain.handler';
@@ -18,7 +18,7 @@ export class AddressSubscriptionHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedService extends ManagedBlockchainTransportService<Transaction, Block, Provider>,
+    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
     BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
 > extends BlockchainHandler<Transaction, Block, Provider, ManagedService, BlockchainServiceType> {
     private subscriptionService: AddressSubscriptionService;

@@ -10,7 +10,7 @@ import {
     Scheme,
     TransportConnectionService,
     BlockchainTransportProvider,
-    ManagedBlockchainTransportService,
+    ManagedBlockchainTransport,
 } from '@applicature-private/fluence.lib.services';
 import { WebMultivestError } from '@applicature-private/core.web';
 import BigNumber from 'bignumber.js';
@@ -24,7 +24,7 @@ export abstract class AbstractBlockchainController<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedService extends ManagedBlockchainTransportService<Transaction, Block, Provider>,
+    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
     BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
 > extends Controller {
     protected blockchainRegistry: BlockchainRegistryService;

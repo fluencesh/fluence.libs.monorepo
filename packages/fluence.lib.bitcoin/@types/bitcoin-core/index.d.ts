@@ -1,8 +1,4 @@
-import {Client} from "bitcoin-core";
-
 declare module 'bitcoin-core' {
-    import { Promise } from 'bluebird';
-
     export class Client {
         public agentOptions: any;
         public auth: { user: string; pass: string; };

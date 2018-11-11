@@ -15,9 +15,9 @@ import {
 import { EthereumTransportProvider } from './interfaces';
 import { EthersEthereumTransportService } from './ethers.ethereum.transport';
 
-export class ManagedEthereumTransportService
-    extends ManagedBlockchainTransportService<EthereumTransaction, EthereumBlock, EthereumTransportProvider>
-    implements ManagedEthereumTransportService {
+export class ManagedEthereumTransportService<Provider extends EthereumTransportProvider = EthereumTransportProvider>
+    extends ManagedBlockchainTransportService<EthereumTransaction, EthereumBlock, Provider>
+    implements ManagedEthereumTransportService<Provider> {
 
     public getBlockchainId(): string {
         return ETHEREUM;
@@ -108,7 +108,9 @@ export class ManagedEthereumTransportService
         return transport.contractMethodGasEstimate(contractEntity, methodName, inputTypes, inputValues);
     }
 
-    protected prepareTransportServices(connections: Array<Scheme.TransportConnection>) {
-        return connections.map((con) => new EthersEthereumTransportService(this.pluginManager, con));
+    protected prepareTransportServices(connections: Array<Scheme.TransportConnection>): Array<Provider> {
+        return connections.map<Provider>(
+            (con) => new EthersEthereumTransportService(this.pluginManager, con) as any as Provider
+        );
     }
 }

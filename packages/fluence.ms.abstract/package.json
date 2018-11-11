@@ -40,7 +40,7 @@
     "prom-client": "^11.1.1",
     "swagger-stats": "^0.95.6",
     "swapi": "0.0.4",
-    "winston": "^2.4.2"
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "@types/agenda": "^1.0.3",

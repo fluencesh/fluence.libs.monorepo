@@ -3,17 +3,25 @@ import {
     BlockchainService,
     Scheme,
     TransactionHashSubscriptionService,
+    BlockchainTransportProvider,
+    ManagedBlockchainTransportService,
 } from '@applicature-private/fluence.lib.services';
 import * as logger from 'winston';
 import { CronjobMetricService } from '../services';
 import { BlockchainHandler } from './blockchain.handler';
 
-export class TransactionSubscriptionHandler extends BlockchainHandler {
+export class TransactionSubscriptionHandler<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends BlockchainTransportProvider<Transaction, Block>,
+    ManagedService extends ManagedBlockchainTransportService<Transaction, Block, Provider>,
+    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
+> extends BlockchainHandler<Transaction, Block, Provider, ManagedService, BlockchainServiceType> {
     private subscriptionService: TransactionHashSubscriptionService;
 
     constructor(
         pluginManager: PluginManager,
-        blockchainService: BlockchainService,
+        blockchainService: BlockchainServiceType,
         metricService?: CronjobMetricService
     ) {
         super(pluginManager, blockchainService, metricService);
@@ -26,7 +34,7 @@ export class TransactionSubscriptionHandler extends BlockchainHandler {
         return Scheme.SubscriptionBlockRecheckType.Transaction;
     }
 
-    public async processBlock(lastBlockHeight: number, block: Scheme.BlockchainBlock) {
+    public async processBlock(lastBlockHeight: number, block: Block) {
         const txMap: Hashtable<Scheme.BlockchainTransaction> = {};
         block.transactions.forEach((tx) => {
             txMap[tx.hash] = tx;

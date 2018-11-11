@@ -2,12 +2,12 @@ import { MultivestError, PluginManager, Service } from '@applicature/core.plugin
 import { Errors } from '../../errors';
 import { Scheme } from '../../types';
 import { BlockchainService } from './blockchain.service';
-import { ManagedBlockchainTransportService, BlockchainTransportProvider } from '../transports';
+import { BlockchainTransportProvider, ManagedBlockchainTransport } from '../transports';
 
 type Transaction = Scheme.BlockchainTransaction;
 type Block = Scheme.BlockchainBlock<Transaction>;
 type Provider = BlockchainTransportProvider<Transaction, Block>;
-type ManagedTransport = ManagedBlockchainTransportService<Transaction, Block, Provider>;
+type ManagedTransport = ManagedBlockchainTransport<Transaction, Block, Provider>;
 type BlockchainServiceType = BlockchainService<Transaction, Block, Provider, ManagedTransport>;
 
 export class BlockchainRegistryService extends Service {

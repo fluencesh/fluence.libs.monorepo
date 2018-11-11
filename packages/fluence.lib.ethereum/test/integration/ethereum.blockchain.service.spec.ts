@@ -5,7 +5,6 @@ import {
     MongodbTransportConnectionDao,
     Scheme,
 } from '@fluencesh/fluence.lib.services';
-import BigNumber from 'bignumber.js';
 import * as config from 'config';
 import { utils } from 'ethers';
 import { has } from 'lodash';

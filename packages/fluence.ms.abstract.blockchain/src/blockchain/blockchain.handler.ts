@@ -10,7 +10,6 @@ import {
     WebhookActionItemObjectService,
     BlockchainTransportProvider,
     ManagedBlockchainTransport,
-    ManagedBlockchainTransportService,
 } from '@applicature-private/fluence.lib.services';
 import { set } from 'lodash';
 import { v1 as generateId } from 'uuid';
@@ -21,7 +20,7 @@ export abstract class BlockchainHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedService extends ManagedBlockchainTransportService<Transaction, Block, Provider>,
+    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
     BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
 > {
     protected pluginManager: PluginManager;

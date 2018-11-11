@@ -169,8 +169,8 @@ export class EthereumBlockchainService extends BlockchainService<
 
     public getAddressTransactionsCount(
         address: string,
-        blockTag?: number | string,
-        transportId?: string
+        transportId?: string,
+        blockTag?: number | string
     ): Promise<number> {
         return this.blockchainTransport.getAddressTransactionsCount(address, transportId, blockTag);
     }

@@ -6,7 +6,7 @@ import {
     JobDao,
     Scheme,
     BlockchainTransportProvider,
-    ManagedBlockchainTransportService
+    ManagedBlockchainTransport
 } from '@fluencesh/fluence.lib.services';
 import * as logger from 'winston';
 import { BlockchainHandler } from './blockchain.handler';
@@ -15,7 +15,7 @@ export class BlockchainMonitor<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedService extends ManagedBlockchainTransportService<Transaction, Block, Provider>,
+    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
     BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
 > {
     protected blockchainService: BlockchainServiceType;

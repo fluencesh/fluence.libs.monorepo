@@ -4,6 +4,7 @@ import {
     BlockchainTransportProvider,
     ManagedBlockchainTransportService,
     Scheme,
+    ManagedBlockchainTransport,
 } from '@fluencesh/fluence.lib.services';
 import { Errors } from '../errors';
 import { BlockchainMonitor } from './blockchain.monitor';
@@ -12,8 +13,8 @@ export class BlockchainMonitorRegistry<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedService extends ManagedBlockchainTransportService<Transaction, Block, Provider>,
-    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>,
+    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
+    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
 > extends Service {
     private registry: Map<
         Scheme.BlockchainInfo,

@@ -4,7 +4,7 @@ import {
     Scheme,
     TransactionHashSubscriptionService,
     BlockchainTransportProvider,
-    ManagedBlockchainTransportService,
+    ManagedBlockchainTransport,
 } from '@applicature-private/fluence.lib.services';
 import * as logger from 'winston';
 import { CronjobMetricService } from '../services';
@@ -14,7 +14,7 @@ export class TransactionSubscriptionHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedService extends ManagedBlockchainTransportService<Transaction, Block, Provider>,
+    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
     BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
 > extends BlockchainHandler<Transaction, Block, Provider, ManagedService, BlockchainServiceType> {
     private subscriptionService: TransactionHashSubscriptionService;

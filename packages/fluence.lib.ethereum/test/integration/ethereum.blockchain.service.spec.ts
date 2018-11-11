@@ -271,7 +271,7 @@ describe('ethereum blockchain', () => {
         const address = '0xa10F52b30260A11f0Accc8DEaeF3237ae40352F8';
         const blockHeight = 2152749;
 
-        const result = await blockchainService.getAddressTransactionsCount(address, blockHeight);
+        const result = await blockchainService.getAddressTransactionsCount(address, null, blockHeight);
 
         expect(typeof result === 'number').toBeTruthy();
     });

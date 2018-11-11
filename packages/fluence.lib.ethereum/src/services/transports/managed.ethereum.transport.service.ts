@@ -76,8 +76,8 @@ export class ManagedEthereumTransportService<Provider extends EthereumTransportP
 
     public async getAddressTransactionsCount(
         address: string,
-        blockTag?: number | string,
-        transportConnectionId?: string
+        transportConnectionId?: string,
+        blockTag?: number | string
     ): Promise<number> {
         const transportService = await this.getActiveTransportService(transportConnectionId);
 

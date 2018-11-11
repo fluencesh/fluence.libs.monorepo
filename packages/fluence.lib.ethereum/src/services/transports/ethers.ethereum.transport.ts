@@ -165,7 +165,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = []
+        inputValues: Array<string | Array<string>> = []
     ) {
         const contract = new Contract(contractEntity.address, contractEntity.abi, this.provider);
 
@@ -188,7 +188,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = []
+        inputValues: Array<string | Array<string>> = []
     ): Promise<BigNumber> {
         const contract = new Contract(contractEntity.address, contractEntity.abi, this.provider);
         const methodSignature = `${methodName}(${inputTypes.join(',')})`;

@@ -32,14 +32,14 @@ export interface ManagedEthereumTransport<
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string>,
-        inputValues: Array<string>,
+        inputValues: Array<string | Array<string>>,
         transportConnectionId: string
     ): Promise<any>;
     contractMethodGasEstimate(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string>,
-        inputValues: Array<string>,
+        inputValues: Array<string | Array<string>>,
         transportConnectionId: string
     ): Promise<any>;
 }

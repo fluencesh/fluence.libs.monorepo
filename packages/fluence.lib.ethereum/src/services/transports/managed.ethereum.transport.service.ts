@@ -88,7 +88,7 @@ export class ManagedEthereumTransportService<Provider extends EthereumTransportP
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = [],
+        inputValues: Array<string | Array<string>> = [],
         transportConnectionId?: string
     ): Promise<any> {
         const transport = await this.getActiveTransportService(transportConnectionId);
@@ -100,7 +100,7 @@ export class ManagedEthereumTransportService<Provider extends EthereumTransportP
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = [],
+        inputValues: Array<string | Array<string>> = [],
         transportConnectionId?: string
     ): Promise<any> {
         const transport = await this.getActiveTransportService(transportConnectionId);

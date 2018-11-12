@@ -250,8 +250,6 @@ export function randomScheduledTx() {
         cronExpression: '* * * * * * *',
         tx: randomTransactionScheme(),
         projectId: generateId(),
-        blockchainId: generateId(),
-        networkId: generateId(),
         privateKey: generate(RandomStringPresets.Hash256),
         relatedJobId: generateId(),
         transportConnectionId: generateId(),

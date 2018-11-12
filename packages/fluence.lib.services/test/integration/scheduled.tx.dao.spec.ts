@@ -58,8 +58,6 @@ describe('scheduled tx dao', () => {
             created.projectId,
             created.cronExpression,
             created.tx,
-            created.blockchainId,
-            created.networkId,
             created.privateKey,
             created.transportConnectionId
         );
@@ -67,8 +65,6 @@ describe('scheduled tx dao', () => {
         expect(got.projectId).toEqual(created.projectId);
         expect(got.cronExpression).toEqual(created.cronExpression);
         expect(got.tx).toEqual(created.tx);
-        expect(got.blockchainId).toEqual(created.blockchainId);
-        expect(got.networkId).toEqual(created.networkId);
         expect(got.privateKey).toEqual(created.privateKey);
         expect(got.transportConnectionId).toEqual(created.transportConnectionId);
     });

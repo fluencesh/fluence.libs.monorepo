@@ -30,7 +30,7 @@ export abstract class BlockchainService<
 
     constructor(
         pluginManager: PluginManager,
-        blockchainTransport: ManagedBlockchainTransportService<Transaction>
+        blockchainTransport: ManagedBlockchainTransportService
     ) {
         super(pluginManager);
 

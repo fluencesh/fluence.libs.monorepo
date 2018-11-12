@@ -1,6 +1,6 @@
-import { BigNumber } from 'bignumber.js';
-
 declare module 'ethers' {
+  import { BigNumber } from 'bignumber.js';
+
   class Contract {
     functions: {[ funName: string ]: (...params: Array<any>) => Promise<any> };
 

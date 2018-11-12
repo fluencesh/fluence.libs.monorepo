@@ -1,25 +1,36 @@
 import { Job, PluginManager } from '@applicature-private/core.plugin-manager';
-import { BlockchainService } from '@applicature-private/fluence.lib.services';
+import {
+    BlockchainService,
+    Scheme,
+    BlockchainTransportProvider,
+    ManagedBlockchainTransportService
+} from '@applicature-private/fluence.lib.services';
 import { BlockchainHandler, BlockchainMonitor } from '../blockchain';
 
 let blockchainId: string = null;
 let networkId: string = null;
 
-export class BlockchainListenerJob extends Job {
-    protected blockchainSqsPublisher: BlockchainMonitor;
+export class BlockchainListenerJob<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends BlockchainTransportProvider<Transaction, Block>,
+    ManagedService extends ManagedBlockchainTransportService<Transaction, Block, Provider>,
+    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
+> extends Job {
+    protected monitor: BlockchainMonitor<Transaction, Block, Provider, ManagedService, BlockchainServiceType>;
 
     constructor(
         pluginManager: PluginManager,
-        blockchainService: BlockchainService,
+        blockchainService: BlockchainServiceType,
         sinceBlock: number,
-        handlers: Array<BlockchainHandler>
+        handlers: Array<BlockchainHandler<Transaction, Block, Provider, ManagedService, BlockchainServiceType>>
     ) {
         blockchainId = blockchainService.getBlockchainId();
         networkId = blockchainService.getNetworkId();
 
         super(pluginManager);
         
-        this.blockchainSqsPublisher = new BlockchainMonitor(
+        this.monitor = new BlockchainMonitor(
             pluginManager,
             blockchainService,
             sinceBlock,
@@ -32,6 +43,6 @@ export class BlockchainListenerJob extends Job {
     }
 
     public async execute() {
-        await this.blockchainSqsPublisher.execute();
+        await this.monitor.execute();
     }
 }

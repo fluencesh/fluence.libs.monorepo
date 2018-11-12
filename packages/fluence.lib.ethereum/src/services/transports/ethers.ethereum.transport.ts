@@ -2,7 +2,6 @@ import { MultivestError, PluginManager, Service } from '@applicature-private/cor
 import { Scheme } from '@applicature-private/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import { Contract, providers } from 'ethers';
-import { get } from 'lodash';
 import { ServiceIds, TransportIds } from '../../constants';
 import {
     ETHEREUM,
@@ -13,7 +12,7 @@ import {
     EthereumTransactionReceipt,
     ethereumValidNetworks,
 } from '../../types';
-import { EthereumTransportProvider } from './ethereum.transport.provider';
+import { EthereumTransportProvider } from './interfaces';
 
 export enum Provider {
     JsonRpc = 'json-rpc',
@@ -165,8 +164,8 @@ export class EthersEthereumTransportService extends Service implements EthereumT
     public async callContractMethod(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
-        inputTypes: Array<string>,
-        inputValues: Array<string>
+        inputTypes: Array<string> = [],
+        inputValues: Array<string | Array<string>> = []
     ) {
         const contract = new Contract(contractEntity.address, contractEntity.abi, this.provider);
 
@@ -189,7 +188,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = []
+        inputValues: Array<string | Array<string>> = []
     ): Promise<BigNumber> {
         const contract = new Contract(contractEntity.address, contractEntity.abi, this.provider);
         const methodSignature = `${methodName}(${inputTypes.join(',')})`;

@@ -16,7 +16,7 @@ export class ScSdkGenerator {
 
     public generate(
         abi: Array<EthereumContractAbiItem>,
-        className: string = 'SmartContractProvider',
+        className: string = 'SmartContractProvider'
     ): SdkData {
         const templateData: Array<EthereumContractAbiItemTemplate> = [];
 

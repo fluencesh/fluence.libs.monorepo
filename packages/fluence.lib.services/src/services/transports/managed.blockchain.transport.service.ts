@@ -9,16 +9,17 @@ import * as logger from 'winston';
 import { Errors } from '../../errors';
 import { Scheme } from '../../types';
 import { TransportConnectionService } from '../object/transport.connection.service';
-import { ManagedBlockchainTransport } from './managed.blockchain.transport';
-import { BlockchainTransportProvider } from './blockchain.transport.provider';
+import { BlockchainTransportProvider, ManagedBlockchainTransport } from './interfaces';
 
-export abstract class ManagedBlockchainTransportService<Transaction extends Scheme.BlockchainTransaction>
-    extends Service
-    implements ManagedBlockchainTransport<Transaction> {
+export abstract class ManagedBlockchainTransportService<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends BlockchainTransportProvider<Transaction, Block>
+> extends Service implements ManagedBlockchainTransport<Transaction, Block, Provider> {
 
-    protected transportServices: Array<BlockchainTransportProvider<Transaction>>;
-    protected publicTransportServices: Array<BlockchainTransportProvider<Transaction>>;
-    protected reference: BlockchainTransportProvider<Transaction>;
+    protected transportServices: Array<Provider>;
+    protected publicTransportServices: Array<Provider>;
+    protected reference: Provider;
     protected validityCheckDuration: number;
     protected lastCheckAt: number;
     protected allowedNumberOfBlockToDelay: number;
@@ -130,8 +131,7 @@ export abstract class ManagedBlockchainTransportService<Transaction extends Sche
         return activeTransport.getBalance(address, minConf);
     }
 
-    protected abstract prepareTransportServices(connections: Array<Scheme.TransportConnection>)
-        : Array<BlockchainTransportProvider<Transaction>>;
+    protected abstract prepareTransportServices(connections: Array<Scheme.TransportConnection>): Array<Provider>;
 
     protected async updateValid() {
         const today = new Date();
@@ -208,14 +208,12 @@ export abstract class ManagedBlockchainTransportService<Transaction extends Sche
         }
     }
 
-    // THINK: what should be done if all transports are inactive?
-    // THINK: what should be done if specified transport is inactive?
-    protected async getActiveTransportService(transportId: string): Promise<BlockchainTransportProvider<Transaction>> {
+    protected async getActiveTransportService(transportId?: string): Promise<Provider> {
         await this.updateValid();
 
         this.wasCalledTimes++;
 
-        let transport: BlockchainTransportProvider<Transaction> = null;
+        let transport: Provider = null;
         if (transportId) {
             transport = this.transportServices.find((transportService) => {
                 return this.activeTransports[transportService.getTransportId()]

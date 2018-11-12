@@ -1,5 +1,4 @@
 import { MongoDBDao } from '@applicature-private/core.mongodb';
-import { Transaction } from '@applicature-private/core.plugin-manager';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { ScheduledTxDao } from '../scheduled.tx.dao';
@@ -21,7 +20,7 @@ export class MongodbScheduledTxDao extends MongoDBDao<Scheme.ScheduledTx> implem
         projectId: string,
         cronExpression: string,
 
-        tx: Transaction,
+        tx: Scheme.BlockchainTransaction,
         blockchainId: string,
         networkId: string,
         privateKey: string
@@ -53,7 +52,7 @@ export class MongodbScheduledTxDao extends MongoDBDao<Scheme.ScheduledTx> implem
         await this.update({ id }, { cronExpression });
     }
 
-    public async setTransaction(id: string, tx: Transaction): Promise<void> {
+    public async setTransaction(id: string, tx: Scheme.BlockchainTransaction): Promise<void> {
         await this.update({ id }, { tx });
     }
 

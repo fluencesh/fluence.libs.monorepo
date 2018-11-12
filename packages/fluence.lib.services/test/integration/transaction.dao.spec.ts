@@ -5,7 +5,7 @@ import { v1 as generateId } from 'uuid';
 import { Scheme } from '../../src/types';
 
 import { MongodbTransactionDao } from '../../src/dao/mongodb/transaction.dao';
-import { randomTransaction } from '../../src/generation/transaction';
+import { randomTransaction } from '../helper';
 
 describe('transaction dao', () => {
     let dao: MongodbTransactionDao;

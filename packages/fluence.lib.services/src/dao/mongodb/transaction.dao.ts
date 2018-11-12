@@ -17,8 +17,11 @@ export class MongodbTransactionDao extends MongoDBDao<Scheme.Transaction> implem
     }
 
     public async createTransaction(
-        blockChainId: string, networkId: string, uniqId: string,
-        transaction: Scheme.BlockchainTransaction, status: Scheme.TransactionStatus
+        blockChainId: string,
+        networkId: string,
+        uniqId: string,
+        transaction: Scheme.BlockchainTransaction,
+        status: Scheme.TransactionStatus
     ): Promise<Scheme.Transaction> {
 
         return this.create({
@@ -31,8 +34,12 @@ export class MongodbTransactionDao extends MongoDBDao<Scheme.Transaction> implem
     }
 
     public async setMinedBlock(
-        blockChainId: string, networkId: string, txHash: string, hash: string,
-        height: number, time: number
+        blockChainId: string,
+        networkId: string,
+        txHash: string,
+        hash: string,
+        height: number,
+        time: number
     ): Promise<void> {
         await this.collection
             .updateOne(
@@ -66,7 +73,9 @@ export class MongodbTransactionDao extends MongoDBDao<Scheme.Transaction> implem
     }
 
     public async getByBlockchainAndUniqId(
-        blockChainId: string, networkId: string, uniqId: string
+        blockChainId: string,
+        networkId: string,
+        uniqId: string
     ): Promise<Scheme.Transaction> {
         return this.getRaw({
             blockChainId, networkId,
@@ -75,7 +84,9 @@ export class MongodbTransactionDao extends MongoDBDao<Scheme.Transaction> implem
     }
 
     public async listByNetworkAndStatus(
-        blockChainId: string, networkId: string, status: Scheme.TransactionStatus
+        blockChainId: string,
+        networkId: string,
+        status: Scheme.TransactionStatus
     ): Promise<Array<Scheme.Transaction>> {
 
         return this.list({
@@ -86,10 +97,13 @@ export class MongodbTransactionDao extends MongoDBDao<Scheme.Transaction> implem
     }
 
     public async listByUniqId(
-        blockChainId: string, networkId: string, uniqId: string
+        blockChainId: string,
+        networkId: string,
+        uniqId: string
     ): Promise<Array<Scheme.Transaction>> {
         return this.listRaw({
-            blockChainId, networkId,
+            blockChainId,
+            networkId,
             uniqId,
         });
     }
@@ -106,7 +120,10 @@ export class MongodbTransactionDao extends MongoDBDao<Scheme.Transaction> implem
     }
 
     public async getCountByAddressExcludingStatus(
-        blockChainId: string, networkId: string, address: string,  status: Scheme.TransactionStatus
+        blockChainId: string,
+        networkId: string,
+        address: string,
+        status: Scheme.TransactionStatus
     ): Promise<number> {
         return this.collection.count({
             blockChainId, networkId,

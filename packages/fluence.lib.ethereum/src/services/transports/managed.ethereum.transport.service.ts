@@ -10,15 +10,14 @@ import {
     EthereumTopicFilter,
     EthereumTransaction,
     EthereumTransactionReceipt,
+    EthereumBlock,
 } from '../../types';
-import { EthereumTransportProvider } from '../transports/ethereum.transport.provider';
-import { ManagedEthereumTransport } from '../transports/managed.ethereum.transport';
-import { EthersEthereumTransportService } from '../transports/ethers.ethereum.transport';
+import { EthereumTransportProvider } from './interfaces';
+import { EthersEthereumTransportService } from './ethers.ethereum.transport';
 
-export class ManagedEthereumTransportService extends ManagedBlockchainTransportService<EthereumTransaction>
-        implements ManagedEthereumTransport {
-    protected transportServices: Array<EthereumTransportProvider>;
-    protected reference: EthereumTransportProvider;
+export class ManagedEthereumTransportService<Provider extends EthereumTransportProvider = EthereumTransportProvider>
+    extends ManagedBlockchainTransportService<EthereumTransaction, EthereumBlock, Provider>
+    implements ManagedEthereumTransportService<Provider> {
 
     public getBlockchainId(): string {
         return ETHEREUM;
@@ -77,8 +76,8 @@ export class ManagedEthereumTransportService extends ManagedBlockchainTransportS
 
     public async getAddressTransactionsCount(
         address: string,
-        blockTag?: number | string,
-        transportConnectionId?: string
+        transportConnectionId?: string,
+        blockTag?: number | string
     ): Promise<number> {
         const transportService = await this.getActiveTransportService(transportConnectionId);
 
@@ -89,7 +88,7 @@ export class ManagedEthereumTransportService extends ManagedBlockchainTransportS
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = [],
+        inputValues: Array<string | Array<string>> = [],
         transportConnectionId?: string
     ): Promise<any> {
         const transport = await this.getActiveTransportService(transportConnectionId);
@@ -101,7 +100,7 @@ export class ManagedEthereumTransportService extends ManagedBlockchainTransportS
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = [],
+        inputValues: Array<string | Array<string>> = [],
         transportConnectionId?: string
     ): Promise<any> {
         const transport = await this.getActiveTransportService(transportConnectionId);
@@ -109,13 +108,9 @@ export class ManagedEthereumTransportService extends ManagedBlockchainTransportS
         return transport.contractMethodGasEstimate(contractEntity, methodName, inputTypes, inputValues);
     }
 
-    protected prepareTransportServices(connections: Array<Scheme.TransportConnection>) {
-        return connections.map((con) => new EthersEthereumTransportService(this.pluginManager, con));
-    }
-
-    protected async getActiveTransportService(transportConnectionId?: string): Promise<EthereumTransportProvider> {
-        const activeTransportService = await super.getActiveTransportService(transportConnectionId);
-
-        return activeTransportService as EthereumTransportProvider;
+    protected prepareTransportServices(connections: Array<Scheme.TransportConnection>): Array<Provider> {
+        return connections.map<Provider>(
+            (con) => new EthersEthereumTransportService(this.pluginManager, con) as any as Provider
+        );
     }
 }

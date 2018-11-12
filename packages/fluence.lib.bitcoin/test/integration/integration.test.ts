@@ -1,10 +1,11 @@
 import { BitcoinBlockchainService } from '../../src/services/blockchain/bitcoin';
 
+// TODO: write test for all methods of BitcoinBlockchainService (except those which needed ethers)
 describe('test', () => {
     let service: BitcoinBlockchainService;
 
     beforeEach(() => {
-        service = new BitcoinBlockchainService();
+        service = new BitcoinBlockchainService(false);
     });
 
     it('should get block by height', async () => {

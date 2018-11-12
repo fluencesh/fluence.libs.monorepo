@@ -1,16 +1,19 @@
 import { random } from 'lodash';
-import { MongodbSubscriptionBlockRecheckDao, Scheme } from '../../src';
+import { MongodbSubscriptionBlockRecheckDao, Scheme, SubscriptionBlockRecheckService } from '../../src';
 import { createDao, createEntities, getRandomItem, randomSubscriptionBlockChecker } from '../helper';
 
-describe('subscription block recheck dao', () => {
-    let dao: MongodbSubscriptionBlockRecheckDao;
+describe('subscription block recheck service', () => {
+    let service: SubscriptionBlockRecheckService;
 
     const subscriptionBlockRechecks: Array<Scheme.SubscriptionBlockRecheck> = new Array(15);
     let subscriptionBlockRecheck: Scheme.SubscriptionBlockRecheck = null;
 
     beforeAll(async () => {
-        dao = await createDao(MongodbSubscriptionBlockRecheckDao);
+        const dao = await createDao(MongodbSubscriptionBlockRecheckDao);
         await createEntities(dao, randomSubscriptionBlockChecker, subscriptionBlockRechecks);
+
+        service = new SubscriptionBlockRecheckService(null);
+        (service as any).dao = dao;
     });
 
     beforeEach(() => {
@@ -18,7 +21,7 @@ describe('subscription block recheck dao', () => {
     });
 
     it('should get by id', async () => {
-        const got = await dao.getById(subscriptionBlockRecheck.id);
+        const got = await service.getById(subscriptionBlockRecheck.id);
         expect(got).toEqual(subscriptionBlockRecheck);
     });
 
@@ -26,7 +29,7 @@ describe('subscription block recheck dao', () => {
         const filtered =
             subscriptionBlockRechecks.filter((sbr) => sbr.blockHeight === subscriptionBlockRecheck.blockHeight);
 
-        const got = await dao.listByBlockHeight(subscriptionBlockRecheck.blockHeight);
+        const got = await service.listByBlockHeight(subscriptionBlockRecheck.blockHeight);
         expect(got).toEqual(filtered);
     });
 
@@ -37,7 +40,7 @@ describe('subscription block recheck dao', () => {
             && sbr.networkId === subscriptionBlockRecheck.networkId
         );
 
-        const got = await dao.listByBlockHeightAndBlockchainIdAndNetworkId(
+        const got = await service.listByBlockHeightAndBlockchainIdAndNetworkId(
             subscriptionBlockRecheck.blockHeight,
             subscriptionBlockRecheck.blockchainId,
             subscriptionBlockRecheck.networkId
@@ -53,7 +56,7 @@ describe('subscription block recheck dao', () => {
             && sbr.type === subscriptionBlockRecheck.type
         );
 
-        const got = await dao.listByBlockHeightAndBlockchainInfoAndType(
+        const got = await service.listByBlockHeightAndBlockchainInfoAndType(
             subscriptionBlockRecheck.blockHeight,
             subscriptionBlockRecheck.blockchainId,
             subscriptionBlockRecheck.networkId,
@@ -64,7 +67,7 @@ describe('subscription block recheck dao', () => {
 
     it('should create new entity', async () => {
         const data = randomSubscriptionBlockChecker();
-        const got = await dao.createBlockRecheck(
+        const got = await service.createBlockRecheck(
             data.subscriptionId,
             data.blockchainId,
             data.networkId,
@@ -86,9 +89,9 @@ describe('subscription block recheck dao', () => {
     });
 
     it('should increment `invokeOnBlockHeight` by id', async () => {
-        await dao.incInvokeOnBlockHeightById(subscriptionBlockRecheck.id);
+        await service.incInvokeOnBlockHeightById(subscriptionBlockRecheck.id);
 
-        const got = await dao.getById(subscriptionBlockRecheck.id);
+        const got = await service.getById(subscriptionBlockRecheck.id);
         expect(got.invokeOnBlockHeight).toEqual(subscriptionBlockRecheck.invokeOnBlockHeight + 1);
 
         subscriptionBlockRecheck.invokeOnBlockHeight += 1;
@@ -96,18 +99,18 @@ describe('subscription block recheck dao', () => {
 
     it('should increment `invokeOnBlockHeight` by id (another one)', async () => {
         const incrementOn = random(2, 10);
-        await dao.incInvokeOnBlockHeightById(subscriptionBlockRecheck.id, incrementOn);
+        await service.incInvokeOnBlockHeightById(subscriptionBlockRecheck.id, incrementOn);
 
-        const got = await dao.getById(subscriptionBlockRecheck.id);
+        const got = await service.getById(subscriptionBlockRecheck.id);
         expect(got.invokeOnBlockHeight).toEqual(subscriptionBlockRecheck.invokeOnBlockHeight + incrementOn);
 
         subscriptionBlockRecheck.invokeOnBlockHeight += incrementOn;
     });
 
     it('should increment `invokeOnBlockHeight` by ids', async () => {
-        await dao.incInvokeOnBlockHeightByIds([ subscriptionBlockRecheck.id ]);
+        await service.incInvokeOnBlockHeightByIds([ subscriptionBlockRecheck.id ]);
 
-        const got = await dao.getById(subscriptionBlockRecheck.id);
+        const got = await service.getById(subscriptionBlockRecheck.id);
         expect(got.invokeOnBlockHeight).toEqual(subscriptionBlockRecheck.invokeOnBlockHeight + 1);
 
         subscriptionBlockRecheck.invokeOnBlockHeight += 1;
@@ -115,9 +118,9 @@ describe('subscription block recheck dao', () => {
 
     it('should increment `invokeOnBlockHeight` by ids (another one)', async () => {
         const incrementOn = random(2, 10);
-        await dao.incInvokeOnBlockHeightByIds([ subscriptionBlockRecheck.id ], incrementOn);
+        await service.incInvokeOnBlockHeightByIds([ subscriptionBlockRecheck.id ], incrementOn);
 
-        const got = await dao.getById(subscriptionBlockRecheck.id);
+        const got = await service.getById(subscriptionBlockRecheck.id);
         expect(got.invokeOnBlockHeight).toEqual(subscriptionBlockRecheck.invokeOnBlockHeight + incrementOn);
 
         subscriptionBlockRecheck.invokeOnBlockHeight += incrementOn;
@@ -125,18 +128,18 @@ describe('subscription block recheck dao', () => {
 
     it('should set new `invokeOnBlockHeight` by id', async () => {
         const invokeOnBlockHeight = random(500000, 1000000);
-        await dao.setInvokeOnBlockHeightById(subscriptionBlockRecheck.id, invokeOnBlockHeight);
+        await service.setInvokeOnBlockHeightById(subscriptionBlockRecheck.id, invokeOnBlockHeight);
 
-        const got = await dao.getById(subscriptionBlockRecheck.id);
+        const got = await service.getById(subscriptionBlockRecheck.id);
         expect(got.invokeOnBlockHeight).toEqual(invokeOnBlockHeight);
 
         subscriptionBlockRecheck.invokeOnBlockHeight = invokeOnBlockHeight;
     });
 
     it('should remove by id', async () => {
-        await dao.removeById(subscriptionBlockRecheck.id);
+        await service.removeById(subscriptionBlockRecheck.id);
 
-        const got = await dao.getById(subscriptionBlockRecheck.id);
+        const got = await service.getById(subscriptionBlockRecheck.id);
         expect(got).toBeNull();
 
         subscriptionBlockRechecks.splice(
@@ -145,9 +148,9 @@ describe('subscription block recheck dao', () => {
     });
 
     it('should remove by ids', async () => {
-        await dao.removeByIds([ subscriptionBlockRecheck.id ]);
+        await service.removeByIds([ subscriptionBlockRecheck.id ]);
 
-        const got = await dao.getById(subscriptionBlockRecheck.id);
+        const got = await service.getById(subscriptionBlockRecheck.id);
         expect(got).toBeNull();
 
         subscriptionBlockRechecks.splice(

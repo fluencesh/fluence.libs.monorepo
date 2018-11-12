@@ -29,8 +29,13 @@ pipelines:
       - node
       script:
       - printf "//`node -p \"require('url').parse(process.env.NPM_REGISTRY_URL || 'https://registry.npmjs.org').host\"`/:_authToken=${NPM_TOKEN}\nregistry=${NPM_REGISTRY_URL:-https://registry.npmjs.org}\n" >> ~/.npmrc
+      - npm install
+      - npm run bootstrap-deps
+      - npm install -g gulp
+      - npm run build
       - git config --global user.email "bitbucket-bot@applicature.com"
       - git config --global user.name "Bitbucket Bot"
+      - git status
       - >-
         npm run lerna-publish -- "prerelease" "--yes" "-m '[skip ci] chore(alpha): publish %s'"
   branches:

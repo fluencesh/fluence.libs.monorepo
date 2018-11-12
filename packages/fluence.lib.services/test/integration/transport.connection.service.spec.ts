@@ -3,7 +3,6 @@ import { random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
 import { v1 as generateId } from 'uuid';
 import { MongodbTransportConnectionDao } from '../../src/dao/mongodb/transport.connection.dao';
-import { randomJob } from '../../src/generation/jobs';
 import { TransportConnectionService } from '../../src/services/object/transport.connection.service';
 import { Scheme } from '../../src/types';
 import { randomTransportConnection } from '../helper';

@@ -1,5 +1,5 @@
 import { Plugin as MongoPlugin } from '@applicature/core.mongodb';
-import { MultivestError, Service, Transaction } from '@applicature/core.plugin-manager';
+import { MultivestError, Service } from '@applicature/core.plugin-manager';
 import { CronExpressionValidation, DaoIds, ScheduledTxJobName } from '../../constants';
 import { ClientDao, ProjectDao } from '../../dao';
 import { ScheduledTxDao } from '../../dao/scheduled.tx.dao';
@@ -29,7 +29,7 @@ export class ScheduledTxService extends Service {
         projectId: string,
         cronExpression: string,
 
-        tx: Transaction,
+        tx: Scheme.BlockchainTransaction,
         blockchainId: string,
         networkId: string,
         privateKey: string
@@ -102,7 +102,7 @@ export class ScheduledTxService extends Service {
         }
     }
 
-    public async setTransaction(id: string, tx: Transaction): Promise<void> {
+    public async setTransaction(id: string, tx: Scheme.BlockchainTransaction): Promise<void> {
         await this.scheduledTxDao.setTransaction(id, tx);
     }
 }

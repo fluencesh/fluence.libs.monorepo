@@ -1,6 +1,8 @@
 import { Hashtable } from '@applicature/core.plugin-manager';
 import {
     Scheme,
+    BlockchainTransportProvider,
+    ManagedBlockchainTransport,
 } from '@fluencesh/fluence.lib.services';
 import { BlockchainListenerHandler } from './blockchain.listener.handler';
 
@@ -9,21 +11,31 @@ interface RecipientAndTx {
     tx: Scheme.BlockchainTransaction;
 }
 
-export class AddressSubscriptionHandler extends BlockchainListenerHandler {
+export class AddressSubscriptionHandler<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends BlockchainTransportProvider<Transaction, Block>,
+    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
+    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
+> extends BlockchainHandler<Transaction, Block, Provider, ManagedService, BlockchainServiceType> {
+    private subscriptionService: AddressSubscriptionService;
+
+    constructor(
+        pluginManager: PluginManager,
+        blockchainService: BlockchainServiceType,
+        metricService?: CronjobMetricService
+    ) {
+        super(pluginManager, blockchainService, metricService);
+
+        this.subscriptionService =
+            pluginManager.getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;
+    }
 
     public getSubscriptionBlockRecheckType() {
         return Scheme.SubscriptionBlockRecheckType.Address;
     }
 
-    public getHandlerId() {
-        return 'address.subscription.handler';
-    }
-
-    public async processBlock(
-        lastBlockHeight: number,
-        block: Scheme.BlockchainBlock<Scheme.BlockchainTransaction>,
-        transportConnectionSubscription: Scheme.TransportConnectionSubscription
-    ) {
+    public async processBlock(lastBlockHeight: number, block: Block) {
         const recipients: Array<string> = [];
         const recipientsMap: Hashtable<Array<RecipientAndTx>> = {};
         for (const tx of block.transactions) {

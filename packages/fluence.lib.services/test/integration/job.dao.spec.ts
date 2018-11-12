@@ -2,7 +2,7 @@ import * as config from 'config';
 import { Db, MongoClient } from 'mongodb';
 
 import { MongodbJobDao } from '../../src/dao/mongodb/job.dao';
-import { randomJob } from '../../src/generation/jobs';
+import { randomJob } from '../helper';
 import { Scheme } from '../../src/types';
 
 describe('job dao', () => {

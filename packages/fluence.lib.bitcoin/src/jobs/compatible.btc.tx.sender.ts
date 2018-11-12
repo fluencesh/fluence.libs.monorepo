@@ -1,56 +1,61 @@
-import { Dao, Hashtable, Job, PluginManager } from '@applicature/core.plugin-manager';
-import { Scheme, TransactionDao } from '@applicature/fluence.lib.services';
-import * as logger from 'winston';
-import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';
+// FIXME:
+// - remove old packs
+// - use new packs
+// - fix incompatible parts of code
 
-export abstract class CompatibleBitcoinTransactionSender extends Job {
-    constructor(
-        pluginManager: PluginManager,
-        private blockchainService: BitcoinBlockchainService,
-        private sendFromAddress: string
-    ) {
-        super(pluginManager);
-    }
+// import { Dao, Hashtable, Job, PluginManager } from '@applicature/core.plugin-manager';
+// import { Scheme, TransactionDao } from '@applicature/fluence.lib.services';
+// import * as logger from 'winston';
+// import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';
 
-    public async execute() {
-        const transactionDao = this.pluginManager.getDaoByClass(TransactionDao);
-        const transactions = await transactionDao.listByNetworkAndStatus(
-            this.blockchainService.getBlockchainId(),
-            Scheme.TransactionStatus.Created
-        );
+// export abstract class CompatibleBitcoinTransactionSender extends Job {
+//     constructor(
+//         pluginManager: PluginManager,
+//         private blockchainService: BitcoinBlockchainService,
+//         private sendFromAddress: string
+//     ) {
+//         super(pluginManager);
+//     }
 
-        for (const transaction of transactions) {
-            logger.info(`${this.getJobId()}: send transaction`, transaction);
+//     public async execute() {
+//         const transactionDao = this.pluginManager.getDaoByClass(TransactionDao);
+//         const transactions = await transactionDao.listByNetworkAndStatus(
+//             this.blockchainService.getBlockchainId(),
+//             Scheme.TransactionStatus.Created
+//         );
 
-            if (!transaction.ref.from[0].address) {
-                transaction.ref.from[0].address = this.sendFromAddress;
-            }
+//         for (const transaction of transactions) {
+//             logger.info(`${this.getJobId()}: send transaction`, transaction);
 
-            let txHash;
+//             if (!transaction.ref.from[0].address) {
+//                 transaction.ref.from[0].address = this.sendFromAddress;
+//             }
 
-            try {
-                txHash = await this.blockchainService.sendTransaction({
-                    fee: transaction.ref.fee,
-                    from: transaction.ref.from,
-                    hash: transaction.ref.hash,
-                    to: transaction.ref.to,
-                });
-            }
-            catch (error) {
-                logger.error(`transaction sending failed ${transaction.uniqId}`, error);
-                throw error;
-            }
+//             let txHash;
 
-            logger.info(`${this.getJobId()}: transaction sent`, {
-                transaction,
-                txHash,
-            });
+//             try {
+//                 txHash = await this.blockchainService.sendTransaction({
+//                     fee: transaction.ref.fee,
+//                     from: transaction.ref.from,
+//                     hash: transaction.ref.hash,
+//                     to: transaction.ref.to,
+//                 });
+//             }
+//             catch (error) {
+//                 logger.error(`transaction sending failed ${transaction.uniqId}`, error);
+//                 throw error;
+//             }
 
-            await transactionDao.setHashAndStatus(
-                transaction.id,
-                txHash,
-                Scheme.TransactionStatus.Sent
-            );
-        }
-    }
-}
+//             logger.info(`${this.getJobId()}: transaction sent`, {
+//                 transaction,
+//                 txHash,
+//             });
+
+//             await transactionDao.setHashAndStatus(
+//                 transaction.id,
+//                 txHash,
+//                 Scheme.TransactionStatus.Sent
+//             );
+//         }
+//     }
+// }

@@ -1,3 +1,21 @@
 {
-  "extends": "../../tslint.json"
+  "extends": "tslint:recommended",
+  "rules": {
+    "array-type": [true, "generic"],
+    "interface-name": false,
+    "no-trailing-whitespace": [true, "ignore-blank-lines"],
+    "object-literal-sort-keys": false,
+    "one-line": false,
+    "ordered-imports": false,
+    "quotemark": [true, "single"],
+    "curly": false,
+    "trailing-comma": [
+      true,
+      {
+        "multiline": {
+          "functions": "never"
+        }
+      }
+    ]
+  }
 }

@@ -1,20 +1,25 @@
-import { PluginManager } from '@applicature/core.plugin-manager';
-import * as config from 'config';
-import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';
-import { CompatibleBitcoinTxMiningListener } from './compatible.btc.tx.mining.listener';
+// FIXME:
+// - remove old packs
+// - use new packs
+// - fix incompatible parts of code
 
-export class BitcoinTxMiningListener extends CompatibleBitcoinTxMiningListener {
-    constructor(pluginManager: PluginManager) {
-        super(
-            pluginManager,
-            new BitcoinBlockchainService(),
-            config.get('multivest.blockchain.bitcoin.listener.sinceBlock'),
-            config.get('multivest.blockchain.bitcoin.listener.minConfirmations')
-        );
-    }
+// import { PluginManager } from '@applicature/core.plugin-manager';
+// import * as config from 'config';
+// import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';
+// import { CompatibleBitcoinTxMiningListener } from './compatible.btc.tx.mining.listener';
 
-    public getJobId() {
-        return 'btc.tx.mining.listener';
-    }
+// export class BitcoinTxMiningListener extends CompatibleBitcoinTxMiningListener {
+//     constructor(pluginManager: PluginManager) {
+//         super(
+//             pluginManager,
+//             new BitcoinBlockchainService(),
+//             config.get('multivest.blockchain.bitcoin.listener.sinceBlock'),
+//             config.get('multivest.blockchain.bitcoin.listener.minConfirmations')
+//         );
+//     }
 
-}
+//     public getJobId() {
+//         return 'btc.tx.mining.listener';
+//     }
+
+// }

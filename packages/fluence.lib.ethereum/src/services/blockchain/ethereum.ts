@@ -16,11 +16,19 @@ import {
     EthereumTransaction,
     EthereumTransactionReceipt,
     ethereumValidNetworks,
+    EthereumBlock,
 } from '../../types';
-import { ManagedEthereumTransportService } from '../transports/managed.ethereum.transport.service';
+import { ManagedEthereumTransport } from '../transports/';
+import { EthereumTransportProvider } from '../transports';
 
-export class EthereumBlockchainService extends BlockchainService<EthereumTransaction> {
-    protected blockchainTransport: ManagedEthereumTransportService;
+export class EthereumBlockchainService extends BlockchainService<
+    EthereumTransaction,
+    EthereumBlock,
+    EthereumTransportProvider,
+    ManagedEthereumTransport
+> {
+
+    protected blockchainTransport: ManagedEthereumTransport;
 
     public getServiceId(): string {
         return ServiceIds.EthereumBlockchainService;
@@ -127,7 +135,7 @@ export class EthereumBlockchainService extends BlockchainService<EthereumTransac
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = [],
+        inputValues: Array<string | Array<string>> = [],
         transportId?: string
     ) {
         return this.blockchainTransport.callContractMethod(
@@ -143,7 +151,7 @@ export class EthereumBlockchainService extends BlockchainService<EthereumTransac
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
-        inputValues: Array<string> = [],
+        inputValues: Array<string | Array<string>> = [],
         transportId?: string
     ) {
         return this.blockchainTransport.contractMethodGasEstimate(
@@ -161,9 +169,9 @@ export class EthereumBlockchainService extends BlockchainService<EthereumTransac
 
     public getAddressTransactionsCount(
         address: string,
-        blockTag?: number | string,
-        transportId?: string
+        transportId?: string,
+        blockTag?: number | string
     ): Promise<number> {
-        return this.blockchainTransport.getAddressTransactionsCount(address, blockTag, transportId);
+        return this.blockchainTransport.getAddressTransactionsCount(address, transportId, blockTag);
     }
 }

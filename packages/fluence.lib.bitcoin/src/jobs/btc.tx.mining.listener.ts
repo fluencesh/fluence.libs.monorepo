@@ -2,7 +2,6 @@
 // - remove old packs
 // - use new packs
 // - fix incompatible parts of code
-
 // import { PluginManager } from '@applicature-private/core.plugin-manager';
 // import * as config from 'config';
 // import { BitcoinBlockchainService } from '../services/blockchain/bitcoin';

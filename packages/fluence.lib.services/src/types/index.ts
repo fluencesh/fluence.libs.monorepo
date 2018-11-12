@@ -188,6 +188,14 @@ export namespace Scheme {
         createdAt: Date;
 
         isPredefinedBySystem?: boolean;
+
+        cronExpression: string;
+        relatedJobId?: string;
+    }
+
+    export interface TransportConnectionJobData {
+        cronExpression: string;
+        transportConnectionId: string;
     }
 
     // TODO: FabricSmartContractCreation
@@ -320,7 +328,9 @@ export namespace Scheme {
         tx: BlockchainTransaction;
         privateKey: string;
 
-        relatedJobId: string;
+        transportConnectionId: string;
+
+        relatedJobId?: string;
     }
 
     export enum ScheduledTxExecutionStatus {

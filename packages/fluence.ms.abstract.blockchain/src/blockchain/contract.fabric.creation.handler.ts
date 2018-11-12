@@ -1,126 +1,130 @@
-import { Hashtable, PluginManager } from '@applicature-private/core.plugin-manager';
-import { EthereumBlockchainService, EthereumTransaction } from '@applicature-private/fluence.lib.ethereum';
-import {
-    ContractService,
-    EthereumContractSubscriptionService,
-    Scheme,
-} from '@applicature-private/fluence.lib.services';
-import * as config from 'config';
-import { sha3 } from 'ethereumjs-util';
-import { EthereumBlockchainHandler } from './ethereum.blockchain.handler';
+// TODO: migrate to subscription model:
+// https://applicature.atlassian.net/browse/FLC-210
+// TODO: move to separate package
+// https://applicature.atlassian.net/browse/FLC-209
 
-interface FabricMethodConfigData {
-    name: string;
-    types: Array<string>;
-    minConfirmations: number;
-}
+// import { Hashtable, PluginManager } from '@applicature-private/core.plugin-manager';
+// import { EthereumBlockchainService, EthereumTransaction } from '@applicature-private/fluence.lib.ethereum';
+// import {
+//     ContractService,
+//     EthereumContractSubscriptionService,
+//     Scheme,
+// } from '@applicature-private/fluence.lib.services';
+// import * as config from 'config';
+// import { sha3 } from 'ethereumjs-util';
+// import { EthereumBlockchainHandler } from './ethereum.blockchain.handler';
 
-// TODO: integrate with BlockchainListener
-export class ContractFabricCreationHandler extends EthereumBlockchainHandler {
-    private contractService: ContractService;
+// interface FabricMethodConfigData {
+//     name: string;
+//     types: Array<string>;
+//     minConfirmations: number;
+// }
 
-    constructor(
-        pluginManager: PluginManager,
-        blockchainService: EthereumBlockchainService
-    ) {
-        super(pluginManager, blockchainService);
+// export class ContractFabricCreationHandler extends EthereumBlockchainHandler {
+//     private contractService: ContractService;
 
-        this.contractService =
-            pluginManager.getServiceByClass(ContractService) as ContractService;
-    }
+//     constructor(
+//         pluginManager: PluginManager,
+//         blockchainService: EthereumBlockchainService
+//     ) {
+//         super(pluginManager, blockchainService);
 
-    public async processBlock(lastBlockHeight: number, block: Scheme.BlockchainBlock<EthereumTransaction>) {
-        const logs = await this.getLogsByBlockHeight(block.height);
+//         this.contractService =
+//             pluginManager.getServiceByClass(ContractService) as ContractService;
+//     }
 
-        const receivedContractsAddresses = logs
-            .map((log) => log.address)
-            .filter((address, index, addresses) => addresses.indexOf(address) === index);
-        const contracts = await this.contractService.listByAddresses(receivedContractsAddresses);
+//     public async processBlock(lastBlockHeight: number, block: Scheme.BlockchainBlock<EthereumTransaction>) {
+//         const logs = await this.getLogsByBlockHeight(block.height);
 
-        if (contracts.length === 0) {
-            return;
-        }
+//         const receivedContractsAddresses = logs
+//             .map((log) => log.address)
+//             .filter((address, index, addresses) => addresses.indexOf(address) === index);
+//         const contracts = await this.contractService.listByAddresses(receivedContractsAddresses);
 
-        const projectIds = contracts.map((c) => c.projectId);
-        const projectsMap: Hashtable<Scheme.Project> = await this.loadProjectHashmapByIds(projectIds);
+//         if (contracts.length === 0) {
+//             return;
+//         }
 
-        const eventMethodData = config.get<FabricMethodConfigData>('multivest.blockchain.fabricMethod');
-        const eventMethodSignature = `${eventMethodData.name}(${eventMethodData.types.join(',')})`;
-        const createContractTopic = this.attachPrefix((sha3(eventMethodSignature) as Buffer).toString('hex'));
-        const minConfirmations = eventMethodData.minConfirmations;
+//         const projectIds = contracts.map((c) => c.projectId);
+//         const projectsMap: Hashtable<Scheme.Project> = await this.loadProjectHashmapByIds(projectIds);
 
-        const webhookActions: Array<Scheme.WebhookActionItem> = [];
-        const createdAddresses: Array<string> = [];
+//         const eventMethodData = config.get<FabricMethodConfigData>('multivest.blockchain.fabricMethod');
+//         const eventMethodSignature = `${eventMethodData.name}(${eventMethodData.types.join(',')})`;
+//         const createContractTopic = this.attachPrefix((sha3(eventMethodSignature) as Buffer).toString('hex'));
+//         const minConfirmations = eventMethodData.minConfirmations;
 
-        const confirmations = lastBlockHeight - block.height;
+//         const webhookActions: Array<Scheme.WebhookActionItem> = [];
+//         const createdAddresses: Array<string> = [];
 
-        for (const contract of contracts) {
-            const contractLogs = logs.filter((log) =>
-                log.address === contract.address
-                && log.topics.find((topic) => topic === createContractTopic)
-            );
+//         const confirmations = lastBlockHeight - block.height;
 
-            for (const log of contractLogs) {
-                const decoded = this.decodeData(eventMethodData.types, log.data);
-                const contractAddress = this.attachPrefix(decoded[0]);
+//         for (const contract of contracts) {
+//             const contractLogs = logs.filter((log) =>
+//                 log.address === contract.address
+//                 && log.topics.find((topic) => topic === createContractTopic)
+//             );
 
-                if (!createdAddresses.find((address) => address === contractAddress)) {
-                    const project = projectsMap[contract.projectId];
+//             for (const log of contractLogs) {
+//                 const decoded = this.decodeData(eventMethodData.types, log.data);
+//                 const contractAddress = this.attachPrefix(decoded[0]);
 
-                    const createdContract = await this.contractService.createContract(
-                        contract.projectId,
-                        contractAddress,
-                        contract.abi
-                    );
-                    createdAddresses.push(createdContract.address);
+//                 if (!createdAddresses.find((address) => address === contractAddress)) {
+//                     const project = projectsMap[contract.projectId];
 
-                    const params = {
-                        abi: createdContract.abi,
-                        address: createdContract.address,
-                        id: createdContract.id,
-                        isFabric: createdContract.isFabric,
-                        isPublic: createdContract.isPublic,
-                        projectId: createdContract.projectId,
-                    };
+//                     const createdContract = await this.contractService.createContract(
+//                         contract.projectId,
+//                         contractAddress,
+//                         contract.abi
+//                     );
+//                     createdAddresses.push(createdContract.address);
 
-                    const subscription = { minConfirmations, id: null } as Scheme.Subscription;
+//                     const params = {
+//                         abi: createdContract.abi,
+//                         address: createdContract.address,
+//                         id: createdContract.id,
+//                         isFabric: createdContract.isFabric,
+//                         isPublic: createdContract.isPublic,
+//                         projectId: createdContract.projectId,
+//                     };
 
-                    const webhook = this.createWebhook(
-                        block,
-                        log.transactionHash,
-                        project,
-                        subscription,
-                        confirmations,
-                        params,
-                        log.address,
-                    );
+//                     const subscription = { minConfirmations, id: null } as Scheme.Subscription;
 
-                    if (minConfirmations > confirmations) {
-                        await this.createBlockRecheck(
-                            subscription,
-                            block,
-                            confirmations,
-                            webhook
-                        );
+//                     const webhook = this.createWebhook(
+//                         block,
+//                         log.transactionHash,
+//                         project,
+//                         subscription,
+//                         confirmations,
+//                         params,
+//                         log.address,
+//                     );
 
-                        continue;
-                    }
+//                     if (minConfirmations > confirmations) {
+//                         await this.createBlockRecheck(
+//                             subscription,
+//                             block,
+//                             confirmations,
+//                             webhook
+//                         );
 
-                    webhookActions.push(webhook);
-                }
-            }
-        }
+//                         continue;
+//                     }
 
-        if (webhookActions.length) {
-            await this.webhookService.fill(webhookActions);
-        }
-    }
+//                     webhookActions.push(webhook);
+//                 }
+//             }
+//         }
 
-    public getSubscriptionBlockRecheckType() {
-        return Scheme.SubscriptionBlockRecheckType.ContractFabricCreation;
-    }
+//         if (webhookActions.length) {
+//             await this.webhookService.fill(webhookActions);
+//         }
+//     }
 
-    protected getWebhookType() {
-        return Scheme.WebhookTriggerType.EthereumContractEvent;
-    }
-}
+//     public getSubscriptionBlockRecheckType() {
+//         return Scheme.SubscriptionBlockRecheckType.ContractFabricCreation;
+//     }
+
+//     protected getWebhookType() {
+//         return Scheme.WebhookTriggerType.EthereumContractEvent;
+//     }
+// }

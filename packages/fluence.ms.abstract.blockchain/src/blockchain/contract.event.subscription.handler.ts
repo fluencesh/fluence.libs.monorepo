@@ -1,35 +1,34 @@
-import { Hashtable, PluginManager } from '@applicature-private/core.plugin-manager';
-import { EthereumBlockchainService, EthereumTransaction } from '@applicature-private/fluence.lib.ethereum';
+import { Hashtable } from '@applicature-private/core.plugin-manager';
+import { EthereumBlock, EthereumBlockchainService } from '@applicature-private/fluence.lib.ethereum';
 import {
-    EthereumContractSubscriptionService,
     Scheme,
 } from '@applicature-private/fluence.lib.services';
-import { CronjobMetricService } from '@applicature-private/fluence.ms.abstract.blockchain';
 import { set } from 'lodash';
-import { EthereumBlockchainHandler } from './ethereum.blockchain.handler';
+import { EthereumListenerHandler } from './ethereum.listener.handler';
 
-// TODO: integrate with BlockchainListener
-export class ContractEventSubscriptionHandler extends EthereumBlockchainHandler {
-    private subscriptionService: EthereumContractSubscriptionService;
-
-    constructor(
-        pluginManager: PluginManager,
-        blockchainService: EthereumBlockchainService,
-        metricService: CronjobMetricService,
-    ) {
-        super(pluginManager, blockchainService, metricService);
-
-        this.subscriptionService =
-            pluginManager.getServiceByClass(EthereumContractSubscriptionService) as EthereumContractSubscriptionService;
+// TODO: move to separate package
+// https://applicature.atlassian.net/browse/FLC-209
+export class ContractEventSubscriptionHandler extends EthereumListenerHandler {
+    public getHandlerId() {
+        return 'contract.event.subscription.handler';
     }
 
-    public async processBlock(lastBlockHeight: number, block: Scheme.BlockchainBlock<EthereumTransaction>) {
-        const logsMap = await this.getLogMapByBlockHeight(block.height);
+    public getSubscriptionBlockRecheckType(): Scheme.SubscriptionBlockRecheckType {
+        return Scheme.SubscriptionBlockRecheckType.ContractEvent;
+    }
+
+    protected async processBlock(
+        lastBlockHeight: number,
+        block: EthereumBlock,
+        transportConnectionSubscription: Scheme.TransportConnectionSubscription,
+        blockchainService: EthereumBlockchainService
+    ) {
+        const logsMap = await this.getLogMapByBlockHeight(blockchainService, block.height);
 
         const confirmations = lastBlockHeight - block.height;
         const addresses = Object.keys(logsMap);
-        const subscriptions = (await this.subscriptionService.listBySubscribedAddressesActiveOnly(addresses))
-            .filter((subscription) => subscription.minConfirmations >= confirmations);
+        const subscriptions = transportConnectionSubscription.contractSubscriptions
+            .filter((s) => s.minConfirmations <= confirmations && addresses.includes(s.address));
 
         if (subscriptions.length === 0) {
             return;
@@ -67,6 +66,8 @@ export class ContractEventSubscriptionHandler extends EthereumBlockchainHandler 
                 const params = { decodedData };
 
                 const webhook = this.createWebhook(
+                    transportConnectionSubscription.blockchainId,
+                    transportConnectionSubscription.networkId,
                     block,
                     log.transactionHash,
                     project,
@@ -77,7 +78,13 @@ export class ContractEventSubscriptionHandler extends EthereumBlockchainHandler 
                 );
 
                 if (subscription.minConfirmations > confirmations) {
-                    await this.createBlockRecheck(subscription, block, confirmations, webhook);
+                    await this.createBlockRecheck(
+                        subscription,
+                        transportConnectionSubscription.id,
+                        block,
+                        confirmations,
+                        webhook
+                    );
                     continue;
                 }
 
@@ -95,8 +102,8 @@ export class ContractEventSubscriptionHandler extends EthereumBlockchainHandler 
 
                 promises.push(
                     this.metricService.addressFoundInBlock(
-                        this.blockchainService.getBlockchainId(),
-                        this.blockchainService.getNetworkId(),
+                        transportConnectionSubscription.blockchainId,
+                        transportConnectionSubscription.networkId,
                         webhookActions.length,
                         today
                     )
@@ -107,10 +114,6 @@ export class ContractEventSubscriptionHandler extends EthereumBlockchainHandler 
         }
 
         return;
-    }
-
-    public getSubscriptionBlockRecheckType(): Scheme.SubscriptionBlockRecheckType {
-        return Scheme.SubscriptionBlockRecheckType.ContractEvent;
     }
 
     protected getWebhookType() {

@@ -1,7 +1,6 @@
 import { Hashtable } from '@applicature-private/core.plugin-manager';
 import {
     Scheme,
-    TransactionHashSubscriptionService,
     BlockchainTransportProvider,
     ManagedBlockchainTransport,
 } from '@applicature-private/fluence.lib.services';
@@ -11,27 +10,22 @@ export class TransactionSubscriptionHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
-    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
-> extends BlockchainHandler<Transaction, Block, Provider, ManagedService, BlockchainServiceType> {
-    private subscriptionService: TransactionHashSubscriptionService;
-
-    constructor(
-        pluginManager: PluginManager,
-        blockchainService: BlockchainServiceType,
-        metricService?: CronjobMetricService
-    ) {
-        super(pluginManager, blockchainService, metricService);
-
-        this.subscriptionService =
-            pluginManager.getServiceByClass(TransactionHashSubscriptionService) as TransactionHashSubscriptionService;
-    }
+    ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
+> extends BlockchainListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
 
     public getSubscriptionBlockRecheckType() {
         return Scheme.SubscriptionBlockRecheckType.Transaction;
     }
 
-    public async processBlock(lastBlockHeight: number, block: Block) {
+    public getHandlerId() {
+        return 'transaction.hash.subscription.handler';
+    }
+
+    public async processBlock(
+        lastBlockHeight: number,
+        block: Block,
+        transportConnectionSubscription: Scheme.TransportConnectionSubscription
+    ) {
         const txMap: Hashtable<Scheme.BlockchainTransaction> = {};
         block.transactions.forEach((tx) => {
             txMap[tx.hash] = tx;

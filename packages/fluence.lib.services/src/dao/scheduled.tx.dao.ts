@@ -9,7 +9,9 @@ export abstract class ScheduledTxDao extends Dao<Scheme.ScheduledTx> {
         tx: Scheme.BlockchainTransaction,
         blockchainId: string,
         networkId: string,
-        privateKey: string
+        privateKey: string,
+
+        transportConnectionId: string
     ): Promise<Scheme.ScheduledTx>;
 
     public abstract getById(id: string): Promise<Scheme.ScheduledTx>;

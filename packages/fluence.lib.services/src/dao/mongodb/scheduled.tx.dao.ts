@@ -23,7 +23,9 @@ export class MongodbScheduledTxDao extends MongoDBDao<Scheme.ScheduledTx> implem
         tx: Scheme.BlockchainTransaction,
         blockchainId: string,
         networkId: string,
-        privateKey: string
+        privateKey: string,
+
+        transportConnectionId: string
     ): Promise<Scheme.ScheduledTx> {
         return this.create({
             projectId,
@@ -32,7 +34,9 @@ export class MongodbScheduledTxDao extends MongoDBDao<Scheme.ScheduledTx> implem
             tx,
             blockchainId,
             networkId,
-            privateKey
+            privateKey,
+
+            transportConnectionId,
         });
     }
 

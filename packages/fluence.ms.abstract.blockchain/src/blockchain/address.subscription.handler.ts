@@ -15,27 +15,22 @@ export class AddressSubscriptionHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
-    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
-> extends BlockchainHandler<Transaction, Block, Provider, ManagedService, BlockchainServiceType> {
-    private subscriptionService: AddressSubscriptionService;
-
-    constructor(
-        pluginManager: PluginManager,
-        blockchainService: BlockchainServiceType,
-        metricService?: CronjobMetricService
-    ) {
-        super(pluginManager, blockchainService, metricService);
-
-        this.subscriptionService =
-            pluginManager.getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;
-    }
+    ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
+> extends BlockchainListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
 
     public getSubscriptionBlockRecheckType() {
         return Scheme.SubscriptionBlockRecheckType.Address;
     }
 
-    public async processBlock(lastBlockHeight: number, block: Block) {
+    public getHandlerId() {
+        return 'address.subscription.handler';
+    }
+
+    public async processBlock(
+        lastBlockHeight: number,
+        block: Block,
+        transportConnectionSubscription: Scheme.TransportConnectionSubscription
+    ) {
         const recipients: Array<string> = [];
         const recipientsMap: Hashtable<Array<RecipientAndTx>> = {};
         for (const tx of block.transactions) {

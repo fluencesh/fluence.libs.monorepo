@@ -21,8 +21,6 @@ export class MongodbScheduledTxDao extends MongoDBDao<Scheme.ScheduledTx> implem
         cronExpression: string,
 
         tx: Scheme.BlockchainTransaction,
-        blockchainId: string,
-        networkId: string,
         privateKey: string,
 
         transportConnectionId: string
@@ -32,8 +30,6 @@ export class MongodbScheduledTxDao extends MongoDBDao<Scheme.ScheduledTx> implem
             cronExpression,
 
             tx,
-            blockchainId,
-            networkId,
             privateKey,
 
             transportConnectionId,

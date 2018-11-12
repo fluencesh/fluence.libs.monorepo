@@ -323,8 +323,6 @@ export namespace Scheme {
         projectId: string;
         cronExpression: string;
 
-        blockchainId: string;
-        networkId: string;
         tx: BlockchainTransaction;
         privateKey: string;
 

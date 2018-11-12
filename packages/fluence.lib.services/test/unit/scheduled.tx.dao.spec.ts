@@ -57,8 +57,6 @@ describe('address subscription dao', () => {
             projectId,
             cronExpression,
             tx,
-            blockchainId,
-            networkId,
             privateKey,
             transportConnectionId
         );

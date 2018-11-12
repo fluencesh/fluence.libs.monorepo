@@ -30,8 +30,6 @@ export class ScheduledTxService extends Service {
         cronExpression: string,
 
         tx: Scheme.BlockchainTransaction,
-        blockchainId: string,
-        networkId: string,
         privateKey: string,
 
         transportConnectionId: string
@@ -51,8 +49,6 @@ export class ScheduledTxService extends Service {
                 projectId,
                 cronExpression,
                 tx,
-                blockchainId,
-                networkId,
                 privateKey,
                 transportConnectionId
             );

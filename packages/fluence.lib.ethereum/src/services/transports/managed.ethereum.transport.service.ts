@@ -19,19 +19,19 @@ export class ManagedEthereumTransportService extends ManagedBlockchainTransportS
     protected transportServices: Array<EthereumTransport>;
     protected reference: EthereumTransport;
 
-    public getBlockchainId() {
+    public getBlockchainId(): string {
         return ETHEREUM;
     }
 
-    public getNetworkId() {
+    public getNetworkId(): string {
         return this.networkId;
     }
 
-    public getServiceId() {
+    public getServiceId(): string {
         return ServiceIds.ManagedEthereumTransportService;
     }
 
-    public getTransportId() {
+    public getTransportId(): string {
         return TransportIds.ManagedEthereumTransportService;
     }
 

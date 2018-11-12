@@ -93,8 +93,8 @@ export class BatchService extends Service {
 
     private async sendResults(webhookUrl: string, done: boolean, results: Array<any>) {
         const requestConfig = {
-            url: webhookUrl,
             method: 'POST',
+            url: webhookUrl,
             headers: {
                 'Content-Type': 'application/json'
             },

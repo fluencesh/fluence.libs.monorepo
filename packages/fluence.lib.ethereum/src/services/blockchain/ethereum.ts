@@ -18,8 +18,7 @@ import {
     ethereumValidNetworks,
     EthereumBlock,
 } from '../../types';
-import { ManagedEthereumTransport } from '../transports/';
-import { EthereumTransportProvider } from '../transports';
+import { EthereumTransportProvider, ManagedEthereumTransport } from '../transports';
 
 export class EthereumBlockchainService extends BlockchainService<
     EthereumTransaction,

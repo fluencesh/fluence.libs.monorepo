@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@applicature/core.metrics": "^2.0.0",
+    "@applicature/core.mongodb": "^2.0.0",
     "@applicature/core.plugin-manager": "^2.0.0",
     "@applicature/core.web": "^2.0.0",
     "@fluencesh/fluence.lib.services": "^2.0.9-alpha.1",

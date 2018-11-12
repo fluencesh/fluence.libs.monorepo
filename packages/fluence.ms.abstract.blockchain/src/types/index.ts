@@ -12,8 +12,12 @@ export enum TransactionSendStatusMetricType {
     Fail = 'FAIL',
 }
 
+export interface BlockchainListenerJobMessage {
+    transportConnectionId: string;
+}
+
 export interface BlockchainListenerJob extends Scheme.Job {
-    params: Hashtable<TransportConnectionData>;
+    params: TransportConnectionData;
 }
 
 export interface TransportConnectionData {

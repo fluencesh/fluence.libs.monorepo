@@ -63,7 +63,7 @@ export class ScheduledTxHandlerService extends Service {
         try {
             const privateKey = Buffer.alloc(scheduledTx.privateKey.length, scheduledTx.privateKey, 'utf8');
             // FIXME: type error. Should take `Scheme.BlockchainTransaction`
-            tx = await blockchainService.sendTransaction(privateKey, scheduledTx.tx);
+            tx = await blockchainService.sendTransaction(privateKey, scheduledTx.tx, scheduledTx.transportConnectionId);
 
             await this.createWebhookAction(
                 client.id,
@@ -93,8 +93,7 @@ export class ScheduledTxHandlerService extends Service {
             await this.txSubscriptionService.createSubscription(
                 client.id,
                 project.id,
-                scheduledTx.blockchainId,
-                scheduledTx.networkId,
+                scheduledTx.transportConnectionId,
                 tx.hash,
                 project.txMinConfirmations
             );

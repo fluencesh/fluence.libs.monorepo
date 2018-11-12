@@ -3,39 +3,41 @@ import {
     EthereumBlockchainService,
     EthereumTopic,
     EthereumTopicFilter,
-    EthereumTransaction
+    EthereumTransaction,
+    EthereumBlock,
+    EthereumTransportProvider,
+    ManagedEthereumTransport
 } from '@fluencesh/fluence.lib.ethereum';
 import { Scheme } from '@fluencesh/fluence.lib.services';
 import * as abi from 'ethereumjs-abi';
 import { sha3 } from 'ethereumjs-util';
 import { set } from 'lodash';
 import { BlockchainListenerHandler } from './blockchain.listener.handler';
-import { CronjobMetricService } from '../services';
-
-// TODO: integrate with BlockchainListener
-export abstract class EthereumBlockchainHandler extends BlockchainListenerHandler<EthereumTransaction> {
-    protected blockchainService: EthereumBlockchainService;
-
-    constructor(
-        pluginManager: PluginManager,
-        ethereumService: EthereumBlockchainService
+// TODO: move to separate package
+// https://applicature.atlassian.net/browse/FLC-209
+export abstract class EthereumListenerHandler extends BlockchainListenerHandler<
+    EthereumTransaction,
+    EthereumBlock,
+    EthereumTransportProvider,
+    ManagedEthereumTransport
+> {
+    protected async getLogsByBlockHeight(
+        blockchainService: EthereumBlockchainService,
+        height: number
     ) {
-        super(pluginManager, ethereumService);
-
-        this.blockchainService = ethereumService;
-    }
-
-    protected async getLogsByBlockHeight(height: number) {
         const logsFilters = {
             fromBlock: height,
             toBlock: height,
         } as EthereumTopicFilter;
 
-        return this.blockchainService.getLogs(logsFilters);
+        return blockchainService.getLogs(logsFilters);
     }
 
-    protected async getLogMapByBlockHeight(height: number) {
-        const logs = await this.getLogsByBlockHeight(height);
+    protected async getLogMapByBlockHeight(
+        blockchainService: EthereumBlockchainService,
+        height: number
+    ) {
+        const logs = await this.getLogsByBlockHeight(blockchainService, height);
         const logsMap: Hashtable<EthereumTopic> = logs.reduce((map, log) => set(map, log.address, log), {});
 
         return logsMap;

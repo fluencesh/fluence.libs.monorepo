@@ -16,15 +16,13 @@ import { v1 as generateId } from 'uuid';
 import * as logger from 'winston';
 import { CronjobMetricService } from '../services';
 
-export abstract class BlockchainHandler<
+export abstract class BlockchainListenerHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
-    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
+    ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
 > {
-    protected blockchainService: BlockchainServiceType;
-    protected pluginManager: PluginManager;
+    protected readonly pluginManager: PluginManager;
 
     protected readonly projectService: ProjectService;
     protected readonly webhookService: WebhookActionItemObjectService;
@@ -34,7 +32,6 @@ export abstract class BlockchainHandler<
 
     constructor(
         pluginManager: PluginManager,
-        blockchainService: BlockchainServiceType,
         metricService?: CronjobMetricService
     ) {
         this.pluginManager = pluginManager;
@@ -46,16 +43,16 @@ export abstract class BlockchainHandler<
             pluginManager.getServiceByClass(SubscriptionBlockRecheckService);
 
         this.metricService = metricService;
-
-        this.blockchainService = blockchainService;
     }
 
     public async execute(
         lastBlockHeight: number,
-        block: Block
+        block: Block,
+        transportConnectionSubscription: Scheme.TransportConnectionSubscription,
+        blockchainService: BlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>
     ): Promise<void> {
         try {
-            await this.processBlock(lastBlockHeight, block, transportConnectionSubscription);
+            await this.processBlock(lastBlockHeight, block, transportConnectionSubscription, blockchainService);
         } catch (ex) {
             logger.error(`cant process block [${ block.height }]. Reason: ${ ex.message }`);
             throw ex;
@@ -78,12 +75,14 @@ export abstract class BlockchainHandler<
 
     protected abstract async processBlock(
         lastBlockHeight: number,
-        block: Block
+        block: Block,
+        transportConnectionSubscription: Scheme.TransportConnectionSubscription,
+        blockchainService: BlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>
     ): Promise<void>;
 
     protected async processUnconfirmedBlocks(
         processedBlockHeight: number,
-        blockchainService: BlockchainService<T>,
+        blockchainService: BlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>,
         transportConnectionId: string
     ): Promise<void> {
         let subscriptionBlockRechecks;
@@ -161,6 +160,9 @@ export abstract class BlockchainHandler<
     }
 
     protected createWebhook(
+        blockchainId: string,
+        networkId: string,
+
         block: Block,
         txHash: string,
         project: Scheme.Project,
@@ -210,6 +212,7 @@ export abstract class BlockchainHandler<
 
     protected async createBlockRecheck(
         subscription: Scheme.Subscription,
+        transportConnectionId: string,
         block: Block,
         confirmations: number,
         webhook: Scheme.WebhookActionItem
@@ -229,70 +232,12 @@ export abstract class BlockchainHandler<
         return;
     }
 
-    protected async processUnconfirmedBlocks(processedBlockHeight: number): Promise<void> {
-        let subscriptionBlockRechecks;
-        try {
-            subscriptionBlockRechecks =
-                await this.subscriptionBlockRecheckService.listByBlockHeightAndBlockchainInfoAndType(
-                    processedBlockHeight,
-                    this.blockchainId,
-                    this.networkId,
-                    this.getSubscriptionBlockRecheckType()
-                );
-        } catch (ex) {
-            logger.error(`Can't load block rechecks. Reason: ${ ex.message }`);
-            return;
-        }
-
-        const webhooks: Array<Scheme.WebhookActionItem> = [];
-        const failedSubscriptionBlockRechecks: Array<string> = [];
-        const succeedSubscriptionBlockRechecks: Array<string> = [];
-
-        await Promise.all(subscriptionBlockRechecks.map(async (subscriptionBlockRecheck) => {
-            try {
-                const block = await this.loadBlockByHash(subscriptionBlockRecheck.blockHash);
-                if (block.hash === subscriptionBlockRecheck.blockHash) {
-                    webhooks.push(subscriptionBlockRecheck.webhookActionItem);
-                }
-
-                succeedSubscriptionBlockRechecks.push(subscriptionBlockRecheck.id);
-            } catch (ex) {
-                logger.error(
-                    `can't get block [${ subscriptionBlockRecheck.blockHash }]. it will be reloaded in next iteration.`
-                );
-                failedSubscriptionBlockRechecks.push(subscriptionBlockRecheck.id);
-
-                return;
-            }
-        }));
-
-        if (webhooks.length) {
-            try {
-                await this.webhookService.fill(webhooks);
-            } catch (ex) {
-                logger.error(`creating webhooks in db was failed. `, ex);
-            }
-        }
-
-        if (failedSubscriptionBlockRechecks.length) {
-            try {
-                await this.subscriptionBlockRecheckService.incInvokeOnBlockHeightByIds(failedSubscriptionBlockRechecks);
-            } catch (ex) {
-                logger.error(`incrementing 'invokeOnBlockHeight' was failed. `, ex);
-            }
-        }
-
-        if (succeedSubscriptionBlockRechecks.length) {
-            try {
-                await this.subscriptionBlockRecheckService.removeByIds(succeedSubscriptionBlockRechecks);
-            } catch (ex) {
-                logger.error(`removing 'SubscriptionBlockRecheck' entities was failed. `, ex);
-            }
-        }
-    }
-
-    private async loadBlockByHash(hash: string): Promise<Block> {
-        logger.debug(`trying to load block [${ hash }]`);
+    private async loadBlockByHeight(
+        blockchainService: BlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>,
+        transportConnectionId: string,
+        height: number
+    ): Promise<Block> {
+        logger.debug(`trying to load block [${ height }]`);
 
         const block = await blockchainService.getBlockByHeight(height, transportConnectionId);
 

@@ -159,6 +159,8 @@ export function randomTransportConnection() {
         isPrivate: false,
 
         createdAt: new Date(),
+
+        cronExpression: '* * * * * * *'
     } as Scheme.TransportConnection;
 }
 
@@ -251,7 +253,8 @@ export function randomScheduledTx() {
         blockchainId: generateId(),
         networkId: generateId(),
         privateKey: generate(RandomStringPresets.Hash256),
-        relatedJobId: generateId()
+        relatedJobId: generateId(),
+        transportConnectionId: generateId(),
     } as Scheme.ScheduledTx;
 }
 

@@ -1,36 +1,31 @@
-import { Hashtable, PluginManager } from '@applicature/core.plugin-manager';
-import { EthereumBlockchainService, EthereumTransaction } from '@fluencesh/fluence.lib.ethereum';
+import { Hashtable } from '@applicature/core.plugin-manager';
+import { EthereumBlockchainService, EthereumBlock } from '@fluencesh/fluence.lib.ethereum';
 import {
-    OraclizeSubscriptionService,
     Scheme,
 } from '@fluencesh/fluence.lib.services';
 import { set } from 'lodash';
-import { EthereumBlockchainHandler } from './ethereum.blockchain.handler';
+import { EthereumListenerHandler } from './ethereum.listener.handler';
 
-// TODO: integrate with BlockchainListener
-export class OraclizeSubscriptionHandler extends EthereumBlockchainHandler {
-    private subscriptionService: OraclizeSubscriptionService;
-
-    constructor(
-        pluginManager: PluginManager,
-        blockchainService: EthereumBlockchainService
-    ) {
-        super(pluginManager, blockchainService);
-
-        this.subscriptionService =
-            pluginManager.getServiceByClass(OraclizeSubscriptionService) as OraclizeSubscriptionService;
+// TODO: move to separate package
+// https://applicature.atlassian.net/browse/FLC-209
+export class OraclizeSubscriptionHandler extends EthereumListenerHandler {
+    public getHandlerId() {
+        return 'oraclize.subscription.handler';
     }
 
-    public async processBlock(lastBlockHeight: number, block: Scheme.BlockchainBlock<EthereumTransaction>) {
-        const logs = await this.getLogsByBlockHeight(block.height);
+    public async processBlock(
+        lastBlockHeight: number,
+        block: EthereumBlock,
+        transportConnectionSubscription: Scheme.TransportConnectionSubscription,
+        blockchainService: EthereumBlockchainService
+    ) {
+        const logs = await this.getLogsByBlockHeight(blockchainService, block.height);
 
         const eventsList = logs.reduce((events: Array<string>, log) => events.concat(log.topics), []);
 
         const confirmations = lastBlockHeight - block.height;
-        const subscriptions = (await this.subscriptionService.listByEventHashesAndStatus(
-            eventsList,
-            true
-        )).filter((subscription) => subscription.minConfirmations >= confirmations);
+        const subscriptions = transportConnectionSubscription.oraclizeSubscriptions
+            .filter((s) => s.minConfirmations >= confirmations && eventsList.includes(s.eventHash));
 
         if (!subscriptions.length) {
             return;
@@ -53,6 +48,8 @@ export class OraclizeSubscriptionHandler extends EthereumBlockchainHandler {
                 const decodedData = this.decodeData(subscription.eventInputTypes, log.data);
                 const params = { decodedData };
                 const webhookAction = this.createWebhook(
+                    transportConnectionSubscription.blockchainId,
+                    transportConnectionSubscription.networkId,
                     block,
                     log.transactionHash,
                     project,
@@ -63,7 +60,13 @@ export class OraclizeSubscriptionHandler extends EthereumBlockchainHandler {
                 );
 
                 if (subscription.minConfirmations > confirmations) {
-                    await this.createBlockRecheck(subscription, block, confirmations, webhookAction);
+                    await this.createBlockRecheck(
+                        subscription,
+                        transportConnectionSubscription.id,
+                        block,
+                        confirmations,
+                        webhookAction
+                    );
                     continue;
                 }
 

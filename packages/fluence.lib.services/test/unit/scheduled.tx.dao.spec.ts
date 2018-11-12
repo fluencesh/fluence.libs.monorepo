@@ -1,7 +1,7 @@
-import { Transaction } from '@applicature/core.plugin-manager';
 import { MongodbScheduledTxDao } from '../../src/dao/mongodb/scheduled.tx.dao';
 import { randomTransactionScheme } from '../helper';
 import { CollectionMock, DbMock } from '../mock/db.mock';
+import { Scheme } from '../../src/types';
 
 describe('address subscription dao', () => {
     let dao: MongodbScheduledTxDao;
@@ -47,18 +47,27 @@ describe('address subscription dao', () => {
     it('`createScheduledTx` should pass correct params', async () => {
         const projectId = 'projectId';
         const cronExpression = '* * * ? * * *';
-        const tx = {} as Transaction;
+        const tx = {} as Scheme.BlockchainTransaction;
         const blockchainId = 'blockchainId';
         const networkId = 'networkId';
         const privateKey = 'privateKey';
+        const transportConnectionId = 'transportConnectionId';
     
-        await dao.createScheduledTx(projectId, cronExpression, tx, blockchainId, networkId, privateKey);
+        await dao.createScheduledTx(
+            projectId,
+            cronExpression,
+            tx,
+            blockchainId,
+            networkId,
+            privateKey,
+            transportConnectionId
+        );
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);
     });
 
     it('`setTransaction` should pass correct params', async () => {
-        const tx = { blockHash: '', txHash: '' } as any as Transaction;
+        const tx = { blockHash: '', txHash: '' } as any as Scheme.BlockchainTransaction;
         const id = 'id';
 
         await dao.setTransaction(id, tx);

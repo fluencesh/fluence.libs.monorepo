@@ -60,7 +60,8 @@ describe('scheduled tx dao', () => {
             created.tx,
             created.blockchainId,
             created.networkId,
-            created.privateKey
+            created.privateKey,
+            created.transportConnectionId
         );
 
         expect(got.projectId).toEqual(created.projectId);
@@ -69,6 +70,7 @@ describe('scheduled tx dao', () => {
         expect(got.blockchainId).toEqual(created.blockchainId);
         expect(got.networkId).toEqual(created.networkId);
         expect(got.privateKey).toEqual(created.privateKey);
+        expect(got.transportConnectionId).toEqual(created.transportConnectionId);
     });
 
     it('should set new tx', async () => {

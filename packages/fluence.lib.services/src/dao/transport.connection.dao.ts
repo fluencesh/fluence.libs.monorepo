@@ -54,6 +54,8 @@ export abstract class TransportConnectionDao extends Dao<Scheme.TransportConnect
 
         isPrivate: boolean,
 
+        cronExpression: string,
+
         isPredefinedBySystem?: boolean
     ): Promise<Scheme.TransportConnection>;
 

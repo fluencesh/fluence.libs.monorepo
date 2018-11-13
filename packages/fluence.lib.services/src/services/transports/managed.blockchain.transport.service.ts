@@ -27,7 +27,7 @@ export abstract class ManagedBlockchainTransportService<
     protected transportConnectionService: TransportConnectionService;
     protected networkId: string;
     protected lastTransportConnectionsSearchAt: Date;
-    protected wasCalledTimes: number;
+    protected transportsCallsStatistic: Hashtable<number>;
 
     constructor(
         pluginManager: PluginManager,
@@ -44,7 +44,7 @@ export abstract class ManagedBlockchainTransportService<
         this.activeTransports = {};
 
         this.transportConnectionService = new TransportConnectionService(pluginManager);
-        this.wasCalledTimes = 0;
+        this.transportsCallsStatistic = {};
     }
 
     public abstract getBlockchainId(): string;
@@ -86,10 +86,12 @@ export abstract class ManagedBlockchainTransportService<
             connectionsCount,
             healthyConnectionsCount,
             unhealthyConnectionsCount,
-            wasCalledTimes: this.wasCalledTimes
+            transportsCallsStatistic: this.transportsCallsStatistic
         };
 
-        this.wasCalledTimes = 0;
+        for (const transportId of Object.keys(this.transportsCallsStatistic)) {
+            this.transportsCallsStatistic[transportId] = 0;
+        }
 
         return statistic;
     }
@@ -208,11 +210,11 @@ export abstract class ManagedBlockchainTransportService<
     }
 
     protected async getActiveTransportService(
-        transportId?: string
+        transportId: string
     ): Promise<Provider> {
         await this.updateValid();
 
-        this.wasCalledTimes++;
+        this.transportsCallsStatistic[transportId]++;
 
         let transport: Provider = null;
         if (transportId) {

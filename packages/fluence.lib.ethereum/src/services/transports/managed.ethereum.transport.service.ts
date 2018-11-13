@@ -35,31 +35,31 @@ export class ManagedEthereumTransportService<Provider extends EthereumTransportP
         return TransportIds.ManagedEthereumTransportService;
     }
 
-    public async call(transaction: EthereumTransaction, transportConnectionId?: string): Promise<string> {
+    public async call(transaction: EthereumTransaction, transportConnectionId: string): Promise<string> {
         const transportService = await this.getActiveTransportService(transportConnectionId);
 
         return transportService.call(transaction);
     }
 
-    public async estimateGas(transaction: EthereumTransaction, transportConnectionId?: string): Promise<number> {
+    public async estimateGas(transaction: EthereumTransaction, transportConnectionId: string): Promise<number> {
         const transportService = await this.getActiveTransportService(transportConnectionId);
 
         return transportService.estimateGas(transaction);
     }
 
-    public async getGasPrice(transportConnectionId?: string): Promise<BigNumber> {
+    public async getGasPrice(transportConnectionId: string): Promise<BigNumber> {
         const transportService = await this.getActiveTransportService(transportConnectionId);
 
         return transportService.getGasPrice();
     }
 
-    public async getCode(address: string, transportConnectionId?: string): Promise<string> {
+    public async getCode(address: string, transportConnectionId: string): Promise<string> {
         const transportService = await this.getActiveTransportService(transportConnectionId);
 
         return transportService.getCode(address);
     }
 
-    public async getLogs(filters: EthereumTopicFilter, transportConnectionId?: string): Promise<Array<EthereumTopic>> {
+    public async getLogs(filters: EthereumTopicFilter, transportConnectionId: string): Promise<Array<EthereumTopic>> {
         const transportService = await this.getActiveTransportService(transportConnectionId);
 
         return transportService.getLogs(filters);
@@ -67,7 +67,7 @@ export class ManagedEthereumTransportService<Provider extends EthereumTransportP
 
     public async getTransactionReceipt(
         txHex: string,
-        transportConnectionId?: string
+        transportConnectionId: string
     ): Promise<EthereumTransactionReceipt> {
         const transportService = await this.getActiveTransportService(transportConnectionId);
 
@@ -76,7 +76,7 @@ export class ManagedEthereumTransportService<Provider extends EthereumTransportP
 
     public async getAddressTransactionsCount(
         address: string,
-        transportConnectionId?: string,
+        transportConnectionId: string,
         blockTag?: number | string
     ): Promise<number> {
         const transportService = await this.getActiveTransportService(transportConnectionId);
@@ -89,7 +89,7 @@ export class ManagedEthereumTransportService<Provider extends EthereumTransportP
         methodName: string,
         inputTypes: Array<string> = [],
         inputValues: Array<string | Array<string>> = [],
-        transportConnectionId?: string
+        transportConnectionId: string
     ): Promise<any> {
         const transport = await this.getActiveTransportService(transportConnectionId);
 
@@ -101,7 +101,7 @@ export class ManagedEthereumTransportService<Provider extends EthereumTransportP
         methodName: string,
         inputTypes: Array<string> = [],
         inputValues: Array<string | Array<string>> = [],
-        transportConnectionId?: string
+        transportConnectionId: string
     ): Promise<any> {
         const transport = await this.getActiveTransportService(transportConnectionId);
 

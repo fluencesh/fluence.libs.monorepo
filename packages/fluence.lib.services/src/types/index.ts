@@ -359,7 +359,7 @@ export namespace Scheme {
         connectionsCount: number;
         healthyConnectionsCount: number;
         unhealthyConnectionsCount: number;
-        wasCalledTimes: number;
+        transportsCallsStatistic: Hashtable<number>;
     }
 
     export interface WebhookCallResult {

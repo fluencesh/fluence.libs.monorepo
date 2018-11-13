@@ -19,7 +19,11 @@ export class OraclizeSubscriptionHandler extends EventListenerHandler {
         transportConnectionSubscription: Scheme.TransportConnectionSubscription,
         blockchainService: EthereumBlockchainService
     ) {
-        const logs = await this.getLogsByBlockHeight(blockchainService, block.height);
+        const logs = await this.getLogsByBlockHeight(
+            blockchainService,
+            transportConnectionSubscription.id,
+            block.height
+        );
 
         const eventsList = logs.reduce((events: Array<string>, log) => events.concat(log.topics), []);
 

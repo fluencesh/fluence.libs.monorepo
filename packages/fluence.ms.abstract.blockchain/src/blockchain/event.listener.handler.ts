@@ -23,6 +23,7 @@ export abstract class EventListenerHandler extends BlockchainListenerHandler<
 > {
     protected async getLogsByBlockHeight(
         blockchainService: EthereumBlockchainService,
+        transportConnectionId: string,
         height: number
     ) {
         const logsFilters = {
@@ -30,14 +31,15 @@ export abstract class EventListenerHandler extends BlockchainListenerHandler<
             toBlock: height,
         } as EthereumTopicFilter;
 
-        return blockchainService.getLogs(logsFilters);
+        return blockchainService.getLogs(logsFilters, transportConnectionId);
     }
 
     protected async getLogMapByBlockHeight(
         blockchainService: EthereumBlockchainService,
+        transportConnectionId: string,
         height: number
     ) {
-        const logs = await this.getLogsByBlockHeight(blockchainService, height);
+        const logs = await this.getLogsByBlockHeight(blockchainService, transportConnectionId, height);
         const logsMap: Hashtable<EthereumTopic> = logs.reduce((map, log) => set(map, log.address, log), {});
 
         return logsMap;

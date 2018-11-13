@@ -8,6 +8,7 @@ export class CronjobMetricService extends MetricService {
     public async transactionsFoundInBlock(
         blockchainId: string,
         networkId: string,
+        transportId: string,
         count: number = 1,
         timestamp: Date = new Date()
     ): Promise<void> {
@@ -15,13 +16,14 @@ export class CronjobMetricService extends MetricService {
             'transactions_found_total',
             count,
             timestamp,
-            { blockchainId, networkId }
+            { blockchainId, networkId, transportId }
         );
     }
 
     public async contractsEventFoundInBlock(
         blockchainId: string,
         networkId: string,
+        transportId: string,
         count: number = 1,
         timestamp: Date = new Date()
     ): Promise<void> {
@@ -29,13 +31,14 @@ export class CronjobMetricService extends MetricService {
             'contracts_found_total',
             count,
             timestamp,
-            { blockchainId, networkId }
+            { blockchainId, networkId, transportId }
         );
     }
 
     public async addressFoundInBlock(
         blockchainId: string,
         networkId: string,
+        transportId: string,
         count: number = 1,
         timestamp: Date = new Date()
     ): Promise<void> {
@@ -43,7 +46,7 @@ export class CronjobMetricService extends MetricService {
             'address_found_total',
             count,
             timestamp,
-            { blockchainId, networkId }
+            { blockchainId, networkId, transportId }
         );
     }
 }

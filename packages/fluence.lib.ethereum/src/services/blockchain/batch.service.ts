@@ -80,8 +80,16 @@ export class BatchService extends Service {
                     continue;
                 }
 
+                // TODO: pass a transport connection id instead of null
+                // https://applicature.atlassian.net/browse/FLC-88
                 batchCalls.push(
-                    this.blockchainService.callContractMethod(contractEntity, methodName, inputTypes, inputValues)
+                    this.blockchainService.callContractMethod(
+                        contractEntity,
+                        methodName,
+                        inputTypes,
+                        inputValues,
+                        null
+                    )
                 );
             }
 

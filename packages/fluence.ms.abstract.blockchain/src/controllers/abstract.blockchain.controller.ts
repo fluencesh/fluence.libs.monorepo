@@ -174,6 +174,7 @@ export abstract class AbstractBlockchainController<
                     await this.metricService.transactionsUnsuccessfullySent(
                         blockchainService.getBlockchainId(),
                         blockchainService.getNetworkId(),
+                        transportConnection.id,
                         1,
                         today
                     );
@@ -190,6 +191,7 @@ export abstract class AbstractBlockchainController<
                 await this.metricService.transactionsSuccessfullySent(
                     blockchainService.getBlockchainId(),
                     blockchainService.getNetworkId(),
+                    transportConnection.id,
                     1,
                     today
                 );

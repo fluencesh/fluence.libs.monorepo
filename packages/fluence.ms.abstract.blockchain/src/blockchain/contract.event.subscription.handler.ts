@@ -23,7 +23,11 @@ export class ContractEventSubscriptionHandler extends EventListenerHandler {
         transportConnectionSubscription: Scheme.TransportConnectionSubscription,
         blockchainService: EthereumBlockchainService
     ) {
-        const logsMap = await this.getLogMapByBlockHeight(blockchainService, block.height);
+        const logsMap = await this.getLogMapByBlockHeight(
+            blockchainService,
+            transportConnectionSubscription.id,
+            block.height
+        );
 
         const confirmations = lastBlockHeight - block.height;
         const addresses = Object.keys(logsMap);
@@ -104,6 +108,7 @@ export class ContractEventSubscriptionHandler extends EventListenerHandler {
                     this.metricService.addressFoundInBlock(
                         transportConnectionSubscription.blockchainId,
                         transportConnectionSubscription.networkId,
+                        transportConnectionSubscription.id,
                         webhookActions.length,
                         today
                     )

@@ -27,51 +27,54 @@ describe('CronjobMetricService spec', () => {
     it('transactionsFoundInBlock should transfer right params', () => {
         const blockchainId = 'blockchainId';
         const networkId = 'networkId';
+        const transportId = 'transportId';
         const count = 1;
         const timestamp = new Date();
 
-        metricService.transactionsFoundInBlock(blockchainId, networkId, count, timestamp);
+        metricService.transactionsFoundInBlock(blockchainId, networkId, transportId, count, timestamp);
 
         expect(saveMetricMock).toHaveBeenCalledTimes(1);
         expect(saveMetricMock).toHaveBeenCalledWith(
             `transactions_found_total`,
             count,
             timestamp,
-            { env: nodeEnv, hostname: hostName, blockchainId, networkId }
+            { env: nodeEnv, hostname: hostName, blockchainId, networkId, transportId }
         );
     });
 
     it('contractsEventFoundInBlock should transfer right params', () => {
         const blockchainId = 'blockchainId';
         const networkId = 'networkId';
+        const transportId = 'transportId';
         const count = 1;
         const timestamp = new Date();
 
-        metricService.contractsEventFoundInBlock(blockchainId, networkId, count, timestamp);
+        metricService.contractsEventFoundInBlock(blockchainId, networkId, transportId, count, timestamp);
 
         expect(saveMetricMock).toHaveBeenCalledTimes(1);
         expect(saveMetricMock).toHaveBeenCalledWith(
             `contracts_found_total`,
             count,
             timestamp,
-            { env: nodeEnv, hostname: hostName, blockchainId, networkId }
+            { env: nodeEnv, hostname: hostName, blockchainId, networkId, transportId }
         );
     });
 
     it('addressFoundInBlock should transfer right params', () => {
         const blockchainId = 'blockchainId';
         const networkId = 'networkId';
+        const transportId = 'transportId';
         const count = 1;
         const timestamp = new Date();
 
-        metricService.addressFoundInBlock(blockchainId, networkId, count, timestamp);
+        metricService.addressFoundInBlock(blockchainId, networkId, transportId, count, timestamp);
 
         expect(saveMetricMock).toHaveBeenCalledTimes(1);
         expect(saveMetricMock).toHaveBeenCalledWith(
             `address_found_total`,
             count,
             timestamp,
-            { env: nodeEnv, hostname: hostName, blockchainId, networkId }
+            { env: nodeEnv, hostname: hostName, blockchainId, networkId, transportId }
         );
     });
 });

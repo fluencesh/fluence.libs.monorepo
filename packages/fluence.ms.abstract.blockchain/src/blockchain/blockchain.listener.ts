@@ -62,24 +62,6 @@ export class BlockchainListener<
         return `${ this.getServiceId() }.${ transportConnectionSubscription.id }`;
     }
 
-    public async getJobSafely(
-        transportConnectionSubscription: Scheme.TransportConnectionSubscription
-    ): Promise<BlockchainListenerJob> {
-        const jobId = this.getJobId(transportConnectionSubscription);
-
-        logger.info(`tying to get job [${ jobId }]...`);
-
-        let job = await this.jobService.getById(jobId);
-        if (!job) {
-            logger.debug(`job [${ this.getServiceId() }] was not found in DB. trying to create new one.`);
-            job = await this.jobService.createJob(jobId, {});
-        } else {
-            logger.debug(`job [${ this.getServiceId() }] was found in DB. Job: ${ JSON.stringify(job) }`);
-        }
-
-        return job as BlockchainListenerJob;
-    }
-
     public async execute(message: BlockchainListenerJobMessage) {
         let transportConnectionSubscription: Scheme.TransportConnectionSubscription;
         try {
@@ -110,14 +92,48 @@ export class BlockchainListener<
             return;
         }
 
+        let blockchainService: BlockchainService<
+            Transaction,
+            Block,
+            Provider,
+            ManagedBlockchainTransportService
+        >;
         try {
-            await this.processFailedBlocks(transportConnectionSubscription, job);
+            blockchainService = this.blockchainRegistry.getByBlockchainInfo(
+                transportConnectionSubscription.blockchainId,
+                transportConnectionSubscription.networkId
+            );
+        } catch (ex) {
+            logger.error(
+                'BlockchainRegistry does not contain service for '
+                + `${ transportConnectionSubscription.blockchainId } ${ transportConnectionSubscription.networkId }`
+            );
+            return;
+        }
+
+        let lastBlockHeight: number;
+        try {
+            lastBlockHeight = await blockchainService.getBlockHeight(transportConnectionSubscription.id);
+        } catch (ex) {
+            logger.error(`cant get last block height. Reason: ${ ex.message }`);
+            return;
+        }
+
+        try {
+            lastBlockHeight = await blockchainService.getBlockHeight(transportConnectionSubscription.id);
+        } catch (ex) {
+            logger.error(`cant get last block height. Reason: ${ ex.message }`);
+            return;
+        }
+
+        try {
+            await this.processFailedBlocks(blockchainService, lastBlockHeight, transportConnectionSubscription, job);
         } catch (ex) {
             logger.error(`cant process failed blocks. Reason: ${ ex.reason }`);
         }
 
         try {
-            await this.executeHandlers(transportConnectionSubscription, job);
+            await this.executeHandlers(blockchainService, lastBlockHeight, transportConnectionSubscription, job);
         } catch (ex) {
             logger.error(`cant process new block(s). Reason: ${ ex.reason }`);
         }
@@ -132,31 +148,36 @@ export class BlockchainListener<
         }
     }
 
+    private async getJobSafely(
+        transportConnectionSubscription: Scheme.TransportConnectionSubscription
+    ): Promise<BlockchainListenerJob> {
+        const jobId = this.getJobId(transportConnectionSubscription);
+
+        logger.info(`tying to get job [${ jobId }]...`);
+
+        let job: BlockchainListenerJob = await this.jobService.getById(jobId) as BlockchainListenerJob;
+        if (!job) {
+            logger.debug(`job [${ this.getServiceId() }] was not found in DB. trying to create new one.`);
+            job = await this.jobService.createJob(jobId, {}) as BlockchainListenerJob;
+        } else {
+            logger.debug(`job [${ this.getServiceId() }] was found in DB. Job: ${ JSON.stringify(job) }`);
+        }
+
+        return job as BlockchainListenerJob;
+    }
+
     private async executeHandlers(
+        blockchainService: BlockchainService<
+            Transaction,
+            Block,
+            Provider,
+            ManagedBlockchainTransportService
+        >,
+        lastBlockHeight: number,
         transportConnectionSubscription: Scheme.TransportConnectionSubscription,
         job: BlockchainListenerJob
     ): Promise<void> {
         const handlersExecutions: Array<Promise<void>> = [];
-
-        const blockchainId = transportConnectionSubscription.blockchainId;
-        const networkId = transportConnectionSubscription.networkId;
-
-        const blockchainService = this.blockchainRegistry
-            .getByBlockchainInfo<BlockchainService<
-                Transaction,
-                Block,
-                Provider,
-                ManagedBlockchainTransportService
-            >>(blockchainId, networkId);
-
-        const lastBlockHeight = await blockchainService.getBlockHeight(transportConnectionSubscription.id);
-
-        try {
-            this.validateJobData(job, lastBlockHeight);
-        } catch (ex) {
-            logger.error(`cant validate job data [${ this.getServiceId() }]. Reason: ${ ex.message }`);
-            return;
-        }
 
         const lastProcessedBlock = job.params.lastProcessedBlock;
 
@@ -176,46 +197,20 @@ export class BlockchainListener<
     }
 
     private async processFailedBlocks(
-        transportConnectionSubscription: Scheme.TransportConnectionSubscription,
-        job: BlockchainListenerJob
-    ) {
-        const blockchainId = transportConnectionSubscription.blockchainId;
-        const networkId = transportConnectionSubscription.networkId;
-
-        let blockchainService: BlockchainService<
+        blockchainService: BlockchainService<
             Transaction,
             Block,
             Provider,
             ManagedBlockchainTransportService
-        >;
-        try {
-            blockchainService = this.blockchainRegistry.getByBlockchainInfo(
-                blockchainId,
-                networkId
-            );
-        } catch (ex) {
-            logger.error(`BlockchainRegistry does not contain service for ${ blockchainId } ${ networkId }`);
-            return;
-        }
-
-        let lastBlockHeight: number;
-        try {
-            lastBlockHeight = await blockchainService.getBlockHeight(transportConnectionSubscription.id);
-        } catch (ex) {
-            logger.error(`cant get last block height. Reason: ${ ex.message }`);
-            return;
-        }
-
-        try {
-            this.validateJobData(job, lastBlockHeight);
-        } catch (ex) {
-            logger.error(`cant validate job data [${ this.getServiceId() }]. Reason: ${ ex.message }`);
-            return;
-        }
-
+        >,
+        lastBlockHeight: number,
+        transportConnectionSubscription: Scheme.TransportConnectionSubscription,
+        job: BlockchainListenerJob
+    ) {
         const transportConnectionData = job.params;
 
         const failedBlocksExecutors: Array<Promise<void | Array<void>>> = [];
+        const cachedBlocks: Hashtable<Block> = {};
 
         // NOTICE: processes blocks which one or more handlers were not processed
         for (const handlerId of Object.keys(transportConnectionData.handlersData)) {
@@ -241,10 +236,16 @@ export class BlockchainListener<
                     handlersFailedBlocksHeights.map(async (failedBlockHeight) => {
                         let block: Block;
                         try {
-                            block = await blockchainService.getBlockByHeight(
-                                failedBlockHeight,
-                                transportConnectionSubscription.id
-                            );
+                            if (cachedBlocks.hasOwnProperty(failedBlockHeight.toString())) {
+                                block = cachedBlocks[failedBlockHeight.toString()];
+                            } else {
+                                block = await blockchainService.getBlockByHeight(
+                                    failedBlockHeight,
+                                    transportConnectionSubscription.id
+                                );
+
+                                cachedBlocks[failedBlockHeight.toString()] = block;
+                            }
                         } catch (ex) {
                             logger.error(`cant process block [${ failedBlockHeight }]. Reason: ${ ex.reason }`);
                             handlerData.failedBlocks.push(failedBlockHeight);
@@ -272,10 +273,16 @@ export class BlockchainListener<
                 failedBlocksHeights.map(async (failedBlockHeight) => {
                     let block: Block;
                     try {
-                        block = await blockchainService.getBlockByHeight(
-                            failedBlockHeight,
-                            transportConnectionSubscription.id
-                        );
+                        if (cachedBlocks.hasOwnProperty(failedBlockHeight.toString())) {
+                            block = cachedBlocks[failedBlockHeight.toString()];
+                        } else {
+                            block = await blockchainService.getBlockByHeight(
+                                failedBlockHeight,
+                                transportConnectionSubscription.id
+                            );
+
+                            cachedBlocks[failedBlockHeight.toString()] = block;
+                        }
                     } catch (ex) {
                         logger.error(`cant process block [${ failedBlockHeight }]. Reason: ${ ex.reason }`);
                         transportConnectionData.failedBlocks.push(failedBlockHeight);
@@ -376,7 +383,7 @@ export class BlockchainListener<
         }
     }
 
-    private validateJobData(job: BlockchainListenerJob, lastBlockHeight: number) {
+    private initJobData(job: BlockchainListenerJob, lastBlockHeight: number) {
         // NOTICE: defines data in job entity
         if ((job.params.failedBlocks instanceof Array) === false) {
             job.params.failedBlocks = [];
@@ -388,7 +395,7 @@ export class BlockchainListener<
 
         const lastProcessedBlockHeight = job.params.lastProcessedBlock;
         if (!lastProcessedBlockHeight && lastProcessedBlockHeight !== 0) {
-            job.params.lastProcessedBlock = lastBlockHeight;
+            job.params.lastProcessedBlock = lastBlockHeight - 1;
         }
     }
 }

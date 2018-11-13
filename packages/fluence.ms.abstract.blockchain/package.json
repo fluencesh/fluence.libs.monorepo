@@ -29,7 +29,6 @@
     "@applicature/core.mongodb": "^2.0.6",
     "@applicature/core.plugin-manager": "^2.0.6",
     "@applicature/core.web": "^2.0.6",
-    "@fluencesh/fluence.lib.ethereum": "^2.0.9-alpha.1",
     "@fluencesh/fluence.lib.services": "^2.0.9-alpha.1",
     "@fluencesh/fluence.ms.abstract": "^2.0.9-alpha.1",
     "bignumber.js": "^7.2.1",

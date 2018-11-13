@@ -1,17 +1,19 @@
 import { Hashtable } from '@applicature/core.plugin-manager';
-import { EthereumBlock, EthereumBlockchainService } from '@fluencesh/fluence.lib.ethereum';
 import {
+    BlockchainTransportProvider, ManagedBlockchainTransport, ScBlockchainService,
     Scheme,
 } from '@fluencesh/fluence.lib.services';
 import { set } from 'lodash';
-import { EthereumListenerHandler } from './ethereum.listener.handler';
+import { EventListenerHandler } from './event.listener.handler';
 
 // TODO: move to separate package
 // https://applicature.atlassian.net/browse/FLC-209
-export class ContractEventSubscriptionHandler extends EthereumListenerHandler {
-    public getHandlerId() {
-        return 'contract.event.subscription.handler';
-    }
+export abstract class ContractEventSubscriptionHandler<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends BlockchainTransportProvider<Transaction, Block>,
+    ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
+> extends EventListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
 
     public getSubscriptionBlockRecheckType(): Scheme.SubscriptionBlockRecheckType {
         return Scheme.SubscriptionBlockRecheckType.ContractEvent;
@@ -19,9 +21,9 @@ export class ContractEventSubscriptionHandler extends EthereumListenerHandler {
 
     protected async processBlock(
         lastBlockHeight: number,
-        block: EthereumBlock,
+        block: Block,
         transportConnectionSubscription: Scheme.TransportConnectionSubscription,
-        blockchainService: EthereumBlockchainService
+        blockchainService: ScBlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>
     ) {
         const logsMap = await this.getLogMapByBlockHeight(blockchainService, block.height);
 
@@ -117,6 +119,6 @@ export class ContractEventSubscriptionHandler extends EthereumListenerHandler {
     }
 
     protected getWebhookType() {
-        return Scheme.WebhookTriggerType.EthereumContractEvent;
+        return Scheme.WebhookTriggerType.ContractEvent;
     }
 }

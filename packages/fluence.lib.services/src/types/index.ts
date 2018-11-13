@@ -440,4 +440,23 @@ export namespace Scheme {
         blockchainId: string;
         networkId: string;
     }
+
+    export interface BlockchainEventFilter {
+        fromBlock?: number;
+        toBlock?: number;
+        address?: string;
+        topics?: Array<string>;
+    }
+
+    export interface BlockchainEvent {
+        address: string;
+        topics: Array<string>;
+        data: string;
+        blockNumber: number;
+        transactionHash: string;
+        transactionIndex: number;
+        blockHash: string;
+        logIndex: number;
+        removed: boolean;
+    }
 }

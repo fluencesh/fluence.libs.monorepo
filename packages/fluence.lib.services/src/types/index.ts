@@ -99,7 +99,7 @@ export namespace Scheme {
 
     export enum WebhookTriggerType {
         Address = 'ADDRESS',
-        EthereumContractEvent = 'ETHEREUM_CONTRACT_EVENT',
+        ContractEvent = 'CONTRACT_EVENT',
         Transaction = 'TRANSACTION',
         ScheduledTransaction = 'SCHEDULED_TRANSACTION',
         OraclizeSubscription = 'ORACLIZE_SUBSCRIPTION'

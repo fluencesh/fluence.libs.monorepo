@@ -41,6 +41,6 @@ export abstract class EventListenerHandler<
 
     protected abstract convertAbiMethodInTopic(abiMethod: any): string;
 
-    protected abstract decodeData(types: Array<string>, data: string): string[];
+    protected abstract decodeData(types: Array<string>, data: string): Array<string>;
 
 }

@@ -4,11 +4,11 @@ import {
     Scheme,
 } from '@fluencesh/fluence.lib.services';
 import { set } from 'lodash';
-import { EthereumListenerHandler } from './ethereum.listener.handler';
+import { EventListenerHandler } from './event.listener.handler';
 
 // TODO: move to separate package
 // https://applicature.atlassian.net/browse/FLC-209
-export class OraclizeSubscriptionHandler extends EthereumListenerHandler {
+export class OraclizeSubscriptionHandler extends EventListenerHandler {
     public getHandlerId() {
         return 'oraclize.subscription.handler';
     }

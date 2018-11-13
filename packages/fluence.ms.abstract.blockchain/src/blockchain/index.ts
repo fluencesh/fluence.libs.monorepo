@@ -15,4 +15,8 @@ export * from './contract.event.subscription.handler';
 
 // TODO: move to separate package
 // https://applicature.atlassian.net/browse/FLC-209
+export * from './event.listener.handler';
+
+// TODO: move to separate package
+// https://applicature.atlassian.net/browse/FLC-209
 export * from './oraclize.handler';

@@ -8,6 +8,7 @@ import {
     Scheme,
     TransactionHashSubscriptionService,
     WebhookActionItemObjectService,
+    TransportConnectionService,
 } from '@applicature-private/fluence.lib.services';
 import * as logger from 'winston';
 
@@ -17,6 +18,7 @@ export class ScheduledTxHandlerService extends Service {
     private scheduledTxService: ScheduledTxService;
     private webhookService: WebhookActionItemObjectService;
     private txSubscriptionService: TransactionHashSubscriptionService;
+    private transportConnectionService: TransportConnectionService;
 
     private blockchainRegistry: BlockchainRegistryService;
 
@@ -31,17 +33,35 @@ export class ScheduledTxHandlerService extends Service {
     }
 
     public async init() {
-        this.clientService = await this.pluginManager.getServiceByClass(ClientService);
-        this.projectService = await this.pluginManager.getServiceByClass(ProjectService);
-        this.scheduledTxService = await this.pluginManager.getServiceByClass(ScheduledTxService);
-        this.webhookService = await this.pluginManager.getServiceByClass(WebhookActionItemObjectService);
-        this.txSubscriptionService = await this.pluginManager.getServiceByClass(TransactionHashSubscriptionService);
+        this.clientService = this.pluginManager.getServiceByClass(ClientService);
+        this.projectService = this.pluginManager.getServiceByClass(ProjectService);
+        this.scheduledTxService = this.pluginManager.getServiceByClass(ScheduledTxService);
+        this.webhookService = this.pluginManager.getServiceByClass(WebhookActionItemObjectService);
+        this.txSubscriptionService = this.pluginManager.getServiceByClass(TransactionHashSubscriptionService);
+        this.transportConnectionService = this.pluginManager.getServiceByClass(TransportConnectionService);
     }
 
     public async handle(scheduledTxId: string): Promise<void> {
-        const scheduledTx = await this.scheduledTxService.getById(scheduledTxId);
-        const project = await this.projectService.getById(scheduledTx.projectId);
-        const client = await this.clientService.getById(project.id);
+        let scheduledTx: Scheme.ScheduledTx;
+        let project: Scheme.Project;
+        let client: Scheme.Client;
+        let transportConnection: Scheme.TransportConnection;
+
+        try {
+            scheduledTx = await this.scheduledTxService.getById(scheduledTxId);
+
+            const projectTransportConnection = await Promise.all([
+                this.projectService.getById(scheduledTx.projectId),
+                this.transportConnectionService.getById(scheduledTx.transportConnectionId)
+            ]);
+            project = projectTransportConnection[0];
+            transportConnection = projectTransportConnection[1];
+
+            client = await this.clientService.getById(project.id);
+        } catch (ex) {
+            logger.error(`cant load entities from DB. Reason: ${ ex.message }`);
+            return;
+        }
 
         const isProjectActive = project.status === Scheme.ProjectStatus.Active;
         const isClientActive = client.status === Scheme.ClientStatus.Active;
@@ -56,8 +76,8 @@ export class ScheduledTxHandlerService extends Service {
         }
 
         const blockchainService = this.blockchainRegistry.getByBlockchainInfo(
-            scheduledTx.blockchainId,
-            scheduledTx.networkId
+            transportConnection.blockchainId,
+            transportConnection.networkId
         );
         let tx: Scheme.BlockchainTransaction;
         try {
@@ -69,8 +89,8 @@ export class ScheduledTxHandlerService extends Service {
                 client.id,
                 project.id,
                 scheduledTxId,
-                scheduledTx.blockchainId,
-                scheduledTx.networkId,
+                transportConnection.blockchainId,
+                transportConnection.networkId,
                 Scheme.ScheduledTxExecutionStatus.SENT,
                 tx,
                 project.txMinConfirmations
@@ -81,8 +101,8 @@ export class ScheduledTxHandlerService extends Service {
                 client.id,
                 project.id,
                 scheduledTxId,
-                scheduledTx.blockchainId,
-                scheduledTx.networkId,
+                transportConnection.blockchainId,
+                transportConnection.networkId,
                 Scheme.ScheduledTxExecutionStatus.FAILED
             );
 

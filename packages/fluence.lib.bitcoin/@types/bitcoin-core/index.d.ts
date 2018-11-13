@@ -21,8 +21,6 @@ declare module 'bitcoin-core' {
         public getBalance(address: string, minConf: number): Promise<number>;
     }
 
-    export = Client;
-
     export type Extension = 'bin' | 'hex' | 'json';
 
     export interface ClientOptions {

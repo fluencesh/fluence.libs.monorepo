@@ -15,6 +15,10 @@ export abstract class ContractEventSubscriptionHandler<
     ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
 > extends EventListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
 
+    public getHandlerId() {
+        return 'contract.event.subscription.handler';
+    }
+
     public getSubscriptionBlockRecheckType(): Scheme.SubscriptionBlockRecheckType {
         return Scheme.SubscriptionBlockRecheckType.ContractEvent;
     }

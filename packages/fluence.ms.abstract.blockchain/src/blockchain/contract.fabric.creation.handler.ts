@@ -12,7 +12,7 @@
 // } from '@applicature-private/fluence.lib.services';
 // import * as config from 'config';
 // import { sha3 } from 'ethereumjs-util';
-// import { EthereumBlockchainHandler } from './ethereum.blockchain.handler';
+// import { EventListenerHandler } from './event.blockchain.handler';
 
 // interface FabricMethodConfigData {
 //     name: string;
@@ -20,7 +20,7 @@
 //     minConfirmations: number;
 // }
 
-// export class ContractFabricCreationHandler extends EthereumBlockchainHandler {
+// export class ContractFabricCreationHandler extends EventListenerHandler {
 //     private contractService: ContractService;
 
 //     constructor(

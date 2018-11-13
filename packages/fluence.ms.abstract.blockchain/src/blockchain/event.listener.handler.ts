@@ -15,7 +15,7 @@ export abstract class EventListenerHandler<
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>,
     ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
-> extends BlockchainListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
+    > extends BlockchainListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
 
     protected async getLogsByBlockHeight(
         blockchainService: ScBlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>,

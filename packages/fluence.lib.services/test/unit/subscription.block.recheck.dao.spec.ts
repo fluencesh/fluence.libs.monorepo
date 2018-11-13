@@ -1,5 +1,5 @@
 import { MongodbSubscriptionBlockRecheckDao } from '../../src';
-import { randomClient, randomSubscriptionBlockChecker } from '../helper';
+import { randomSubscriptionBlockChecker } from '../helper';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
 describe('subscription block recheck dao', () => {
@@ -61,6 +61,27 @@ describe('subscription block recheck dao', () => {
 
         expect(collection.find).toHaveBeenCalledWith({
             blockHeight,
+            transportConnectionId,
+            type,
+        });
+        expect(collection.find).toHaveBeenCalledTimes(1);
+    });
+
+    it('listByLteInvokeOnBlockAndTransportConnectionIdAndType() transfers correct arguments', async () => {
+        const invokeOnBlockHeight = 1;
+        const transportConnectionId = 'transportConnectionId';
+        const type = 'type' as any;
+
+        await dao.listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+            invokeOnBlockHeight,
+            transportConnectionId,
+            type
+        );
+
+        expect(collection.find).toHaveBeenCalledWith({
+            invokeOnBlockHeight: {
+                $lte: invokeOnBlockHeight
+            },
             transportConnectionId,
             type,
         });

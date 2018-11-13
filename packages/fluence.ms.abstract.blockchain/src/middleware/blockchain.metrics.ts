@@ -76,7 +76,7 @@ export class BlockchainMetrics {
         try {
             await Promise.all(metricRequests);
         } catch (ex) {
-            logger.warn(`Can't save blockchain metrics. Reason: ${ ex.message }`);
+            logger.error(`Can't save blockchain metrics. Reason: ${ ex.message }`);
         }
 
         next();

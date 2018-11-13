@@ -19,7 +19,6 @@ export class BlockchainMetricService extends MetricService {
     public async totalBlockchainNodes(
         blockchainId: string,
         networkId: string,
-        transportId: string,
         count: number,
         timestamp: Date = new Date()
     ): Promise<void> {
@@ -27,14 +26,13 @@ export class BlockchainMetricService extends MetricService {
             `blockchain_nodes_total`,
             count,
             timestamp,
-            { blockchainId, networkId, type: BlockchainNodeMetricType.Total, transportId }
+            { blockchainId, networkId, type: BlockchainNodeMetricType.Total }
         );
     }
 
     public async healthyBlockchainNodes(
         blockchainId: string,
         networkId: string,
-        transportId: string,
         count: number,
         timestamp: Date = new Date()
     ): Promise<void> {
@@ -42,14 +40,13 @@ export class BlockchainMetricService extends MetricService {
             `blockchain_nodes_total`,
             count,
             timestamp,
-            { blockchainId, networkId, type: BlockchainNodeMetricType.Healthy, transportId }
+            { blockchainId, networkId, type: BlockchainNodeMetricType.Healthy }
         );
     }
 
     public async unhealthyBlockchainNodes(
         blockchainId: string,
         networkId: string,
-        transportId: string,
         count: number,
         timestamp: Date = new Date()
     ): Promise<void> {
@@ -57,7 +54,7 @@ export class BlockchainMetricService extends MetricService {
             `blockchain_nodes_total`,
             count,
             timestamp,
-            { blockchainId, networkId, type: BlockchainNodeMetricType.Unhealthy, transportId }
+            { blockchainId, networkId, type: BlockchainNodeMetricType.Unhealthy }
         );
     }
 

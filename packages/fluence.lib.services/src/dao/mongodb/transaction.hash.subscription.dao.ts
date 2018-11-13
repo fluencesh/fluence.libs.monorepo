@@ -23,16 +23,14 @@ export class MongodbTransactionHashSubscriptionDao
     public createSubscription(
         clientId: string,
         projectId: string,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         hash: string,
         minConfirmations: number
     ): Promise<Scheme.TransactionHashSubscription> {
         return this.create({
             clientId,
             projectId,
-            blockchainId,
-            networkId,
+            transportConnectionId,
 
             hash,
             minConfirmations,

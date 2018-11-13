@@ -58,17 +58,15 @@ describe('scheduled tx dao', () => {
             created.projectId,
             created.cronExpression,
             created.tx,
-            created.blockchainId,
-            created.networkId,
-            created.privateKey
+            created.privateKey,
+            created.transportConnectionId
         );
 
         expect(got.projectId).toEqual(created.projectId);
         expect(got.cronExpression).toEqual(created.cronExpression);
         expect(got.tx).toEqual(created.tx);
-        expect(got.blockchainId).toEqual(created.blockchainId);
-        expect(got.networkId).toEqual(created.networkId);
         expect(got.privateKey).toEqual(created.privateKey);
+        expect(got.transportConnectionId).toEqual(created.transportConnectionId);
     });
 
     it('should set new tx', async () => {

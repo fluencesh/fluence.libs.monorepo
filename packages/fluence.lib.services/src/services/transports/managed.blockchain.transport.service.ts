@@ -96,37 +96,38 @@ export abstract class ManagedBlockchainTransportService<
         return statistic;
     }
 
-    public async getBlockByHash(hash: string, transportId?: string) {
+    public async getBlockByHash(hash: string, transportId: string) {
         const activeTransport = await this.getActiveTransportService(transportId);
 
         return activeTransport.getBlockByHash(hash);
     }
 
-    public async getBlockHeight(transportId?: string): Promise<number> {
+    public async getBlockHeight(transportId: string): Promise<number> {
         const activeTransport = await this.getActiveTransportService(transportId);
 
         return activeTransport.getBlockHeight();
     }
 
-    public async getBlockByHeight(blockHeight: number, transportId?: string): Promise<Block> {
+    public async getBlockByHeight(blockHeight: number, transportId: string) {
         const activeTransport = await this.getActiveTransportService(transportId);
 
         return activeTransport.getBlockByHeight(blockHeight);
     }
 
-    public async getTransactionByHash(txHash: string, transportId?: string): Promise<Transaction> {
+    public async getTransactionByHash(
+        txHash: string, transportId: string) {
         const activeTransport = await this.getActiveTransportService(transportId);
 
         return activeTransport.getTransactionByHash(txHash);
     }
 
-    public async sendRawTransaction(txHex: string, transportId?: string): Promise<Transaction> {
+    public async sendRawTransaction(txHex: string, transportId: string) {
         const activeTransport = await this.getActiveTransportService(transportId);
 
         return activeTransport.sendRawTransaction(txHex);
     }
 
-    public async getBalance(address: string, minConf: number, transportId?: string): Promise<BigNumber> {
+    public async getBalance(address: string, minConf: number, transportId: string): Promise<BigNumber> {
         const activeTransport = await this.getActiveTransportService(transportId);
 
         return activeTransport.getBalance(address, minConf);
@@ -209,9 +210,7 @@ export abstract class ManagedBlockchainTransportService<
         }
     }
 
-    protected async getActiveTransportService(
-        transportId: string
-    ): Promise<Provider> {
+    protected async getActiveTransportService(transportId: string): Promise<Provider> {
         await this.updateValid();
 
         this.transportsCallsStatistic[transportId]++;

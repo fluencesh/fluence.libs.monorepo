@@ -3,7 +3,7 @@
     "mongodb": {
       "url": "mongodb://localhost/test-fluence-services",
       "urlWithDbPrefix": "mongodb://localhost/test-fluence",
-      "db": "test-fluence-services",
+      "dbName": "test-fluence-services",
       "options": null
     }
   }

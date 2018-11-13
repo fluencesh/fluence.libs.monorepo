@@ -35,39 +35,33 @@ describe('subscription block recheck dao', () => {
 
     it('listByBlockHeightAndBlockchainIdAndNetworkId() transfers correct arguments', async () => {
         const blockHeight = 1;
-        const blockchainId = 'blockchainId';
-        const networkId = 'networkId';
-        await dao.listByBlockHeightAndBlockchainIdAndNetworkId(
+        const transportConnectionId = 'transportConnectionId';
+        await dao.listByBlockHeightAndTransportConnectionId(
             blockHeight,
-            blockchainId,
-            networkId
+            transportConnectionId
         );
 
         expect(collection.find).toHaveBeenCalledWith({
             blockHeight,
-            blockchainId,
-            networkId,
+            transportConnectionId
         });
         expect(collection.find).toHaveBeenCalledTimes(1);
     });
 
     it('listByBlockHeightAndBlockchainInfoAndType() transfers correct arguments', async () => {
         const blockHeight = 1;
-        const blockchainId = 'blockchainId';
-        const networkId = 'networkId';
+        const transportConnectionId = 'transportConnectionId';
         const type = 'type' as any;
 
-        await dao.listByBlockHeightAndBlockchainInfoAndType(
+        await dao.listByBlockHeightAndTransportConnectionIdAndType(
             blockHeight,
-            blockchainId,
-            networkId,
+            transportConnectionId,
             type
         );
 
         expect(collection.find).toHaveBeenCalledWith({
             blockHeight,
-            blockchainId,
-            networkId,
+            transportConnectionId,
             type,
         });
         expect(collection.find).toHaveBeenCalledTimes(1);
@@ -77,8 +71,7 @@ describe('subscription block recheck dao', () => {
         const data = randomSubscriptionBlockChecker();
         await dao.createBlockRecheck(
             data.subscriptionId,
-            data.blockchainId,
-            data.networkId,
+            data.transportConnectionId,
             data.type,
             data.blockHash,
             data.blockHeight,

@@ -13,12 +13,12 @@ describe('address subscription dao', () => {
     const webhookActions: Array<Scheme.WebhookActionItem> = [];
     const webhookActionsCount = 15;
     let webhookAction: Scheme.WebhookActionItem;
-    let connection: Db;
+    let connection: MongoClient;
 
     beforeAll(async () => {
         connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
 
-        dao = new MongodbWebhookActionDao(connection);
+        dao = new MongodbWebhookActionDao(connection as any);
         await dao.remove({});
 
         for (let i = 0; i < webhookActionsCount; i++) {

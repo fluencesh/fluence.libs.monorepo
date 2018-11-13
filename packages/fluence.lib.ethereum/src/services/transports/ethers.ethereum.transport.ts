@@ -69,7 +69,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         return this.transportConnection;
     }
 
-    public async getBlockByHash(hash: string) {
+    public async getBlockByHash(hash: string): Promise<EthereumBlock> {
         const block = await this.provider.getBlock(hash);
 
         block.transactions = await Promise.all(
@@ -227,7 +227,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
 
             network: ETHEREUM,
             size: block.size,
-            transactions: block.transactions,
+            transactions: block.transactions as Array<EthereumTransaction>,
             fee: null, // @TODO: define
 
             sha3Uncles: block.sha3Uncles,

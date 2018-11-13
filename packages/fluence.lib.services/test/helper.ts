@@ -9,15 +9,14 @@ import { generate } from 'randomstring';
 import { v1 as generateId } from 'uuid';
 import { RandomStringPresets } from '../src/constants';
 import { Scheme } from './../src/types';
-import {Constructable} from '@applicature/core.plugin-manager';
+import { Constructable, Dao } from '@applicature/core.plugin-manager';
 import TransactionStatus = Scheme.TransactionStatus;
 
 export function randomAddressSubscription(): Scheme.AddressSubscription {
     return {
         clientId: generateId(),
         projectId: generateId(),
-        blockchainId: generateId(),
-        networkId: generateId(),
+        transportConnectionId: generateId(),
         address: generateId(),
         minConfirmations: random(10, 100),
         subscribed: true,
@@ -29,13 +28,12 @@ export function randomAddressSubscription(): Scheme.AddressSubscription {
 
 export function randomTransactionSubscription(): Scheme.TransactionHashSubscription {
     return {
-        blockchainId: generateId(),
         clientId: generateId(),
         hash: `0x${generateId()}`,
         isClientActive: true,
         isProjectActive: true,
         minConfirmations: 0,
-        networkId: generateId(),
+        transportConnectionId: generateId(),
         projectId: generateId(),
         subscribed: true,
     } as Scheme.TransactionHashSubscription;
@@ -161,6 +159,8 @@ export function randomTransportConnection() {
         isPrivate: false,
 
         createdAt: new Date(),
+
+        cronExpression: '* * * * * * *'
     } as Scheme.TransportConnection;
 }
 
@@ -250,10 +250,9 @@ export function randomScheduledTx() {
         cronExpression: '* * * * * * *',
         tx: randomTransactionScheme(),
         projectId: generateId(),
-        blockchainId: generateId(),
-        networkId: generateId(),
         privateKey: generate(RandomStringPresets.Hash256),
-        relatedJobId: generateId()
+        relatedJobId: generateId(),
+        transportConnectionId: generateId(),
     } as Scheme.ScheduledTx;
 }
 
@@ -309,8 +308,7 @@ export function randomOraclize(projectId: string = generateId(), ) {
     return {
         clientId: generateId(),
         projectId,
-        blockchainId: generateId(),
-        networkId: generateId(),
+        transportConnectionId: generateId(),
         minConfirmations: random(10, 100),
         subscribed: true,
         isProjectActive: true,
@@ -331,8 +329,7 @@ export function randomSubscriptionBlockChecker() {
     return {
         id: generateId(),
         subscriptionId: generateId(),
-        blockchainId: generateId(),
-        networkId: generateId(),
+        transportConnectionId: generateId(),
         type: Scheme.SubscriptionBlockRecheckType[(typesKeys[random(0, typesKeys.length - 1)] as any)],
         blockHash: generateId(),
         blockHeight,
@@ -349,28 +346,30 @@ export function generateRandomPrometheusMetric(): Scheme.PrometheusMetric {
     };
 }
 
-export async function clearDb(collections: Array<string>, db?: Db) {
-    db = db || await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+let db: Db;
+export async function createDao<T extends MongoDBDao<any>>(daoConstructor: Constructable<T>): Promise<T> {
+    if (!db) {
+        const connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+        db = connection.db(config.get('multivest.mongodb.dbName'));
+    }
+
+    const dao = new daoConstructor(db);
+    return dao;
+}
+
+export async function clearDb(collections: Array<string>) {
+    if (!db) {
+        const connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+        db = connection.db(config.get('multivest.mongodb.dbName'));
+    }
 
     await Promise.all(
         collections.map((collection) => db.collection(collection).remove({}))
     );
-
-    await db.close();
-}
-
-let connection: Db;
-export async function createDao<T extends MongoDBDao<any>>(daoConstructor: Constructable<T>): Promise<T> {
-    if (!connection) {
-        connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
-    }
-
-    const dao = new daoConstructor(connection);
-    return dao;
 }
 
 export async function createEntities(
-    dao: MongoDBDao<any>,
+    dao: Dao<any>,
     entityGenerator: () => object,
     target: Array<any>
 ) {

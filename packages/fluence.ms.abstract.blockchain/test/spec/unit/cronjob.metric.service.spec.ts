@@ -3,7 +3,7 @@ import { hostname } from 'os';
 import { env } from 'process';
 import { CronjobMetricService } from '../../../src';
 
-describe('HttpRequestMetricService spec', () => {
+describe('CronjobMetricService spec', () => {
     let metricService: CronjobMetricService;
     const saveMetricMock = jest.fn().mockImplementation(() => Promise.resolve(undefined));
     const nodeEnv = env.NODE_ENV;

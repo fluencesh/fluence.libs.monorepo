@@ -6,7 +6,6 @@
     "removeComments": true,
     "sourceMap": true,
     "declaration": true,
-    "sourceRoot": "",
     "outDir": "./dist"
   },
   "exclude": [

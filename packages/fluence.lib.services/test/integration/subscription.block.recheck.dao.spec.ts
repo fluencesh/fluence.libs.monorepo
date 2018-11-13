@@ -30,17 +30,15 @@ describe('subscription block recheck dao', () => {
         expect(got).toEqual(filtered);
     });
 
-    it('should get by block height and blockchainId and networkId', async () => {
+    it('should get by block height and transportConnectionId', async () => {
         const filtered = subscriptionBlockRechecks.filter((sbr) =>
             sbr.blockHeight === subscriptionBlockRecheck.blockHeight
-            && sbr.blockchainId === subscriptionBlockRecheck.blockchainId
-            && sbr.networkId === subscriptionBlockRecheck.networkId
+            && sbr.transportConnectionId === subscriptionBlockRecheck.transportConnectionId
         );
 
-        const got = await dao.listByBlockHeightAndBlockchainIdAndNetworkId(
+        const got = await dao.listByBlockHeightAndTransportConnectionId(
             subscriptionBlockRecheck.blockHeight,
-            subscriptionBlockRecheck.blockchainId,
-            subscriptionBlockRecheck.networkId
+            subscriptionBlockRecheck.transportConnectionId
         );
         expect(got).toEqual(filtered);
     });
@@ -48,15 +46,13 @@ describe('subscription block recheck dao', () => {
     it('should get by block height and blockchainId and networkId', async () => {
         const filtered = subscriptionBlockRechecks.filter((sbr) =>
             sbr.blockHeight === subscriptionBlockRecheck.blockHeight
-            && sbr.blockchainId === subscriptionBlockRecheck.blockchainId
-            && sbr.networkId === subscriptionBlockRecheck.networkId
+            && sbr.transportConnectionId === subscriptionBlockRecheck.transportConnectionId
             && sbr.type === subscriptionBlockRecheck.type
         );
 
-        const got = await dao.listByBlockHeightAndBlockchainInfoAndType(
+        const got = await dao.listByBlockHeightAndTransportConnectionIdAndType(
             subscriptionBlockRecheck.blockHeight,
-            subscriptionBlockRecheck.blockchainId,
-            subscriptionBlockRecheck.networkId,
+            subscriptionBlockRecheck.transportConnectionId,
             subscriptionBlockRecheck.type
         );
         expect(got).toEqual(filtered);
@@ -66,8 +62,7 @@ describe('subscription block recheck dao', () => {
         const data = randomSubscriptionBlockChecker();
         const got = await dao.createBlockRecheck(
             data.subscriptionId,
-            data.blockchainId,
-            data.networkId,
+            data.transportConnectionId,
             data.type,
             data.blockHash,
             data.blockHeight,
@@ -76,8 +71,7 @@ describe('subscription block recheck dao', () => {
         );
         
         expect(got.subscriptionId).toEqual(data.subscriptionId);
-        expect(got.blockchainId).toEqual(data.blockchainId);
-        expect(got.networkId).toEqual(data.networkId);
+        expect(got.transportConnectionId).toEqual(data.transportConnectionId);
         expect(got.type).toEqual(data.type);
         expect(got.blockHash).toEqual(data.blockHash);
         expect(got.blockHeight).toEqual(data.blockHeight);

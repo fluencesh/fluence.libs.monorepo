@@ -131,8 +131,7 @@ describe('oraclize dao', () => {
         const got = await dao.createSubscription(
             randomOraclizeEntity.clientId,
             randomOraclizeEntity.projectId,
-            randomOraclizeEntity.blockchainId,
-            randomOraclizeEntity.networkId,
+            randomOraclizeEntity.transportConnectionId,
             randomOraclizeEntity.minConfirmations,
             randomOraclizeEntity.eventHash,
             randomOraclizeEntity.eventName,

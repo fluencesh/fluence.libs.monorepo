@@ -14,7 +14,7 @@ import { BITCOIN } from '../../constants';
 type NetworkName = 'bitcoin' | 'litecoin' | 'testnet';
 
 // this is not cool, but we have not normal declaration, so works for now
-// FIXME:
+// TODO:
 // tslint:disable-next-line:no-var-requires
 const Client: any = require('bitcoin-core');
 type OriginalBlock = any;

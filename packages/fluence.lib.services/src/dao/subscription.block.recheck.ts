@@ -26,6 +26,12 @@ export abstract class SubscriptionBlockRecheckDao extends Dao<Scheme.Subscriptio
         type: Scheme.SubscriptionBlockRecheckType
     ): Promise<Array<Scheme.SubscriptionBlockRecheck>>;
 
+    public abstract listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+        invokeOnBlockHeight: number,
+        transportConnectionId: string,
+        type: Scheme.SubscriptionBlockRecheckType
+    ): Promise<Array<Scheme.SubscriptionBlockRecheck>>;
+
     public abstract incInvokeOnBlockHeightById(id: string, incrementOn?: number): Promise<void>;
     public abstract incInvokeOnBlockHeightByIds(id: Array<string>, incrementOn?: number): Promise<void>;
 

@@ -69,6 +69,20 @@ export class MongodbSubscriptionBlockRecheckDao
         });
     }
 
+    public async listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+        invokeOnBlockHeight: number,
+        transportConnectionId: string,
+        type: Scheme.SubscriptionBlockRecheckType
+    ): Promise<Array<Scheme.SubscriptionBlockRecheck>> {
+        return this.listRaw({
+            invokeOnBlockHeight: {
+                $lte: invokeOnBlockHeight
+            },
+            transportConnectionId,
+            type
+        });
+    }
+
     public async incInvokeOnBlockHeightById(id: string, incrementOn: number = 1): Promise<void> {
         await this.updateRaw({ id }, {
             $inc: {

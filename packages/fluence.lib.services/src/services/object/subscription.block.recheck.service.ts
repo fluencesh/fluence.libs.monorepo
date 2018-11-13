@@ -68,6 +68,18 @@ export class SubscriptionBlockRecheckService extends Service {
         );
     }
 
+    public async listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+        invokeOnBlockHeight: number,
+        transportConnectionId: string,
+        type: Scheme.SubscriptionBlockRecheckType
+    ): Promise<Array<Scheme.SubscriptionBlockRecheck>> {
+        return this.dao.listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+            invokeOnBlockHeight,
+            transportConnectionId,
+            type
+        );
+    }
+
     public async incInvokeOnBlockHeightById(
         id: string,
         incrementOn: number = 1

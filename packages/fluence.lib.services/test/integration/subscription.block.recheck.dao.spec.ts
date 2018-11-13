@@ -58,6 +58,21 @@ describe('subscription block recheck dao', () => {
         expect(got).toEqual(filtered);
     });
 
+    it('should get by invokeOnBlockHeight and transportConnectionId and type', async () => {
+        const filtered = subscriptionBlockRechecks.filter((sbr) =>
+            sbr.invokeOnBlockHeight <= subscriptionBlockRecheck.invokeOnBlockHeight
+            && sbr.transportConnectionId === subscriptionBlockRecheck.transportConnectionId
+            && sbr.type === subscriptionBlockRecheck.type
+        );
+
+        const got = await dao.listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+            subscriptionBlockRecheck.invokeOnBlockHeight,
+            subscriptionBlockRecheck.transportConnectionId,
+            subscriptionBlockRecheck.type
+        );
+        expect(got).toEqual(filtered);
+    });
+
     it('should create new entity', async () => {
         const data = randomSubscriptionBlockChecker();
         const got = await dao.createBlockRecheck(

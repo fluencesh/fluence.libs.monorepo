@@ -88,7 +88,7 @@ export abstract class BlockchainListenerHandler<
         let subscriptionBlockRechecks;
         try {
             subscriptionBlockRechecks =
-                await this.subscriptionBlockRecheckService.listByBlockHeightAndBlockchainInfoAndType(
+                await this.subscriptionBlockRecheckService.listByLteInvokeOnBlockAndTransportConnectionIdAndType(
                     processedBlockHeight,
                     transportConnectionId,
                     this.getSubscriptionBlockRecheckType()
@@ -98,10 +98,6 @@ export abstract class BlockchainListenerHandler<
             throw ex;
         }
 
-        const webhooks: Array<Scheme.WebhookActionItem> = [];
-        const failedSubscriptionBlockRechecks: Array<string> = [];
-        const succeedSubscriptionBlockRechecks: Array<string> = [];
-
         await Promise.all(subscriptionBlockRechecks.map(async (subscriptionBlockRecheck) => {
             try {
                 const block = await this.loadBlockByHeight(
@@ -110,43 +106,34 @@ export abstract class BlockchainListenerHandler<
                     subscriptionBlockRecheck.blockHeight
                 );
                 if (block.hash === subscriptionBlockRecheck.blockHash) {
-                    webhooks.push(subscriptionBlockRecheck.webhookActionItem);
+                    await this.webhookService.createAction(
+                        subscriptionBlockRecheck.webhookActionItem.clientId,
+                        subscriptionBlockRecheck.webhookActionItem.projectId,
+                        subscriptionBlockRecheck.webhookActionItem.blockchainId,
+                        subscriptionBlockRecheck.webhookActionItem.networkId,
+                        subscriptionBlockRecheck.webhookActionItem.blockHash,
+                        subscriptionBlockRecheck.webhookActionItem.blockHeight,
+                        subscriptionBlockRecheck.webhookActionItem.blockTime,
+                        subscriptionBlockRecheck.webhookActionItem.minConfirmations,
+                        subscriptionBlockRecheck.webhookActionItem.confirmations,
+                        subscriptionBlockRecheck.webhookActionItem.txHash,
+                        subscriptionBlockRecheck.webhookActionItem.address,
+                        subscriptionBlockRecheck.webhookActionItem.type,
+                        subscriptionBlockRecheck.webhookActionItem.refId,
+                        subscriptionBlockRecheck.webhookActionItem.eventId,
+                        subscriptionBlockRecheck.webhookActionItem.params
+                    );
                 }
 
-                succeedSubscriptionBlockRechecks.push(subscriptionBlockRecheck.id);
+                await this.subscriptionBlockRecheckService.removeById(subscriptionBlockRecheck.id);
             } catch (ex) {
                 logger.error(
                     `can't get block [${ subscriptionBlockRecheck.blockHash }]. it will be reloaded in next iteration.`
                 );
-                failedSubscriptionBlockRechecks.push(subscriptionBlockRecheck.id);
 
                 return;
             }
         }));
-
-        if (webhooks.length) {
-            try {
-                await this.webhookService.fill(webhooks);
-            } catch (ex) {
-                logger.error(`creating webhooks in db was failed. `, ex);
-            }
-        }
-
-        if (failedSubscriptionBlockRechecks.length) {
-            try {
-                await this.subscriptionBlockRecheckService.incInvokeOnBlockHeightByIds(failedSubscriptionBlockRechecks);
-            } catch (ex) {
-                logger.error(`incrementing 'invokeOnBlockHeight' was failed. `, ex);
-            }
-        }
-
-        if (succeedSubscriptionBlockRechecks.length) {
-            try {
-                await this.subscriptionBlockRecheckService.removeByIds(succeedSubscriptionBlockRechecks);
-            } catch (ex) {
-                logger.error(`removing 'SubscriptionBlockRecheck' entities was failed. `, ex);
-            }
-        }
     }
 
     protected async loadProjectHashmapByIds(ids: Array<string>): Promise<Hashtable<Scheme.Project>> {

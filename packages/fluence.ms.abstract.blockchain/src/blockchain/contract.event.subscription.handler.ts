@@ -4,11 +4,11 @@ import {
     Scheme,
 } from '@applicature-private/fluence.lib.services';
 import { set } from 'lodash';
-import { EthereumListenerHandler } from './ethereum.listener.handler';
+import { EventListenerHandler } from './event.listener.handler';
 
 // TODO: move to separate package
 // https://applicature.atlassian.net/browse/FLC-209
-export class ContractEventSubscriptionHandler extends EthereumListenerHandler {
+export class ContractEventSubscriptionHandler extends EventListenerHandler {
     public getHandlerId() {
         return 'contract.event.subscription.handler';
     }

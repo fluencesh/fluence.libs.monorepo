@@ -92,12 +92,13 @@ describe('bc bitcoin transport service ', () => {
         checkTx(tx);
     });
 
-    // FIXME:
+    // TODO:
     // Error:
     // code: -32601
     // message: "Method not found"
     // name: "RpcError"
     // status:-32601
+    // https://applicature.atlassian.net/browse/FLC-216
     it.skip('should get balance by address', async () => {
         const address = '0xmgadYuDvGwULgroRp2ZfM5CnH89HsAWv9t';
 

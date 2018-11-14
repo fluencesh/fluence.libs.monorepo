@@ -1,5 +1,5 @@
 {
-  "name": "@applicature-private/multivest.blockchain.bitcoin",
+  "name": "@applicature-private/fluence.lib.bitcoin",
   "version": "2.0.11",
   "private": false,
   "license": "UNLICENSED",
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.com:applicature/multivest.blockchain.bitcoin.git"
+    "url": "git@bitbucket.com:applicature/fluence.lib.bitcoin"
   },
   "dependencies": {
     "@applicature-private/core.plugin-manager": "^2.0.0",

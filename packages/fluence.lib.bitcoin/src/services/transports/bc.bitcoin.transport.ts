@@ -1,19 +1,20 @@
-import { Block, MultivestError, PluginManager, Transaction } from '@fluencesh/multivest.core';
-import { Scheme } from '@fluencesh/multivest.services.blockchain';
+import { MultivestError, PluginManager, Service } from '@applicature/core.plugin-manager';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import BigNumber from 'bignumber.js';
-import * as Client from 'bitcoin-core';
-import { get, has } from 'lodash';
+import { get } from 'lodash';
 import * as logger from 'winston';
-import { STD_VALUE_MULTIPLIER } from '../../constants';
-import { AbstractBitcoinTransportService } from './abstract.bitcoin.transport';
-import { BitcoinTransport } from './bitcoin.transport';
+import { AbstractBitcoinTransportProvider } from './abstract.bitcoin.transport.provider';
+import { BitcoinBlock, BitcoinTransaction } from '../../types';
 
-export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
-    protected client: Client;
+const Client = require('bitcoin-core');
+
+export class BcBitcoinTransportService extends AbstractBitcoinTransportProvider {
+    private client: any;
 
     constructor(pluginManager: PluginManager, transportConnection: Scheme.TransportConnection) {
         super(pluginManager, transportConnection);
 
+        this.networkId = this.transportConnection.networkId;
         this.client = new Client(this.transportConnection.settings);
     }
 
@@ -38,7 +39,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
         }
     }
 
-    public async getBlockByHash(hash: string): Promise<Block> {
+    public async getBlockByHash(hash: string): Promise<BitcoinBlock> {
         const preparedHash = this.prepareHash(hash);
 
         try {
@@ -55,7 +56,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
         }
     }
     
-    public async getBlockByHeight(height: number): Promise<Block> {
+    public async getBlockByHeight(height: number): Promise<BitcoinBlock> {
         const hash = await this.client.getBlockHash(height);
         
         return this.getBlockByHash(hash);
@@ -92,7 +93,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
         return this.convertTransaction(tx, block);
     }
 
-    public async sendRawTransaction(txHex: string): Promise<Transaction> {
+    public async sendRawTransaction(txHex: string): Promise<BitcoinTransaction> {
         let hash: string;
         try {
             hash = await this.client.sendRawTransaction(txHex);
@@ -110,7 +111,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
         return this.client.getTransactionByHash(preparedHash);
     }
 
-    private convertBlock(block: any): Block {
+    private convertBlock(block: any): BitcoinBlock {
         const convertedBlock = {
             difficulty: block.difficulty,
             hash: `0x${block.hash}`,
@@ -120,7 +121,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
             parentHash: block.previousblockhash,
             size: block.size,
             time: block.time
-        } as Block;
+        } as BitcoinBlock;
 
         const transactions = block.tx.map((tx: any) => {
             const convertedTx = this.convertTransaction(tx);
@@ -137,7 +138,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
         return convertedBlock;
     }
 
-    private convertTransaction(tx: any, block: Block = {} as Block): Transaction {
+    private convertTransaction(tx: any, block: BitcoinBlock = {} as BitcoinBlock): BitcoinTransaction {
         const convertedTx = {
             blockHash: `0x${tx.blockhash}`,
             hash: `0x${tx.txid}`,
@@ -150,7 +151,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportService {
                 address: get(recipient, 'scriptPubKey.addresses[0]'),
                 amount: new BigNumber(recipient.value)
             })),
-        } as Transaction;
+        } as BitcoinTransaction;
 
         if (Object.keys(block).length > 0) {
             convertedTx.blockHeight = block.height;

@@ -1,5 +1,6 @@
+
 declare module 'bitcoin-core' {
-    export class Client {
+    class Client {
         public agentOptions: any;
         public auth: { user: string; pass: string; };
         public hasNamedParametersSupport: boolean;
@@ -14,16 +15,14 @@ declare module 'bitcoin-core' {
 
         public getBlockCount(): Promise<number>;
         public getBlockHash(height: number): Promise<string>;
-        public getBlockByHash(hash: string, options: { extension: Extension }): Promise<Block>;
-        public getTransactionByHash(hash: string, options?: any): Promise<Transaction>;
+        public getBlockByHash(hash: string, options: { extension: 'hex' | 'json' }): Promise<any>;
+        public getTransactionByHash(hash: string, options?: any): Promise<any>;
         public sendToAddress(to: string, amount: string, comment?: string, commentTo?: string): Promise<string>;
         public sendRawTransaction(txHex: string): Promise<string>;
         public getBalance(address: string, minConf: number): Promise<number>;
     }
 
-    export type Extension = 'bin' | 'hex' | 'json';
-
-    export interface ClientOptions {
+    interface ClientOptions {
         agentOptions: any;
         headers?: any;
         host?: string;
@@ -37,7 +36,7 @@ declare module 'bitcoin-core' {
         version: string;
     }
 
-    export interface Block {
+    interface Block {
         hash: string;
         confirmations: number;
         strippedsize: number;
@@ -58,7 +57,7 @@ declare module 'bitcoin-core' {
         nextblockhash?: string;
     }
 
-    export interface Transaction {
+    interface Transaction {
         amount : number;
         fee : number;
         confirmations : number;
@@ -74,7 +73,7 @@ declare module 'bitcoin-core' {
         hex : string;
     }
 
-    export interface InputOutput {
+    interface InputOutput {
         involvesWatchonly?: true;
         account: string;
         address: string;
@@ -84,14 +83,17 @@ declare module 'bitcoin-core' {
         fee?: number;
     }
 
-    export enum NetworkPorts {
+    enum NetworkPorts {
         mainnet = 8332,
         regtest = 18332,
         testnet = 18332
     }
 
-    export interface SSL {
+    interface SSL {
         enabled: boolean;
         strict: boolean;
     }
+
+    
+    export = Client;
 }

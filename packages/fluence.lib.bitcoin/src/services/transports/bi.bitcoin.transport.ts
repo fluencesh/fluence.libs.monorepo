@@ -1,5 +1,5 @@
-import { Block, MultivestError, PluginManager, Transaction } from '@applicature-private/multivest.core';
-import { Scheme } from '@applicature-private/multivest.services.blockchain';
+import { MultivestError, PluginManager } from '@applicature-private/core.plugin-manager';
+import { Scheme } from '@applicature-private/fluence.lib.services';
 import BigNumber from 'bignumber.js';
 import {
     Transaction as BitcoinLibTx,
@@ -10,9 +10,8 @@ import { resolve } from 'url';
 import * as logger from 'winston';
 import { STD_VALUE_MULTIPLIER } from '../../constants';
 import { Errors } from '../../errors';
-import { AvailableNetwork } from '../../types';
-import { AbstractBitcoinTransportService } from './abstract.bitcoin.transport';
-import { BitcoinTransport } from './bitcoin.transport';
+import { AbstractBitcoinTransportProvider } from './abstract.bitcoin.transport.provider';
+import { BitcoinTransaction, BitcoinBlock } from '../../types';
 
 interface BiWalletSettings {
     id: string;
@@ -20,7 +19,7 @@ interface BiWalletSettings {
     secondPassword: string;
 }
 
-export class BiBitcoinTransportService extends AbstractBitcoinTransportService {
+export class BiBitcoinTransportService extends AbstractBitcoinTransportProvider {
     private baseUrl: string;
     private wallet: BiWalletSettings;
     private apiKey: string;
@@ -114,7 +113,7 @@ export class BiBitcoinTransportService extends AbstractBitcoinTransportService {
         }
     }
 
-    public async sendRawTransaction(txHex: string): Promise<Transaction> {
+    public async sendRawTransaction(txHex: string): Promise<BitcoinTransaction> {
         try {
             await this.postRequest('pushtx', txHex);
         } catch (ex) {
@@ -145,7 +144,7 @@ export class BiBitcoinTransportService extends AbstractBitcoinTransportService {
         }
     }
 
-    private convertBlock(block: any, deepConvert: boolean = false): Block {
+    private convertBlock(block: any, deepConvert: boolean = false): BitcoinBlock {
         const convertedBlock = {
             fee: new BigNumber(block.fee) as any,
             hash: `0x${block.hash}`,
@@ -155,7 +154,7 @@ export class BiBitcoinTransportService extends AbstractBitcoinTransportService {
             parentHash: `0x${block.prev_block}`,
             size: block.size,
             time: block.time,
-        } as Block;
+        } as BitcoinBlock;
 
         if (deepConvert) {
             const txs = block.tx.map((tx: any) => {
@@ -176,7 +175,7 @@ export class BiBitcoinTransportService extends AbstractBitcoinTransportService {
         return convertedBlock;
     }
 
-    private convertTransaction(tx: any): Transaction {
+    private convertTransaction(tx: any): BitcoinTransaction {
         const senderAddressPath = 'inputs[0].prev_out.addr';
         const senderAddress = has(tx, senderAddressPath) ? `0x${get(tx, senderAddressPath)}` : null;
 
@@ -190,7 +189,7 @@ export class BiBitcoinTransportService extends AbstractBitcoinTransportService {
                 address: recipient.addr,
                 amount: new BigNumber(recipient.value).div(STD_VALUE_MULTIPLIER)
             })),
-        } as Transaction;
+        } as BitcoinTransaction;
     }
 
     private getRequest(path: string, qs: any = {}) {

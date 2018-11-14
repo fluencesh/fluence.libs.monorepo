@@ -1,14 +1,17 @@
-import { Block, Transaction } from '@applicature-private/multivest.core';
-import { Scheme } from '@applicature-private/multivest.services.blockchain';
+import { Scheme } from '@applicature-private/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import * as config from 'config';
-import { BcBitcoinTransportService } from '../../src/services/transports/bc.bitcoin.transport';
-import { AvailableNetwork } from '../../src/types';
+import {
+    BcBitcoinTransportService,
+    AvailableNetwork,
+    BitcoinBlock,
+    BitcoinTransaction
+} from '../../src';
 
 describe('bc bitcoin transport service ', () => {
     let transport: BcBitcoinTransportService;
 
-    function checkBlock(block: Block) {
+    function checkBlock(block: BitcoinBlock) {
         expect(typeof block.hash === 'string').toBeTruthy();
         expect(typeof block.height === 'number').toBeTruthy();
         expect(typeof block.network === 'string').toBeTruthy();
@@ -23,7 +26,7 @@ describe('bc bitcoin transport service ', () => {
         });
     }
 
-    function checkTx(tx: Transaction) {
+    function checkTx(tx: BitcoinTransaction) {
         if (tx.hasOwnProperty('blockHash')) {
             expect(typeof tx.blockHash === 'string').toBeTruthy();
         }
@@ -101,13 +104,5 @@ describe('bc bitcoin transport service ', () => {
         const balance = await transport.getBalance(address);
 
         expect(balance).toBeInstanceOf(BigNumber);
-    });
-
-    it('should check is address valid', async () => {
-        const address = '0xmgadYuDvGwULgroRp2ZfM5CnH89HsAWv9t';
-
-        const valid = transport.isValidAddress(address);
-
-        expect(typeof valid === 'boolean').toBeTruthy();
     });
 });

@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.lib.sc.sdk.generator",
-  "version": "2.0.11",
+  "version": "2.0.12-alpha.1",
   "private": false,
   "license": "UNLICENSED",
   "description": "Ethereum Blockchain Plugin",

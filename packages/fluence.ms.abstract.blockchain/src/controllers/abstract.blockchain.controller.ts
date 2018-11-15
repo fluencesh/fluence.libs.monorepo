@@ -9,6 +9,8 @@ import {
     ProjectService,
     Scheme,
     TransportConnectionService,
+    BlockchainTransportProvider,
+    ManagedBlockchainTransport,
 } from '@applicature-private/fluence.lib.services';
 import { WebMultivestError } from '@applicature-private/core.web';
 import BigNumber from 'bignumber.js';
@@ -18,7 +20,13 @@ import * as logger from 'winston';
 import { Errors } from '../errors';
 import { BlockchainMetricService } from '../services';
 
-export abstract class AbstractBlockchainController<T extends BlockchainService> extends Controller {
+export abstract class AbstractBlockchainController<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends BlockchainTransportProvider<Transaction, Block>,
+    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
+    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
+> extends Controller {
     protected blockchainRegistry: BlockchainRegistryService;
     protected projectService: ProjectService;
     protected clientService: ClientService;
@@ -45,8 +53,8 @@ export abstract class AbstractBlockchainController<T extends BlockchainService> 
         this.transportConnectionService = pluginManager.getServiceByClass(TransportConnectionService);
     }
 
-    public abstract convertBlockDTO(block: Scheme.BlockchainBlock): any;
-    public abstract convertTransactionDTO(transaction: Scheme.BlockchainTransaction): any;
+    public abstract convertBlockDTO(block: Block): any;
+    public abstract convertTransactionDTO(transaction: Transaction): any;
     public abstract convertAddressBalanceDTO(address: string, balance: BigNumber): any;
 
     public convertScheduledTxDTO(scheduledTx: Scheme.ScheduledTx) {
@@ -54,12 +62,12 @@ export abstract class AbstractBlockchainController<T extends BlockchainService> 
             cronExpression: scheduledTx.cronExpression,
             id: scheduledTx.id,
             projectId: scheduledTx.projectId,
-            tx: this.convertTransactionDTO(scheduledTx.tx)
+            tx: this.convertTransactionDTO(scheduledTx.tx as Transaction)
         };
     }
 
     public async getBlockByHashOrNumber(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
-        let block: Scheme.BlockchainBlock;
+        let block: Block;
 
         let transportConnection: Scheme.TransportConnection;
         try {
@@ -117,7 +125,7 @@ export abstract class AbstractBlockchainController<T extends BlockchainService> 
             return this.handleError(ex, next);
         }
 
-        let transaction: Scheme.BlockchainTransaction;
+        let transaction: Transaction;
         try {
             const networkId = transportConnection.networkId;
             // FIXME: migrate to right types (should return Scheme.BlockchainTransaction)
@@ -157,9 +165,8 @@ export abstract class AbstractBlockchainController<T extends BlockchainService> 
             return this.handleError(ex, next);
         }
 
-        let transaction: Scheme.BlockchainTransaction;
+        let transaction: Transaction;
         try {
-            // FIXME: migrate to right types (should return Scheme.BlockchainTransaction)
             transaction = await blockchainService.sendRawTransaction(hex, req.project.id, transportConnection.id);
         } catch (ex) {
             if (this.metricService) {
@@ -270,9 +277,10 @@ export abstract class AbstractBlockchainController<T extends BlockchainService> 
         return true;
     }
 
-    protected getBlockchainService(networkId: string): T {
+    protected getBlockchainService(networkId: string): BlockchainServiceType {
         try {
-            const blockchainService = this.blockchainRegistry.getByBlockchainInfo(this.blockchainId, networkId) as T;
+            const blockchainService =
+                this.blockchainRegistry.getByBlockchainInfo<BlockchainServiceType>(this.blockchainId, networkId);
 
             return blockchainService;
         } catch (ex) {

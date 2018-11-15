@@ -1,14 +1,15 @@
-import { BlockchainTransport, Scheme } from '@applicature-private/fluence.lib.services';
-import { BigNumber } from 'bignumber.js';
+
 import {
-    ETHEREUM,
     EthereumTopic,
     EthereumTopicFilter,
     EthereumTransaction,
     EthereumTransactionReceipt,
-} from '../../types';
+    EthereumBlock,
+} from '../../../types';
+import { BlockchainTransportProvider, Scheme } from '@applicature-private/fluence.lib.services';
+import BigNumber from 'bignumber.js';
 
-export interface EthereumTransport extends BlockchainTransport {
+export interface EthereumTransportProvider extends BlockchainTransportProvider<EthereumTransaction, EthereumBlock> {
     call(transaction: EthereumTransaction): Promise<string>;
     estimateGas(transaction: EthereumTransaction): Promise<number>;
     getGasPrice(): Promise<BigNumber>;
@@ -19,13 +20,13 @@ export interface EthereumTransport extends BlockchainTransport {
     callContractMethod(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
-        inputTypes?: Array<string>,
-        inputValues?: Array<string>
+        inputTypes: Array<string>,
+        inputValues: Array<string | Array<string>>
     ): Promise<any>;
     contractMethodGasEstimate(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
-        inputTypes?: Array<string>,
-        inputValues?: Array<string>
+        inputTypes: Array<string>,
+        inputValues: Array<string | Array<string>>
     ): Promise<any>;
 }

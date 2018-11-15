@@ -1,4 +1,3 @@
-import { Transaction } from '@applicature-private/core.plugin-manager';
 import * as config from 'config';
 import { Db, MongoClient } from 'mongodb';
 import { v1 as generateId } from 'uuid';
@@ -6,7 +5,7 @@ import { v1 as generateId } from 'uuid';
 import { Scheme } from '../../src/types';
 
 import { MongodbTransactionDao } from '../../src/dao/mongodb/transaction.dao';
-import { randomTransaction } from '../../src/generation/transaction';
+import { randomTransaction } from '../helper';
 
 describe('transaction dao', () => {
     let dao: MongodbTransactionDao;
@@ -107,7 +106,7 @@ describe('transaction dao', () => {
             data.blockChainId,
             data.networkId,
             data.uniqId,
-            data.ref as Transaction,
+            data.ref as Scheme.BlockchainTransaction,
             data.status
         );
         const got = await dao.getByUniqId(data.uniqId);

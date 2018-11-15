@@ -8,19 +8,27 @@ import {
     Scheme,
     SubscriptionBlockRecheckService,
     WebhookActionItemObjectService,
+    BlockchainTransportProvider,
+    ManagedBlockchainTransport,
 } from '@applicature-private/fluence.lib.services';
 import { set } from 'lodash';
 import { v1 as generateId } from 'uuid';
 import * as logger from 'winston';
 import { CronjobMetricService } from '../services';
 
-export abstract class BlockchainHandler<T extends Scheme.BlockchainTransaction> {
+export abstract class BlockchainHandler<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends BlockchainTransportProvider<Transaction, Block>,
+    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
+    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
+> {
     protected pluginManager: PluginManager;
 
     protected blockchainId: string;
     protected networkId: string;
 
-    protected blockchainService: BlockchainService;
+    protected blockchainService: BlockchainServiceType;
 
     protected projectService: ProjectService;
     protected webhookService: WebhookActionItemObjectService;
@@ -30,7 +38,7 @@ export abstract class BlockchainHandler<T extends Scheme.BlockchainTransaction> 
 
     constructor(
         pluginManager: PluginManager,
-        blockchainService: BlockchainService,
+        blockchainService: BlockchainServiceType,
         metricService?: CronjobMetricService
     ) {
         this.pluginManager = pluginManager;
@@ -50,7 +58,7 @@ export abstract class BlockchainHandler<T extends Scheme.BlockchainTransaction> 
 
     public async processBlockAndUnconfirmedBlocks(
         lastBlockHeight: number,
-        block: Scheme.BlockchainBlock<T>
+        block: Block
     ): Promise<void> {
         try {
             await this.processBlock(lastBlockHeight, block);
@@ -69,7 +77,7 @@ export abstract class BlockchainHandler<T extends Scheme.BlockchainTransaction> 
 
     public abstract async processBlock(
         lastBlockHeight: number,
-        block: Scheme.BlockchainBlock<T>
+        block: Block
     ): Promise<void>;
 
     public abstract getSubscriptionBlockRecheckType(): Scheme.SubscriptionBlockRecheckType;
@@ -85,7 +93,7 @@ export abstract class BlockchainHandler<T extends Scheme.BlockchainTransaction> 
     }
 
     protected createWebhook(
-        block: Scheme.BlockchainBlock<T>,
+        block: Block,
         txHash: string,
         project: Scheme.Project,
 
@@ -134,7 +142,7 @@ export abstract class BlockchainHandler<T extends Scheme.BlockchainTransaction> 
 
     protected async createBlockRecheck(
         subscription: Scheme.Subscription,
-        block: Scheme.BlockchainBlock<T>,
+        block: Block,
         confirmations: number,
         webhook: Scheme.WebhookActionItem
     ): Promise<void> {
@@ -216,7 +224,7 @@ export abstract class BlockchainHandler<T extends Scheme.BlockchainTransaction> 
         }
     }
 
-    private async loadBlockByHash(hash: string): Promise<Scheme.BlockchainBlock<T>> {
+    private async loadBlockByHash(hash: string): Promise<Block> {
         logger.debug(`trying to load block [${ hash }]`);
 
         const block = await this.blockchainService.getBlockByHash(hash);

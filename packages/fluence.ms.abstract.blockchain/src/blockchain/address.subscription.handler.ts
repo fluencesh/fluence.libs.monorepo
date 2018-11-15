@@ -3,6 +3,8 @@ import {
     AddressSubscriptionService,
     BlockchainService,
     Scheme,
+    BlockchainTransportProvider,
+    ManagedBlockchainTransport,
 } from '@applicature-private/fluence.lib.services';
 import { CronjobMetricService } from '../services';
 import { BlockchainHandler } from './blockchain.handler';
@@ -12,12 +14,18 @@ interface RecipientAndTx {
     tx: Scheme.BlockchainTransaction;
 }
 
-export class AddressSubscriptionHandler<T extends Scheme.BlockchainTransaction> extends BlockchainHandler {
+export class AddressSubscriptionHandler<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends BlockchainTransportProvider<Transaction, Block>,
+    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
+    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
+> extends BlockchainHandler<Transaction, Block, Provider, ManagedService, BlockchainServiceType> {
     private subscriptionService: AddressSubscriptionService;
 
     constructor(
         pluginManager: PluginManager,
-        blockchainService: BlockchainService,
+        blockchainService: BlockchainServiceType,
         metricService?: CronjobMetricService
     ) {
         super(pluginManager, blockchainService, metricService);
@@ -30,7 +38,7 @@ export class AddressSubscriptionHandler<T extends Scheme.BlockchainTransaction> 
         return Scheme.SubscriptionBlockRecheckType.Address;
     }
 
-    public async processBlock(lastBlockHeight: number, block: Scheme.BlockchainBlock<T>) {
+    public async processBlock(lastBlockHeight: number, block: Block) {
         const recipients: Array<string> = [];
         const recipientsMap: Hashtable<Array<RecipientAndTx>> = {};
         for (const tx of block.transactions) {

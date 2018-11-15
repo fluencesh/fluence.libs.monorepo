@@ -1,10 +1,25 @@
 import { MultivestError, PluginManager, Service } from '@applicature/core.plugin-manager';
-import { Scheme } from '@fluencesh/fluence.lib.services';
+import {
+    BlockchainService,
+    BlockchainTransportProvider,
+    ManagedBlockchainTransportService,
+    Scheme,
+    ManagedBlockchainTransport,
+} from '@fluencesh/fluence.lib.services';
 import { Errors } from '../errors';
 import { BlockchainMonitor } from './blockchain.monitor';
 
-export class BlockchainMonitorRegistry extends Service {
-    private registry: Map<Scheme.BlockchainInfo, BlockchainMonitor>;
+export class BlockchainMonitorRegistry<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends BlockchainTransportProvider<Transaction, Block>,
+    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
+    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
+> extends Service {
+    private registry: Map<
+        Scheme.BlockchainInfo,
+        BlockchainMonitor<Transaction, Block, Provider, ManagedService, BlockchainServiceType>
+    >;
 
     constructor(pluginManager: PluginManager) {
         super(pluginManager);
@@ -16,12 +31,19 @@ export class BlockchainMonitorRegistry extends Service {
         return 'blockchain.monitor.registry';
     }
 
-    public addBlockchainMonitor(blockchainId: string, networkId: string, blockchainMonitor: BlockchainMonitor): void {
+    public addBlockchainMonitor(
+        blockchainId: string,
+        networkId: string,
+        blockchainMonitor: BlockchainMonitor<Transaction, Block, Provider, ManagedService, BlockchainServiceType>
+    ): void {
         const key = this.generateKey(blockchainId, networkId);
         this.registry.set(key, blockchainMonitor);
     }
 
-    public getBlockchainMonitor(blockchainId: string, networkId: string): BlockchainMonitor {
+    public getBlockchainMonitor(
+        blockchainId: string,
+        networkId: string
+    ): BlockchainMonitor<Transaction, Block, Provider, ManagedService, BlockchainServiceType> {
         const key = this.generateKey(blockchainId, networkId);
         const blockchainMonitor = this.registry.get(key);
 

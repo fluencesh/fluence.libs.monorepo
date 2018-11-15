@@ -3,13 +3,12 @@ import BigNumber from 'bignumber.js';
 import * as config from 'config';
 import { createHash } from 'crypto';
 import * as faker from 'faker';
-import { random } from 'lodash';
+import { random, sample } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
 import { generate } from 'randomstring';
 import { v1 as generateId } from 'uuid';
 import { RandomStringPresets } from '../src/constants';
 import { Scheme } from './../src/types';
-import Transaction = Scheme.Transaction;
 import {Constructable} from '@applicature/core.plugin-manager';
 import TransactionStatus = Scheme.TransactionStatus;
 
@@ -258,7 +257,7 @@ export function randomScheduledTx() {
     } as Scheme.ScheduledTx;
 }
 
-export function randomTransactionScheme(): Transaction {
+export function randomTransactionScheme(): Scheme.BlockchainTransaction {
     return {
         id: '123',
         ref: '123',
@@ -276,7 +275,7 @@ export function randomTransactionScheme(): Transaction {
             address: `0x${generate(RandomStringPresets.Hash256)}`,
             amount: new BigNumber(random(1, 10)) as any
         }]
-    } as Transaction;
+    } as Scheme.BlockchainTransaction;
 }
 
 export function randomSession(type?: Scheme.SessionType): Scheme.Session {
@@ -386,3 +385,54 @@ export async function createEntities(
 export function getRandomItem<T>(items: Array<T>): T {
     return items[random(0, items.length - 1)];
 }
+
+export function randomJob(): Scheme.Job {
+    const job: Scheme.Job = {
+        id: faker.lorem.word(),
+        params: {
+            processedBlockHeight: faker.random.number({
+                min: 100000,
+                max: 1000000,
+            })
+        },
+    };
+    return job;
+}
+
+export const randomTransactionRef = (): Scheme.BlockchainTransaction => {
+    return {
+        blockHash: `0x${generateId()}`,
+        blockHeight: Math.floor(Math.random() * 100000000),
+        blockTime: faker.date.past().getTime(),
+        fee: new BigNumber(String(Math.random() / 1000)) as any,
+        from: [
+            {
+                address: `0x${generateId()}`,
+            }
+        ],
+        hash: `0x${generateId()}`,
+        to: [
+            {
+                address: `0x${generateId()}`,
+                amount: new BigNumber(String(Math.random())) as any,
+            }
+        ]
+    };
+};
+
+const transactionStatuses = [
+    Scheme.TransactionStatus.Created,
+    Scheme.TransactionStatus.Mined,
+    Scheme.TransactionStatus.Sent,
+];
+
+export const randomTransaction = (): Scheme.Transaction => {
+    return {
+        blockChainId: 'ETHEREUM',
+        networkId: 'homestead',
+        id: generateId(),
+        uniqId: `ETHEREUM-${generateId()}`,
+        ref: randomTransactionRef(),
+        status: sample(transactionStatuses)
+    };
+};

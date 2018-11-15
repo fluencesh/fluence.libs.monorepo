@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.lib.bitcoin",
-  "version": "2.0.7",
+  "version": "2.0.8-alpha.4",
   "private": false,
   "license": "UNLICENSED",
   "description": "Bitcoin Blockchain Plugin",
@@ -28,9 +28,9 @@
   "dependencies": {
     "@applicature/core.mongodb": "^2.0.0",
     "@applicature/core.plugin-manager": "^2.0.0",
-    "@fluencesh/fluence.lib.services": "^2.0.7",
+    "@fluencesh/fluence.lib.services": "^2.0.8-alpha.1",
     "agenda": "^1.0.3",
-    "bignumber.js": "^4.1.0",
+    "bignumber.js": "^7.2.1",
     "bitcoin-core": "^1.2.0",
     "bitcoinjs-lib": "^3.3.0",
     "bluebird": "^3.5.0",
@@ -51,6 +51,7 @@
     "@types/mongodb": "^2.2.18",
     "@types/nock": "^9.1.3",
     "@types/node": "^10.11.4",
+    "@types/request": "^2.48.1",
     "@types/uuid": "^3.4.4",
     "@types/winston": "^2.4.4",
     "cors": "^2.8.4",

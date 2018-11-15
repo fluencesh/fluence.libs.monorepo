@@ -1,6 +1,11 @@
 import { AuthenticatedRequest, AuthMiddleware } from '@fluencesh/fluence.ms.abstract';
 import { PluginManager } from '@applicature/core.plugin-manager';
-import { BlockchainService } from '@fluencesh/fluence.lib.services';
+import {
+    BlockchainService,
+    Scheme,
+    BlockchainTransportProvider,
+    ManagedBlockchainTransport
+} from '@fluencesh/fluence.lib.services';
 import * as express from 'express';
 import { AbstractRouter, Body, Get, Post, Query, Response } from 'swapi/dist';
 import { AbstractBlockchainRouteUrls } from '../constants';
@@ -9,15 +14,33 @@ import { Errors } from '../errors';
 import { AddressValidation, BlockValidation, TransactionValidation } from '../validation';
 
 @AbstractRouter
-export class AbstractBlockchainRouter<T extends BlockchainService> {
+export class AbstractBlockchainRouter<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends BlockchainTransportProvider<Transaction, Block>,
+    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
+    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
+> {
     protected validationService: any;
-    protected blockchainController: AbstractBlockchainController<T>;
+    protected blockchainController: AbstractBlockchainController<
+        Transaction,
+        Block,
+        Provider,
+        ManagedService,
+        BlockchainServiceType
+    >;
     protected authMiddleware: AuthMiddleware;
     protected blockchainUrlPrefix: string;
 
     constructor(
         pluginManager: PluginManager,
-        blockchainController: AbstractBlockchainController<T>,
+        blockchainController: AbstractBlockchainController<
+            Transaction,
+            Block,
+            Provider,
+            ManagedService,
+            BlockchainServiceType
+        >,
         authMiddleware: AuthMiddleware,
         blockchainUrlPrefix: string = ''
     ) {

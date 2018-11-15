@@ -1,4 +1,4 @@
-import {Dao, Transaction} from '@applicature/core.plugin-manager';
+import {Dao} from '@applicature/core.plugin-manager';
 import { Scheme } from '../types';
 
 export abstract class TransactionDao extends Dao<Scheme.Transaction> {
@@ -6,7 +6,7 @@ export abstract class TransactionDao extends Dao<Scheme.Transaction> {
         blockChainId: string,
         networkId: string,
         uniqId: string,
-        transaction: Transaction,
+        transaction: Partial<Scheme.BlockchainTransaction>,
         status: Scheme.TransactionStatus
     ): Promise<Scheme.Transaction>;
 

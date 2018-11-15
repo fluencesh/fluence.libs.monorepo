@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.ms.abstract",
-  "version": "2.0.9-alpha.4",
+  "version": "2.0.12",
   "private": false,
   "license": "UNLICENSED",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -29,7 +29,7 @@
     "@applicature/core.mongodb": "^2.0.0",
     "@applicature/core.plugin-manager": "^2.0.0",
     "@applicature/core.web": "^2.0.0",
-    "@fluencesh/fluence.lib.services": "^2.0.9-alpha.4",
+    "@fluencesh/fluence.lib.services": "^2.0.12",
     "aws-sdk": "^2.316.0",
     "axios": "^0.18.0",
     "bignumber.js": "^7.2.1",

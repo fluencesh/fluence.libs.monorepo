@@ -109,6 +109,8 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
 
         isPrivate: boolean,
 
+        cronExpression: string,
+
         isPredefinedBySystem: boolean = null
     ): Promise<Scheme.TransportConnection> {
         const data: Partial<Scheme.TransportConnection> = {
@@ -127,6 +129,8 @@ export class MongodbTransportConnectionDao extends MongoDBDao<Scheme.TransportCo
             failedCount,
 
             isPrivate,
+
+            cronExpression,
 
             createdAt: new Date(),
         };

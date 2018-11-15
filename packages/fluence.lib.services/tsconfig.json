@@ -1,7 +1,12 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
-    "outDir": "lib",
+    "skipLibCheck": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "node_modules/@applicature-private/multivest.mongodb/@types"
+    ],
+
     "rootDir": ".",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true

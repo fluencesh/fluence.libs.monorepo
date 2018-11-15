@@ -114,7 +114,9 @@ describe('transport connection dao', () => {
             data.lastFailedAt,
             data.failedCount,
 
-            data.isPrivate
+            data.isPrivate,
+
+            data.cronExpression
         );
 
         const got = await dao.getById(created.id);

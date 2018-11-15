@@ -1,8 +1,9 @@
 import { Plugin } from '@applicature-private/core.mongodb';
-import { PluginManager, Service } from '@applicature-private/core.plugin-manager';
-import { DaoIds } from '../../constants';
+import { PluginManager, Service, MultivestError } from '@applicature-private/core.plugin-manager';
+import { DaoIds, TransportConnectionJobName } from '../../constants';
 import { TransportConnectionDao } from '../../dao';
 import { Scheme } from '../../types';
+import { Errors } from '../../errors';
 
 export class TransportConnectionService extends Service {
     protected transportConnectionDao: TransportConnectionDao;
@@ -87,7 +88,7 @@ export class TransportConnectionService extends Service {
         );
     }
 
-    public createTransportConnection(
+    public async createTransportConnection(
         blockchainId: string,
         networkId: string,
         providerId: string,
@@ -102,9 +103,13 @@ export class TransportConnectionService extends Service {
         lastFailedAt: Date,
         failedCount: number,
 
-        isPrivate: boolean
+        isPrivate: boolean,
+
+        cronExpression: string,
+
+        isPredefinedBySystem: boolean = null
     ): Promise<Scheme.TransportConnection> {
-        return this.transportConnectionDao.createTransportConnection(
+        const transportConnection = await this.transportConnectionDao.createTransportConnection(
             blockchainId,
             networkId,
             providerId,
@@ -119,8 +124,29 @@ export class TransportConnectionService extends Service {
             lastFailedAt,
             failedCount,
 
-            isPrivate
+            isPrivate,
+
+            cronExpression,
+
+            isPredefinedBySystem
         );
+
+        const agenda = this.pluginManager.getJobExecutor();
+        try {
+            const jobData: Scheme.TransportConnectionJobData = {
+                transportConnectionId: transportConnection.id,
+                cronExpression,
+            };
+
+            const job = agenda.create(TransportConnectionJobName, jobData) as any;
+            await job.save();
+
+            transportConnection.relatedJobId = job.attrs._id.toHexString();
+        } catch (ex) {
+            throw new MultivestError(Errors.CANT_CREATE_AGENDA_JOB);
+        }
+
+        return transportConnection;
     }
 
     public async setSettings(

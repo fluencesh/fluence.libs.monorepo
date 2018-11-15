@@ -1,6 +1,6 @@
 {
   "name": "@applicature-private/fluence.ms.abstract",
-  "version": "2.0.8-alpha.1",
+  "version": "2.0.13-alpha.0",
   "private": false,
   "license": "UNLICENSED",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -26,9 +26,10 @@
   },
   "dependencies": {
     "@applicature-private/core.metrics": "^2.0.0",
+    "@applicature-private/core.mongodb": "^2.0.0",
     "@applicature-private/core.plugin-manager": "^2.0.0",
     "@applicature-private/core.web": "^2.0.0",
-    "@applicature-private/fluence.lib.services": "^2.0.8-alpha.1",
+    "@applicature-private/fluence.lib.services": "^2.0.13-alpha.0",
     "aws-sdk": "^2.316.0",
     "axios": "^0.18.0",
     "bignumber.js": "^7.2.1",

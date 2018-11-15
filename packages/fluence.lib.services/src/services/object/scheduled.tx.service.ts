@@ -30,9 +30,9 @@ export class ScheduledTxService extends Service {
         cronExpression: string,
 
         tx: Scheme.BlockchainTransaction,
-        blockchainId: string,
-        networkId: string,
-        privateKey: string
+        privateKey: string,
+
+        transportConnectionId: string
     ): Promise<Scheme.ScheduledTx> {
         try {
             const project = await this.projectDao.getById(projectId);
@@ -49,9 +49,8 @@ export class ScheduledTxService extends Service {
                 projectId,
                 cronExpression,
                 tx,
-                blockchainId,
-                networkId,
-                privateKey
+                privateKey,
+                transportConnectionId
             );
 
             const agenda = this.pluginManager.getJobExecutor();

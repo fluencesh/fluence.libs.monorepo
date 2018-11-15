@@ -1,13 +1,10 @@
-import { Hashtable, PluginManager } from '@applicature-private/core.plugin-manager';
+import { Hashtable } from '@applicature-private/core.plugin-manager';
 import {
-    AddressSubscriptionService,
-    BlockchainService,
     Scheme,
     BlockchainTransportProvider,
     ManagedBlockchainTransport,
 } from '@applicature-private/fluence.lib.services';
-import { CronjobMetricService } from '../services';
-import { BlockchainHandler } from './blockchain.handler';
+import { BlockchainListenerHandler } from './blockchain.listener.handler';
 
 interface RecipientAndTx {
     recipient: Scheme.Recipient;
@@ -18,27 +15,22 @@ export class AddressSubscriptionHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
-    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
-> extends BlockchainHandler<Transaction, Block, Provider, ManagedService, BlockchainServiceType> {
-    private subscriptionService: AddressSubscriptionService;
-
-    constructor(
-        pluginManager: PluginManager,
-        blockchainService: BlockchainServiceType,
-        metricService?: CronjobMetricService
-    ) {
-        super(pluginManager, blockchainService, metricService);
-
-        this.subscriptionService =
-            pluginManager.getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;
-    }
+    ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
+> extends BlockchainListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
 
     public getSubscriptionBlockRecheckType() {
         return Scheme.SubscriptionBlockRecheckType.Address;
     }
 
-    public async processBlock(lastBlockHeight: number, block: Block) {
+    public getHandlerId() {
+        return 'address.subscription.handler';
+    }
+
+    public async processBlock(
+        lastBlockHeight: number,
+        block: Block,
+        transportConnectionSubscription: Scheme.TransportConnectionSubscription
+    ) {
         const recipients: Array<string> = [];
         const recipientsMap: Hashtable<Array<RecipientAndTx>> = {};
         for (const tx of block.transactions) {
@@ -55,7 +47,9 @@ export class AddressSubscriptionHandler<
             }
         }
 
-        const subscriptions = await this.subscriptionService.listBySubscribedAddressesActiveOnly(recipients);
+        const subscriptions = transportConnectionSubscription.addressSubscriptions
+            .filter((s) => recipientsMap[s.address] !== undefined);
+
         const projectIds = subscriptions.map((s) => s.projectId);
         const projectsMap: Hashtable<Scheme.Project> = await this.loadProjectHashmapByIds(projectIds);
         const webhookActions: Array<Scheme.WebhookActionItem> = [];
@@ -73,6 +67,8 @@ export class AddressSubscriptionHandler<
                 };
 
                 const webhook = this.createWebhook(
+                    transportConnectionSubscription.blockchainId,
+                    transportConnectionSubscription.networkId,
                     block,
                     tx.hash,
                     project,
@@ -83,7 +79,13 @@ export class AddressSubscriptionHandler<
                 );
 
                 if (subscription.minConfirmations > confirmations) {
-                    await this.createBlockRecheck(subscription, block, confirmations, webhook);
+                    await this.createBlockRecheck(
+                        subscription,
+                        transportConnectionSubscription.id,
+                        block,
+                        confirmations,
+                        webhook
+                    );
                     continue;
                 }
 
@@ -101,8 +103,8 @@ export class AddressSubscriptionHandler<
 
                 promises.push(
                     this.metricService.addressFoundInBlock(
-                        this.blockchainService.getBlockchainId(),
-                        this.blockchainService.getNetworkId(),
+                        transportConnectionSubscription.blockchainId,
+                        transportConnectionSubscription.networkId,
                         webhookActions.length,
                         today
                     )

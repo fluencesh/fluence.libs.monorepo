@@ -94,7 +94,9 @@ describe('transport connection dao', () => {
             data.lastFailedAt,
             data.failedCount,
 
-            data.isPrivate
+            data.isPrivate,
+
+            data.cronExpression
         );
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);

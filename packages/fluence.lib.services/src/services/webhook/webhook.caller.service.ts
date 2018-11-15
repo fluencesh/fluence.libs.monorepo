@@ -47,18 +47,18 @@ export class WebhookCallerService extends Service {
                 blockHeight: action.blockHeight,
                 blockTime: action.blockTime,
 
-                minConfirmations: action.minConfirmations,
                 confirmations: action.confirmations,
+                minConfirmations: action.minConfirmations,
 
                 txHash: action.txHash,
 
                 address: action.address,
 
-                projectId: action.projectId,
                 clientId: action.clientId,
+                projectId: action.projectId,
 
-                type: action.type,
                 refId: action.refId, // AddressSubscription id or EthereumContractSubscription id
+                type: action.type,
 
                 eventId: action.eventId,
                 params: action.params
@@ -82,10 +82,11 @@ export class WebhookCallerService extends Service {
         }
 
         return {
+            error,
             request: {
-                method: options.method,
+                data: options.data,
                 headers: options.headers,
-                data: options.data
+                method: options.method,
             },
             response: {
                 body: response.data,
@@ -93,7 +94,6 @@ export class WebhookCallerService extends Service {
                 statusCode: response.status,
                 statusMessage: response.statusText
             },
-            error
         };
     }
 }

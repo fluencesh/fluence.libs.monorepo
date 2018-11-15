@@ -4,18 +4,22 @@ module.exports = {
     ],
     "globals": {
         "ts-jest": {
-            "skipBabel": true
+            "skipBabel": true,
+            "diagnostics": false
         }
     },
     "testResultsProcessor": "jest-multi-test-result-processor",
     "transform": {
         "^.+\\.tsx?$": "ts-jest"
     },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "testRegex": "test\/.*\\.spec\\.ts$",
     "moduleFileExtensions": [
         "ts",
         "tsx",
-        "js"
+        "js",
+        "jsx",
+        "json",
+        "node"
     ],
     "coveragePathIgnorePatterns": [
         "<rootDir>/.*?\\.d\\.ts$",

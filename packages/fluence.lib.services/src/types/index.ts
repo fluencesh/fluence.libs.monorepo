@@ -57,8 +57,7 @@ export namespace Scheme {
         clientId: string;
         projectId: string;
 
-        blockchainId: string;
-        networkId: string;
+        transportConnectionId: string;
 
         minConfirmations: number;
         subscribed: boolean;
@@ -100,7 +99,7 @@ export namespace Scheme {
 
     export enum WebhookTriggerType {
         Address = 'ADDRESS',
-        EthereumContractEvent = 'ETHEREUM_CONTRACT_EVENT',
+        ContractEvent = 'CONTRACT_EVENT',
         Transaction = 'TRANSACTION',
         ScheduledTransaction = 'SCHEDULED_TRANSACTION',
         OraclizeSubscription = 'ORACLIZE_SUBSCRIPTION'
@@ -189,6 +188,28 @@ export namespace Scheme {
         createdAt: Date;
 
         isPredefinedBySystem?: boolean;
+
+        cronExpression: string;
+        relatedJobId?: string;
+    }
+
+    export interface TransportConnectionJobData {
+        cronExpression: string;
+        transportConnectionId: string;
+    }
+
+    // TODO: FabricSmartContractCreation
+    export interface TransportConnectionSubscription extends TransportConnection {
+        addressSubscriptions: Array<AddressSubscription>;
+        contractSubscriptions: Array<EthereumContractSubscription>;
+        transactionHashSubscriptions: Array<TransactionHashSubscription>;
+        oraclizeSubscriptions: Array<OraclizeSubscription>;
+    }
+
+    export enum TransportConnectionSubscriptionStatus {
+        All = 'All',
+        Subscribed = 'Subscribed',
+        Unsubscribed = 'Unsubscribed',
     }
 
     export interface BlockchainBlock<T extends BlockchainTransaction> {
@@ -302,12 +323,12 @@ export namespace Scheme {
         projectId: string;
         cronExpression: string;
 
-        blockchainId: string;
-        networkId: string;
         tx: BlockchainTransaction;
         privateKey: string;
 
-        relatedJobId: string;
+        transportConnectionId: string;
+
+        relatedJobId?: string;
     }
 
     export enum ScheduledTxExecutionStatus {
@@ -330,8 +351,7 @@ export namespace Scheme {
 
     export interface SubscriptionBlockRecheck extends MongoScheme {
         invokeOnBlockHeight: number;
-        blockchainId: string;
-        networkId: string;
+        transportConnectionId: string;
         subscriptionId: string;
         type: SubscriptionBlockRecheckType;
         blockHash: string;
@@ -419,5 +439,24 @@ export namespace Scheme {
     export interface BlockchainInfo {
         blockchainId: string;
         networkId: string;
+    }
+
+    export interface BlockchainEventFilter {
+        fromBlock?: number;
+        toBlock?: number;
+        address?: string;
+        topics?: Array<string>;
+    }
+
+    export interface BlockchainEvent {
+        address: string;
+        topics: Array<string>;
+        data: string;
+        blockNumber: number;
+        transactionHash: string;
+        transactionIndex: number;
+        blockHash: string;
+        logIndex: number;
+        removed: boolean;
     }
 }

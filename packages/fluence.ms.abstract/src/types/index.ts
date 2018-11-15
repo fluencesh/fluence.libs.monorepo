@@ -64,17 +64,17 @@ export interface AwsGatewayIdentity {
     userAgent: string;
 }
 
-export enum SwResponseFormat {
-    Buffer = 'buffer',
-    Json = 'json'
-}
-
 export enum HttpMethod {
     GET = 'get',
     POST = 'post',
     PUT = 'put',
     PATCH = 'patch',
     DELETE = 'delete'
+}
+
+export enum SwResponseFormat {
+    Buffer = 'buffer',
+    Json = 'json'
 }
 
 export interface AwsRouter extends Router {

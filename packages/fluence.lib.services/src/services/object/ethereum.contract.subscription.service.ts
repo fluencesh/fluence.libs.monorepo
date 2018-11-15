@@ -29,8 +29,7 @@ export class EthereumContractSubscriptionService extends Service {
 
         compatibleStandard: Scheme.EthereumContractCompatibleStandard,
 
-        blockChainId: string,
-        networkId: string,
+        transportConnectionId: string,
 
         address: string,
         minConfirmations: number,
@@ -56,8 +55,7 @@ export class EthereumContractSubscriptionService extends Service {
                 clientId,
                 projectId,
                 compatibleStandard,
-                blockChainId,
-                networkId,
+                transportConnectionId,
                 address,
                 minConfirmations,
                 abi,

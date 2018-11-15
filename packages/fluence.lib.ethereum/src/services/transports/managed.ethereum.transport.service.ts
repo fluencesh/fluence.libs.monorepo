@@ -15,9 +15,10 @@ import {
 import { EthereumTransportProvider } from './interfaces';
 import { EthersEthereumTransportService } from './ethers.ethereum.transport';
 
-export class ManagedEthereumTransportService<Provider extends EthereumTransportProvider = EthereumTransportProvider>
+export class ManagedEthereumTransportService<Provider extends EthereumTransportProvider>
     extends ManagedBlockchainTransportService<EthereumTransaction, EthereumBlock, Provider>
-    implements ManagedEthereumTransportService<Provider> {
+    implements ManagedEthereumTransportService<Provider>
+{
 
     public getBlockchainId(): string {
         return ETHEREUM;
@@ -41,16 +42,16 @@ export class ManagedEthereumTransportService<Provider extends EthereumTransportP
         return transportService.call(transaction);
     }
 
-    public async estimateGas(transaction: EthereumTransaction, transportConnectionId: string): Promise<number> {
+    public async estimateFee(transaction: EthereumTransaction, transportConnectionId?: string): Promise<BigNumber> {
         const transportService = await this.getActiveTransportService(transportConnectionId);
 
-        return transportService.estimateGas(transaction);
+        return transportService.estimateFee(transaction);
     }
 
-    public async getGasPrice(transportConnectionId: string): Promise<BigNumber> {
+    public async getFeePrice(transportConnectionId?: string): Promise<BigNumber> {
         const transportService = await this.getActiveTransportService(transportConnectionId);
 
-        return transportService.getGasPrice();
+        return transportService.getFeePrice();
     }
 
     public async getCode(address: string, transportConnectionId: string): Promise<string> {
@@ -96,7 +97,7 @@ export class ManagedEthereumTransportService<Provider extends EthereumTransportP
         return transport.callContractMethod(contractEntity, methodName, inputTypes, inputValues);
     }
 
-    public async contractMethodGasEstimate(
+    public async contractMethodFeeEstimate(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
@@ -105,7 +106,7 @@ export class ManagedEthereumTransportService<Provider extends EthereumTransportP
     ): Promise<any> {
         const transport = await this.getActiveTransportService(transportConnectionId);
 
-        return transport.contractMethodGasEstimate(contractEntity, methodName, inputTypes, inputValues);
+        return transport.contractMethodFeeEstimate(contractEntity, methodName, inputTypes, inputValues);
     }
 
     protected prepareTransportServices(connections: Array<Scheme.TransportConnection>): Array<Provider> {

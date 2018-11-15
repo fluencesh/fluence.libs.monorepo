@@ -1,14 +1,22 @@
 import { Hashtable } from '@applicature/core.plugin-manager';
-import { EthereumBlock, EthereumBlockchainService } from '@fluencesh/fluence.lib.ethereum';
 import {
+    ScBlockchainService,
     Scheme,
+    ScBlockchainTransportProvider,
+    ManagedScBlockchainTransport,
 } from '@fluencesh/fluence.lib.services';
 import { set } from 'lodash';
 import { EventListenerHandler } from './event.listener.handler';
 
 // TODO: move to separate package
 // https://applicature.atlassian.net/browse/FLC-209
-export class ContractEventSubscriptionHandler extends EventListenerHandler {
+export abstract class ContractEventSubscriptionHandler<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends ScBlockchainTransportProvider<Transaction, Block>,
+    ManagedBlockchainTransportService extends ManagedScBlockchainTransport<Transaction, Block, Provider>
+> extends EventListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
+
     public getHandlerId() {
         return 'contract.event.subscription.handler';
     }
@@ -19,9 +27,9 @@ export class ContractEventSubscriptionHandler extends EventListenerHandler {
 
     protected async processBlock(
         lastBlockHeight: number,
-        block: EthereumBlock,
+        block: Block,
         transportConnectionSubscription: Scheme.TransportConnectionSubscription,
-        blockchainService: EthereumBlockchainService
+        blockchainService: ScBlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>
     ) {
         const logsMap = await this.getLogMapByBlockHeight(
             blockchainService,
@@ -122,6 +130,6 @@ export class ContractEventSubscriptionHandler extends EventListenerHandler {
     }
 
     protected getWebhookType() {
-        return Scheme.WebhookTriggerType.EthereumContractEvent;
+        return Scheme.WebhookTriggerType.ContractEvent;
     }
 }

@@ -1,6 +1,6 @@
 import { MultivestError } from '@applicature/core.plugin-manager';
 import {
-    BlockchainService,
+    ScBlockchainService,
     Scheme,
     Signature
 } from '@fluencesh/fluence.lib.services';
@@ -20,7 +20,7 @@ import {
 } from '../../types';
 import { EthereumTransportProvider, ManagedEthereumTransport } from '../transports';
 
-export class EthereumBlockchainService extends BlockchainService<
+export class EthereumBlockchainService extends ScBlockchainService<
     EthereumTransaction,
     EthereumBlock,
     EthereumTransportProvider,
@@ -110,8 +110,8 @@ export class EthereumBlockchainService extends BlockchainService<
         return serializedTx.toString('hex');
     }
 
-    public getGasPrice(transportId: string): Promise<BigNumber> {
-        return this.blockchainTransport.getGasPrice(transportId);
+    public getFeePrice(transportId: string): Promise<BigNumber> {
+        return this.blockchainTransport.getFeePrice(transportId);
     }
 
     public getCode(address: string, transportId: string) {
@@ -146,14 +146,14 @@ export class EthereumBlockchainService extends BlockchainService<
         );
     }
 
-    public contractMethodGasEstimate(
+    public contractMethodFeeEstimate(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
         inputValues: Array<string | Array<string>> = [],
         transportId: string
     ) {
-        return this.blockchainTransport.contractMethodGasEstimate(
+        return this.blockchainTransport.contractMethodFeeEstimate(
             contractEntity,
             methodName,
             inputTypes,
@@ -162,8 +162,8 @@ export class EthereumBlockchainService extends BlockchainService<
         );
     }
 
-    public estimateGas(tx: EthereumTransaction, transportId: string) {
-        return this.blockchainTransport.estimateGas(tx, transportId);
+    public estimateFee(tx: EthereumTransaction, transportId: string) {
+        return this.blockchainTransport.estimateFee(tx, transportId);
     }
 
     public getAddressTransactionsCount(

@@ -133,6 +133,12 @@ export abstract class ManagedBlockchainTransportService<
         return activeTransport.getBalance(address, minConf);
     }
 
+    public async estimateFee(tx: Transaction, transportId: string): Promise<BigNumber> {
+        const activeTransport = await this.getActiveTransportService(transportId);
+
+        return activeTransport.estimateFee(tx);
+    }
+
     protected abstract prepareTransportServices(connections: Array<Scheme.TransportConnection>): Array<Provider>;
 
     protected async updateValid() {

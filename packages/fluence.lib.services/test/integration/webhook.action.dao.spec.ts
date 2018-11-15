@@ -42,6 +42,18 @@ describe('address subscription dao', () => {
         expect(got).toEqual(webhookAction);
     });
 
+    it('should get by unique info', async () => {
+        const got = await dao.getByUniqueInfo(
+            webhookAction.blockHash,
+            webhookAction.blockHeight,
+            webhookAction.type,
+            webhookAction.refId,
+            webhookAction.eventId
+        );
+
+        expect(got).toEqual(webhookAction);
+    });
+
     it('should get by client id', async () => {
         const filtered = webhookActions.filter((wa) => wa.clientId === webhookAction.clientId);
 

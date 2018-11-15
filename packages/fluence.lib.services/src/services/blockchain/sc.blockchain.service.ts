@@ -9,38 +9,63 @@ import { Scheme } from '../../types';
 import { ClientService } from '../object/client.service';
 import { ProjectService } from '../object/project.service';
 import { TransactionHashSubscriptionService } from '../object/transaction.hash.subscription.service';
-import { BlockchainTransportProvider, ManagedBlockchainTransport } from '../transports';
+import { ScBlockchainTransportProvider, ManagedScBlockchainTransport } from '../transports';
 import { BlockchainService } from './index';
 
 export abstract class ScBlockchainService<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
-    Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
+    Provider extends ScBlockchainTransportProvider<Transaction, Block>,
+    ManagedBlockchainTransportService extends ManagedScBlockchainTransport<Transaction, Block, Provider>
 > extends BlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService> {
-    public abstract getGasPrice(transportId?: string): Promise<BigNumber>;
 
-    public abstract getLogs(
-        filters: Scheme.BlockchainEventFilter, transportId?: string
-    ): Promise<Array<Scheme.BlockchainEvent>>;
+    public getFeePrice(transportConnectionId: string): Promise<BigNumber> {
+        return this.blockchainTransport.getFeePrice(transportConnectionId);
+    }
 
-    public abstract call(tx: Transaction, transportId?: string): Promise<string>;
+    public getLogs(
+        filters: Scheme.BlockchainEventFilter,
+        transportConnectionId: string
+    ): Promise<Array<Scheme.BlockchainEvent>> {
+        return this.blockchainTransport.getLogs(filters, transportConnectionId);
+    }
 
-    public abstract callContractMethod(
+    public call(
+        tx: Transaction,
+        transportConnectionId: string
+    ): Promise<string> {
+        return this.blockchainTransport.call(tx, transportConnectionId);
+    }
+
+    public callContractMethod(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string>,
         inputValues: Array<string | Array<string>>,
-        transportId?: string
-    ): Promise<any>;
+        transportConnectionId: string
+    ): Promise<any> {
+        return this.blockchainTransport.callContractMethod(
+            contractEntity,
+            methodName,
+            inputTypes,
+            inputValues,
+            transportConnectionId
+        );
+    }
 
-    public abstract contractMethodGasEstimate(
+    public contractMethodFeeEstimate(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string>,
         inputValues: Array<string | Array<string>>,
-        transportId?: string
-    ): Promise<BigNumber>;
-
-    public abstract estimateGas(tx: Transaction, transportId?: string): Promise<BigNumber>;
+        transportConnectionId: string
+    ): Promise<BigNumber> {
+        return this.blockchainTransport.contractMethodFeeEstimate(
+            contractEntity,
+            methodName,
+            inputTypes,
+            inputValues,
+            transportConnectionId
+        );
+    }
 }

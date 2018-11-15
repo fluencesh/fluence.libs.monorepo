@@ -42,6 +42,22 @@ export class SubscriptionBlockRecheckService extends Service {
         return this.dao.getById(id);
     }
 
+    public async getByUniqueInfo(
+        subscriptionId: string,
+        transportConnectionId: string,
+        type: Scheme.SubscriptionBlockRecheckType,
+        blockHash: string,
+        blockHeight: number
+    ): Promise<Scheme.SubscriptionBlockRecheck> {
+        return this.dao.getByUniqueInfo(
+            subscriptionId,
+            transportConnectionId,
+            type,
+            blockHash,
+            blockHeight
+        );
+    }
+
     public async listByBlockHeight(height: number): Promise<Array<Scheme.SubscriptionBlockRecheck>> {
         return this.dao.listByBlockHeight(height);
     }
@@ -68,12 +84,12 @@ export class SubscriptionBlockRecheckService extends Service {
         );
     }
 
-    public async listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+    public async listOnBlockByTransportAndType(
         invokeOnBlockHeight: number,
         transportConnectionId: string,
         type: Scheme.SubscriptionBlockRecheckType
     ): Promise<Array<Scheme.SubscriptionBlockRecheck>> {
-        return this.dao.listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+        return this.dao.listOnBlockByTransportAndType(
             invokeOnBlockHeight,
             transportConnectionId,
             type

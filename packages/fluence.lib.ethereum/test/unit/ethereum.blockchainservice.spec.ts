@@ -7,9 +7,6 @@ import { TransportConnectionMock } from '../mock/transport.connection.mock';
 describe('ethereum blockchain', () => {
     let transportService: EthersEthereumTransportService;
 
-    const BLOCKCHAIN_ID = 'ETH';
-    const NETWORK_ID = 'rinkeby';
-
     beforeAll(async () => {
         transportService = new EthersEthereumTransportService(
             PluginManagerMock,
@@ -96,7 +93,7 @@ describe('ethereum blockchain', () => {
             nonce: 0,
         } as EthereumTransaction;
 
-        await transportService.estimateGas(tx);
+        await transportService.estimateFee(tx);
 
         expect(ProviderMock.estimateGas).toHaveBeenCalledWith({
             data: tx.input,
@@ -110,7 +107,7 @@ describe('ethereum blockchain', () => {
     });
 
     it('should transfer correct params in `getGasPrice`', async () => {
-        await transportService.getGasPrice();
+        await transportService.getFeePrice();
 
         expect(ProviderMock.getGasPrice).toHaveBeenCalledWith();
         expect(ProviderMock.getGasPrice).toHaveBeenCalledTimes(1);

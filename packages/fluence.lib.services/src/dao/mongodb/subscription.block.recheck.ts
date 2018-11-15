@@ -43,6 +43,22 @@ export class MongodbSubscriptionBlockRecheckDao
         return this.getRaw({ id });
     }
 
+    public async getByUniqueInfo(
+        subscriptionId: string,
+        transportConnectionId: string,
+        type: Scheme.SubscriptionBlockRecheckType,
+        blockHash: string,
+        blockHeight: number
+    ): Promise<Scheme.SubscriptionBlockRecheck> {
+        return this.getRaw({
+            subscriptionId,
+            transportConnectionId,
+            type,
+            blockHash,
+            blockHeight
+        });
+    }
+
     public async listByBlockHeight(height: number): Promise<Array<Scheme.SubscriptionBlockRecheck>> {
         return this.list({ blockHeight: height });
     }
@@ -69,7 +85,7 @@ export class MongodbSubscriptionBlockRecheckDao
         });
     }
 
-    public async listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+    public async listOnBlockByTransportAndType(
         invokeOnBlockHeight: number,
         transportConnectionId: string,
         type: Scheme.SubscriptionBlockRecheckType

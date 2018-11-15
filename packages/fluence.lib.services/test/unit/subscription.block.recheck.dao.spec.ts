@@ -25,6 +25,25 @@ describe('subscription block recheck dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
+    it('getById() transfers correct arguments', async () => {
+        const subscriptionId = 'subscriptionId';
+        const transportConnectionId = 'transportConnectionId';
+        const type: any = 'type';
+        const blockHash = 'blockHash';
+        const blockHeight = 1;
+
+        await dao.getByUniqueInfo(subscriptionId, transportConnectionId, type, blockHash, blockHeight);
+
+        expect(collection.findOne).toHaveBeenCalledWith({
+            subscriptionId,
+            transportConnectionId,
+            type,
+            blockHash,
+            blockHeight
+        });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
     it('listByBlockHeight() transfers correct arguments', async () => {
         const blockHeight = 1;
         await dao.listByBlockHeight(blockHeight);
@@ -72,7 +91,7 @@ describe('subscription block recheck dao', () => {
         const transportConnectionId = 'transportConnectionId';
         const type = 'type' as any;
 
-        await dao.listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+        await dao.listOnBlockByTransportAndType(
             invokeOnBlockHeight,
             transportConnectionId,
             type

@@ -1,8 +1,10 @@
 import { Hashtable } from '@applicature/core.plugin-manager';
 // import { EthereumBlockchainService, EthereumBlock } from '@fluencesh/fluence.lib.ethereum';
 import {
-    BlockchainTransportProvider, ManagedBlockchainTransport, ScBlockchainService,
+    ScBlockchainService,
     Scheme,
+    ScBlockchainTransportProvider,
+    ManagedScBlockchainTransport,
 } from '@fluencesh/fluence.lib.services';
 import { set } from 'lodash';
 import { EventListenerHandler } from './event.listener.handler';
@@ -12,8 +14,8 @@ import { EventListenerHandler } from './event.listener.handler';
 export abstract class OraclizeSubscriptionHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
-    Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
+    Provider extends ScBlockchainTransportProvider<Transaction, Block>,
+    ManagedBlockchainTransportService extends ManagedScBlockchainTransport<Transaction, Block, Provider>
 > extends EventListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
 
     public getHandlerId() {
@@ -26,7 +28,11 @@ export abstract class OraclizeSubscriptionHandler<
         transportConnectionSubscription: Scheme.TransportConnectionSubscription,
         blockchainService: ScBlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>
     ) {
-        const logs = await this.getLogsByBlockHeight(blockchainService, block.height);
+        const logs = await this.getLogsByBlockHeight(
+            blockchainService,
+            block.height,
+            transportConnectionSubscription.id
+        );
 
         const eventsList = logs.reduce((events: Array<string>, log) => events.concat(log.topics), []);
 

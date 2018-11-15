@@ -124,7 +124,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         return this.provider.getBalance(address);
     }
 
-    public async estimateGas(tx: EthereumTransaction): Promise<number> {
+    public async estimateFee(tx: EthereumTransaction): Promise<BigNumber> {
         return this.provider.estimateGas({
             to: tx.to[0].address,
             nonce: tx.nonce,
@@ -135,7 +135,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         });
     }
 
-    public async getGasPrice(): Promise<BigNumber> {
+    public async getFeePrice(): Promise<BigNumber> {
         const price = (await this.provider.getGasPrice()) as BigNumber;
 
         return price;
@@ -184,7 +184,7 @@ export class EthersEthereumTransportService extends Service implements EthereumT
         return this.convertContractMethodResponse(abiItem, result);
     }
 
-    public async contractMethodGasEstimate(
+    public async contractMethodFeeEstimate(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
@@ -250,15 +250,15 @@ export class EthersEthereumTransportService extends Service implements EthereumT
             blockHash: tx.blockHash,
             blockHeight: tx.blockNumber,
 
-            fee: tx.gasPrice.mul(tx.gasLimit),
+            fee: new BigNumber(tx.gasPrice.toString()).multipliedBy(tx.gasLimit.toString()),
             from: [{ address: tx.from }],
             to: [{
                 address: tx.to,
                 amount: tx.value
             }],
 
-            gasLimit: tx.gasLimit,
-            gasPrice: tx.gasPrice,
+            gasLimit: new BigNumber(tx.gasLimit.toString()),
+            gasPrice: new BigNumber(tx.gasPrice.toString()),
             nonce: tx.nonce,
             input: tx.input,
             transactionIndex: tx.transactionIndex

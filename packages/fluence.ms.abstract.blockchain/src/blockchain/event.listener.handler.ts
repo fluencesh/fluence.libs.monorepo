@@ -3,7 +3,9 @@ import {
     BlockchainTransportProvider,
     ScBlockchainService,
     ManagedBlockchainTransport,
-    Scheme
+    Scheme,
+    ScBlockchainTransportProvider,
+    ManagedScBlockchainTransport
 } from '@applicature-private/fluence.lib.services';
 import { set } from 'lodash';
 import { BlockchainListenerHandler } from './blockchain.listener.handler';
@@ -13,27 +15,29 @@ import { BlockchainListenerHandler } from './blockchain.listener.handler';
 export abstract class EventListenerHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
-    Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
-    > extends BlockchainListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
+    Provider extends ScBlockchainTransportProvider<Transaction, Block>,
+    ManagedBlockchainTransportService extends ManagedScBlockchainTransport<Transaction, Block, Provider>
+> extends BlockchainListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
 
     protected async getLogsByBlockHeight(
         blockchainService: ScBlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>,
-        height: number
+        height: number,
+        transportConnectionId: string
     ): Promise<Array<Scheme.BlockchainEvent>> {
         const logsFilters = {
             fromBlock: height,
             toBlock: height,
         } as Scheme.BlockchainEventFilter;
 
-        return blockchainService.getLogs(logsFilters);
+        return blockchainService.getLogs(logsFilters, transportConnectionId);
     }
 
     protected async getLogMapByBlockHeight(
         blockchainService: ScBlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>,
-        height: number
+        height: number,
+        transportConnectionId: string
     ) {
-        const logs = await this.getLogsByBlockHeight(blockchainService, height);
+        const logs = await this.getLogsByBlockHeight(blockchainService, height, transportConnectionId);
         const logsMap: Hashtable<Scheme.BlockchainEvent> = logs.reduce((map, log) => set(map, log.address, log), {});
 
         return logsMap;

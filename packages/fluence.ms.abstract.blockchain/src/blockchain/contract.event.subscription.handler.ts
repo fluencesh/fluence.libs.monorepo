@@ -1,7 +1,9 @@
 import { Hashtable } from '@applicature-private/core.plugin-manager';
 import {
-    BlockchainTransportProvider, ManagedBlockchainTransport, ScBlockchainService,
+    ScBlockchainService,
     Scheme,
+    ScBlockchainTransportProvider,
+    ManagedScBlockchainTransport,
 } from '@applicature-private/fluence.lib.services';
 import { set } from 'lodash';
 import { EventListenerHandler } from './event.listener.handler';
@@ -11,8 +13,8 @@ import { EventListenerHandler } from './event.listener.handler';
 export abstract class ContractEventSubscriptionHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
-    Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
+    Provider extends ScBlockchainTransportProvider<Transaction, Block>,
+    ManagedBlockchainTransportService extends ManagedScBlockchainTransport<Transaction, Block, Provider>
 > extends EventListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
 
     public getHandlerId() {
@@ -29,7 +31,11 @@ export abstract class ContractEventSubscriptionHandler<
         transportConnectionSubscription: Scheme.TransportConnectionSubscription,
         blockchainService: ScBlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>
     ) {
-        const logsMap = await this.getLogMapByBlockHeight(blockchainService, block.height);
+        const logsMap = await this.getLogMapByBlockHeight(
+            blockchainService,
+            block.height,
+            transportConnectionSubscription.id
+        );
 
         const confirmations = lastBlockHeight - block.height;
         const addresses = Object.keys(logsMap);

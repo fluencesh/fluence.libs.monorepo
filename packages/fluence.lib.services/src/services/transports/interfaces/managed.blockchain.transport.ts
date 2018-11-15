@@ -16,4 +16,6 @@ export interface ManagedBlockchainTransport<
     getTransactionByHash(txHash: string, transportConnectionId: string): Promise<Transaction>;
     sendRawTransaction(txHex: string, transportConnectionId: string): Promise<Transaction>;
     getBalance(address: string, minConf: number, transportConnectionId: string): Promise<BigNumber>;
+
+    estimateFee(tx: Transaction, transportConnectionId: string): Promise<BigNumber>;
 }

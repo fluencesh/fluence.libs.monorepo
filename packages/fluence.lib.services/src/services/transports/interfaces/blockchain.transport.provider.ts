@@ -15,4 +15,6 @@ export interface BlockchainTransportProvider<
     getTransactionByHash(txHash: string): Promise<Transaction>;
     sendRawTransaction(txHex: string): Promise<Transaction>;
     getBalance(address: string, minConf: number): Promise<BigNumber>;
+
+    estimateFee(tx: Transaction): Promise<BigNumber>;
 }

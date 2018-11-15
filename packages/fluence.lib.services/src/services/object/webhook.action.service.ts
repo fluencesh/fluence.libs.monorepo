@@ -1,9 +1,10 @@
 import WebhookActionItem = Scheme.WebhookActionItem;
 import { Plugin } from '@applicature-private/core.mongodb';
-import {Hashtable, PluginManager, Service} from '@applicature-private/core.plugin-manager';
+import {Hashtable, PluginManager, Service, MultivestError} from '@applicature-private/core.plugin-manager';
 import { DaoIds } from '../../constants';
 import { WebhookActionDao } from '../../dao/webhook.action.dao';
 import { Scheme } from '../../types';
+import { Errors } from '../../errors';
 
 export class WebhookActionItemObjectService extends Service {
     protected webHookActionItemDao: WebhookActionDao;
@@ -46,6 +47,18 @@ export class WebhookActionItemObjectService extends Service {
         eventId: string,
         params: Hashtable<any>
     ): Promise<Scheme.WebhookActionItem> {
+        const createdItem = await this.getByUniqueInfo(
+            blockHash,
+            blockHeight,
+            type,
+            refId,
+            eventId
+        );
+
+        if (createdItem) {
+            throw new MultivestError(Errors.WEBHOOK_ALREADY_EXISTS);
+        }
+
         return this.webHookActionItemDao.createAction(
             clientId, projectId,
             blockChainId, networkId,
@@ -60,6 +73,22 @@ export class WebhookActionItemObjectService extends Service {
 
             eventId,
             params
+        );
+    }
+
+    public async getByUniqueInfo(
+        blockHash: string,
+        blockHeight: number,
+        type: Scheme.WebhookTriggerType,
+        refId: string,
+        eventId: string
+    ): Promise<Scheme.WebhookActionItem> {
+        return this.webHookActionItemDao.getByUniqueInfo(
+            blockHash,
+            blockHeight,
+            type,
+            refId,
+            eventId
         );
     }
 

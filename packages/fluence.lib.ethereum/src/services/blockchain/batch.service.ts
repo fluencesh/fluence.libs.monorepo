@@ -81,7 +81,7 @@ export class BatchService extends Service {
                 }
 
                 batchCalls.push(
-                    this.blockchainService.callContractMethod(contractEntity, methodName, inputTypes, inputValues)
+                    this.blockchainService.callContractMethod(contractEntity, methodName, inputTypes, inputValues, null)
                 );
             }
 

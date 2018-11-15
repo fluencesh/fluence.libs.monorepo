@@ -29,6 +29,31 @@ describe('exchange dao', () => {
         expect(collection.findOne).toHaveBeenCalledTimes(1);
     });
 
+    it('getById() transfers correct arguments', async () => {
+        const eventId = 'eventId';
+        const refId = 'refId';
+        const type: any = 'type';
+        const blockHash = '0x';
+        const blockHeight = 1;
+
+        await dao.getByUniqueInfo(
+            blockHash,
+            blockHeight,
+            type,
+            refId,
+            eventId
+        );
+
+        expect(collection.findOne).toHaveBeenCalledWith({
+            blockHash,
+            blockHeight,
+            type,
+            refId,
+            eventId
+        });
+        expect(collection.findOne).toHaveBeenCalledTimes(1);
+    });
+
     it('listByClientId() transfers correct arguments', async () => {
         await dao.listByClientId('clientId');
 

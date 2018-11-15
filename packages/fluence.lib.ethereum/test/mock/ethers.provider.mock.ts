@@ -1,8 +1,8 @@
 import { BigNumber } from 'bignumber.js';
 
 const transactionMock = {
-    gasPrice: new BigNumber(0),
-    gasLimit: new BigNumber(0),
+    gasPrice: new BigNumber(1),
+    gasLimit: new BigNumber(1),
 };
 const blockMock: any = { transactions: [] };
 const transactionReceiptMock = {};

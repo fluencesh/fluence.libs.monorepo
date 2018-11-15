@@ -88,7 +88,7 @@ export abstract class BlockchainListenerHandler<
         let subscriptionBlockRechecks;
         try {
             subscriptionBlockRechecks =
-                await this.subscriptionBlockRecheckService.listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+                await this.subscriptionBlockRecheckService.listOnBlockByTransportAndType(
                     processedBlockHeight,
                     transportConnectionId,
                     this.getSubscriptionBlockRecheckType()

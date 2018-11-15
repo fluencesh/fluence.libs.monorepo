@@ -1,25 +1,38 @@
 import { Hashtable } from '@applicature/core.plugin-manager';
-import { EthereumBlockchainService, EthereumBlock } from '@fluencesh/fluence.lib.ethereum';
+// import { EthereumBlockchainService, EthereumBlock } from '@fluencesh/fluence.lib.ethereum';
 import {
+    ScBlockchainService,
     Scheme,
+    ScBlockchainTransportProvider,
+    ManagedScBlockchainTransport,
 } from '@fluencesh/fluence.lib.services';
 import { set } from 'lodash';
 import { EventListenerHandler } from './event.listener.handler';
 
 // TODO: move to separate package
 // https://applicature.atlassian.net/browse/FLC-209
-export class OraclizeSubscriptionHandler extends EventListenerHandler {
+export abstract class OraclizeSubscriptionHandler<
+    Transaction extends Scheme.BlockchainTransaction,
+    Block extends Scheme.BlockchainBlock<Transaction>,
+    Provider extends ScBlockchainTransportProvider<Transaction, Block>,
+    ManagedBlockchainTransportService extends ManagedScBlockchainTransport<Transaction, Block, Provider>
+> extends EventListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
+
     public getHandlerId() {
         return 'oraclize.subscription.handler';
     }
 
     public async processBlock(
         lastBlockHeight: number,
-        block: EthereumBlock,
+        block: Block,
         transportConnectionSubscription: Scheme.TransportConnectionSubscription,
-        blockchainService: EthereumBlockchainService
+        blockchainService: ScBlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>
     ) {
-        const logs = await this.getLogsByBlockHeight(blockchainService, block.height);
+        const logs = await this.getLogsByBlockHeight(
+            blockchainService,
+            block.height,
+            transportConnectionSubscription.id
+        );
 
         const eventsList = logs.reduce((events: Array<string>, log) => events.concat(log.topics), []);
 

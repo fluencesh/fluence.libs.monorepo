@@ -13,6 +13,13 @@ export abstract class SubscriptionBlockRecheckDao extends Dao<Scheme.Subscriptio
     ): Promise<Scheme.SubscriptionBlockRecheck>;
 
     public abstract getById(id: string): Promise<Scheme.SubscriptionBlockRecheck>;
+    public abstract getByUniqueInfo(
+        subscriptionId: string,
+        transportConnectionId: string,
+        type: Scheme.SubscriptionBlockRecheckType,
+        blockHash: string,
+        blockHeight: number
+    ): Promise<Scheme.SubscriptionBlockRecheck>;
 
     public abstract listByBlockHeight(height: number): Promise<Array<Scheme.SubscriptionBlockRecheck>>;
     public abstract listByBlockHeightAndTransportConnectionId(
@@ -26,7 +33,7 @@ export abstract class SubscriptionBlockRecheckDao extends Dao<Scheme.Subscriptio
         type: Scheme.SubscriptionBlockRecheckType
     ): Promise<Array<Scheme.SubscriptionBlockRecheck>>;
 
-    public abstract listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+    public abstract listOnBlockByTransportAndType(
         invokeOnBlockHeight: number,
         transportConnectionId: string,
         type: Scheme.SubscriptionBlockRecheckType

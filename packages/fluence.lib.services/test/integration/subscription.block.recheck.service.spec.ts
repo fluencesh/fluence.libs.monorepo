@@ -25,6 +25,17 @@ describe('subscription block recheck service', () => {
         expect(got).toEqual(subscriptionBlockRecheck);
     });
 
+    it('should get by unique info', async () => {
+        const got = await service.getByUniqueInfo(
+            subscriptionBlockRecheck.subscriptionId,
+            subscriptionBlockRecheck.transportConnectionId,
+            subscriptionBlockRecheck.type,
+            subscriptionBlockRecheck.blockHash,
+            subscriptionBlockRecheck.blockHeight
+        );
+        expect(got).toEqual(subscriptionBlockRecheck);
+    });
+
     it('should get by block height', async () => {
         const filtered =
             subscriptionBlockRechecks.filter((sbr) => sbr.blockHeight === subscriptionBlockRecheck.blockHeight);
@@ -68,7 +79,7 @@ describe('subscription block recheck service', () => {
             && sbr.type === subscriptionBlockRecheck.type
         );
 
-        const got = await service.listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+        const got = await service.listOnBlockByTransportAndType(
             subscriptionBlockRecheck.invokeOnBlockHeight,
             subscriptionBlockRecheck.transportConnectionId,
             subscriptionBlockRecheck.type

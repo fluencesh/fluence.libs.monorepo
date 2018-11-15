@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.lib.bitcoin",
-  "version": "2.0.12-alpha.1",
+  "version": "2.0.13",
   "private": false,
   "license": "UNLICENSED",
   "description": "Bitcoin Blockchain Plugin",
@@ -23,11 +23,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.com:applicature/fluence.lib.bitcoin"
+    "url": "git@bitbucket.com:applicature/fluence.libs-monorepo.git"
   },
   "dependencies": {
     "@applicature/core.plugin-manager": "^2.0.0",
-    "@fluencesh/fluence.lib.services": "^2.0.12-alpha.1",
+    "@fluencesh/fluence.lib.services": "^2.0.13",
     "agenda": "^1.0.3",
     "ajv": "^6.5.0",
     "bignumber.js": "^7.2.1",

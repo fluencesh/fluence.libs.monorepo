@@ -1,6 +1,6 @@
 import { MultivestError } from '@applicature/core.plugin-manager';
 import {
-    BlockchainService,
+    ScBlockchainService,
     Scheme,
     Signature
 } from '@fluencesh/fluence.lib.services';
@@ -20,7 +20,7 @@ import {
 } from '../../types';
 import { EthereumTransportProvider, ManagedEthereumTransport } from '../transports';
 
-export class EthereumBlockchainService extends BlockchainService<
+export class EthereumBlockchainService extends ScBlockchainService<
     EthereumTransaction,
     EthereumBlock,
     EthereumTransportProvider,
@@ -45,7 +45,7 @@ export class EthereumBlockchainService extends BlockchainService<
         return 'ETH';
     }
 
-    public async getHDAddress(index: number, transportId?: string): Promise<string> {
+    public async getHDAddress(index: number, transportId: string): Promise<string> {
         throw new MultivestError('not implemented');
     }
 
@@ -110,23 +110,23 @@ export class EthereumBlockchainService extends BlockchainService<
         return serializedTx.toString('hex');
     }
 
-    public getGasPrice(transportId?: string): Promise<BigNumber> {
-        return this.blockchainTransport.getGasPrice(transportId);
+    public getFeePrice(transportId: string): Promise<BigNumber> {
+        return this.blockchainTransport.getFeePrice(transportId);
     }
 
-    public getCode(address: string, transportId?: string) {
+    public getCode(address: string, transportId: string) {
         return this.blockchainTransport.getCode(address, transportId);
     }
 
-    public getLogs(filters: EthereumTopicFilter, transportId?: string): Promise<Array<EthereumTopic>> {
+    public getLogs(filters: EthereumTopicFilter, transportId: string): Promise<Array<EthereumTopic>> {
         return this.blockchainTransport.getLogs(filters, transportId);
     }
 
-    public getTransactionReceipt(txHex: string, transportId?: string): Promise<EthereumTransactionReceipt> {
+    public getTransactionReceipt(txHex: string, transportId: string): Promise<EthereumTransactionReceipt> {
         return this.blockchainTransport.getTransactionReceipt(txHex, transportId);
     }
 
-    public call(tx: EthereumTransaction, transportId?: string) {
+    public call(tx: EthereumTransaction, transportId: string) {
         return this.blockchainTransport.call(tx, transportId);
     }
 
@@ -135,7 +135,7 @@ export class EthereumBlockchainService extends BlockchainService<
         methodName: string,
         inputTypes: Array<string> = [],
         inputValues: Array<string | Array<string>> = [],
-        transportId?: string
+        transportId: string
     ) {
         return this.blockchainTransport.callContractMethod(
             contractEntity,
@@ -146,14 +146,14 @@ export class EthereumBlockchainService extends BlockchainService<
         );
     }
 
-    public contractMethodGasEstimate(
+    public contractMethodFeeEstimate(
         contractEntity: Scheme.ContractScheme,
         methodName: string,
         inputTypes: Array<string> = [],
         inputValues: Array<string | Array<string>> = [],
-        transportId?: string
+        transportId: string
     ) {
-        return this.blockchainTransport.contractMethodGasEstimate(
+        return this.blockchainTransport.contractMethodFeeEstimate(
             contractEntity,
             methodName,
             inputTypes,
@@ -162,13 +162,13 @@ export class EthereumBlockchainService extends BlockchainService<
         );
     }
 
-    public estimateGas(tx: EthereumTransaction, transportId?: string) {
-        return this.blockchainTransport.estimateGas(tx, transportId);
+    public estimateFee(tx: EthereumTransaction, transportId: string) {
+        return this.blockchainTransport.estimateFee(tx, transportId);
     }
 
     public getAddressTransactionsCount(
         address: string,
-        transportId?: string,
+        transportId: string,
         blockTag?: number | string
     ): Promise<number> {
         return this.blockchainTransport.getAddressTransactionsCount(address, transportId, blockTag);

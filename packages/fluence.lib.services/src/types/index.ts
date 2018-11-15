@@ -99,7 +99,7 @@ export namespace Scheme {
 
     export enum WebhookTriggerType {
         Address = 'ADDRESS',
-        EthereumContractEvent = 'ETHEREUM_CONTRACT_EVENT',
+        ContractEvent = 'CONTRACT_EVENT',
         Transaction = 'TRANSACTION',
         ScheduledTransaction = 'SCHEDULED_TRANSACTION',
         OraclizeSubscription = 'ORACLIZE_SUBSCRIPTION'
@@ -439,5 +439,24 @@ export namespace Scheme {
     export interface BlockchainInfo {
         blockchainId: string;
         networkId: string;
+    }
+
+    export interface BlockchainEventFilter {
+        fromBlock?: number;
+        toBlock?: number;
+        address?: string;
+        topics?: Array<string>;
+    }
+
+    export interface BlockchainEvent {
+        address: string;
+        topics: Array<string>;
+        data: string;
+        blockNumber: number;
+        transactionHash: string;
+        transactionIndex: number;
+        blockHash: string;
+        logIndex: number;
+        removed: boolean;
     }
 }

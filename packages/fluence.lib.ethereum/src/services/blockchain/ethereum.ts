@@ -1,6 +1,6 @@
 import { MultivestError } from '@applicature-private/core.plugin-manager';
 import {
-    BlockchainService,
+    ScBlockchainService,
     Scheme,
     Signature
 } from '@applicature-private/fluence.lib.services';
@@ -20,7 +20,7 @@ import {
 } from '../../types';
 import { EthereumTransportProvider, ManagedEthereumTransport } from '../transports';
 
-export class EthereumBlockchainService extends BlockchainService<
+export class EthereumBlockchainService extends ScBlockchainService<
     EthereumTransaction,
     EthereumBlock,
     EthereumTransportProvider,

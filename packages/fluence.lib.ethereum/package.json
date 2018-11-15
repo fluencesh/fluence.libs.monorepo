@@ -1,6 +1,6 @@
 {
   "name": "@applicature-private/fluence.lib.ethereum",
-  "version": "2.0.12",
+  "version": "2.0.13-alpha.0",
   "private": false,
   "license": "UNLICENSED",
   "description": "Ethereum Blockchain Plugin",
@@ -28,7 +28,7 @@
   "dependencies": {
     "@applicature-private/core.mongodb": "^2.0.0",
     "@applicature-private/core.plugin-manager": "^2.0.0",
-    "@applicature-private/fluence.lib.services": "^2.0.12",
+    "@applicature-private/fluence.lib.services": "^2.0.13-alpha.0",
     "axios": "^0.18.0",
     "bignumber.js": "^7.2.1",
     "config": "^1.30.0",

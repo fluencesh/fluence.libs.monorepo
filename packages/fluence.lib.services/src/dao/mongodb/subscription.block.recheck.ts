@@ -21,8 +21,7 @@ export class MongodbSubscriptionBlockRecheckDao
 
     public async createBlockRecheck(
         subscriptionId: string,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         type: Scheme.SubscriptionBlockRecheckType,
         blockHash: string,
         blockHeight: number,
@@ -31,8 +30,7 @@ export class MongodbSubscriptionBlockRecheckDao
     ): Promise<Scheme.SubscriptionBlockRecheck> {
         return this.create({
             subscriptionId,
-            blockchainId,
-            networkId,
+            transportConnectionId,
             type,
             blockHash,
             blockHeight,
@@ -45,33 +43,59 @@ export class MongodbSubscriptionBlockRecheckDao
         return this.getRaw({ id });
     }
 
+    public async getByUniqueInfo(
+        subscriptionId: string,
+        transportConnectionId: string,
+        type: Scheme.SubscriptionBlockRecheckType,
+        blockHash: string,
+        blockHeight: number
+    ): Promise<Scheme.SubscriptionBlockRecheck> {
+        return this.getRaw({
+            subscriptionId,
+            transportConnectionId,
+            type,
+            blockHash,
+            blockHeight
+        });
+    }
+
     public async listByBlockHeight(height: number): Promise<Array<Scheme.SubscriptionBlockRecheck>> {
         return this.list({ blockHeight: height });
     }
 
-    public async listByBlockHeightAndBlockchainIdAndNetworkId(
+    public async listByBlockHeightAndTransportConnectionId(
         height: number,
-        blockchainId: string,
-        networkId: string
+        transportConnectionId: string
     ) {
         return this.listRaw({
             blockHeight: height,
-            blockchainId,
-            networkId
+            transportConnectionId
         });
     }
 
-    public async listByBlockHeightAndBlockchainInfoAndType(
+    public async listByBlockHeightAndTransportConnectionIdAndType(
         height: number,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         type: Scheme.SubscriptionBlockRecheckType
     ) {
         return this.listRaw({
             blockHeight: height,
-            blockchainId,
-            networkId,
+            transportConnectionId,
             type,
+        });
+    }
+
+    public async listOnBlockByTransportAndType(
+        invokeOnBlockHeight: number,
+        transportConnectionId: string,
+        type: Scheme.SubscriptionBlockRecheckType
+    ): Promise<Array<Scheme.SubscriptionBlockRecheck>> {
+        return this.listRaw({
+            invokeOnBlockHeight: {
+                $lte: invokeOnBlockHeight
+            },
+            transportConnectionId,
+            type
         });
     }
 

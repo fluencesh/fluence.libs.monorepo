@@ -1,46 +1,38 @@
-import { Hashtable, PluginManager } from '@applicature/core.plugin-manager';
+import { Hashtable } from '@applicature/core.plugin-manager';
 import {
-    BlockchainService,
     Scheme,
-    TransactionHashSubscriptionService,
     BlockchainTransportProvider,
     ManagedBlockchainTransport,
 } from '@fluencesh/fluence.lib.services';
-import * as logger from 'winston';
-import { CronjobMetricService } from '../services';
-import { BlockchainHandler } from './blockchain.handler';
+import { BlockchainListenerHandler } from './blockchain.listener.handler';
 
 export class TransactionSubscriptionHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,
     Provider extends BlockchainTransportProvider<Transaction, Block>,
-    ManagedService extends ManagedBlockchainTransport<Transaction, Block, Provider>,
-    BlockchainServiceType extends BlockchainService<Transaction, Block, Provider, ManagedService>
-> extends BlockchainHandler<Transaction, Block, Provider, ManagedService, BlockchainServiceType> {
-    private subscriptionService: TransactionHashSubscriptionService;
-
-    constructor(
-        pluginManager: PluginManager,
-        blockchainService: BlockchainServiceType,
-        metricService?: CronjobMetricService
-    ) {
-        super(pluginManager, blockchainService, metricService);
-
-        this.subscriptionService =
-            pluginManager.getServiceByClass(TransactionHashSubscriptionService) as TransactionHashSubscriptionService;
-    }
+    ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
+> extends BlockchainListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
 
     public getSubscriptionBlockRecheckType() {
         return Scheme.SubscriptionBlockRecheckType.Transaction;
     }
 
-    public async processBlock(lastBlockHeight: number, block: Block) {
+    public getHandlerId() {
+        return 'transaction.hash.subscription.handler';
+    }
+
+    public async processBlock(
+        lastBlockHeight: number,
+        block: Block,
+        transportConnectionSubscription: Scheme.TransportConnectionSubscription
+    ) {
         const txMap: Hashtable<Scheme.BlockchainTransaction> = {};
         block.transactions.forEach((tx) => {
             txMap[tx.hash] = tx;
         });
 
-        const subscriptions = await this.subscriptionService.listBySubscribedHashesActiveOnly(Object.keys(txMap));
+        const subscriptions = transportConnectionSubscription.transactionHashSubscriptions
+            .filter((s) => txMap[s.hash] !== undefined);
 
         if (subscriptions.length) {
             const uniqueProjectsIds = subscriptions
@@ -59,6 +51,8 @@ export class TransactionSubscriptionHandler<
                 const params: any = {};
 
                 const webhook = this.createWebhook(
+                    transportConnectionSubscription.blockchainId,
+                    transportConnectionSubscription.networkId,
                     block,
                     tx.hash,
                     project,
@@ -67,7 +61,13 @@ export class TransactionSubscriptionHandler<
                     params
                 );
                 if (subscription.minConfirmations > confirmations) {
-                    await this.createBlockRecheck(subscription, block, confirmations, webhook);
+                    await this.createBlockRecheck(
+                        subscription,
+                        transportConnectionSubscription.id,
+                        block,
+                        confirmations,
+                        webhook
+                    );
                     continue;
                 }
 
@@ -84,8 +84,8 @@ export class TransactionSubscriptionHandler<
     
                     promises.push(
                         this.metricService.addressFoundInBlock(
-                            this.blockchainService.getBlockchainId(),
-                            this.blockchainService.getNetworkId(),
+                            transportConnectionSubscription.blockchainId,
+                            transportConnectionSubscription.networkId,
                             webhookActions.length,
                             today
                         )

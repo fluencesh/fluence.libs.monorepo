@@ -17,6 +17,7 @@ import {
     MongodbTransactionDao,
     MongodbTransactionHashSubscriptionDao,
     MongodbTransportConnectionDao,
+    MongodbTransportConnectionSubscriptionDao,
     MongodbWebhookActionDao,
 } from './dao';
 import {
@@ -37,6 +38,7 @@ import {
     TransactionHashSubscriptionService,
     TransactionService,
     TransportConnectionService,
+    TransportConnectionSubscriptionService,
     WebhookActionItemObjectService,
     WebhookCallerService,
 } from './services';
@@ -46,7 +48,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         return 'services.blockchain';
     }
 
-    public init() {
+    public async init() {
         const mongoDbPlugin = this.pluginManager.get('mongodb') as any as MongodbPlugin;
 
         mongoDbPlugin.addDao(MongodbAddressSubscriptionDao);
@@ -66,6 +68,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbProjectBlockchainSetupDao);
         mongoDbPlugin.addDao(MongodbSessionDao);
         mongoDbPlugin.addDao(MongodbSubscriptionBlockRecheckDao);
+        mongoDbPlugin.addDao(MongodbTransportConnectionSubscriptionDao);
 
         this.registerService(AddressSubscriptionService);
         this.registerService(BlockchainRegistryService);
@@ -86,6 +89,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         this.registerService(SessionService);
         this.registerService(SubscriptionBlockRecheckService);
         this.registerService(ScheduledTxService);
+        this.registerService(TransportConnectionSubscriptionService);
     }
 }
 

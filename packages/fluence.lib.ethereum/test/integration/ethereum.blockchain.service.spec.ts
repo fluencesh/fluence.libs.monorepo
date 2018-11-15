@@ -13,6 +13,7 @@ import { EthereumBlockchainService } from '../../src/services/blockchain/ethereu
 import { ManagedEthereumTransportService } from '../../src/services/transports/managed.ethereum.transport.service';
 import { EthereumBlock, EthereumEvent, EthereumTopic, EthereumTopicFilter, EthereumTransaction } from '../../src/types';
 import { clearDb } from '../helper';
+import BigNumber from '@fluencesh/fluence.lib.services/node_modules/bignumber.js';
 
 describe('ethereum blockchain', () => {
     let blockchainService: EthereumBlockchainService;
@@ -20,6 +21,8 @@ describe('ethereum blockchain', () => {
     let pluginManager: PluginManager;
     let contractService: ContractService;
     let randomContract: Scheme.ContractScheme = null;
+
+    let transportConnectionId: string = null;
 
     const BLOCKCHAIN_ID = 'ETH';
     const NETWORK_ID = 'rinkeby';
@@ -39,16 +42,6 @@ describe('ethereum blockchain', () => {
 
     async function createTransportConnections() {
         const transportConnections: Array<Scheme.TransportConnection> = [
-            // {
-            //     blockchainId: 'ETHEREUM',
-            //     networkId: NETWORK_ID,
-            //     providerId: 'json-rpc',
-            //     settings: {
-            //         url: 'http://127.0.0.1:8545'
-            //     },
-            //     isPrivate: false,
-            //     status: Scheme.TransportConnectionStatus.Enabled
-            // } as Scheme.TransportConnection,
             {
                 blockchainId: 'ETHEREUM',
                 networkId: NETWORK_ID,
@@ -63,7 +56,7 @@ describe('ethereum blockchain', () => {
 
         const transportConnectionDao = new MongodbTransportConnectionDao(db);
 
-        await Promise.all(transportConnections.map((tc) => transportConnectionDao.createTransportConnection(
+        const tcs = await Promise.all(transportConnections.map((tc) => transportConnectionDao.createTransportConnection(
             tc.blockchainId,
             tc.networkId,
             tc.providerId,
@@ -73,8 +66,11 @@ describe('ethereum blockchain', () => {
             tc.isFailing,
             tc.lastFailedAt,
             tc.failedCount,
-            tc.isPrivate
+            tc.isPrivate,
+            null
         )));
+
+        transportConnectionId = tcs[0].id;
     }
 
     async function initBlockchainService() {
@@ -137,7 +133,7 @@ describe('ethereum blockchain', () => {
     it('should get block by height', async () => {
         const height = 2103272;
 
-        const result = await blockchainService.getBlockByHeight(height) as EthereumBlock;
+        const result = await blockchainService.getBlockByHeight(height, transportConnectionId);
 
         isBlock(result);
     });
@@ -145,13 +141,13 @@ describe('ethereum blockchain', () => {
     it('should get block by hash', async () => {
         const hash = '0x256e471add784f008cd422ffffbd489a70411ded7b6cf41d6e9ee5ae06121f1b';
 
-        const result = await blockchainService.getBlockByHash(hash) as EthereumBlock;
+        const result = await blockchainService.getBlockByHash(hash, transportConnectionId);
 
         isBlock(result);
     });
 
     it('should get block number', async () => {
-        const result = await blockchainService.getBlockHeight();
+        const result = await blockchainService.getBlockHeight(transportConnectionId);
 
         expect(typeof result === 'number').toBeTruthy();
     });
@@ -159,12 +155,13 @@ describe('ethereum blockchain', () => {
     it('should get transaction by hash', async () => {
         const hash = '0x04bb04c61181cd1e82489cd1a220afef696a7b5293bdeb28bd3bc8dee61ce43a';
 
-        const result = await blockchainService.getTransactionByHash(hash) as EthereumTransaction;
+        const result = await blockchainService.getTransactionByHash(hash, transportConnectionId);
 
         expect(typeof result.blockHash === 'string').toBeTruthy();
         expect(typeof result.blockHeight === 'number').toBeTruthy();
-        // expect(body.fee).toBeTruthy(); // FIXME: fee is always null
-        expect(isCustomBn(result.gasPrice)).toBeTruthy();
+        expect(result.fee.constructor.name).toEqual('BigNumber');
+        expect(result.gasPrice.constructor.name).toEqual('BigNumber');
+        expect(result.gasLimit.constructor.name).toEqual('BigNumber');
         expect(typeof result.hash === 'string').toBeTruthy();
         expect(typeof result.nonce === 'number').toBeTruthy();
         expect(typeof result.transactionIndex === 'number').toBeTruthy();
@@ -189,7 +186,7 @@ describe('ethereum blockchain', () => {
             input: utils.id('name()').substring(0, 10),
         } as any as EthereumTransaction;
 
-        const result = await blockchainService.call(tx);
+        const result = await blockchainService.call(tx, transportConnectionId);
 
         expect(typeof result === 'string').toBeTruthy();
     });
@@ -197,7 +194,7 @@ describe('ethereum blockchain', () => {
     it('should get balance by address', async () => {
         const address = '0xab13665b08d9dfcb6a323ed9148e5fe74ea15ca3';
 
-        const result = await blockchainService.getBalance(address, null);
+        const result = await blockchainService.getBalance(address, null, transportConnectionId);
 
         expect(isCustomBn(result)).toBeTruthy();
     });
@@ -208,13 +205,13 @@ describe('ethereum blockchain', () => {
             input: utils.id('mintingFinished()').substring(0, 10),
         } as any as EthereumTransaction;
 
-        const result = await blockchainService.estimateGas(tx);
+        const result = await blockchainService.estimateFee(tx, transportConnectionId);
 
         expect(isCustomBn(result)).toBeTruthy();
     });
 
     it('should get gas price', async () => {
-        const result = await blockchainService.getGasPrice();
+        const result = await blockchainService.getFeePrice(transportConnectionId);
 
         expect(isCustomBn(result)).toBeTruthy();
     });
@@ -222,7 +219,7 @@ describe('ethereum blockchain', () => {
     it('should get code', async () => {
         const address = '0xab13665b08d9dfcb6a323ed9148e5fe74ea15ca3';
 
-        const result = await blockchainService.getCode(address);
+        const result = await blockchainService.getCode(address, transportConnectionId);
 
         expect(typeof result === 'string').toBeTruthy();
     });
@@ -233,7 +230,7 @@ describe('ethereum blockchain', () => {
             get toBlock() { return this.fromBlock + 10; }
         } as EthereumTopicFilter;
 
-        const result = await blockchainService.getLogs(filters);
+        const result = await blockchainService.getLogs(filters, transportConnectionId);
 
         expect(result).toBeInstanceOf(Array);
         result.forEach((log) => isLog(log));
@@ -242,7 +239,7 @@ describe('ethereum blockchain', () => {
     it('should get tx receipt', async () => {
         const txHash = '0x64970da96d02f0aec2c1b008e0ac1b7cb7700231a4c27ca3f1d11dd1873c9de9';
 
-        const result = await blockchainService.getTransactionReceipt(txHash);
+        const result = await blockchainService.getTransactionReceipt(txHash, transportConnectionId);
 
         expect(typeof result.blockHash === 'string').toBeTruthy();
         expect(typeof result.blockNumber === 'number').toBeTruthy();
@@ -261,7 +258,7 @@ describe('ethereum blockchain', () => {
     it('should tx count', async () => {
         const address = '0xa10F52b30260A11f0Accc8DEaeF3237ae40352F8';
 
-        const result = await blockchainService.getAddressTransactionsCount(address);
+        const result = await blockchainService.getAddressTransactionsCount(address, transportConnectionId);
 
         expect(typeof result === 'number').toBeTruthy();
     });
@@ -280,7 +277,9 @@ describe('ethereum blockchain', () => {
         // tslint:disable-next-line:no-shadowed-variable
         const methodAbi = randomContract.abi.find((methodAbi) => methodAbi.name === methodName);
 
-        const result = await blockchainService.callContractMethod(randomContract, methodName);
+        const result = await blockchainService.callContractMethod(
+            randomContract, methodName, [], [], transportConnectionId
+        );
 
         methodAbi.outputs.forEach((output) => {
             expect(typeof result[output.name] === 'string').toBeTruthy();
@@ -295,7 +294,9 @@ describe('ethereum blockchain', () => {
         const types = ['uint256'];
         const values = ['1'];
 
-        const result = await blockchainService.callContractMethod(randomContract, methodName, types, values);
+        const result = await blockchainService.callContractMethod(
+            randomContract, methodName, types, values, transportConnectionId
+        );
 
         methodAbi.outputs.forEach((output) => {
             expect(typeof result[output.name] === 'string').toBeTruthy();
@@ -307,7 +308,9 @@ describe('ethereum blockchain', () => {
         // tslint:disable-next-line:no-shadowed-variable
         const methodAbi = randomContract.abi.find((methodAbi) => methodAbi.name === methodName);
 
-        const result = await blockchainService.contractMethodGasEstimate(randomContract, methodName);
+        const result = await blockchainService.contractMethodFeeEstimate(
+            randomContract, methodName, [], [], transportConnectionId
+        );
 
         expect(isCustomBn(result)).toBeTruthy();
         expect(result.toString()).toEqual('0');
@@ -321,7 +324,9 @@ describe('ethereum blockchain', () => {
         const types = ['uint256'];
         const values = ['1'];
 
-        const result = await blockchainService.contractMethodGasEstimate(randomContract, methodName, types, values);
+        const result = await blockchainService.contractMethodFeeEstimate(
+            randomContract, methodName, types, values, transportConnectionId
+        );
 
         expect(isCustomBn(result)).toBeTruthy();
         expect(result.toString()).toEqual('0');

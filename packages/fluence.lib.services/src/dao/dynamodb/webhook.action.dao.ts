@@ -66,6 +66,22 @@ export class DynamodbWebhookActionDao extends DynamoDBDao<Scheme.WebhookActionIt
         return await this.get({ id });
     }
 
+    public async getByUniqueInfo(
+        blockHash: string,
+        blockHeight: number,
+        type: Scheme.WebhookTriggerType,
+        refId: string,
+        eventId: string
+    ): Promise<Scheme.WebhookActionItem> {
+        return await this.get({
+            blockHash,
+            blockHeight,
+            type,
+            refId,
+            eventId
+        });
+    }
+
     public async listByClientId(clientId: string): Promise<Array<Scheme.WebhookActionItem>> {
         return await this.list({
             clientId

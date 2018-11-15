@@ -28,6 +28,13 @@ export abstract class WebhookActionDao extends Dao<Scheme.WebhookActionItem> {
     ): Promise<Scheme.WebhookActionItem>;
 
     public abstract async getById(id: string): Promise<Scheme.WebhookActionItem>;
+    public abstract getByUniqueInfo(
+        blockHash: string,
+        blockHeight: number,
+        type: Scheme.WebhookTriggerType,
+        refId: string,
+        eventId: string
+    ): Promise<Scheme.WebhookActionItem>;
 
     public abstract async listByClientId(clientId: string): Promise<Array<Scheme.WebhookActionItem>>;
     public abstract async listByProjectId(projectId: string): Promise<Array<Scheme.WebhookActionItem>>;

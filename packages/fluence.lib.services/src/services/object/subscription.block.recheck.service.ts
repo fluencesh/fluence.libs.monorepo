@@ -20,8 +20,7 @@ export class SubscriptionBlockRecheckService extends Service {
 
     public async createBlockRecheck(
         subscriptionId: string,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         type: Scheme.SubscriptionBlockRecheckType,
         blockHash: string,
         blockHeight: number,
@@ -30,8 +29,7 @@ export class SubscriptionBlockRecheckService extends Service {
     ): Promise<Scheme.SubscriptionBlockRecheck> {
         return this.dao.createBlockRecheck(
             subscriptionId,
-            blockchainId,
-            networkId,
+            transportConnectionId,
             type,
             blockHash,
             blockHeight,
@@ -44,32 +42,56 @@ export class SubscriptionBlockRecheckService extends Service {
         return this.dao.getById(id);
     }
 
+    public async getByUniqueInfo(
+        subscriptionId: string,
+        transportConnectionId: string,
+        type: Scheme.SubscriptionBlockRecheckType,
+        blockHash: string,
+        blockHeight: number
+    ): Promise<Scheme.SubscriptionBlockRecheck> {
+        return this.dao.getByUniqueInfo(
+            subscriptionId,
+            transportConnectionId,
+            type,
+            blockHash,
+            blockHeight
+        );
+    }
+
     public async listByBlockHeight(height: number): Promise<Array<Scheme.SubscriptionBlockRecheck>> {
         return this.dao.listByBlockHeight(height);
     }
 
-    public async listByBlockHeightAndBlockchainIdAndNetworkId(
+    public async listByBlockHeightAndTransportConnectionId(
         height: number,
-        blockchainId: string,
-        networkId: string
+        transportConnectionId: string
     ): Promise<Array<Scheme.SubscriptionBlockRecheck>> {
-        return this.dao.listByBlockHeightAndBlockchainIdAndNetworkId(
+        return this.dao.listByBlockHeightAndTransportConnectionId(
             height,
-            blockchainId,
-            networkId
+            transportConnectionId
         );
     }
 
     public async listByBlockHeightAndBlockchainInfoAndType(
         height: number,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         type: Scheme.SubscriptionBlockRecheckType
     ): Promise<Array<Scheme.SubscriptionBlockRecheck>> {
-        return this.dao.listByBlockHeightAndBlockchainInfoAndType(
+        return this.dao.listByBlockHeightAndTransportConnectionIdAndType(
             height,
-            blockchainId,
-            networkId,
+            transportConnectionId,
+            type
+        );
+    }
+
+    public async listOnBlockByTransportAndType(
+        invokeOnBlockHeight: number,
+        transportConnectionId: string,
+        type: Scheme.SubscriptionBlockRecheckType
+    ): Promise<Array<Scheme.SubscriptionBlockRecheck>> {
+        return this.dao.listOnBlockByTransportAndType(
+            invokeOnBlockHeight,
+            transportConnectionId,
             type
         );
     }

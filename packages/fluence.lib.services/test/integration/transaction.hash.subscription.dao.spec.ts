@@ -169,8 +169,7 @@ describe('transaction hash subscription dao', () => {
         const created = await dao.createSubscription(
             data.clientId,
             data.projectId,
-            data.blockchainId,
-            data.networkId,
+            data.transportConnectionId,
             data.hash,
             data.minConfirmations
         );

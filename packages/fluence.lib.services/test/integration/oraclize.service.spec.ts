@@ -137,8 +137,7 @@ describe('oraclize service', () => {
         const got = await service.createSubscription(
             randomOraclizeEntity.clientId,
             randomOraclizeEntity.projectId,
-            randomOraclizeEntity.blockchainId,
-            randomOraclizeEntity.networkId,
+            randomOraclizeEntity.transportConnectionId,
             randomOraclizeEntity.minConfirmations,
             randomOraclizeEntity.eventName,
             randomOraclizeEntity.eventInputTypes,

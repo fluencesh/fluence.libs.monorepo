@@ -22,8 +22,7 @@ export class MongodbOraclizeSubscriptionDao
     public async createSubscription(
         clientId: string,
         projectId: string,
-        blockchainId: string,
-        networkId: string,
+        transportConnectionId: string,
         minConfirmations: number,
         eventHash: string,
         eventName: string,
@@ -34,8 +33,7 @@ export class MongodbOraclizeSubscriptionDao
             clientId,
             projectId,
 
-            blockchainId,
-            networkId,
+            transportConnectionId,
 
             minConfirmations,
 

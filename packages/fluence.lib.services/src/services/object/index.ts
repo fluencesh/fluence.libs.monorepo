@@ -14,4 +14,5 @@ export * from './subscription.block.recheck.service';
 export * from './transaction.hash.subscription.service';
 export * from './transaction.service';
 export * from './transport.connection.service';
+export * from './transport.connection.subscription.service';
 export * from './webhook.action.service';

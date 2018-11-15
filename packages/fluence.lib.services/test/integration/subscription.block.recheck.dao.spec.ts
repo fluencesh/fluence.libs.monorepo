@@ -22,6 +22,17 @@ describe('subscription block recheck dao', () => {
         expect(got).toEqual(subscriptionBlockRecheck);
     });
 
+    it('should get by unique info', async () => {
+        const got = await dao.getByUniqueInfo(
+            subscriptionBlockRecheck.subscriptionId,
+            subscriptionBlockRecheck.transportConnectionId,
+            subscriptionBlockRecheck.type,
+            subscriptionBlockRecheck.blockHash,
+            subscriptionBlockRecheck.blockHeight
+        );
+        expect(got).toEqual(subscriptionBlockRecheck);
+    });
+
     it('should get by block height', async () => {
         const filtered =
             subscriptionBlockRechecks.filter((sbr) => sbr.blockHeight === subscriptionBlockRecheck.blockHeight);
@@ -65,7 +76,7 @@ describe('subscription block recheck dao', () => {
             && sbr.type === subscriptionBlockRecheck.type
         );
 
-        const got = await dao.listByLteInvokeOnBlockAndTransportConnectionIdAndType(
+        const got = await dao.listOnBlockByTransportAndType(
             subscriptionBlockRecheck.invokeOnBlockHeight,
             subscriptionBlockRecheck.transportConnectionId,
             subscriptionBlockRecheck.type

@@ -73,6 +73,22 @@ export class MongodbWebhookActionDao extends MongoDBDao<Scheme.WebhookActionItem
         return this.get({ id });
     }
 
+    public async getByUniqueInfo(
+        blockHash: string,
+        blockHeight: number,
+        type: Scheme.WebhookTriggerType,
+        refId: string,
+        eventId: string
+    ): Promise<Scheme.WebhookActionItem> {
+        return this.getRaw({
+            blockHash,
+            blockHeight,
+            type,
+            refId,
+            eventId
+        });
+    }
+
     public async listByClientId(clientId: string): Promise<Array<Scheme.WebhookActionItem>> {
         return this.listRaw({
             clientId

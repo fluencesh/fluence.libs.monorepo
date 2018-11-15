@@ -117,7 +117,7 @@ export function randomWebhookAction(): Scheme.WebhookActionItem {
 
         type: random(0, 1, true) > .5
             ? Scheme.WebhookTriggerType.Address
-            : Scheme.WebhookTriggerType.EthereumContractEvent,
+            : Scheme.WebhookTriggerType.ContractEvent,
         refId: generateId(),
 
         eventId: generateId(),

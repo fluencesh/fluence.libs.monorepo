@@ -133,4 +133,8 @@ export abstract class BlockchainService<
     public async getBalance(address: string, minConf: number, transportConnectionId: string): Promise<BigNumber> {
         return this.blockchainTransport.getBalance(address, minConf, transportConnectionId);
     }
+
+    public async estimateFee(tx: Transaction, transportConnectionId: string): Promise<BigNumber> {
+        return this.blockchainTransport.estimateFee(tx, transportConnectionId);
+    }
 }

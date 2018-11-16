@@ -1,6 +1,6 @@
 {
   "name": "@applicature-private/fluence.lib.litecoin",
-  "version": "0.2.2",
+  "version": "2.0.15",
   "private": false,
   "license": "UNLICENSED",
   "description": "Litecoin Blockchain Plugin",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@applicature-private/core.plugin-manager": "^2.0.0",
-    "@applicature-private/fluence.lib.services": "^2.0.13",
+    "@applicature-private/fluence.lib.services": "^2.0.15",
     "bignumber.js": "^7.2.1",
     "bitcoin-core": "^1.2.0",
     "bitcoinjs-lib": "^3.3.0",

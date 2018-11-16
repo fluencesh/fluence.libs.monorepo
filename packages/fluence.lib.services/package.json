@@ -1,6 +1,6 @@
 {
     "name": "@fluencesh/fluence.lib.services",
-    "version": "2.0.14",
+    "version": "2.0.15-alpha.0",
     "private": false,
     "license": "UNLICENSED",
     "description": "Fluence Services Plugin",

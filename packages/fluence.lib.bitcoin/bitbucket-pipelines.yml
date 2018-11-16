@@ -15,7 +15,7 @@ pipelines:
           - npm run test:ci
           - npm run test:lint
           - npm run test:sonar
-        services:
+        services: 
           - mongo
     - step:
         name: Deploy beta version
@@ -40,9 +40,9 @@ pipelines:
             - npm run test:lint
             - npm run test:sonar
             - npm publish
-          services:
+          services: 
             - mongo
 definitions:
-  services:
+  services: 
     mongo:
       image: mongo

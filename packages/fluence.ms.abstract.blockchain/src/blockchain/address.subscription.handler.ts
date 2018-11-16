@@ -105,6 +105,7 @@ export class AddressSubscriptionHandler<
                     this.metricService.addressFoundInBlock(
                         transportConnectionSubscription.blockchainId,
                         transportConnectionSubscription.networkId,
+                        transportConnectionSubscription.id,
                         webhookActions.length,
                         today
                     )

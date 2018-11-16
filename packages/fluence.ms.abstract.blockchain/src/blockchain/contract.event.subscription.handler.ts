@@ -33,8 +33,8 @@ export abstract class ContractEventSubscriptionHandler<
     ) {
         const logsMap = await this.getLogMapByBlockHeight(
             blockchainService,
-            block.height,
-            transportConnectionSubscription.id
+            transportConnectionSubscription.id,
+            block.height
         );
 
         const confirmations = lastBlockHeight - block.height;
@@ -116,6 +116,7 @@ export abstract class ContractEventSubscriptionHandler<
                     this.metricService.addressFoundInBlock(
                         transportConnectionSubscription.blockchainId,
                         transportConnectionSubscription.networkId,
+                        transportConnectionSubscription.id,
                         webhookActions.length,
                         today
                     )

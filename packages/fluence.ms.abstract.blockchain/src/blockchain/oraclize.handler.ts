@@ -30,8 +30,8 @@ export abstract class OraclizeSubscriptionHandler<
     ) {
         const logs = await this.getLogsByBlockHeight(
             blockchainService,
-            block.height,
-            transportConnectionSubscription.id
+            transportConnectionSubscription.id,
+            block.height
         );
 
         const eventsList = logs.reduce((events: Array<string>, log) => events.concat(log.topics), []);

@@ -144,6 +144,11 @@ export class BiBitcoinTransportService extends AbstractBitcoinTransportProvider 
         }
     }
 
+    public async estimateFee(tx: BitcoinTransaction): Promise<BigNumber> {
+        // NOTICE: no such operation https://blockchain.info/q
+        throw new MultivestError(Errors.NOT_IMPLEMENTED);
+    }
+
     private convertBlock(block: any, deepConvert: boolean = false): BitcoinBlock {
         const convertedBlock = {
             fee: new BigNumber(block.fee) as any,
@@ -196,7 +201,6 @@ export class BiBitcoinTransportService extends AbstractBitcoinTransportProvider 
         qs.format = 'json';
         
         if (this.apiKey) {
-            // CHECK: does `api_key` correct query param for specifying API key?
             qs.api_key = this.apiKey;
         }
 

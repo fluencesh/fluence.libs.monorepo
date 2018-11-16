@@ -7,7 +7,7 @@ import { BITCOIN, BitcoinInfoTransportConfigScheme, BitcoinCoreTransportConfigSc
 import { BcBitcoinTransportService } from './bc.bitcoin.transport';
 import { BiBitcoinTransportService } from './bi.bitcoin.transport';
 import { BitcoinTransaction, BitcoinBlock } from '../../types';
-import { BitcoinTransportProvider } from './interfaces';
+import { BitcoinTransportProvider, ManagedBitcoinTransport } from './interfaces';
 
 const ajv = new Ajv({ removeAdditional: false, useDefaults: true, coerceTypes: true });
 ajv.addSchema(BitcoinCoreTransportConfigScheme, 'bitcoin.core.transport.config.scheme');
@@ -15,7 +15,7 @@ ajv.addSchema(BitcoinInfoTransportConfigScheme, 'bitcoin.info.transport.config.s
 
 export class ManagedBitcoinTransportService
     extends ManagedBlockchainTransportService<BitcoinTransaction, BitcoinBlock, BitcoinTransportProvider>
-    implements ManagedBitcoinTransportService {
+    implements ManagedBitcoinTransport {
 
     public getBlockchainId() {
         return BITCOIN;

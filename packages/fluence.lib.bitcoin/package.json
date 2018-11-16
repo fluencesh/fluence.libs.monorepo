@@ -31,7 +31,7 @@
     "agenda": "^1.0.3",
     "ajv": "^6.5.0",
     "bignumber.js": "^7.2.1",
-    "bitcoin-core": "^2.0.0",
+    "bitcoin-core": "^1.2.0",
     "bitcoinjs-lib": "^3.3.0",
     "bluebird": "^3.5.0",
     "config": "^1.26.1",

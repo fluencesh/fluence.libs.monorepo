@@ -3,20 +3,42 @@ import { Scheme } from '@applicature-private/fluence.lib.services';
 import BigNumber from 'bignumber.js';
 import { get } from 'lodash';
 import * as logger from 'winston';
-import { AbstractBitcoinTransportProvider } from './abstract.bitcoin.transport.provider';
-import { BitcoinBlock, BitcoinTransaction } from '../../types';
+import { LitecoinBlock, LitecoinTransaction } from '../../types';
 import { Errors } from '../../errors';
+import { LITECOIN } from '../../constants';
+import { LitecoinTransportProvider } from './interfaces';
 
 const Client = require('bitcoin-core');
 
-export class BcBitcoinTransportService extends AbstractBitcoinTransportProvider {
+export class BcLitecoinTransportService extends Service implements LitecoinTransportProvider {
     private client: any;
+    protected networkId: string;
+    protected transportConnection: Scheme.TransportConnection;
 
     constructor(pluginManager: PluginManager, transportConnection: Scheme.TransportConnection) {
-        super(pluginManager, transportConnection);
+        super(pluginManager);
+
+        this.transportConnection = transportConnection;
+        this.networkId = transportConnection.networkId;
 
         this.networkId = this.transportConnection.networkId;
         this.client = new Client(this.transportConnection.settings);
+    }
+
+    public getBlockchainId() {
+        return LITECOIN;
+    }
+
+    public getNetworkId() {
+        return this.networkId;
+    }
+
+    public getTransportConnection() {
+        return this.transportConnection;
+    }
+
+    protected prepareHash(hash: string) {
+        return hash.indexOf('0x') === 0 ? hash.slice(2) : hash;
     }
 
     public getServiceId() {
@@ -40,7 +62,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportProvider 
         }
     }
 
-    public async getBlockByHash(hash: string): Promise<BitcoinBlock> {
+    public async getBlockByHash(hash: string): Promise<LitecoinBlock> {
         const preparedHash = this.prepareHash(hash);
 
         try {
@@ -57,7 +79,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportProvider 
         }
     }
     
-    public async getBlockByHeight(height: number): Promise<BitcoinBlock> {
+    public async getBlockByHeight(height: number): Promise<LitecoinBlock> {
         const hash = await this.client.getBlockHash(height);
         
         return this.getBlockByHash(hash);
@@ -94,7 +116,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportProvider 
         return this.convertTransaction(tx, block);
     }
 
-    public async sendRawTransaction(txHex: string): Promise<BitcoinTransaction> {
+    public async sendRawTransaction(txHex: string): Promise<LitecoinTransaction> {
         let hash: string;
         try {
             hash = await this.client.sendRawTransaction(txHex);
@@ -106,7 +128,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportProvider 
         return this.getTransactionByHash(hash);
     }
 
-    public async estimateFee(tx: BitcoinTransaction): Promise<BigNumber> {
+    public async estimateFee(tx: LitecoinTransaction): Promise<BigNumber> {
         // NOTICE: no such method for bitcoin
         // https://en.bitcoin.it/wiki/Original_Bitcoin_client/API_calls_list
         throw new MultivestError(Errors.NOT_IMPLEMENTED);
@@ -118,7 +140,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportProvider 
         return this.client.getTransactionByHash(preparedHash);
     }
 
-    private convertBlock(block: any): BitcoinBlock {
+    private convertBlock(block: any): LitecoinBlock {
         const convertedBlock = {
             difficulty: block.difficulty,
             hash: `0x${block.hash}`,
@@ -128,7 +150,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportProvider 
             parentHash: block.previousblockhash,
             size: block.size,
             time: block.time
-        } as BitcoinBlock;
+        } as LitecoinBlock;
 
         const transactions = block.tx.map((tx: any) => {
             const convertedTx = this.convertTransaction(tx);
@@ -145,7 +167,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportProvider 
         return convertedBlock;
     }
 
-    private convertTransaction(tx: any, block: BitcoinBlock = {} as BitcoinBlock): BitcoinTransaction {
+    private convertTransaction(tx: any, block: LitecoinBlock = {} as LitecoinBlock): LitecoinTransaction {
         const convertedTx = {
             blockHash: `0x${tx.blockhash}`,
             hash: `0x${tx.txid}`,
@@ -158,7 +180,7 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportProvider 
                 address: get(recipient, 'scriptPubKey.addresses[0]'),
                 amount: new BigNumber(recipient.value)
             })),
-        } as BitcoinTransaction;
+        } as LitecoinTransaction;
 
         if (Object.keys(block).length > 0) {
             convertedTx.blockHeight = block.height;

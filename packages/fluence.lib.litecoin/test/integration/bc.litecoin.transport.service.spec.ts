@@ -2,17 +2,16 @@ import { Scheme } from '@applicature-private/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import * as config from 'config';
 import {
-    BcBitcoinTransportService,
+    BcLitecoinTransportService,
     AvailableNetwork,
-    BitcoinBlock,
-    BitcoinTransaction
+    LitecoinBlock,
+    LitecoinTransaction
 } from '../../src';
-import { get } from 'lodash';
 
-describe('bc bitcoin transport service ', () => {
-    let transport: BcBitcoinTransportService;
+describe('bc litecoin transport service ', () => {
+    let transport: BcLitecoinTransportService;
 
-    function checkBlock(block: BitcoinBlock) {
+    function checkBlock(block: LitecoinBlock) {
         expect(typeof block.hash === 'string').toBeTruthy();
         expect(typeof block.height === 'number').toBeTruthy();
         expect(typeof block.network === 'string').toBeTruthy();
@@ -27,7 +26,7 @@ describe('bc bitcoin transport service ', () => {
         });
     }
 
-    function checkTx(tx: BitcoinTransaction) {
+    function checkTx(tx: LitecoinTransaction) {
         if (tx.hasOwnProperty('blockHash')) {
             expect(typeof tx.blockHash === 'string').toBeTruthy();
         }
@@ -57,14 +56,14 @@ describe('bc bitcoin transport service ', () => {
     beforeAll(async () => {
         const connection = {
             networkId: AvailableNetwork.MAIN_NET,
-            settings: config.get('multivest.blockchain.bitcoin.providers.native')
+            settings: config.get('multivest.blockchain.litecoin.providers.native')
         } as Scheme.TransportConnection;
 
-        transport = new BcBitcoinTransportService(null, connection);
+        transport = new BcLitecoinTransportService(null, connection);
     });
 
     it('should get block by hash', async () => {
-        const hash = '0x000000000091ccd98b544b611b8b72603da95a11ad3fca14488fde5d54990ec9';
+        const hash = '0xac05c6760737937fdd82b72bdec17edc1260ba604db1efaf1382ea8e14f2e238';
 
         const block = await transport.getBlockByHash(hash);
 
@@ -72,9 +71,10 @@ describe('bc bitcoin transport service ', () => {
     });
 
     it('should get block by height', async () => {
-        const height = 1297911;
+        const height = 579145;
 
         const block = await transport.getBlockByHeight(height);
+
         checkBlock(block);
     });
 
@@ -85,25 +85,18 @@ describe('bc bitcoin transport service ', () => {
     });
 
     it('should get tx by hash', async () => {
-        const hash = '0xbd9094c980164e9a99943bc948fd56b0521911866816c53567c48716cad8d49b';
+        const hash = '0xcba0c03e62a15d1214c9d2ca5cca1d2bf4cb7735fa9755979824d1c748e3a294';
 
         const tx = await transport.getTransactionByHash(hash);
 
         checkTx(tx);
     });
 
-    // TODO:
-    // Error:
-    // code: -32601
-    // message: "Method not found"
-    // name: "RpcError"
-    // status:-32601
-    // https://applicature.atlassian.net/browse/FLC-216
-    it.skip('should get balance by address', async () => {
-        const address = 'moUpywAyHED77Mst8UY5y9bH25yeyM3sTr';
+    it('should get balance by address', async () => {
+        const address = '0xLi4QamDbtR4mPY5HPEjNtXshpCaCKqDNpm';
 
         const balance = await transport.getBalance(address);
 
-        expect(balance).toBeInstanceOf(BigNumber);
+        expect(balance.constructor.name).toEqual('BigNumber');
     });
 });

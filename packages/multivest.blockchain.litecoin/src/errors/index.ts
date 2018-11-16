@@ -1,3 +1,0 @@
-export enum Errors {
-    MASTER_PUBLIC_KEY_REQUIRED = 'MASTER_PUBLIC_KEY_REQUIRED'
-}

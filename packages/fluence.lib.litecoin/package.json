@@ -1,0 +1,82 @@
+{
+  "name": "@applicature-private/fluence.lib.litecoin",
+  "version": "0.2.2",
+  "private": false,
+  "license": "UNLICENSED",
+  "description": "Litecoin Blockchain Plugin",
+  "author": "Andrew Zubko <andrew@applicature.com>",
+  "engines": {
+    "node": ">=4.8.0",
+    "npm": ">=2.15.11",
+    "yarn": ">=0.20.3"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "gulp clean && gulp build",
+    "lint": "tslint '{src/**/*.ts,test/**/*.ts}'",
+    "precommit": "npm run lint ; npm run test:coverage",
+    "test": "jest",
+    "test:coverage": "jest --coverage --collectCoverageFrom=*/**/*.ts",
+    "test:ci": "jest --coverage --testResultsProcessor ./node_modules/jest-junit --collectCoverageFrom=*/**/*.ts",
+    "test:security": "nsp check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.com:applicature/multivest.blockchain.litecoin.git"
+  },
+  "dependencies": {
+    "@applicature-private/core.plugin-manager": "^2.0.0",
+    "@applicature-private/fluence.lib.services": "^2.0.13",
+    "bignumber.js": "^7.2.1",
+    "bitcoin-core": "^1.2.0",
+    "bitcoinjs-lib": "^3.3.0",
+    "bitcoinjs-testnets": "^1.0.10",
+    "bluebird": "^3.5.0",
+    "config": "^1.30.0",
+    "lodash": "^4.17.10",
+    "winston": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/agenda": "^1.0.3",
+    "@types/bitcoinjs-lib": "^3.4.0",
+    "@types/config": "0.0.33",
+    "@types/jest": "^22.2.3",
+    "@types/lodash": "^4.14.118",
+    "@types/node": "^8.10.16",
+    "@types/winston": "^2.3.9",
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.4.0",
+    "gulp-sourcemaps": "^2.6.3",
+    "gulp-tslint": "^8.1.3",
+    "gulp-typescript": "^3.2.3",
+    "husky": "^0.14.3",
+    "jest": "^21.2.1",
+    "jest-junit": "^3.7.0",
+    "nsp": "^3.2.1",
+    "source-map-support": "^0.5.6",
+    "ts-jest": "^21.2.4",
+    "ts-node": "^4.1.0",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
+  },
+  "files": [
+    "@types/",
+    "dist/",
+    "src/"
+  ],
+  "jest-multi-test-result-processor": {
+    "processors": [
+      "jest-junit",
+      "jest-sonar-reporter"
+    ]
+  },
+  "jestSonar": {
+    "reportPath": "./test-reports",
+    "reportFile": "test-report.xml",
+    "indent": 4
+  },
+  "jest-junit": {
+    "output": "./test-reports/junit.xml"
+  }
+}

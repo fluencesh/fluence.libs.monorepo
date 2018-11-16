@@ -23,6 +23,7 @@ export abstract class AbstractBitcoinTransportProvider extends Service implement
     public abstract getTransactionByHash(hash: string): Promise<BitcoinTransaction>;
     public abstract sendRawTransaction(hex: string): Promise<BitcoinTransaction>;
     public abstract getBalance(address: string, minConf: number): Promise<BigNumber>;
+    public abstract estimateFee(tx: BitcoinTransaction): Promise<BigNumber>;
 
     public getBlockchainId() {
         return BITCOIN;

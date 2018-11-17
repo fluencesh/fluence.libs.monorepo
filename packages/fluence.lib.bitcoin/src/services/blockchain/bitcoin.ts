@@ -1,4 +1,3 @@
-
 import { PluginManager, MultivestError } from '@applicature/core.plugin-manager';
 import { BlockchainService, Signature } from '@fluencesh/fluence.lib.services';
 import * as bitcoin from 'bitcoinjs-lib';

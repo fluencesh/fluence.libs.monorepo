@@ -23,8 +23,12 @@
     },
     "repository": {
         "type": "git",
-        "url": "git@bitbucket.com:applicature/fluence.libs-monorepo.git"
+        "url": "git@github.com:fluencesh/fluence.libs.monorepo.git"
     },
+    "publishConfig": {
+        "access": "public"
+    },
+    "license": "Apache-2.0",
     "dependencies": {
         "@applicature/synth.dynamodb": "^2.0.18",
         "@applicature/synth.metrics": "^2.0.18",

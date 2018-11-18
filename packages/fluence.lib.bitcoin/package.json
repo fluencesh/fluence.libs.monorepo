@@ -26,7 +26,7 @@
     "url": "git@bitbucket.com:applicature/fluence.libs-monorepo.git"
   },
   "dependencies": {
-    "@applicature/synth.plugin-manager": "^2.0.0",
+    "@applicature/synth.plugin-manager": "^2.0.18",
     "@fluencesh/fluence.lib.services": "^2.0.15-alpha.0",
     "agenda": "^1.0.3",
     "ajv": "^6.5.0",

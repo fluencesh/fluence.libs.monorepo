@@ -1,5 +1,5 @@
-import { MongoDBDao } from '@applicature/core.mongodb';
-import { Hashtable } from '@applicature/core.plugin-manager';
+import { MongoDBDao } from '@applicature/synth.mongodb';
+import { Hashtable } from '@applicature/synth.plugin-manager';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { WebhookActionDao } from '../webhook.action.dao';

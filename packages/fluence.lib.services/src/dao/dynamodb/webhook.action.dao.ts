@@ -1,5 +1,5 @@
-import { DynamoDBDao } from '@applicature/core.dynamodb';
-import { Hashtable } from '@applicature/core.plugin-manager';
+import { DynamoDBDao } from '@applicature/synth.dynamodb';
+import { Hashtable } from '@applicature/synth.plugin-manager';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { WebhookActionDao } from '../webhook.action.dao';

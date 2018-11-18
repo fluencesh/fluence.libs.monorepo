@@ -1,4 +1,4 @@
-import { MongoDBDao } from '@applicature/core.mongodb';
+import { MongoDBDao } from '@applicature/synth.mongodb';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { ContractDao } from '../contract.dao';

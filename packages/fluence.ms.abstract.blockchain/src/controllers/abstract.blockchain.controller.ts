@@ -1,5 +1,5 @@
 import { AuthenticatedRequest, Controller } from '@fluencesh/fluence.ms.abstract';
-import { PluginManager } from '@applicature/core.plugin-manager';
+import { PluginManager } from '@applicature/synth.plugin-manager';
 import {
     BlockchainRegistryService,
     BlockchainService,
@@ -12,7 +12,7 @@ import {
     BlockchainTransportProvider,
     ManagedBlockchainTransport,
 } from '@fluencesh/fluence.lib.services';
-import { WebMultivestError } from '@applicature/core.web';
+import { WebMultivestError } from '@applicature/synth.web';
 import BigNumber from 'bignumber.js';
 import { NextFunction, Response } from 'express';
 import { get, isNaN } from 'lodash';

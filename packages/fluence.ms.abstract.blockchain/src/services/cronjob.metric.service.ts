@@ -1,4 +1,4 @@
-import { MetricService } from '@applicature/core.metrics';
+import { MetricService } from '@applicature/synth.metrics';
 
 export class CronjobMetricService extends MetricService {
     public getServiceId() {

@@ -1,4 +1,4 @@
-import { Dao } from '@applicature/core.plugin-manager';
+import { Dao } from '@applicature/synth.plugin-manager';
 
 export abstract class SubscriptionDao<T> extends Dao<T> {
     public abstract async createSubscription(

@@ -1,5 +1,5 @@
-import { PluginManager, Service } from '@applicature/core.plugin-manager';
-import { Plugin as MongoPlugin } from '@applicature/core.mongodb';
+import { PluginManager, Service } from '@applicature/synth.plugin-manager';
+import { Plugin as MongoPlugin } from '@applicature/synth.mongodb';
 import {
     BlockchainRegistryService,
     ClientService,

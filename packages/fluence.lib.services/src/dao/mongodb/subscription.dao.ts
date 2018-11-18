@@ -1,4 +1,4 @@
-import { MongoDBDao } from '@applicature/core.mongodb';
+import { MongoDBDao } from '@applicature/synth.mongodb';
 import { Scheme } from '../../types';
 import { SubscriptionDao } from '../subscription.dao';
 

@@ -1,5 +1,5 @@
 import { AuthenticatedRequest, AuthMiddleware } from '@fluencesh/fluence.ms.abstract';
-import { PluginManager } from '@applicature/core.plugin-manager';
+import { PluginManager } from '@applicature/synth.plugin-manager';
 import {
     BlockchainService,
     Scheme,

@@ -1,4 +1,4 @@
-import { MetricTransport } from '@applicature/core.metrics';
+import { MetricTransport } from '@applicature/synth.metrics';
 import { hostname } from 'os';
 import { env } from 'process';
 import { BlockchainMetricService } from '../../../src';

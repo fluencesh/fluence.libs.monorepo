@@ -1,4 +1,4 @@
-import { Hashtable } from '@applicature/core.plugin-manager';
+import { Hashtable } from '@applicature/synth.plugin-manager';
 // import { EthereumBlockchainService, EthereumBlock } from '@fluencesh/fluence.lib.ethereum';
 import {
     ScBlockchainService,

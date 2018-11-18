@@ -1,5 +1,5 @@
-import { Plugin as MongodbPlugin } from '@applicature/core.mongodb';
-import { Plugin } from '@applicature/core.plugin-manager';
+import { Plugin as MongodbPlugin } from '@applicature/synth.mongodb';
+import { Plugin } from '@applicature/synth.plugin-manager';
 import {
     MongoContractDao,
     MongodbAddressSubscriptionDao,

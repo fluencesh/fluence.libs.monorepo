@@ -1,4 +1,4 @@
-import { MetricService } from '@applicature/core.metrics';
+import { MetricService } from '@applicature/synth.metrics';
 import { BlockchainNodeMetricType, TransactionSendStatusMetricType } from '../types';
 
 export class BlockchainMetricService extends MetricService {

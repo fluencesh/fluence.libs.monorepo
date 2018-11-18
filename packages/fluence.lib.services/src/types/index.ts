@@ -1,5 +1,5 @@
-import { MongoScheme } from '@applicature/core.mongodb';
-import { Hashtable } from '@applicature/core.plugin-manager';
+import { MongoScheme } from '@applicature/synth.mongodb';
+import { Hashtable } from '@applicature/synth.plugin-manager';
 import { BigNumber } from 'bignumber.js';
 
 // tslint:disable-next-line:no-namespace

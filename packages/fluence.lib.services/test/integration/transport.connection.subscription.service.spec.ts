@@ -1,4 +1,4 @@
-import { PluginManager } from '@applicature/core.plugin-manager';
+import { PluginManager } from '@applicature/synth.plugin-manager';
 import { resolve } from 'path';
 import {
     clearDb,
@@ -36,7 +36,7 @@ describe('transport connection subscription service spec', () => {
 
     beforeAll(async () => {
         const pluginManager = new PluginManager([
-            { path: '@applicature/core.mongodb' },
+            { path: '@applicature/synth.mongodb' },
             { path: resolve(__dirname, '../../') }
         ]);
 

@@ -1,4 +1,4 @@
-import {Hashtable} from '@applicature/core.plugin-manager';
+import {Hashtable} from '@applicature/synth.plugin-manager';
 import BigNumber from 'bignumber.js';
 import {Scheme} from '@fluencesh/fluence.lib.services';
 

@@ -1,7 +1,7 @@
 import {
     Hashtable,
     PluginManager,
-} from '@applicature/core.plugin-manager';
+} from '@applicature/synth.plugin-manager';
 import {
     BlockchainService,
     ProjectService,

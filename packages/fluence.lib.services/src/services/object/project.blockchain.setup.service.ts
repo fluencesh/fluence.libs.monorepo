@@ -1,4 +1,4 @@
-import { MultivestError, Service } from '@applicature/core.plugin-manager';
+import { MultivestError, Service } from '@applicature/synth.plugin-manager';
 import { DaoIds } from '../../constants';
 import { TransportConnectionDao } from '../../dao';
 import { ProjectBlockchainSetupDao } from '../../dao/project.blockchain.setup.dao';

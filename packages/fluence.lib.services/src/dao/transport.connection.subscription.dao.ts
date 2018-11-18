@@ -1,4 +1,4 @@
-import { Dao } from '@applicature/core.plugin-manager';
+import { Dao } from '@applicature/synth.plugin-manager';
 import { Scheme } from '../types';
 
 // TODO: create MongoDBViewDao

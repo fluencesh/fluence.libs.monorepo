@@ -1,4 +1,4 @@
-import { PluginManager, Service } from '@applicature/core.plugin-manager';
+import { PluginManager, Service } from '@applicature/synth.plugin-manager';
 import { Scheme } from '@fluencesh/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import { BITCOIN } from '../../constants';

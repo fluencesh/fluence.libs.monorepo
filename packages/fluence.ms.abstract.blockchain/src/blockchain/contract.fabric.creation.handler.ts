@@ -3,7 +3,7 @@
 // TODO: move to separate package
 // https://applicature.atlassian.net/browse/FLC-209
 
-// import { Hashtable, PluginManager } from '@applicature/core.plugin-manager';
+// import { Hashtable, PluginManager } from '@applicature/synth.plugin-manager';
 // import { EthereumBlockchainService, EthereumTransaction } from '@fluencesh/fluence.lib.ethereum';
 // import {
 //     ContractService,

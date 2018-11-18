@@ -1,5 +1,5 @@
-import { Plugin } from '@applicature/core.mongodb';
-import { PluginManager, Service } from '@applicature/core.plugin-manager';
+import { Plugin } from '@applicature/synth.mongodb';
+import { PluginManager, Service } from '@applicature/synth.plugin-manager';
 import { DaoIds } from '../../constants';
 import { JobDao } from '../../dao/job.dao';
 import { Scheme } from '../../types';

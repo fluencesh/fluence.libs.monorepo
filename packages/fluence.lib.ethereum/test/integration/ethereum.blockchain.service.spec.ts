@@ -1,4 +1,4 @@
-import { PluginManager } from '@applicature/core.plugin-manager';
+import { PluginManager } from '@applicature/synth.plugin-manager';
 import {
     ContractService,
     DaoCollectionNames,
@@ -29,7 +29,7 @@ describe('ethereum blockchain', () => {
 
     async function initPluginManager() {
         pluginManager = new PluginManager([
-            { path: '@applicature/core.mongodb' },
+            { path: '@applicature/synth.mongodb' },
             { path: '@fluencesh/fluence.lib.services' },
         ]);
 

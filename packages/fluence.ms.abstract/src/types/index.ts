@@ -1,5 +1,5 @@
-import { MultivestError } from '@applicature/core.plugin-manager';
-import { MongoScheme } from '@applicature/core.mongodb';
+import { MultivestError } from '@applicature/synth.plugin-manager';
+import { MongoScheme } from '@applicature/synth.mongodb';
 import { Scheme } from '@fluencesh/fluence.lib.services';
 import { OptionsJson } from 'body-parser';
 import { NextFunction, Request, Response, Router } from 'express';

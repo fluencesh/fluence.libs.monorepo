@@ -3,7 +3,7 @@ import {
     MultivestError,
     PluginManager,
     Service,
-} from '@applicature/core.plugin-manager';
+} from '@applicature/synth.plugin-manager';
 import { BigNumber } from 'bignumber.js';
 import * as logger from 'winston';
 import { Errors } from '../../errors';

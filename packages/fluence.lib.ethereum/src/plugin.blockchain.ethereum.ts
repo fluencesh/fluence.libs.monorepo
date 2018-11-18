@@ -1,4 +1,4 @@
-import { Plugin } from '@applicature/core.plugin-manager';
+import { Plugin } from '@applicature/synth.plugin-manager';
 
 class EthereumBlockchainPlugin extends Plugin<any> {
     public getPluginId() {

@@ -1,4 +1,4 @@
-import { MultivestError, PluginManager, Service } from '@applicature/core.plugin-manager';
+import { MultivestError, PluginManager, Service } from '@applicature/synth.plugin-manager';
 import { Errors } from '../../errors';
 import { Scheme } from '../../types';
 import { BlockchainService } from './blockchain.service';

@@ -1,5 +1,5 @@
-import { Plugin } from '@applicature/core.mongodb';
-import { MultivestError, Service } from '@applicature/core.plugin-manager';
+import { Plugin } from '@applicature/synth.mongodb';
+import { MultivestError, Service } from '@applicature/synth.plugin-manager';
 import * as config from 'config';
 import { createHash } from 'crypto';
 import { sign, verify } from 'jsonwebtoken';

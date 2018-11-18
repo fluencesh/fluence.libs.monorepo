@@ -1,4 +1,4 @@
-import { Hashtable, PluginManager } from '@applicature/core.plugin-manager';
+import { Hashtable, PluginManager } from '@applicature/synth.plugin-manager';
 import {
     BlockchainTransportProvider,
     ScBlockchainService,

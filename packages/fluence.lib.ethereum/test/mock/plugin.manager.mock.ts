@@ -1,4 +1,4 @@
-import { PluginManager } from '@applicature/core.plugin-manager';
+import { PluginManager } from '@applicature/synth.plugin-manager';
 
 export const PluginManagerMock = {
     getServiceByClass: () => ({})

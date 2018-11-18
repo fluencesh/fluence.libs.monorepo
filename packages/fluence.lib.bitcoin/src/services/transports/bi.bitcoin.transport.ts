@@ -1,4 +1,4 @@
-import { MultivestError, PluginManager } from '@applicature/core.plugin-manager';
+import { MultivestError, PluginManager } from '@applicature/synth.plugin-manager';
 import { Scheme } from '@fluencesh/fluence.lib.services';
 import BigNumber from 'bignumber.js';
 import {

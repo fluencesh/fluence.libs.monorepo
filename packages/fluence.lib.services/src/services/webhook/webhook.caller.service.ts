@@ -1,4 +1,4 @@
-import { Hashtable, PluginManager, Service } from '@applicature/core.plugin-manager';
+import { Hashtable, PluginManager, Service } from '@applicature/synth.plugin-manager';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Scheme } from '../../types';
 import { WebhookActionItemObjectService } from '../object/webhook.action.service';

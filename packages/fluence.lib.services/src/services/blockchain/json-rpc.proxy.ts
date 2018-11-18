@@ -1,4 +1,4 @@
-import { Hashtable } from '@applicature/core.plugin-manager';
+import { Hashtable } from '@applicature/synth.plugin-manager';
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 
 export enum RequestType {

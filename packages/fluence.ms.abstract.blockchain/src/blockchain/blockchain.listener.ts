@@ -1,4 +1,4 @@
-import { PluginManager, Service, Hashtable, MultivestError } from '@applicature/core.plugin-manager';
+import { PluginManager, Service, Hashtable, MultivestError } from '@applicature/synth.plugin-manager';
 import {
     BlockchainRegistryService,
     TransportConnectionSubscriptionService,

@@ -1,4 +1,4 @@
-import { MultivestError } from '@applicature/core.plugin-manager';
+import { MultivestError } from '@applicature/synth.plugin-manager';
 import {
     ScBlockchainService,
     Scheme,

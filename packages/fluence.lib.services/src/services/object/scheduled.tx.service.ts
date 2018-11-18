@@ -1,5 +1,5 @@
-import { Plugin as MongoPlugin } from '@applicature/core.mongodb';
-import { MultivestError, Service } from '@applicature/core.plugin-manager';
+import { Plugin as MongoPlugin } from '@applicature/synth.mongodb';
+import { MultivestError, Service } from '@applicature/synth.plugin-manager';
 import { CronExpressionValidation, DaoIds, ScheduledTxJobName } from '../../constants';
 import { ClientDao, ProjectDao } from '../../dao';
 import { ScheduledTxDao } from '../../dao/scheduled.tx.dao';

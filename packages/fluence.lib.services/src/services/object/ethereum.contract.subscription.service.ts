@@ -1,5 +1,5 @@
-import { Plugin } from '@applicature/core.mongodb';
-import { MultivestError, PluginManager, Service } from '@applicature/core.plugin-manager';
+import { Plugin } from '@applicature/synth.mongodb';
+import { MultivestError, PluginManager, Service } from '@applicature/synth.plugin-manager';
 import { DaoIds } from '../../constants';
 import { EthereumContractSubscriptionDao } from '../../dao/ethereum.contract.subscription.dao';
 import { Errors } from '../../errors';

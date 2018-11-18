@@ -1,5 +1,5 @@
-import { Plugin } from '@applicature/core.mongodb';
-import { PluginManager, Service, MultivestError } from '@applicature/core.plugin-manager';
+import { Plugin } from '@applicature/synth.mongodb';
+import { PluginManager, Service, MultivestError } from '@applicature/synth.plugin-manager';
 import { DaoIds, TransportConnectionJobName } from '../../constants';
 import { TransportConnectionDao } from '../../dao';
 import { Scheme } from '../../types';

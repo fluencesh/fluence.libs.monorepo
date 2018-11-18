@@ -1,5 +1,5 @@
 import { Scheme } from '@fluencesh/fluence.lib.services';
-import { WebMultivestError } from '@applicature/core.web';
+import { WebMultivestError } from '@applicature/synth.web';
 import { NextFunction, Response } from 'express';
 import { Errors } from '../errors';
 import { AuthenticatedRequest, ProjectSession } from '../types';

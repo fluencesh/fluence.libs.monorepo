@@ -1,6 +1,6 @@
 {
-  "name": "@applicature-private/fluence.lib.sc.sdk.generator",
-  "version": "2.0.15",
+  "name": "@fluencesh/fluence.lib.sc.sdk.generator",
+  "version": "2.0.15-alpha.0",
   "private": false,
   "license": "UNLICENSED",
   "description": "Ethereum Blockchain Plugin",
@@ -19,12 +19,16 @@
     "test": "jest",
     "test:ci": "jest --coverage --forceExit --runInBand",
     "test:lint": "tslint --force -t json --project ./tsconfig.json '{index.ts,src/**/*.ts,test/**/*.ts}'",
-    "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$MULTIVEST_BACKEND_SONARCLOUD_TOKEN"
+    "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN"
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.com:applicature/fluence.libs-monorepo.git"
+    "url": "git@github.com:fluencesh/fluence.libs.monorepo.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "Apache-2.0",
   "dependencies": {
     "archiver": "^3.0.0",
     "config": "^1.30.0",

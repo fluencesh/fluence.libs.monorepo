@@ -1,4 +1,4 @@
-import { Signature } from '@applicature-private/fluence.lib.services';
+import { Signature } from '@fluencesh/fluence.lib.services';
 import * as EthereumAbi from 'ethereumjs-abi';
 import { EthereumBlockchainService } from '../blockchain/ethereum';
 

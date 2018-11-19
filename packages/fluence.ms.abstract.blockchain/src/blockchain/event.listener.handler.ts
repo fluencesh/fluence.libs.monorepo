@@ -1,4 +1,4 @@
-import { Hashtable, PluginManager } from '@applicature-private/core.plugin-manager';
+import { Hashtable, PluginManager } from '@applicature/synth.plugin-manager';
 import {
     BlockchainTransportProvider,
     ScBlockchainService,
@@ -6,7 +6,7 @@ import {
     Scheme,
     ScBlockchainTransportProvider,
     ManagedScBlockchainTransport
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import { set } from 'lodash';
 import { BlockchainListenerHandler } from './blockchain.listener.handler';
 
@@ -21,8 +21,8 @@ export abstract class EventListenerHandler<
 
     protected async getLogsByBlockHeight(
         blockchainService: ScBlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>,
-        height: number,
-        transportConnectionId: string
+        transportConnectionId: string,
+        height: number
     ): Promise<Array<Scheme.BlockchainEvent>> {
         const logsFilters = {
             fromBlock: height,
@@ -34,10 +34,10 @@ export abstract class EventListenerHandler<
 
     protected async getLogMapByBlockHeight(
         blockchainService: ScBlockchainService<Transaction, Block, Provider, ManagedBlockchainTransportService>,
-        height: number,
-        transportConnectionId: string
+        transportConnectionId: string,
+        height: number
     ) {
-        const logs = await this.getLogsByBlockHeight(blockchainService, height, transportConnectionId);
+        const logs = await this.getLogsByBlockHeight(blockchainService, transportConnectionId, height);
         const logsMap: Hashtable<Scheme.BlockchainEvent> = logs.reduce((map, log) => set(map, log.address, log), {});
 
         return logsMap;
@@ -46,5 +46,4 @@ export abstract class EventListenerHandler<
     protected abstract convertAbiMethodInTopic(abiMethod: any): string;
 
     protected abstract decodeData(types: Array<string>, data: string): Array<string>;
-
 }

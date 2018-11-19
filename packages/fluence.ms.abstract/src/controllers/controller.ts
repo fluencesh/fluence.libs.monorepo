@@ -1,5 +1,5 @@
-import { MultivestError, PluginManager } from '@applicature-private/core.plugin-manager';
-import { WebMultivestError } from '@applicature-private/core.web';
+import { MultivestError, PluginManager } from '@applicature/synth.plugin-manager';
+import { WebMultivestError } from '@applicature/synth.web';
 import { NextFunction } from 'express';
 import { Errors } from '../errors';
 

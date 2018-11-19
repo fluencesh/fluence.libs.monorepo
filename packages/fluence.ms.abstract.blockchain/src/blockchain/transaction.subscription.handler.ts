@@ -1,9 +1,9 @@
-import { Hashtable } from '@applicature-private/core.plugin-manager';
+import { Hashtable } from '@applicature/synth.plugin-manager';
 import {
     Scheme,
     BlockchainTransportProvider,
     ManagedBlockchainTransport,
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import { BlockchainListenerHandler } from './blockchain.listener.handler';
 
 export class TransactionSubscriptionHandler<
@@ -86,6 +86,7 @@ export class TransactionSubscriptionHandler<
                         this.metricService.addressFoundInBlock(
                             transportConnectionSubscription.blockchainId,
                             transportConnectionSubscription.networkId,
+                            transportConnectionSubscription.id,
                             webhookActions.length,
                             today
                         )

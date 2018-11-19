@@ -1,4 +1,4 @@
-import { Plugin } from '@applicature-private/core.plugin-manager';
+import { Plugin } from '@applicature/synth.plugin-manager';
 
 class BitcoinBlockchainPlugin extends Plugin<void> {
     public getPluginId() {

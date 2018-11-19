@@ -1,6 +1,6 @@
 {
-  "name": "@applicature-private/fluence.ms.abstract.blockchain",
-  "version": "2.0.15",
+  "name": "@fluencesh/fluence.ms.abstract.blockchain",
+  "version": "2.0.15-alpha.0",
   "private": false,
   "license": "UNLICENSED",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -22,16 +22,20 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.com:applicature/fluence.libs-monorepo.git"
+    "url": "git@github.com:fluencesh/fluence.libs.monorepo.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "Apache-2.0",
   "dependencies": {
-    "@applicature-private/core.metrics": "^2.0.6",
-    "@applicature-private/core.mongodb": "^2.0.6",
-    "@applicature-private/core.plugin-manager": "^2.0.6",
-    "@applicature-private/core.web": "^2.0.6",
-    "@applicature-private/fluence.lib.ethereum": "^2.0.15",
-    "@applicature-private/fluence.lib.services": "^2.0.15",
-    "@applicature-private/fluence.ms.abstract": "^2.0.15",
+    "@applicature/synth.metrics": "^2.0.18",
+    "@applicature/synth.mongodb": "^2.0.18",
+    "@applicature/synth.plugin-manager": "^2.0.18",
+    "@applicature/synth.web": "^2.0.18",
+    "@fluencesh/fluence.lib.ethereum": "^2.0.15-alpha.0",
+    "@fluencesh/fluence.lib.services": "^2.0.15-alpha.0",
+    "@fluencesh/fluence.ms.abstract": "^2.0.15-alpha.0",
     "bignumber.js": "^7.2.1",
     "config": "^1.30.0",
     "ethereumjs-abi": "^0.6.5",

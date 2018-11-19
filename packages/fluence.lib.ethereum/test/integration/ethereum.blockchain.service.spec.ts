@@ -1,10 +1,10 @@
-import { PluginManager } from '@applicature-private/core.plugin-manager';
+import { PluginManager } from '@applicature/synth.plugin-manager';
 import {
     ContractService,
     DaoCollectionNames,
     MongodbTransportConnectionDao,
     Scheme,
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import * as config from 'config';
 import { utils } from 'ethers';
 import { has } from 'lodash';
@@ -13,7 +13,7 @@ import { EthereumBlockchainService } from '../../src/services/blockchain/ethereu
 import { ManagedEthereumTransportService } from '../../src/services/transports/managed.ethereum.transport.service';
 import { EthereumBlock, EthereumEvent, EthereumTopic, EthereumTopicFilter, EthereumTransaction } from '../../src/types';
 import { clearDb } from '../helper';
-import BigNumber from '@applicature-private/fluence.lib.services/node_modules/bignumber.js';
+import BigNumber from '@fluencesh/fluence.lib.services/node_modules/bignumber.js';
 
 describe('ethereum blockchain', () => {
     let blockchainService: EthereumBlockchainService;
@@ -29,8 +29,8 @@ describe('ethereum blockchain', () => {
 
     async function initPluginManager() {
         pluginManager = new PluginManager([
-            { path: '@applicature-private/core.mongodb' },
-            { path: '@applicature-private/fluence.lib.services' },
+            { path: '@applicature/synth.mongodb' },
+            { path: '@fluencesh/fluence.lib.services' },
         ]);
 
         await pluginManager.init();
@@ -47,7 +47,7 @@ describe('ethereum blockchain', () => {
                 networkId: NETWORK_ID,
                 providerId: 'json-rpc',
                 settings: {
-                    url: 'https://rinkeby.infura.io/bXMBS9zEadMgfXd0Y3G1',
+                    url: 'http://127.0.0.1:8545/',
                 },
                 isPrivate: false,
                 status: Scheme.TransportConnectionStatus.Enabled

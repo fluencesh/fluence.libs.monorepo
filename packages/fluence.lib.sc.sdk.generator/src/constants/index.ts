@@ -1,5 +1,5 @@
 export const sdkTemplateTs =
-`import { EthereumService } from '@applicature-private/fluence.sdk.js';
+`import { EthereumService } from '@fluencesh/fluence.sdk.js';
 
 export class <%= className %> {
     private ethereumService: EthereumService;

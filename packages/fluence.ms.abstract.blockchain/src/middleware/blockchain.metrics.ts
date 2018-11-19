@@ -1,4 +1,4 @@
-import { BlockchainRegistryService } from '@applicature-private/fluence.lib.services';
+import { BlockchainRegistryService } from '@fluencesh/fluence.lib.services';
 import { NextFunction, Request, Response } from 'express';
 import * as logger from 'winston';
 import { BlockchainMetricService } from '../services/blockchain.metric.service';
@@ -29,17 +29,28 @@ export class BlockchainMetrics {
         const metricRequests = [] as Array<Promise<void>>;
         for (const blockchainService of blockchainServices) {
             const statistic = blockchainService.getStatistic();
+
+            const today = new Date();
+
+            let oneOfTransportWasUsed = false;
+            for (const transportConnectionId of Object.keys(statistic.transportsCallsStatistic)) {
+                const callsCount = statistic.transportsCallsStatistic[transportConnectionId];
+                if (callsCount > 0) {
+                    oneOfTransportWasUsed = true;
+                    metricRequests.push(
+                        this.metricService.blockchainCalled(
+                            blockchainService.getBlockchainId(),
+                            blockchainService.getNetworkId(),
+                            transportConnectionId,
+                            callsCount,
+                            today
+                        )
+                    );
+                }
+            }
     
-            if (statistic.wasCalledTimes > 0) {
-                const today = new Date();
-    
+            if (oneOfTransportWasUsed) {
                 metricRequests.push(
-                    this.metricService.blockchainCalled(
-                        blockchainService.getBlockchainId(),
-                        blockchainService.getNetworkId(),
-                        statistic.wasCalledTimes,
-                        today
-                    ),
                     this.metricService.totalBlockchainNodes(
                         blockchainService.getBlockchainId(),
                         blockchainService.getNetworkId(),
@@ -65,7 +76,7 @@ export class BlockchainMetrics {
         try {
             await Promise.all(metricRequests);
         } catch (ex) {
-            logger.warn(`Can't save blockchain metrics. Reason: ${ ex.message }`);
+            logger.error(`Can't save blockchain metrics. Reason: ${ ex.message }`);
         }
 
         next();

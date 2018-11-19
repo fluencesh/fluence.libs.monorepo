@@ -1,4 +1,4 @@
-import { Plugin } from '@applicature-private/core.plugin-manager';
+import { Plugin } from '@applicature/synth.plugin-manager';
 import { HttpRequestMetricService } from './services';
 
 export class FluenceMsPlugin extends Plugin<void> {

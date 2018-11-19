@@ -1,10 +1,10 @@
-import { Hashtable } from '@applicature-private/core.plugin-manager';
+import { Hashtable } from '@applicature/synth.plugin-manager';
 import {
     ScBlockchainService,
     Scheme,
     ScBlockchainTransportProvider,
     ManagedScBlockchainTransport,
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import { set } from 'lodash';
 import { EventListenerHandler } from './event.listener.handler';
 
@@ -33,8 +33,8 @@ export abstract class ContractEventSubscriptionHandler<
     ) {
         const logsMap = await this.getLogMapByBlockHeight(
             blockchainService,
-            block.height,
-            transportConnectionSubscription.id
+            transportConnectionSubscription.id,
+            block.height
         );
 
         const confirmations = lastBlockHeight - block.height;
@@ -116,6 +116,7 @@ export abstract class ContractEventSubscriptionHandler<
                     this.metricService.addressFoundInBlock(
                         transportConnectionSubscription.blockchainId,
                         transportConnectionSubscription.networkId,
+                        transportConnectionSubscription.id,
                         webhookActions.length,
                         today
                     )

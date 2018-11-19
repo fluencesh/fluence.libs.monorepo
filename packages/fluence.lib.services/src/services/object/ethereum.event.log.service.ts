@@ -1,5 +1,5 @@
-import { Plugin } from '@applicature-private/core.mongodb';
-import {Hashtable, PluginManager, Service} from '@applicature-private/core.plugin-manager';
+import { Plugin } from '@applicature/synth.mongodb';
+import {Hashtable, PluginManager, Service} from '@applicature/synth.plugin-manager';
 import { DaoIds } from '../../constants';
 import { EthereumEventLogDao } from '../../dao/ethereum.event.log.dao';
 import { Scheme } from '../../types';

@@ -1,4 +1,4 @@
-import { MetricTransport } from '@applicature-private/core.metrics';
+import { MetricTransport } from '@applicature/synth.metrics';
 import { hostname } from 'os';
 import { env } from 'process';
 import { BlockchainMetricService } from '../../../src';
@@ -45,17 +45,18 @@ describe('BlockchainMetricService spec', () => {
     it('blockchainCalled should transfer right params', () => {
         const blockchainId = 'blockchainId';
         const networkId = 'networkId';
+        const transportId = 'transportId';
         const count = 1;
         const timestamp = new Date();
 
-        metricService.blockchainCalled(blockchainId, networkId, count, timestamp);
+        metricService.blockchainCalled(blockchainId, networkId, transportId, count, timestamp);
 
         expect(saveMetricMock).toHaveBeenCalledTimes(1);
         expect(saveMetricMock).toHaveBeenCalledWith(
             `blockchain_calls_total`,
             count,
             timestamp,
-            { env: nodeEnv, hostname: hostName, blockchainId, networkId }
+            { env: nodeEnv, hostname: hostName, blockchainId, networkId, transportId }
         );
     });
 
@@ -96,10 +97,11 @@ describe('BlockchainMetricService spec', () => {
     it('transactionsSuccessfullySent should transfer right params', () => {
         const blockchainId = 'blockchainId';
         const networkId = 'networkId';
+        const transportId = 'transportId';
         const count = 1;
         const timestamp = new Date();
 
-        metricService.transactionsSuccessfullySent(blockchainId, networkId, count, timestamp);
+        metricService.transactionsSuccessfullySent(blockchainId, networkId, transportId, count, timestamp);
 
         expect(saveMetricMock).toHaveBeenCalledTimes(1);
         expect(saveMetricMock).toHaveBeenCalledWith(
@@ -111,6 +113,7 @@ describe('BlockchainMetricService spec', () => {
                 env: nodeEnv,
                 hostname: hostName,
                 networkId,
+                transportId,
                 status: TransactionSendStatusMetricType.Success
             }
         );
@@ -119,10 +122,11 @@ describe('BlockchainMetricService spec', () => {
     it('transactionsUnsuccessfullySent should transfer right params', () => {
         const blockchainId = 'blockchainId';
         const networkId = 'networkId';
+        const transportId = 'transportId';
         const count = 1;
         const timestamp = new Date();
 
-        metricService.transactionsUnsuccessfullySent(blockchainId, networkId, count, timestamp);
+        metricService.transactionsUnsuccessfullySent(blockchainId, networkId, transportId, count, timestamp);
 
         expect(saveMetricMock).toHaveBeenCalledTimes(1);
         expect(saveMetricMock).toHaveBeenCalledWith(
@@ -134,6 +138,7 @@ describe('BlockchainMetricService spec', () => {
                 env: nodeEnv,
                 hostname: hostName,
                 networkId,
+                transportId,
                 status: TransactionSendStatusMetricType.Fail
             }
         );

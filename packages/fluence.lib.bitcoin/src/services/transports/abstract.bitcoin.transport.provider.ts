@@ -1,5 +1,5 @@
-import { PluginManager, Service } from '@applicature-private/core.plugin-manager';
-import { Scheme } from '@applicature-private/fluence.lib.services';
+import { PluginManager, Service } from '@applicature/synth.plugin-manager';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import { BITCOIN } from '../../constants';
 import { BitcoinBlock, BitcoinTransaction } from '../../types';
@@ -23,7 +23,6 @@ export abstract class AbstractBitcoinTransportProvider extends Service implement
     public abstract getTransactionByHash(hash: string): Promise<BitcoinTransaction>;
     public abstract sendRawTransaction(hex: string): Promise<BitcoinTransaction>;
     public abstract getBalance(address: string, minConf: number): Promise<BigNumber>;
-    public abstract estimateFee(tx: BitcoinTransaction): Promise<BigNumber>;
 
     public getBlockchainId() {
         return BITCOIN;

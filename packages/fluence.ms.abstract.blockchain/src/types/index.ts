@@ -1,5 +1,5 @@
-import { Scheme } from '@applicature-private/fluence.lib.services';
-import { Hashtable } from '@applicature-private/core.plugin-manager';
+import { Scheme } from '@fluencesh/fluence.lib.services';
+import { Hashtable } from '@applicature/synth.plugin-manager';
 
 export enum BlockchainNodeMetricType {
     Total = 'TOTAL',

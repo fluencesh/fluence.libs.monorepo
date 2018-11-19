@@ -1,4 +1,4 @@
-import { MetricService } from '@applicature-private/core.metrics';
+import { MetricService } from '@applicature/synth.metrics';
 import { BlockchainNodeMetricType, TransactionSendStatusMetricType } from '../types';
 
 export class BlockchainMetricService extends MetricService {
@@ -9,10 +9,11 @@ export class BlockchainMetricService extends MetricService {
     public async blockchainCalled(
         blockchainId: string,
         networkId: string,
+        transportId: string,
         times: number = 1,
         timestamp: Date = new Date()
     ): Promise<void> {
-        await this.saveMetric(`blockchain_calls_total`, times, timestamp, { blockchainId, networkId });
+        await this.saveMetric(`blockchain_calls_total`, times, timestamp, { blockchainId, networkId, transportId });
     }
 
     public async totalBlockchainNodes(
@@ -60,6 +61,7 @@ export class BlockchainMetricService extends MetricService {
     public async transactionsSuccessfullySent(
         blockchainId: string,
         networkId: string,
+        transportId: string,
         count: number = 1,
         timestamp: Date = new Date()
     ): Promise<void> {
@@ -70,7 +72,8 @@ export class BlockchainMetricService extends MetricService {
             {
                 blockchainId,
                 networkId,
-                status: TransactionSendStatusMetricType.Success
+                status: TransactionSendStatusMetricType.Success,
+                transportId
             }
         );
     }
@@ -78,6 +81,7 @@ export class BlockchainMetricService extends MetricService {
     public async transactionsUnsuccessfullySent(
         blockchainId: string,
         networkId: string,
+        transportId: string,
         count: number = 1,
         timestamp: Date = new Date()
     ): Promise<void> {
@@ -88,7 +92,8 @@ export class BlockchainMetricService extends MetricService {
             {
                 blockchainId,
                 networkId,
-                status: TransactionSendStatusMetricType.Fail
+                status: TransactionSendStatusMetricType.Fail,
+                transportId
             }
         );
     }

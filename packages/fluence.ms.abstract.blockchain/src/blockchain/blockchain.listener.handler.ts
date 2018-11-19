@@ -1,7 +1,7 @@
 import {
     Hashtable,
     PluginManager,
-} from '@applicature-private/core.plugin-manager';
+} from '@applicature/synth.plugin-manager';
 import {
     BlockchainService,
     ProjectService,
@@ -10,7 +10,7 @@ import {
     WebhookActionItemObjectService,
     BlockchainTransportProvider,
     ManagedBlockchainTransport,
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import { set } from 'lodash';
 import { v1 as generateId } from 'uuid';
 import * as logger from 'winston';

@@ -1,5 +1,5 @@
-import { AuthenticatedRequest, Controller } from '@applicature-private/fluence.ms.abstract';
-import { PluginManager } from '@applicature-private/core.plugin-manager';
+import { AuthenticatedRequest, Controller } from '@fluencesh/fluence.ms.abstract';
+import { PluginManager } from '@applicature/synth.plugin-manager';
 import {
     BlockchainRegistryService,
     BlockchainService,
@@ -11,8 +11,8 @@ import {
     TransportConnectionService,
     BlockchainTransportProvider,
     ManagedBlockchainTransport,
-} from '@applicature-private/fluence.lib.services';
-import { WebMultivestError } from '@applicature-private/core.web';
+} from '@fluencesh/fluence.lib.services';
+import { WebMultivestError } from '@applicature/synth.web';
 import BigNumber from 'bignumber.js';
 import { NextFunction, Response } from 'express';
 import { get, isNaN } from 'lodash';
@@ -174,6 +174,7 @@ export abstract class AbstractBlockchainController<
                     await this.metricService.transactionsUnsuccessfullySent(
                         blockchainService.getBlockchainId(),
                         blockchainService.getNetworkId(),
+                        transportConnection.id,
                         1,
                         today
                     );
@@ -190,6 +191,7 @@ export abstract class AbstractBlockchainController<
                 await this.metricService.transactionsSuccessfullySent(
                     blockchainService.getBlockchainId(),
                     blockchainService.getNetworkId(),
+                    transportConnection.id,
                     1,
                     today
                 );

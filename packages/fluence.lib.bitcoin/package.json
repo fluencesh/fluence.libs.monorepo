@@ -1,6 +1,6 @@
 {
-  "name": "@applicature-private/fluence.lib.bitcoin",
-  "version": "2.0.15",
+  "name": "@fluencesh/fluence.lib.bitcoin",
+  "version": "2.0.15-alpha.0",
   "private": false,
   "license": "UNLICENSED",
   "description": "Bitcoin Blockchain Plugin",
@@ -19,19 +19,23 @@
     "test": "jest",
     "test:ci": "jest --coverage --forceExit --runInBand",
     "test:lint": "tslint --force -t json --project ./tsconfig.json '{index.ts,src/**/*.ts,test/**/*.ts}'",
-    "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$MULTIVEST_BACKEND_SONARCLOUD_TOKEN"
+    "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN"
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.com:applicature/fluence.libs-monorepo.git"
+    "url": "git@github.com:fluencesh/fluence.libs.monorepo.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "Apache-2.0",
   "dependencies": {
-    "@applicature-private/core.plugin-manager": "^2.0.0",
-    "@applicature-private/fluence.lib.services": "^2.0.15",
+    "@applicature/synth.plugin-manager": "^2.0.18",
+    "@fluencesh/fluence.lib.services": "^2.0.15-alpha.0",
     "agenda": "^1.0.3",
     "ajv": "^6.5.0",
     "bignumber.js": "^7.2.1",
-    "bitcoin-core": "^1.2.0",
+    "bitcoin-core": "^2.0.0",
     "bitcoinjs-lib": "^3.3.0",
     "bluebird": "^3.5.0",
     "config": "^1.26.1",

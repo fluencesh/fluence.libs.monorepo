@@ -1,4 +1,4 @@
-import { ManagedBlockchainTransport } from '@applicature-private/fluence.lib.services';
+import { ManagedBlockchainTransport } from '@fluencesh/fluence.lib.services';
 import { BitcoinTransaction, BitcoinBlock } from '../../../types';
 import { BitcoinTransportProvider } from './bitcoin.transport.provider';
 

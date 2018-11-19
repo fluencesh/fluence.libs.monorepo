@@ -1,5 +1,5 @@
-import { MultivestError, PluginManager } from '@applicature-private/core.plugin-manager';
-import { Scheme } from '@applicature-private/fluence.lib.services';
+import { MultivestError, PluginManager } from '@applicature/synth.plugin-manager';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import BigNumber from 'bignumber.js';
 import {
     Transaction as BitcoinLibTx,
@@ -144,11 +144,6 @@ export class BiBitcoinTransportService extends AbstractBitcoinTransportProvider 
         }
     }
 
-    public async estimateFee(tx: BitcoinTransaction): Promise<BigNumber> {
-        // NOTICE: no such operation https://blockchain.info/q
-        throw new MultivestError(Errors.NOT_IMPLEMENTED);
-    }
-
     private convertBlock(block: any, deepConvert: boolean = false): BitcoinBlock {
         const convertedBlock = {
             fee: new BigNumber(block.fee) as any,
@@ -201,6 +196,7 @@ export class BiBitcoinTransportService extends AbstractBitcoinTransportProvider 
         qs.format = 'json';
         
         if (this.apiKey) {
+            // CHECK: does `api_key` correct query param for specifying API key?
             qs.api_key = this.apiKey;
         }
 

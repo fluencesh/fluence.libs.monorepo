@@ -17,3 +17,4 @@ packages/*/lib
 .DS_Store
 .scannerwork
 _fluence.lib.sc.sdk.generator
+.env

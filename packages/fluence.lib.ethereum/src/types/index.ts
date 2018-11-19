@@ -1,6 +1,6 @@
-import {Hashtable} from '@applicature-private/core.plugin-manager';
+import {Hashtable} from '@applicature/synth.plugin-manager';
 import BigNumber from 'bignumber.js';
-import {Scheme} from '@applicature-private/fluence.lib.services';
+import {Scheme} from '@fluencesh/fluence.lib.services';
 
 export const ETHEREUM = 'ETHEREUM';
 

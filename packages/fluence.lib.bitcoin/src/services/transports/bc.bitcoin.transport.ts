@@ -1,11 +1,10 @@
-import { MultivestError, PluginManager, Service } from '@applicature-private/core.plugin-manager';
-import { Scheme } from '@applicature-private/fluence.lib.services';
+import { MultivestError, PluginManager, Service } from '@applicature/synth.plugin-manager';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import BigNumber from 'bignumber.js';
 import { get } from 'lodash';
 import * as logger from 'winston';
 import { AbstractBitcoinTransportProvider } from './abstract.bitcoin.transport.provider';
 import { BitcoinBlock, BitcoinTransaction } from '../../types';
-import { Errors } from '../../errors';
 
 const Client = require('bitcoin-core');
 
@@ -104,12 +103,6 @@ export class BcBitcoinTransportService extends AbstractBitcoinTransportProvider 
         }
 
         return this.getTransactionByHash(hash);
-    }
-
-    public async estimateFee(tx: BitcoinTransaction): Promise<BigNumber> {
-        // NOTICE: no such method for bitcoin
-        // https://en.bitcoin.it/wiki/Original_Bitcoin_client/API_calls_list
-        throw new MultivestError(Errors.NOT_IMPLEMENTED);
     }
 
     private async getCoreTransactionByHash(txHash: string) {

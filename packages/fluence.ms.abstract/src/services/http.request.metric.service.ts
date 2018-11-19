@@ -1,4 +1,4 @@
-import { MetricService } from '@applicature-private/core.metrics';
+import { MetricService } from '@applicature/synth.metrics';
 import { HttpRequestExecutionStatusMetricType } from '../types';
 
 export class HttpRequestMetricService extends MetricService {

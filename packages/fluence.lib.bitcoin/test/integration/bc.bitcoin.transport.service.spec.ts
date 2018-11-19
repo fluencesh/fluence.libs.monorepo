@@ -1,4 +1,4 @@
-import { Scheme } from '@applicature-private/fluence.lib.services';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import * as config from 'config';
 import {
@@ -7,7 +7,6 @@ import {
     BitcoinBlock,
     BitcoinTransaction
 } from '../../src';
-import { get } from 'lodash';
 
 describe('bc bitcoin transport service ', () => {
     let transport: BcBitcoinTransportService;
@@ -75,6 +74,7 @@ describe('bc bitcoin transport service ', () => {
         const height = 1297911;
 
         const block = await transport.getBlockByHeight(height);
+
         checkBlock(block);
     });
 
@@ -100,7 +100,7 @@ describe('bc bitcoin transport service ', () => {
     // status:-32601
     // https://applicature.atlassian.net/browse/FLC-216
     it.skip('should get balance by address', async () => {
-        const address = 'moUpywAyHED77Mst8UY5y9bH25yeyM3sTr';
+        const address = '0xmgadYuDvGwULgroRp2ZfM5CnH89HsAWv9t';
 
         const balance = await transport.getBalance(address);
 

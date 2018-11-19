@@ -1,4 +1,4 @@
-import { Scheme } from '@applicature-private/fluence.lib.services';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 
 export enum AvailableNetwork {
     MAIN_NET = 'MAIN_NET',

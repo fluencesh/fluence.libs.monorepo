@@ -4,7 +4,7 @@
     "skipLibCheck": true,
     "typeRoots": [
       "node_modules/@types",
-      "node_modules/@applicature-private/multivest.mongodb/@types"
+      "node_modules/@fluencesh/multivest.mongodb/@types"
     ],
 
     "rootDir": ".",

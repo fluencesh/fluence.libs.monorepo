@@ -1,4 +1,4 @@
-import { MongoDBDao } from '@applicature-private/core.mongodb';
+import { MongoDBDao } from '@applicature/synth.mongodb';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 import { TransactionHashSubscriptionDao } from '../transaction.hash.subscription.dao';

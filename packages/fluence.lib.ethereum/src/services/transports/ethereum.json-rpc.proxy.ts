@@ -1,7 +1,7 @@
-import { Hashtable } from '@applicature-private/core.plugin-manager';
+import { Hashtable } from '@applicature/synth.plugin-manager';
 import {
     JsonRpcProxy
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import { AxiosRequestConfig } from 'axios';
 
 export class EthereumJsonRpcProxy extends JsonRpcProxy {

@@ -1,5 +1,5 @@
-import { Plugin } from '@applicature-private/core.mongodb';
-import { PluginManager, Service } from '@applicature-private/core.plugin-manager';
+import { Plugin } from '@applicature/synth.mongodb';
+import { PluginManager, Service } from '@applicature/synth.plugin-manager';
 import { sha3 } from 'ethereumjs-util';
 import { DaoIds } from '../../constants';
 import { OraclizeSubscriptionDao } from '../../dao/oraclize.subscription.dao';

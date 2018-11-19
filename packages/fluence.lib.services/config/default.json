@@ -1,7 +1,7 @@
 {
     "multivest": {
         "mongodb": {
-            "url": "mongodb://localhost/multivest",
+            "url": "mongodb://localhost/fluence",
             "options": {}
         },
         "clientVerification": {

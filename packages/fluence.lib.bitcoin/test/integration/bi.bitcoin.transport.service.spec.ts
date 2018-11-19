@@ -1,4 +1,4 @@
-import { Scheme } from '@applicature-private/fluence.lib.services';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import { BiBitcoinTransportService, AvailableNetwork, BitcoinBlock, BitcoinTransaction } from '../../src';
 

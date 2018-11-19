@@ -4,7 +4,7 @@
       "bitcoin": {
         "providers": {
           "native": {
-            "host": "94.130.216.246",
+            "host": "127.0.0.1",
             "network": "testnet",
             "username": "test",
             "password": "test"

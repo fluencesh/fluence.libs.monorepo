@@ -1,13 +1,13 @@
 import {
     ManagedBlockchainTransportService,
     Scheme,
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import * as Ajv from 'ajv';
 import { BITCOIN, BitcoinInfoTransportConfigScheme, BitcoinCoreTransportConfigScheme } from '../../constants';
 import { BcBitcoinTransportService } from './bc.bitcoin.transport';
 import { BiBitcoinTransportService } from './bi.bitcoin.transport';
 import { BitcoinTransaction, BitcoinBlock } from '../../types';
-import { BitcoinTransportProvider, ManagedBitcoinTransport } from './interfaces';
+import { BitcoinTransportProvider } from './interfaces';
 
 const ajv = new Ajv({ removeAdditional: false, useDefaults: true, coerceTypes: true });
 ajv.addSchema(BitcoinCoreTransportConfigScheme, 'bitcoin.core.transport.config.scheme');
@@ -15,7 +15,7 @@ ajv.addSchema(BitcoinInfoTransportConfigScheme, 'bitcoin.info.transport.config.s
 
 export class ManagedBitcoinTransportService
     extends ManagedBlockchainTransportService<BitcoinTransaction, BitcoinBlock, BitcoinTransportProvider>
-    implements ManagedBitcoinTransport {
+    implements ManagedBitcoinTransportService {
 
     public getBlockchainId() {
         return BITCOIN;

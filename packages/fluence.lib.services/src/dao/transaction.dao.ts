@@ -1,4 +1,4 @@
-import {Dao} from '@applicature-private/core.plugin-manager';
+import {Dao} from '@applicature/synth.plugin-manager';
 import { Scheme } from '../types';
 
 export abstract class TransactionDao extends Dao<Scheme.Transaction> {

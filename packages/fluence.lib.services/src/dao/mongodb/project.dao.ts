@@ -1,4 +1,4 @@
-import { MongoDBDao } from '@applicature-private/core.mongodb';
+import { MongoDBDao } from '@applicature/synth.mongodb';
 import * as logger from 'winston';
 import { DaoCollectionNames, DaoIds } from '../../constants';
 import { Scheme } from '../../types';

@@ -2,7 +2,6 @@
   "name": "@fluencesh/fluence.ms.abstract.blockchain",
   "version": "2.0.15-alpha.0",
   "private": false,
-  "license": "UNLICENSED",
   "author": "Andrew Zubko <andrew@applicature.com>",
   "engines": {
     "node": ">=4.8.0",

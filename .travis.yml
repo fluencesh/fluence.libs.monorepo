@@ -16,3 +16,6 @@ script:
 - npm run test:ci
 - npm run test:lint
 - npm run test:sonar
+
+services:
+- mongodb

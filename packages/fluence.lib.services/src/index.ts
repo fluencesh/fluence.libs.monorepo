@@ -1,6 +1,5 @@
 export * from './constants';
 export * from './dao';
-export * from './models';
 export * from './services';
 export * from './types';
 

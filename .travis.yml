@@ -6,15 +6,13 @@ node_js:
 
 cache: 'npm'
 
-jobs:
-  include:
-  - stage: prepare
-    script:
-      - npm install
-      - npm run bootstrap-deps
-      - npm run build
-  - stage: test
-    script:
-        - npm run test:ci
-        - npm run test:lint
-        - npm run test:sonar
+install:
+- npm install
+- npm install -g gulp
+
+script:
+- npm run bootstrap-deps
+- npm run build
+- npm run test:ci
+- npm run test:lint
+- npm run test:sonar

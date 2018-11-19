@@ -47,7 +47,7 @@ describe('ethereum blockchain', () => {
                 networkId: NETWORK_ID,
                 providerId: 'json-rpc',
                 settings: {
-                    url: 'http://127.0.0.1:8545/',
+                    url: config.get('multivest.blockchain.ethereum.providers.native.url'),
                 },
                 isPrivate: false,
                 status: Scheme.TransportConnectionStatus.Enabled

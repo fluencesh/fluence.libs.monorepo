@@ -1,4 +1,4 @@
-import { MongoDBDao } from '@applicature-private/core.mongodb';
+import { MongoDBDao } from '@applicature/synth.mongodb';
 import BigNumber from 'bignumber.js';
 import * as config from 'config';
 import { createHash } from 'crypto';
@@ -9,7 +9,7 @@ import { generate } from 'randomstring';
 import { v1 as generateId } from 'uuid';
 import { RandomStringPresets } from '../src/constants';
 import { Scheme } from './../src/types';
-import { Constructable, Dao } from '@applicature-private/core.plugin-manager';
+import { Constructable, Dao } from '@applicature/synth.plugin-manager';
 import TransactionStatus = Scheme.TransactionStatus;
 
 export function randomAddressSubscription(): Scheme.AddressSubscription {

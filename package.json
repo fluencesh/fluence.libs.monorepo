@@ -2,7 +2,6 @@
   "name": "fluence.libs.monorepo",
   "version": "1.0.0",
   "private": false,
-  "license": "UNLICENSED",
   "description": "",
   "author": "Andrew Zubko <andrew@applicature.com>",
   "engines": {
@@ -10,6 +9,10 @@
     "npm": ">=2.15.11",
     "yarn": ">=0.20.3"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "Apache-2.0",
   "scripts": {
     "lint": "lerna run lint",
     "build": "lerna run build",
@@ -19,14 +22,16 @@
     "test:ci": "lerna run test:ci",
     "test:lint": "lerna run test:lint",
     "test:sonar": "lerna run test:sonar",
-    "lerna-publish": "lerna publish"
+    "lerna-publish": "lerna publish",
+    "make-changelog": "lerna-changelog"
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.com:applicature/fluence.libs-monorepo.git"
+    "url": "git@github.com:fluencesh/fluence.libs-monorepo.git"
   },
   "devDependencies": {
     "husky": "^1.1.2",
-    "lerna": "^3.4.3"
+    "lerna": "^3.4.3",
+    "lerna-changelog": "^0.8.2"
   }
 }

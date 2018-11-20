@@ -1,4 +1,4 @@
-import { MetricTransport } from '@applicature-private/core.metrics';
+import { MetricTransport } from '@applicature/synth.metrics';
 import { hostname } from 'os';
 import { env } from 'process';
 import { HttpRequestExecutionStatusMetricType, HttpRequestMetricService } from '../../../src';

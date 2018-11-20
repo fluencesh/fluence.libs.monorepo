@@ -3,13 +3,13 @@
 // TODO: move to separate package
 // https://applicature.atlassian.net/browse/FLC-209
 
-// import { Hashtable, PluginManager } from '@applicature-private/core.plugin-manager';
-// import { EthereumBlockchainService, EthereumTransaction } from '@applicature-private/fluence.lib.ethereum';
+// import { Hashtable, PluginManager } from '@applicature/synth.plugin-manager';
+// import { EthereumBlockchainService, EthereumTransaction } from '@fluencesh/fluence.lib.ethereum';
 // import {
 //     ContractService,
 //     EthereumContractSubscriptionService,
 //     Scheme,
-// } from '@applicature-private/fluence.lib.services';
+// } from '@fluencesh/fluence.lib.services';
 // import * as config from 'config';
 // import { sha3 } from 'ethereumjs-util';
 // import { EventListenerHandler } from './event.blockchain.handler';

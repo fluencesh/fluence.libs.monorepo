@@ -1,6 +1,4 @@
-import { Plugin } from '@applicature-private/core.plugin-manager';
-// import { BitcoinTxMiningListener } from './jobs/btc.tx.mining.listener';
-// import { BitcoinTransactionSender } from './jobs/btc.tx.sender';
+import { Plugin } from '@applicature/synth.plugin-manager';
 
 class BitcoinBlockchainPlugin extends Plugin<void> {
     public getPluginId() {
@@ -8,9 +6,6 @@ class BitcoinBlockchainPlugin extends Plugin<void> {
     }
 
     public init() {
-        // FIXME: jobs should be fixed
-        // this.registerJob(BitcoinTxMiningListener);
-        // this.registerJob(BitcoinTransactionSender);
     }
 }
 

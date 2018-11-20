@@ -1,4 +1,4 @@
-import { Dao } from '@applicature-private/core.plugin-manager';
+import { Dao } from '@applicature/synth.plugin-manager';
 import { createHash } from 'crypto';
 import { Scheme } from '../types';
 

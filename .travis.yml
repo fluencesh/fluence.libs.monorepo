@@ -1,0 +1,40 @@
+language: node_js
+node_js:
+- '8'
+- '10'
+- '11'
+
+os:
+  - linux
+  - windows
+
+cache: 'npm'
+
+install:
+- npm install
+- npm install -g gulp
+
+script:
+- npm run bootstrap-deps
+- npm run build
+- npm run test:ci
+- npm run test:lint
+
+
+#- git config --global user.email "bitbucket-bot@applicature.com"
+#- git config --global user.name "Bitbucket Bot"
+
+jobs:
+  include:
+  - stage: report
+    script: npm run test:sonar
+  - stage: release-alpha
+    if: branch != master
+    script: npm run lerna-publish -- "prerelease" "--yes" "-m '[skip ci] chore(alpha): publish %s'"
+  - stage: release-patch
+    if: branch = master
+    script: npm run lerna-publish -- "patch"  "--yes" "-m '[skip ci] chore(release): publish %s'"
+    script: npm run make-changelog
+
+services:
+- mongodb

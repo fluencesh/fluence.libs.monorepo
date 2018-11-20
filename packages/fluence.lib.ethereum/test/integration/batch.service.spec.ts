@@ -1,10 +1,10 @@
-import { PluginManager } from '@applicature-private/core.plugin-manager';
+import { PluginManager } from '@applicature/synth.plugin-manager';
 import {
     ContractService,
     DaoCollectionNames,
     MongodbTransportConnectionDao,
     Scheme,
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import * as config from 'config';
 import * as cors from 'cors';
 import * as express from 'express';
@@ -34,8 +34,8 @@ describe.skip('batch service', () => {
 
     async function initPluginManager() {
         pluginManager = new PluginManager([
-            { path: '@applicature-private/core.mongodb' },
-            { path: '@applicature-private/fluence.lib.services' },
+            { path: '@applicature/synth.mongodb' },
+            { path: '@fluencesh/fluence.lib.services' },
         ]);
 
         await pluginManager.init();
@@ -52,7 +52,7 @@ describe.skip('batch service', () => {
             //     networkId: NETWORK_ID,
             //     providerId: 'json-rpc',
             //     settings: {
-            //         url: 'http://94.130.216.246:8545'
+            //         url: 'http://127.0.0.1:8545'
             //     }
             // } as Scheme.TransportConnection,
             {
@@ -60,7 +60,7 @@ describe.skip('batch service', () => {
                 networkId: NETWORK_ID,
                 providerId: 'json-rpc',
                 settings: {
-                    url: 'https://rinkeby.infura.io/bXMBS9zEadMgfXd0Y3G1',
+                    url: config.get('multivest.blockchain.ethereum.providers.native.url'),
                 },
                 status: Scheme.TransportConnectionStatus.Enabled,
                 isPrivate: false

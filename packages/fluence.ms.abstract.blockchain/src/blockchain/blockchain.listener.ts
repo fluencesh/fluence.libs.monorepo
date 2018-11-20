@@ -1,4 +1,4 @@
-import { PluginManager, Service, Hashtable, MultivestError } from '@applicature-private/core.plugin-manager';
+import { PluginManager, Service, Hashtable, MultivestError } from '@applicature/synth.plugin-manager';
 import {
     BlockchainRegistryService,
     TransportConnectionSubscriptionService,
@@ -7,7 +7,7 @@ import {
     BlockchainService,
     BlockchainTransportProvider,
     ManagedBlockchainTransport,
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import * as logger from 'winston';
 import { BlockchainListenerJob, HandlerData, BlockchainListenerJobMessage, TransportConnectionData } from '../types';
 import { BlockchainListenerHandler } from './blockchain.listener.handler';

@@ -4,7 +4,7 @@ import {
     EthereumTransactionReceipt,
     EthereumBlock,
 } from '../../../types';
-import { ScBlockchainTransportProvider } from '@applicature-private/fluence.lib.services';
+import { ScBlockchainTransportProvider } from '@fluencesh/fluence.lib.services';
 
 export interface EthereumTransportProvider extends ScBlockchainTransportProvider<EthereumTransaction, EthereumBlock> {
     getCode(address: string): Promise<string>;

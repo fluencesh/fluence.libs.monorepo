@@ -1,5 +1,5 @@
-import { MongoScheme } from '@applicature-private/core.mongodb';
-import { Hashtable } from '@applicature-private/core.plugin-manager';
+import { MongoScheme } from '@applicature/synth.mongodb';
+import { Hashtable } from '@applicature/synth.plugin-manager';
 import { BigNumber } from 'bignumber.js';
 
 // tslint:disable-next-line:no-namespace
@@ -379,7 +379,7 @@ export namespace Scheme {
         connectionsCount: number;
         healthyConnectionsCount: number;
         unhealthyConnectionsCount: number;
-        wasCalledTimes: number;
+        transportsCallsStatistic: Hashtable<number>;
     }
 
     export interface WebhookCallResult {

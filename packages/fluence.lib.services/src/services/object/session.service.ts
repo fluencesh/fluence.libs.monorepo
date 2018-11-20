@@ -1,4 +1,4 @@
-import { MultivestError, PluginManager, Service } from '@applicature-private/core.plugin-manager';
+import { MultivestError, PluginManager, Service } from '@applicature/synth.plugin-manager';
 import { DaoIds } from '../../constants';
 import { ClientDao } from '../../dao/client.dao';
 import { ProjectDao } from '../../dao/project.dao';

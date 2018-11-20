@@ -1,4 +1,4 @@
-import { Plugin } from '@applicature-private/core.plugin-manager';
+import { Plugin } from '@applicature/synth.plugin-manager';
 import { BlockchainMetricService } from './services';
 
 class FluenceBlockchainMs extends Plugin<void> {

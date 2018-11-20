@@ -1,4 +1,4 @@
-import { MultivestError } from '@applicature-private/core.plugin-manager';
+import { MultivestError } from '@applicature/synth.plugin-manager';
 import * as config from 'config';
 import { NextFunction, Response } from 'express';
 import { get } from 'lodash';

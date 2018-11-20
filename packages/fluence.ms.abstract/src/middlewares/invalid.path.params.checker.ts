@@ -1,4 +1,4 @@
-import { WebMultivestError } from '@applicature-private/core.web';
+import { WebMultivestError } from '@applicature/synth.web';
 import { NextFunction, Response } from 'express';
 import { Errors } from '../errors';
 import { AuthenticatedRequest } from '../types';

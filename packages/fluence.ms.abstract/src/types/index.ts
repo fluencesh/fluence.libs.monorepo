@@ -1,6 +1,6 @@
-import { MultivestError } from '@applicature-private/core.plugin-manager';
-import { MongoScheme } from '@applicature-private/core.mongodb';
-import { Scheme } from '@applicature-private/fluence.lib.services';
+import { MultivestError } from '@applicature/synth.plugin-manager';
+import { MongoScheme } from '@applicature/synth.mongodb';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import { OptionsJson } from 'body-parser';
 import { NextFunction, Request, Response, Router } from 'express';
 

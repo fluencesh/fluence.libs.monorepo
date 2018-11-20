@@ -1,11 +1,11 @@
-import { AuthenticatedRequest, AuthMiddleware } from '@applicature-private/fluence.ms.abstract';
-import { PluginManager } from '@applicature-private/core.plugin-manager';
+import { AuthenticatedRequest, AuthMiddleware } from '@fluencesh/fluence.ms.abstract';
+import { PluginManager } from '@applicature/synth.plugin-manager';
 import {
     BlockchainService,
     Scheme,
     BlockchainTransportProvider,
     ManagedBlockchainTransport
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import * as express from 'express';
 import { AbstractRouter, Body, Get, Post, Query, Response } from 'swapi/dist';
 import { AbstractBlockchainRouteUrls } from '../constants';

@@ -1,9 +1,9 @@
-import { MultivestError } from '@applicature-private/core.plugin-manager';
+import { MultivestError } from '@applicature/synth.plugin-manager';
 import {
     ScBlockchainService,
     Scheme,
     Signature
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import * as EthereumTx from 'ethereumjs-tx';
 import * as EthereumUtil from 'ethereumjs-util';

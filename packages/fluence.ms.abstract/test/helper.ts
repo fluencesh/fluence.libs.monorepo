@@ -1,5 +1,5 @@
-import { Constructable } from '@applicature-private/core.plugin-manager';
-import { MongoDBDao } from '@applicature-private/core.mongodb';
+import { Constructable } from '@applicature/synth.plugin-manager';
+import { MongoDBDao } from '@applicature/synth.mongodb';
 import * as config from 'config';
 import { random } from 'lodash';
 import { MongoClient } from 'mongodb';

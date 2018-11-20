@@ -1,11 +1,11 @@
-import { Hashtable } from '@applicature-private/core.plugin-manager';
-// import { EthereumBlockchainService, EthereumBlock } from '@applicature-private/fluence.lib.ethereum';
+import { Hashtable } from '@applicature/synth.plugin-manager';
+// import { EthereumBlockchainService, EthereumBlock } from '@fluencesh/fluence.lib.ethereum';
 import {
     ScBlockchainService,
     Scheme,
     ScBlockchainTransportProvider,
     ManagedScBlockchainTransport,
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import { set } from 'lodash';
 import { EventListenerHandler } from './event.listener.handler';
 
@@ -30,8 +30,8 @@ export abstract class OraclizeSubscriptionHandler<
     ) {
         const logs = await this.getLogsByBlockHeight(
             blockchainService,
-            block.height,
-            transportConnectionSubscription.id
+            transportConnectionSubscription.id,
+            block.height
         );
 
         const eventsList = logs.reduce((events: Array<string>, log) => events.concat(log.topics), []);

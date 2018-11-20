@@ -6,7 +6,7 @@ import {
     EthereumTransactionReceipt,
     EthereumBlock,
 } from '../../../types';
-import { Scheme, ManagedScBlockchainTransport } from '@applicature-private/fluence.lib.services';
+import { Scheme, ManagedScBlockchainTransport } from '@fluencesh/fluence.lib.services';
 import BigNumber from 'bignumber.js';
 import { EthereumTransportProvider } from './ethereum.transport.provider';
 

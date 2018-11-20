@@ -1,5 +1,5 @@
-import { MultivestError } from '@applicature-private/core.plugin-manager';
-import { MongoDBDao } from '@applicature-private/core.mongodb';
+import { MultivestError } from '@applicature/synth.plugin-manager';
+import { MongoDBDao } from '@applicature/synth.mongodb';
 import { Scheme } from '../../types';
 import { TransportConnectionSubscriptionDao } from '../transport.connection.subscription.dao';
 import { DaoCollectionNames, DaoIds } from '../../constants';

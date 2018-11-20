@@ -1,6 +1,6 @@
 import WebhookActionItem = Scheme.WebhookActionItem;
-import { Plugin } from '@applicature-private/core.mongodb';
-import {Hashtable, PluginManager, Service, MultivestError} from '@applicature-private/core.plugin-manager';
+import { Plugin } from '@applicature/synth.mongodb';
+import {Hashtable, PluginManager, Service, MultivestError} from '@applicature/synth.plugin-manager';
 import { DaoIds } from '../../constants';
 import { WebhookActionDao } from '../../dao/webhook.action.dao';
 import { Scheme } from '../../types';

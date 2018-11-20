@@ -5,5 +5,6 @@ export * from './middlewares';
 export * from './routers';
 export * from './services';
 export * from './types';
-export * from './fluence.ms.plugin';
 export * from './utils';
+
+export * from './fluence.ms.plugin';

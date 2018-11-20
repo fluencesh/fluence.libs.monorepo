@@ -1,5 +1,5 @@
-import { Plugin } from '@applicature-private/core.mongodb';
-import { MultivestError, Service } from '@applicature-private/core.plugin-manager';
+import { Plugin } from '@applicature/synth.mongodb';
+import { MultivestError, Service } from '@applicature/synth.plugin-manager';
 import { DaoIds } from '../../constants';
 import { ContractPublicRequestDao } from '../../dao/contract.public.request.dao';
 import { Errors } from '../../errors';

@@ -1,5 +1,5 @@
-import { Service } from '@applicature-private/core.plugin-manager';
-import { Plugin } from '@applicature-private/core.mongodb';
+import { Service } from '@applicature/synth.plugin-manager';
+import { Plugin } from '@applicature/synth.mongodb';
 import { DaoIds } from '../../constants';
 import { TransportConnectionSubscriptionDao } from '../../dao';
 import { Scheme } from '../../types';

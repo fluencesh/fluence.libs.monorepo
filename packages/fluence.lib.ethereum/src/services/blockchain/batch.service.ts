@@ -1,5 +1,5 @@
-import { PluginManager, Service } from '@applicature-private/core.plugin-manager';
-import { Scheme } from '@applicature-private/fluence.lib.services';
+import { PluginManager, Service } from '@applicature/synth.plugin-manager';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import Axios, { AxiosRequestConfig } from 'axios';
 import { format } from 'util';
 import * as logger from 'winston';
@@ -80,8 +80,16 @@ export class BatchService extends Service {
                     continue;
                 }
 
+                // TODO: pass a transport connection id instead of null
+                // https://applicature.atlassian.net/browse/FLC-88
                 batchCalls.push(
-                    this.blockchainService.callContractMethod(contractEntity, methodName, inputTypes, inputValues, null)
+                    this.blockchainService.callContractMethod(
+                        contractEntity,
+                        methodName,
+                        inputTypes,
+                        inputValues,
+                        null
+                    )
                 );
             }
 

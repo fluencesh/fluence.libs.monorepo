@@ -1,4 +1,4 @@
-import {Dao, Hashtable} from '@applicature-private/core.plugin-manager';
+import {Dao, Hashtable} from '@applicature/synth.plugin-manager';
 import { Scheme } from '../types';
 
 export abstract class EthereumEventLogDao extends Dao<Scheme.EthereumEventLog> {

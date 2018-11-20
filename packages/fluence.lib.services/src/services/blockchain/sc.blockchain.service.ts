@@ -2,7 +2,7 @@ import {
     MultivestError,
     PluginManager,
     Service,
-} from '@applicature-private/core.plugin-manager';
+} from '@applicature/synth.plugin-manager';
 import { BigNumber } from 'bignumber.js';
 import { Errors } from '../../errors';
 import { Scheme } from '../../types';

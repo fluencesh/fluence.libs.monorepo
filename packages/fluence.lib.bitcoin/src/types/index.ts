@@ -1,6 +1,9 @@
-import { Scheme } from '@applicature-private/fluence.lib.services';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 
-export interface BitcoinBlock extends Scheme.BlockchainBlock<BitcoinTransaction> {}
+export enum AvailableNetwork {
+    MAIN_NET = 'MAIN_NET',
+    TEST_NET = 'TEST_NET'
+}
 
-// tslint:disable-next-line:no-empty-interface
 export interface BitcoinTransaction extends Scheme.BlockchainTransaction {}
+export interface BitcoinBlock extends Scheme.BlockchainBlock<BitcoinTransaction> {}

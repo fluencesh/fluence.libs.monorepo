@@ -1,4 +1,4 @@
-import { PluginManager } from '@applicature-private/core.plugin-manager';
+import { PluginManager } from '@applicature/synth.plugin-manager';
 import { NextFunction, Request, Response, Router } from 'express';
 import { BaseUrl, Get, Response as SwResponse } from 'swapi';
 import { PingRouterUrls } from '../constants';

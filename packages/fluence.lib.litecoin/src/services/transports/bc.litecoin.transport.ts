@@ -42,11 +42,11 @@ export class BcLitecoinTransportService extends Service implements LitecoinTrans
     }
 
     public getServiceId() {
-        return `bitcoin.core.bitcoin.${ this.networkId }.transport.service`;
+        return `bitcoin.core.litecoin.${ this.networkId }.transport.service`;
     }
 
     public getTransportId() {
-        return `bitcoin.core.bitcoin.${ this.networkId }.transport.service`;
+        return `bitcoin.core.litecoin.${ this.networkId }.transport.service`;
     }
 
     public async getBalance(address: string, minConf: number = 1): Promise<BigNumber> {

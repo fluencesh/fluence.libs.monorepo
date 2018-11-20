@@ -1,5 +1,17 @@
 {
     "multivest": {
+        "blockchain": {
+            "bitcoin": {
+                "providers": {
+                    "native": {
+                        "host": "94.130.216.246",
+                        "network": "testnet",
+                        "username": "test",
+                        "password": "test"
+                    }
+                }
+            }
+        },
         "blockchainInfo": {
             "url": "https://testnet.blockchain.info/"
         }

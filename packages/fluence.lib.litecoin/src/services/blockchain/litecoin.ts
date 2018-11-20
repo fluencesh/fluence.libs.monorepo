@@ -34,7 +34,7 @@ export class LitecoinBlockchainService extends BlockchainService<
     }
 
     public isValidNetwork(network: string) {
-        return AvailableNetwork.MAIN_NET === network || AvailableNetwork.TEST_NET === network;
+        return AvailableNetwork.LITECOIN === network || AvailableNetwork.TEST_NET === network;
     }
 
     public async getHDAddress(index: number): Promise<string> {
@@ -46,9 +46,7 @@ export class LitecoinBlockchainService extends BlockchainService<
             throw new MultivestError(Errors.MASTER_PUBLIC_KEY_REQUIRED);
         }
 
-        const network = this.getNetworkId() === AvailableNetwork.MAIN_NET
-            ? bitcoin.networks.bitcoin
-            : bitcoin.networks.testnet;
+        const network = bitcoin.networks.testnet;
 
         const hdNode = bitcoin.HDNode.fromBase58(masterPubKey, network);
 

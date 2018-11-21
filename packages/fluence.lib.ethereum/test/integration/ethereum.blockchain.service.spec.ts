@@ -16,6 +16,7 @@ import { clearDb } from '../helper';
 
 describe('ethereum blockchain', () => {
     let blockchainService: EthereumBlockchainService;
+    let client: MongoClient;
     let db: Db;
     let pluginManager: PluginManager;
     let contractService: ContractService;
@@ -36,7 +37,8 @@ describe('ethereum blockchain', () => {
     }
 
     async function initDb() {
-        db = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+        client = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+        db = client.db(config.get('multivest.mongodb.dbName'));
     }
 
     async function createTransportConnections() {
@@ -52,8 +54,6 @@ describe('ethereum blockchain', () => {
                 status: Scheme.TransportConnectionStatus.Enabled
             } as Scheme.TransportConnection
         ];
-
-        console.log(transportConnections[0].settings.url);
 
         const transportConnectionDao = new MongodbTransportConnectionDao(db);
 

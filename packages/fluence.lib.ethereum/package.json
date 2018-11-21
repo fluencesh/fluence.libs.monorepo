@@ -29,8 +29,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@applicature/synth.mongodb": "^2.0.18",
-    "@applicature/synth.plugin-manager": "^2.0.18",
+    "@applicature/synth.mongodb": "^2.0.21",
+    "@applicature/synth.plugin-manager": "^2.0.21",
     "@fluencesh/fluence.lib.services": "^2.0.15-alpha.0",
     "axios": "^0.18.0",
     "bignumber.js": "^7.2.1",

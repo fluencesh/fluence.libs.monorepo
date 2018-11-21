@@ -1,7 +1,8 @@
 {
     "multivest": {
         "mongodb": {
-            "url": "mongodb://localhost/test-fluence-ethereum",
+            "url": "mongodb://localhost",
+            "dbName": "test-fluence-ethereum",
             "options": null
         },
         "clientVerification": {

@@ -1,8 +1,9 @@
 import { Plugin } from '@applicature/synth.mongodb';
-import { Service } from '@applicature/synth.plugin-manager';
+import { Service, MultivestError } from '@applicature/synth.plugin-manager';
 import { DaoIds } from '../../constants';
 import { SubscriptionBlockRecheckDao } from '../../dao';
 import { Scheme } from '../../types';
+import { Errors } from '../../errors';
 
 export class SubscriptionBlockRecheckService extends Service {
     private dao: SubscriptionBlockRecheckDao;
@@ -27,6 +28,18 @@ export class SubscriptionBlockRecheckService extends Service {
         invokeOnBlockHeight: number,
         webhookActionItem: Scheme.WebhookActionItem
     ): Promise<Scheme.SubscriptionBlockRecheck> {
+        const createdItem = await this.getByUniqueInfo(
+            subscriptionId,
+            transportConnectionId,
+            type,
+            blockHash,
+            blockHeight
+        );
+
+        if (createdItem) {
+            throw new MultivestError(Errors.BLOCK_RECHECK_ALREADY_EXISTS);
+        }
+
         return this.dao.createBlockRecheck(
             subscriptionId,
             transportConnectionId,

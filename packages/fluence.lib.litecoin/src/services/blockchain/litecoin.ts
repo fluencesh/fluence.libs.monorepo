@@ -1,6 +1,6 @@
 
-import { PluginManager, MultivestError } from '@applicature-private/core.plugin-manager';
-import { BlockchainService, Signature } from '@applicature-private/fluence.lib.services';
+import { PluginManager, MultivestError } from '@applicature/synth.plugin-manager';
+import { BlockchainService, Signature } from '@fluencesh/fluence.lib.services';
 import * as bitcoin from 'bitcoinjs-lib';
 import * as config from 'config';
 import { LITECOIN, AvailableNetwork } from '../../constants';
@@ -97,7 +97,7 @@ export class LitecoinBlockchainService extends BlockchainService<
     }
 
     private getBitcoinLibNetwork(): bitcoin.Network {
-        return this.getNetworkId() === AvailableNetwork.MAIN_NET
+        return this.getNetworkId() === AvailableNetwork.LITECOIN
             ? bitcoin.networks.bitcoin
             : bitcoin.networks.testnet;
     }

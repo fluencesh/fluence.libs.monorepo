@@ -1,4 +1,4 @@
-import { Scheme } from '@applicature-private/fluence.lib.services';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import * as config from 'config';
 import {
@@ -55,7 +55,7 @@ describe('bc litecoin transport service ', () => {
 
     beforeAll(async () => {
         const connection = {
-            networkId: AvailableNetwork.MAIN_NET,
+            networkId: AvailableNetwork.LITECOIN,
             settings: config.get('multivest.blockchain.litecoin.providers.native')
         } as Scheme.TransportConnection;
 

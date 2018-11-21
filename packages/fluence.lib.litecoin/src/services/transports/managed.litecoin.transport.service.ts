@@ -1,7 +1,7 @@
 import {
     ManagedBlockchainTransportService,
     Scheme,
-} from '@applicature-private/fluence.lib.services';
+} from '@fluencesh/fluence.lib.services';
 import { BcLitecoinTransportService } from './bc.litecoin.transport';
 import { LitecoinBlock, LitecoinTransaction } from '../../types';
 import { LitecoinTransportProvider, ManagedLitecoinTransport } from './interfaces';

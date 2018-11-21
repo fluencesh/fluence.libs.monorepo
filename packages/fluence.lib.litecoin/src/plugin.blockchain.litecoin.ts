@@ -1,4 +1,4 @@
-import { Plugin, PluginManager } from '@applicature-private/core.plugin-manager';
+import { Plugin, PluginManager } from '@applicature/synth.plugin-manager';
 
 class LitecoinBlockchainPlugin extends Plugin<any> {
     constructor(pluginManager: PluginManager) {

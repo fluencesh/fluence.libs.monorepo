@@ -1,5 +1,5 @@
-import { MultivestError, PluginManager, Service } from '@applicature-private/core.plugin-manager';
-import { Scheme } from '@applicature-private/fluence.lib.services';
+import { MultivestError, PluginManager, Service } from '@applicature/synth.plugin-manager';
+import { Scheme } from '@fluencesh/fluence.lib.services';
 import BigNumber from 'bignumber.js';
 import { get } from 'lodash';
 import * as logger from 'winston';

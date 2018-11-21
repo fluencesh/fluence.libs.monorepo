@@ -1,3 +1,14 @@
+const fs = require('fs');
+
+const exists = fs.existsSync('.env');
+if (exists) {
+    const envVars = fs.readFileSync('.env').toString('utf8').split('\n');
+    envVars.forEach((envVar) => {
+        const [ varName, varValue ] = envVar.split('=');
+        process.env[varName] = varValue;
+    })
+}
+
 module.exports = {
     "collectCoverageFrom": [
         "src/**/*.ts"
@@ -8,16 +19,18 @@ module.exports = {
             "diagnostics": false
         }
     },
-    // "testEnvironment": "node",
     "testResultsProcessor": "jest-multi-test-result-processor",
     "transform": {
         "^.+\\.tsx?$": "ts-jest"
     },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "testRegex": "test\/.*\\.spec\\.ts$",
     "moduleFileExtensions": [
         "ts",
         "tsx",
-        "js"
+        "js",
+        "jsx",
+        "json",
+        "node"
     ],
     "coveragePathIgnorePatterns": [
         "<rootDir>/.*?\\.d\\.ts$",

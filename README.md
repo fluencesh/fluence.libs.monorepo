@@ -8,6 +8,15 @@
 
 ## Base information
 
+Fluence is a tool for easier integration with different blockchains. You may migrate part of your exists application to the blockchain or build a brand new blockchain application using Fluence SDK.
+Fluence is available in two configurations:
+1. A pre-installed solution which may be used by multiple customers
+2. An on-premise solution which may be configured and deployed on your own private server
+
+Fluence already integrated with most popular blockchains: Bitcoin, Ethereum and Litecoin. Also, it will be integrated with HyperLedger Fabric, BitShares (Graphene) and Stellar in the nearest time.
+
+If you want to deploy your own blockchain, for private usage, than Fluence can easily be integrated with that. Also, Fluence provides a single interface for work with all blockchains via SDK or API, so if you want to use more than one blockchain in a single app, then it’s not a big deal.
+
 ## Libraries
 
 ### fluence.lib.bitcoin

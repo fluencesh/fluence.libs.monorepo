@@ -11,7 +11,7 @@ echo 'Release preparation'
 $dir/release-prepare.sh
 
 echo 'Bumping version'
-npm run lerna-publish -- "patch"  "--yes" "-m '[skip ci] chore(release): publish %s'" --git-remote https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}
+npm run lerna-publish -- "patch"  "--yes" "-m '[skip ci] chore(release): publish %s'"
 
 echo 'Generating Changelog'
 npm run make-changelog

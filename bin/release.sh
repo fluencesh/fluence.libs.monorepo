@@ -10,6 +10,9 @@ $dir/test.sh
 echo 'Release preparation'
 $dir/release-prepare.sh
 
+
+git status
+
 echo 'Bumping version'
 npm run lerna-publish -- "patch"  "--yes" "-m '[skip ci] chore(release): publish %s'"
 

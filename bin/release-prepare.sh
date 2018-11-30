@@ -11,8 +11,6 @@ setup_git() {
     git config --global user.name "Travis CI"
 
     git remote set-url origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}
-
-    git checkout -b $TRAVIS_JOB_ID
 }
 
 setup_npm

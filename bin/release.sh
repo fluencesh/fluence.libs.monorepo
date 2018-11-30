@@ -7,6 +7,9 @@ dir=`dirname "$0"`
 echo 'Executing tests'
 $dir/test.sh
 
+echo 'Release preparation'
+$dir/release-prepare.sh
+
 echo 'Bumping version'
 npm run lerna-publish -- "patch"  "--yes" "-m '[skip ci] chore(release): publish %s'"
 

@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.lib.sc.sdk.generator",
-  "version": "2.0.15",
+  "version": "2.0.16",
   "private": false,
   "description": "Ethereum Blockchain Plugin",
   "author": "Andrew Zubko <andrew@applicature.com>",

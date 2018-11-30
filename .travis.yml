@@ -28,11 +28,7 @@ install:
 
 jobs:
   include:
-  - script: npm run bootstrap-deps
-  - script: npm run build
-  - script: npm run test:ci
-  - script: npm run test:lint
-
+  - script: bin/test.sh
   - stage: report
     script: npm run test:sonar
   - stage: release-alpha

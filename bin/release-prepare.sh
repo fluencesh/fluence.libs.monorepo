@@ -11,6 +11,12 @@ setup_git() {
     git config --global user.name "Travis CI"
 
     git remote set-url origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}
+
+    if [TRAVIS_PULL_REQUEST != "false"]; then
+        git checkout $TRAVIS_PULL_REQUEST_BRANCH
+    else
+        git checkout $TRAVIS_BRANCH
+    fi
 }
 
 setup_npm

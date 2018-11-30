@@ -1,0 +1,13 @@
+{
+  "multivest": {
+    "blockchain": {
+      "ethereum": {
+        "providers": {
+          "native": {
+            "url": "ETHEREUM_URL"
+          }
+        }
+      }
+    }
+  }
+}

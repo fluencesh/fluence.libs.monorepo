@@ -1,0 +1,16 @@
+{
+  "multivest": {
+    "blockchain": {
+      "litecoin": {
+        "providers": {
+          "native": {
+            "host": "127.0.0.1",
+            "network": "testnet",
+            "username": "test",
+            "password": "test"
+          }
+        }
+      }
+    }
+  }
+}

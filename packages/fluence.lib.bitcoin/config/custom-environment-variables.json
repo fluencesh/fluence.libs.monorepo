@@ -1,0 +1,13 @@
+{
+  "multivest": {
+    "blockchain": {
+      "bitcoin": {
+        "providers": {
+          "native": {
+            "host": "BITCOIN_HOST"
+          }
+        }
+      }
+    }
+  }
+}

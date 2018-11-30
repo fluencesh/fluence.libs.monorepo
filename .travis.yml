@@ -16,11 +16,11 @@ install:
 - npm install
 - npm install -g gulp
 
-script:
-- npm run bootstrap-deps
-- npm run build
-- npm run test:ci
-- npm run test:lint
+#script:
+#- npm run bootstrap-deps
+#- npm run build
+#- npm run test:ci
+#- npm run test:lint
 
 
 #- git config --global user.email "bitbucket-bot@applicature.com"
@@ -28,6 +28,11 @@ script:
 
 jobs:
   include:
+  - script: npm run bootstrap-deps
+  - script: npm run build
+  - script: npm run test:ci
+  - script: npm run test:lint
+
   - stage: report
     script: npm run test:sonar
   - stage: release-alpha

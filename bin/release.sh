@@ -5,7 +5,7 @@ set -xe
 dir=`dirname "$0"`
 
 echo 'Executing tests'
-# $dir/test.sh
+$dir/test.sh
 
 echo 'Release preparation'
 $dir/release-prepare.sh

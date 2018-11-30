@@ -11,6 +11,6 @@ echo 'Release preparation'
 $dir/release-prepare.sh
 
 echo 'Bumping version'
-npm run lerna-publish -- "prerelease" "--yes" "-m '[skip ci] chore(alpha): publish %s'"
+npm run lerna-publish -- "prerelease" "--yes" "-m '[skip ci] chore(alpha): publish %s'" --git-remote https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}
 
 echo 'Finished'

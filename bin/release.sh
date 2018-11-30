@@ -10,11 +10,8 @@ $dir/test.sh
 echo 'Release preparation'
 $dir/release-prepare.sh
 
-
-git status
-
 echo 'Bumping version'
-npm run lerna-publish -- "patch"  "--yes" "-m '[skip ci] chore(release): publish %s'"
+npm run lerna-publish -- "patch"  "--yes" "-m '[skip ci] chore(release): publish %s'" --git-remote https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}
 
 echo 'Generating Changelog'
 npm run make-changelog

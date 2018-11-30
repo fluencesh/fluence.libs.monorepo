@@ -12,7 +12,7 @@ setup_git() {
     git config --global user.email "travis@travis-ci.org"
     git config --global user.name "Travis CI"
 
-    git remote set-url origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}
+    git remote set-url origin https://${GITHUB_AUTH}@github.com/${TRAVIS_REPO_SLUG}
 
     if [TRAVIS_PULL_REQUEST != "false"]; then
         git checkout $TRAVIS_PULL_REQUEST_BRANCH

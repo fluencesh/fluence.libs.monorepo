@@ -34,7 +34,7 @@ export class LitecoinBlockchainService extends BlockchainService<
     }
 
     public isValidNetwork(network: string) {
-        return AvailableNetwork.LITECOIN === network || AvailableNetwork.TEST_NET === network;
+        return AvailableNetwork.LITECOIN === network;
     }
 
     public async getHDAddress(index: number): Promise<string> {

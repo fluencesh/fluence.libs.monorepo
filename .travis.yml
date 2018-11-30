@@ -32,11 +32,10 @@ jobs:
     script: npm run test:sonar
   - stage: release-alpha
     if: branch != master
-    script: npm run lerna-publish -- "prerelease" "--yes" "-m '[skip ci] chore(alpha): publish %s'"
+    script: ./bin/release-patch.sh
   - stage: release-patch
     if: branch = master
-    script: npm run lerna-publish -- "patch"  "--yes" "-m '[skip ci] chore(release): publish %s'"
-    script: npm run make-changelog
+    script: ./bin/release.sh
 
 services:
 - mongodb

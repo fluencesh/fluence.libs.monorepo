@@ -15,22 +15,14 @@ cache: 'npm'
 install:
 - npm install
 - npm install -g gulp
-
-#script:
-#- npm run bootstrap-deps
-#- npm run build
-#- npm run test:ci
-#- npm run test:lint
-
+- npm run bootstrap-deps
+- npm run build
 
 #- git config --global user.email "bitbucket-bot@applicature.com"
 #- git config --global user.name "Bitbucket Bot"
 
 jobs:
   include:
-  - script: bin/test.sh
-  - stage: report
-    script: npm run test:sonar
   - stage: release-alpha
     if: branch != master
     script: ./bin/release-patch.sh

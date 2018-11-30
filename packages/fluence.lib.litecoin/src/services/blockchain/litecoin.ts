@@ -65,7 +65,7 @@ export class LitecoinBlockchainService extends BlockchainService<
     }
 
     public signTransaction(privateKey: Buffer, txData: LitecoinTransaction): string {
-        const network = this.getBitcoinLibNetwork();
+        const network = bitcoin.networks.litecoin;
 
         const key = bitcoin.ECPair.fromWIF(privateKey.toString('utf8'), network);
         
@@ -78,7 +78,7 @@ export class LitecoinBlockchainService extends BlockchainService<
     }
 
     public signData(privateKey: Buffer, data: Buffer): Signature {
-        const network = this.getBitcoinLibNetwork();
+        const network = bitcoin.networks.litecoin;
         const keyPair = bitcoin.ECPair.fromWIF(privateKey.toString('utf8'), network);
         const signature = keyPair.sign(data) as any;
 
@@ -94,11 +94,5 @@ export class LitecoinBlockchainService extends BlockchainService<
         const hex = Buffer.alloc(64, Buffer.concat([ signature.r, signature.s ])).toString('hex');
 
         return `0x${ hex }`;
-    }
-
-    private getBitcoinLibNetwork(): bitcoin.Network {
-        return this.getNetworkId() === AvailableNetwork.LITECOIN
-            ? bitcoin.networks.bitcoin
-            : bitcoin.networks.testnet;
     }
 }

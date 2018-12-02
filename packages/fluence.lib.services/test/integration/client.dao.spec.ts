@@ -2,109 +2,174 @@ import * as config from 'config';
 import { Db, MongoClient } from 'mongodb';
 import { MongodbClientDao } from '../../src/dao/mongodb/client.dao';
 import { Scheme } from '../../src/types';
+import { DaoCollectionNames } from '../..';
+import { createEntities, clearCollections, generateClient, getRandomItem } from '../helpers';
+import 'jest-extended';
 
-import { omit, random } from 'lodash';
-import { v1 as generateId } from 'uuid';
-
-import { randomClient } from '../helper';
-
-describe('client dao', () => {
-    let dao: MongodbClientDao;
-    const clients: Array<Scheme.Client> = [];
-    const clientsCount = 15;
-    let client: Scheme.Client;
-    let connection: Db;
+describe('Client DAO (integration)', () => {
+    let mongoUrl: string;
+    let connection: MongoClient;
 
     beforeAll(async () => {
-        connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {
-            w: 1
-        });
-        dao = new MongodbClientDao(connection);
-        await dao.remove({});
-
-        for (let i = 0; i < clientsCount; i++) {
-            clients.push(await dao.create(randomClient()));
-        }
-    });
-
-    beforeEach(() => {
-        client = clients[random(0, clientsCount - 1)];
+        mongoUrl = config.get<string>('multivest.mongodb.url');
+        connection = await MongoClient.connect(mongoUrl);
     });
 
     afterAll(async () => {
-        await dao.remove({});
-
         await connection.close();
     });
 
-    it('should get by id', async () => {
-        const got = await dao.getById(client.id);
+    describe('Read operations', () => {
+        let dbName: string;
+        let db: Db;
+        let dao: MongodbClientDao;
 
-        expect(got).toEqual(client);
+        let clients: Array<Scheme.Client>;
+        let client: Scheme.Client;
+
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ClientRead';
+            db = connection.db(dbName);
+            dao = new MongodbClientDao(db);
+
+            await clearCollections(db, [ DaoCollectionNames.Client ]);
+
+            clients = new Array(15);
+            await createEntities(dao, generateClient, clients);
+        });
+
+        beforeEach(() => {
+            client = getRandomItem(clients);
+        });
+
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
+
+        it('should get by id', async () => {
+            const got = await dao.getById(client.id);
+            expect(got).toEqual(client);
+        });
+
+        it('should get by email', async () => {
+            const got = await dao.getByEmail(client.email);
+            expect(got).toEqual(client);
+        });
+
+        it('should get by email and password hash', async () => {
+            const got = await dao.getByEmailAndPasswordHash(client.email, client.passwordHash);
+            expect(got).toEqual(client);
+        });
     });
 
-    it('should get by email', async () => {
-        const got = await dao.getByEmail(client.email);
+    describe('Create/Update operations', () => {
+        let dbName: string;
+        let db: Db;
+        let dao: MongodbClientDao;
 
-        expect(got).toEqual(client);
+        let clients: Array<Scheme.Client>;
+        let client: Scheme.Client;
+
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ClientCreateUpdate';
+            db = connection.db(dbName);
+            dao = new MongodbClientDao(db);
+
+            await clearCollections(db, [ DaoCollectionNames.Client ]);
+
+            clients = new Array(15);
+            await createEntities(dao, generateClient, clients);
+        });
+
+        beforeEach(() => {
+            client = getRandomItem(clients);
+        });
+
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
+
+        it('should set status', async () => {
+            const status = client.status === Scheme.ClientStatus.Active
+                ? Scheme.ClientStatus.Inactive
+                : Scheme.ClientStatus.Active;
+            await dao.setStatus(client.id, status);
+
+            const got = await dao.getById(client.id);
+            expect(got.status).toEqual(status);
+
+            client.status = status;
+        });
+
+        it('should set verification status', async () => {
+            const isVerified = !client.isVerified;
+            await dao.setVerificationStatus(client.id, isVerified);
+
+            const got = await dao.getById(client.id);
+            expect(got.isVerified).toEqual(isVerified);
+
+            client.isVerified = isVerified;
+        });
+
+        it('should set admin status', async () => {
+            const isAdmin = !client.isAdmin;
+            await dao.setAdminStatus(client.id, isAdmin);
+
+            const got = await dao.getById(client.id);
+            expect(got.isAdmin).toEqual(isAdmin);
+        
+            client.isAdmin = isAdmin;
+        });
+
+        it('should create new client', async () => {
+            const data = generateClient();
+            const created = await dao.createClient(data.email, data.passwordHash, data.isAdmin);
+
+            expect(created.email).toEqual(data.email);
+            expect(created.passwordHash).toEqual(data.passwordHash);
+            expect(created.isAdmin).toEqual(data.isAdmin);
+
+            const got = await dao.getById(created.id);
+            expect(got).toBeObject();
+
+            clients.push(got);
+        });
     });
 
-    it('should get by email and password hash', async () => {
-        const got = await dao.getByEmailAndPasswordHash(client.email, client.passwordHash);
+    describe('Delete operations', () => {
+        let dbName: string;
+        let db: Db;
+        let dao: MongodbClientDao;
 
-        expect(got).toEqual(client);
-    });
+        let clients: Array<Scheme.Client>;
+        let client: Scheme.Client;
 
-    it('should set status', async () => {
-        client.status = client.status === Scheme.ClientStatus.Active
-            ? Scheme.ClientStatus.Inactive
-            : Scheme.ClientStatus.Active;
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ClientDelete';
+            db = connection.db(dbName);
+            dao = new MongodbClientDao(db);
 
-        await dao.setStatus(client.id, client.status);
-        const got = await dao.getById(client.id);
+            await clearCollections(db, [ DaoCollectionNames.Client ]);
 
-        expect(got).toEqual(client);
-    });
+            clients = new Array(15);
+            await createEntities(dao, generateClient, clients);
+        });
 
-    it('should set verification status', async () => {
-        const isVerified = !client.isVerified;
+        beforeEach(() => {
+            client = getRandomItem(clients);
+        });
 
-        await dao.setVerificationStatus(client.id, isVerified);
-        const got = await dao.getById(client.id);
-
-        expect(got.isVerified).toEqual(isVerified);
-
-        client.isVerified = isVerified;
-    });
-
-    it('should set admin status', async () => {
-        const isAdmin = !client.isAdmin;
-
-        await dao.setAdminStatus(client.id, isAdmin);
-        const got = await dao.getById(client.id);
-
-        expect(got.isVerified).toEqual(isAdmin);
-
-        client.isAdmin = isAdmin;
-    });
-
-    it('should create new client', async () => {
-        const data = randomClient();
-        const got = await dao.createClient(data.email, data.passwordHash, data.isAdmin);
-
-        expect(got.email).toEqual(data.email);
-        expect(got.passwordHash).toEqual(data.passwordHash);
-        expect(got.isAdmin).toEqual(data.isAdmin);
-
-        clients.push(got);
-    });
-
-    it('should remove by id', async () => {
-        await dao.removeById(client.id);
-        const got = await dao.getById(client.id);
-
-        expect(got).toBeNull();
-
-        clients.splice(clients.indexOf(client), 1);
+        it('should remove by id', async () => {
+            await dao.removeById(client.id);
+            const got = await dao.getById(client.id);
+    
+            expect(got).toBeNull();
+    
+            clients.splice(clients.indexOf(client), 1);
+        });
     });
 });

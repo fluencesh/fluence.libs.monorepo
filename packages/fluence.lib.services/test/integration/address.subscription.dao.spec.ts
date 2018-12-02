@@ -1,179 +1,251 @@
 import * as config from 'config';
-import { Db, MongoClient } from 'mongodb';
 import { MongodbAddressSubscriptionDao } from '../../src/dao/mongodb/address.subscription.dao';
 import { Scheme } from '../../src/types';
+import {
+    getRandomItem,
+    createEntities,
+    generateAddressSubscription,
+    clearCollections
+} from '../helpers';
+import { DaoCollectionNames } from '../../src';
+import { MongoClient, Db } from 'mongodb';
+import 'jest-extended';
 
-import { random } from 'lodash';
-
-import { randomAddressSubscription } from '../helper';
-
-describe('address subscription dao', () => {
-    let dao: MongodbAddressSubscriptionDao;
-    const addressSubscriptions: Array<Scheme.AddressSubscription> = [];
-    const addressSubscriptionsCount = 15;
-    let addressSubscription: Scheme.AddressSubscription;
-    let connection: Db;
-
-    function getActiveSubscriptions() {
-        return addressSubscriptions.filter((subscription) =>
-            subscription.subscribed
-            && subscription.isClientActive
-            && subscription.isProjectActive
-        );
-    }
+describe('Address Subscription DAO (integration)', () => {
+    let mongoUrl: string;
+    let connection: MongoClient;
 
     beforeAll(async () => {
-        connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
-
-        dao = new MongodbAddressSubscriptionDao(connection);
-
-        await dao.remove({});
-
-        for (let i = 0; i < addressSubscriptionsCount; i++) {
-            addressSubscriptions.push(await dao.create(randomAddressSubscription()));
-        }
-    });
-
-    beforeEach(() => {
-        addressSubscription = addressSubscriptions[random(0, addressSubscriptionsCount - 1)];
+        mongoUrl = config.get<string>('multivest.mongodb.url');
+        connection = await MongoClient.connect(mongoUrl);
     });
 
     afterAll(async () => {
-        await dao.remove({});
-
         await connection.close();
     });
 
-    it('should get by id', async () => {
-        const got = await dao.getById(addressSubscription.id);
-        expect(got).toEqual(addressSubscription);
-    });
+    describe('Read operations', () => {
+        let dbName: string;
+        let db: Db;
+        let dao: MongodbAddressSubscriptionDao;
 
-    it('should get by id (active only)', async () => {
-        const subscription = getActiveSubscriptions()[0];
+        let addressSubscriptions: Array<Scheme.AddressSubscription>;
+        let addressSubscription: Scheme.AddressSubscription;
+        let activeAddressSubscription: Scheme.AddressSubscription;
 
-        if (!subscription) {
-            return;
-        }
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'AddressSubscriptionsRead';
+            db = connection.db(dbName);
+            dao = new MongodbAddressSubscriptionDao(db);
 
-        const got = await dao.getByIdActiveOnly(subscription.id);
+            await clearCollections(db, [ DaoCollectionNames.AddressSubscription ]);
 
-        expect(got).toEqual(subscription);
-    });
+            addressSubscriptions = new Array(15);
+            await createEntities(dao, generateAddressSubscription, addressSubscriptions);
+        });
 
-    it('should get by client id', async () => {
-        const filtered = addressSubscriptions.filter((as) => as.clientId === addressSubscription.clientId);
-        const got = await dao.listByClientId(addressSubscription.clientId);
-        expect(got).toEqual(filtered);
-    });
+        beforeEach(() => {
+            addressSubscription = getRandomItem(addressSubscriptions);
+            activeAddressSubscription = getRandomItem(
+                addressSubscriptions,
+                (item) => item.subscribed && item.isClientActive && item.isProjectActive
+            );
+        });
 
-    it('should get by client id (active only)', async () => {
-        const filtered = getActiveSubscriptions()
-            .filter((sub, index, subs) => sub.clientId === subs[0].clientId);
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
 
-        if (filtered.length === 0) {
-            return;
-        }
+        it('should get by id', async () => {
+            const got = await dao.getById(addressSubscription.id);
+            expect(got).toEqual(addressSubscription);
+        });
 
-        const got = await dao.listByClientIdActiveOnly(filtered[0].clientId);
+        it('should get by id (active only)', async () => {
+            if (!activeAddressSubscription) {
+                return;
+            }
 
-        expect(got).toEqual(filtered);
-    });
+            const got = await dao.getByIdActiveOnly(activeAddressSubscription.id);
 
-    it('should get by project id', async () => {
-        const filtered = addressSubscriptions.filter((as) => as.projectId === addressSubscription.projectId);
-        const got = await dao.listByProjectId(addressSubscription.projectId);
-        expect(got).toEqual(filtered);
-    });
+            expect(got).toEqual(activeAddressSubscription);
+        });
 
-    it('should get by project id (active only)', async () => {
-        const filtered = getActiveSubscriptions()
-            .filter((sub, index, subs) => sub.projectId === subs[0].projectId);
+        it('should get by client id', async () => {
+            const filtered = addressSubscriptions.filter((as) => as.clientId === addressSubscription.clientId);
+            const got = await dao.listByClientId(addressSubscription.clientId);
+            expect(got).toEqual(filtered);
+        });
 
-        if (filtered.length === 0) {
-            return;
-        }
+        it('should get by client id (active only)', async () => {
+            const filtered = addressSubscriptions
+                .filter((item) =>
+                    item.subscribed
+                    && item.isClientActive
+                    && item.isProjectActive
+                    && item.clientId === activeAddressSubscription.clientId
+                );
 
-        const got = await dao.listByProjectIdActiveOnly(filtered[0].projectId);
+            if (filtered.length === 0) {
+                return;
+            }
 
-        expect(got).toEqual(filtered);
-    });
+            const got = await dao.listByClientIdActiveOnly(filtered[0].clientId);
 
-    it('should get by id & project id & client id', async () => {
-        const got = await dao.listBySubscribedAddress(
-            addressSubscription.address,
-            addressSubscription.clientId,
-            addressSubscription.projectId
-        );
+            expect(got).toEqual(filtered);
+        });
 
-        expect(got).toEqual([addressSubscription]);
-    });
+        it('should get by project id', async () => {
+            const filtered = addressSubscriptions.filter((as) => as.projectId === addressSubscription.projectId);
+            const got = await dao.listByProjectId(addressSubscription.projectId);
+            expect(got).toEqual(filtered);
+        });
 
-    it('should get by id & project id & client id (active only)', async () => {
-        const filtered = getActiveSubscriptions()
-            .filter((sub, index, subs) =>
-                sub.projectId === subs[0].projectId
-                && sub.clientId === subs[0].clientId
-                && sub.address === subs[0].address
+        it('should get by project id (active only)', async () => {
+            const filtered = addressSubscriptions
+                .filter((item) =>
+                    item.subscribed
+                    && item.isClientActive
+                    && item.isProjectActive
+                    && item.projectId === activeAddressSubscription.projectId
+                );
+
+            if (filtered.length === 0) {
+                return;
+            }
+
+            const got = await dao.listByProjectIdActiveOnly(filtered[0].projectId);
+
+            expect(got).toEqual(filtered);
+        });
+
+        it('should get by id & project id & client id', async () => {
+            const got = await dao.listBySubscribedAddress(
+                addressSubscription.address,
+                addressSubscription.clientId,
+                addressSubscription.projectId
             );
 
-        if (filtered.length === 0) {
-            return;
-        }
-
-        const got = await dao.listBySubscribedAddressActiveOnly(
-            filtered[0].address,
-            filtered[0].clientId,
-            filtered[0].projectId
-        );
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should set new subscriber status', async () => {
-        addressSubscription.subscribed = !addressSubscription.subscribed;
-        await dao.setSubscribed(addressSubscription.id, addressSubscription.subscribed);
-        const got = await dao.getById(addressSubscription.id);
-        expect(got.subscribed).toEqual(addressSubscription.subscribed);
-    });
-
-    it('should set new is client active status', async () => {
-        addressSubscription.isClientActive = !addressSubscription.isClientActive;
-        await dao.setClientActive(addressSubscription.clientId, addressSubscription.isClientActive);
-        const got = await dao.listByClientId(addressSubscription.clientId);
-
-        const filtered = addressSubscriptions.filter((as) => as.clientId === addressSubscription.clientId);
-        filtered.forEach((as) => {
-            as.isClientActive = addressSubscription.isClientActive;
+            expect(got).toEqual([addressSubscription]);
         });
 
-        expect(got).toEqual(filtered);
+        it('should get by id & project id & client id (active only)', async () => {
+            const filtered = addressSubscriptions
+                .filter((item) =>
+                    item.subscribed
+                    && item.isClientActive
+                    && item.isProjectActive
+                    && item.clientId === activeAddressSubscription.clientId
+                    && item.projectId === activeAddressSubscription.projectId
+                );
+
+            if (filtered.length === 0) {
+                return;
+            }
+
+            const got = await dao.listBySubscribedAddressActiveOnly(
+                activeAddressSubscription.address,
+                activeAddressSubscription.clientId,
+                activeAddressSubscription.projectId
+            );
+
+            expect(got).toEqual(filtered);
+        });
     });
 
-    it('should set new is project active status', async () => {
-        addressSubscription.isProjectActive = !addressSubscription.isProjectActive;
-        await dao.setProjectActive(addressSubscription.projectId, addressSubscription.isProjectActive);
+    describe('write-only', () => {
+        let dbName: string;
+        let db: Db;
+        let dao: MongodbAddressSubscriptionDao;
 
-        const got = await dao.listByProjectId(addressSubscription.projectId);
+        let addressSubscriptions: Array<Scheme.AddressSubscription>;
+        let addressSubscription: Scheme.AddressSubscription;
 
-        const filtered = addressSubscriptions.filter((as) => as.projectId === addressSubscription.projectId);
-        filtered.forEach((as) => {
-            as.isProjectActive = addressSubscription.isProjectActive;
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'AddressSubscriptionsWrite';
+            db = connection.db(dbName);
+            dao = new MongodbAddressSubscriptionDao(db);
+
+            await clearCollections(db, [ DaoCollectionNames.AddressSubscription ]);
+
+            addressSubscriptions = new Array(15);
+            await createEntities(dao, generateAddressSubscription, addressSubscriptions);
         });
 
-        expect(got).toEqual(filtered);
-    });
+        beforeEach(() => {
+            addressSubscription = getRandomItem(addressSubscriptions);
+        });
 
-    it('should create subscription', async () => {
-        const data = randomAddressSubscription();
-        const fresh = await dao.createSubscription(
-            data.clientId,
-            data.projectId,
-            data.transportConnectionId,
-            data.address,
-            data.minConfirmations
-        );
-        const got = await dao.getById(fresh.id);
-        expect(got).toEqual(fresh);
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
+
+        it('should set new subscriber status', async () => {
+            const subscribed = !addressSubscription.subscribed;
+            await dao.setSubscribed(addressSubscription.id, subscribed);
+
+            const got = await dao.getById(addressSubscription.id);
+            expect(got.subscribed).toEqual(subscribed);
+
+            addressSubscription.subscribed = subscribed;
+        });
+    
+        it('should set new is client active status', async () => {
+            const isClientActive = !addressSubscription.isClientActive;
+            await dao.setClientActive(addressSubscription.clientId, isClientActive);
+
+            const got = await dao.listByClientId(addressSubscription.clientId);
+
+            const filtered = addressSubscriptions.filter((as) => as.clientId === addressSubscription.clientId);
+            expect(got).toHaveLength(filtered.length);
+            expect(got.map((item) => item.id)).toIncludeAllMembers(filtered.map((item) => item.id));
+            expect(got).toSatisfyAll((item: Scheme.AddressSubscription) => item.isClientActive === isClientActive);
+
+            filtered.forEach((as) => {
+                as.isClientActive = addressSubscription.isClientActive;
+            });
+        });
+    
+        it('should set new is project active status', async () => {
+            const isProjectActive = !addressSubscription.isProjectActive;
+            await dao.setProjectActive(addressSubscription.projectId, isProjectActive);
+
+            const got = await dao.listByProjectId(addressSubscription.projectId);
+
+            const filtered = addressSubscriptions.filter((as) => as.projectId === addressSubscription.projectId);
+            expect(got).toHaveLength(filtered.length);
+            expect(got.map((item) => item.id)).toIncludeAllMembers(filtered.map((item) => item.id));
+            expect(got).toSatisfyAll((item: Scheme.AddressSubscription) => item.isProjectActive === isProjectActive);
+
+            filtered.forEach((as) => {
+                as.isClientActive = addressSubscription.isClientActive;
+            });
+        });
+
+        it('should create subscription', async () => {
+            const data = generateAddressSubscription();
+            const created = await dao.createSubscription(
+                data.clientId,
+                data.projectId,
+                data.transportConnectionId,
+                data.address,
+                data.minConfirmations
+            );
+
+            expect(created._id).toBeDefined();
+            expect(created.id).toBeDefined();
+            expect(created.clientId).toEqual(data.clientId);
+            expect(created.projectId).toEqual(data.projectId);
+            expect(created.transportConnectionId).toEqual(data.transportConnectionId);
+            expect(created.address).toEqual(data.address);
+            expect(created.minConfirmations).toEqual(data.minConfirmations);
+
+            const got = await dao.getById(created.id);
+            expect(got).toBeObject();
+        });
     });
 });

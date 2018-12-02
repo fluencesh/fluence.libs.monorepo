@@ -1,13 +1,10 @@
-import * as config from 'config';
-import { random } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
 import { v1 as generateId } from 'uuid';
 import { MongodbTransportConnectionDao } from '../../src/dao/mongodb/transport.connection.dao';
 import { Scheme } from '../../src/types';
-import { randomTransportConnection } from '../helper';
+import { generateTransportConnection } from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('transport connection dao', () => {
+describe('Transport Connection DAO (unit)', () => {
     let dao: MongodbTransportConnectionDao;
     let collection: any;
 
@@ -77,7 +74,7 @@ describe('transport connection dao', () => {
     });
 
     it('createTransportConnection() transfers correct arguments', async () => {
-        const data = randomTransportConnection();
+        const data = generateTransportConnection();
 
         await dao.createTransportConnection(
             data.blockchainId,

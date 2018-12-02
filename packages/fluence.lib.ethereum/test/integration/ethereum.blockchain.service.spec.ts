@@ -12,11 +12,11 @@ import { Db, MongoClient } from 'mongodb';
 import { EthereumBlockchainService } from '../../src/services/blockchain/ethereum';
 import { ManagedEthereumTransportService } from '../../src/services/transports/managed.ethereum.transport.service';
 import { EthereumBlock, EthereumTopic, EthereumTopicFilter, EthereumTransaction } from '../../src/types';
-import { clearDb } from '../helper';
+import { clearCollections } from '../helpers';
 
 describe('ethereum blockchain', () => {
     let blockchainService: EthereumBlockchainService;
-    let client: MongoClient;
+    let connection: MongoClient;
     let db: Db;
     let pluginManager: PluginManager;
     let contractService: ContractService;
@@ -36,42 +36,35 @@ describe('ethereum blockchain', () => {
         await pluginManager.init();
     }
 
-    async function initDb() {
-        client = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
-        db = client.db(config.get('multivest.mongodb.dbName'));
-    }
-
-    async function createTransportConnections() {
-        const transportConnections: Array<Scheme.TransportConnection> = [
-            {
-                blockchainId: 'ETHEREUM',
-                networkId: NETWORK_ID,
-                providerId: 'json-rpc',
-                settings: {
-                    url: config.get('multivest.blockchain.ethereum.providers.native.url'),
-                },
-                isPrivate: false,
-                status: Scheme.TransportConnectionStatus.Enabled
-            } as Scheme.TransportConnection
-        ];
+    async function createTransportConnection() {
+        const transportConnection = {
+            blockchainId: 'ETHEREUM',
+            networkId: NETWORK_ID,
+            providerId: 'json-rpc',
+            settings: {
+                url: config.get('multivest.blockchain.ethereum.providers.native.url'),
+            },
+            isPrivate: false,
+            status: Scheme.TransportConnectionStatus.Enabled
+        } as Scheme.TransportConnection;
 
         const transportConnectionDao = new MongodbTransportConnectionDao(db);
 
-        const tcs = await Promise.all(transportConnections.map((tc) => transportConnectionDao.createTransportConnection(
-            tc.blockchainId,
-            tc.networkId,
-            tc.providerId,
-            tc.priority,
-            tc.settings,
-            tc.status,
-            tc.isFailing,
-            tc.lastFailedAt,
-            tc.failedCount,
-            tc.isPrivate,
+        const created = await transportConnectionDao.createTransportConnection(
+            transportConnection.blockchainId,
+            transportConnection.networkId,
+            transportConnection.providerId,
+            transportConnection.priority,
+            transportConnection.settings,
+            transportConnection.status,
+            transportConnection.isFailing,
+            transportConnection.lastFailedAt,
+            transportConnection.failedCount,
+            transportConnection.isPrivate,
             null
-        )));
+        );
 
-        transportConnectionId = tcs[0].id;
+        transportConnectionId = created.id;
     }
 
     async function initBlockchainService() {
@@ -116,19 +109,26 @@ describe('ethereum blockchain', () => {
     }
 
     beforeAll(async () => {
-        await initDb();
-        await clearDb([
+        connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
+        db = connection.db(config.get('multivest.mongodb.dbName'));
+
+        await clearCollections(db, [
             DaoCollectionNames.Contract,
             DaoCollectionNames.TransportConnection,
         ]);
+
+        await createTransportConnection();
         await initPluginManager();
-        await createTransportConnections();
         await initBlockchainService();
 
         contractService = pluginManager.getServiceByClass(ContractService) as ContractService;
         const randomContractAbi = require('./data/random.contract.abi.json');
         const randomContractAddress = '0x85B887d535736080b235a5ea389C2CD256bD3744';
         randomContract = await contractService.createContract('project id', randomContractAddress, randomContractAbi);
+    });
+
+    afterAll(async () => {
+        await connection.close();
     });
 
     it('should get block by height', async () => {

@@ -1,8 +1,8 @@
 import { MongodbAddressSubscriptionDao } from '../../src/dao/mongodb/address.subscription.dao';
-import { randomAddressSubscription } from '../helper';
+import { generateAddressSubscription } from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('Address subscription dao', () => {
+describe('Address Subscription DAO (unit)', () => {
     let dao: MongodbAddressSubscriptionDao;
     let collection: any;
 
@@ -176,12 +176,11 @@ describe('Address subscription dao', () => {
     });
 
     it('createSubscription() transfers correct arguments', async () => {
-        const data = randomAddressSubscription();
+        const data = generateAddressSubscription();
         await dao.createSubscription(
             data.clientId,
             data.projectId,
-            data.blockchainId,
-            data.networkId,
+            data.transportConnectionId,
             data.address,
             data.minConfirmations
         );

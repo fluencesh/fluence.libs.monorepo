@@ -73,7 +73,7 @@ export class MongodbContractPublicRequestDao extends MongoDBDao<Scheme.ContractP
         adminResolution: string,
         adminResolutionStatus: Scheme.AdminResolutionStatus
     ): Promise<void> {
-        this.updateRaw({ id: requestId }, {
+        await this.updateRaw({ id: requestId }, {
             $set: {
                 adminId,
                 adminResolution,

@@ -1,7 +1,95 @@
-import { Scheme, DaoCollectionNames } from '../src';
+import {
+    Scheme,
+    DaoCollectionNames,
+    MongodbAddressSubscriptionDao,
+    MongodbTransportConnectionDao,
+    MongodbOraclizeSubscriptionDao,
+    MongodbTransactionHashSubscriptionDao,
+    MongodbEthereumContractSubscriptionDao
+} from '../../src';
 import { sortBy, omit } from 'lodash';
+import { createEntities, getRandomItem } from './db.helpers';
+import {
+    generateEthereumContractSubscription,
+    generateTransportConnection,
+    generateOraclize,
+    generateTransactionSubscription,
+    generateAddressSubscription
+} from './entities.generators';
+import { Db } from 'mongodb';
 
 //#region integration
+export async function initTransportConnectionSubscriptionsInDb(db: Db) {
+    const transportConnections: Array<Scheme.TransportConnection> = new Array(5);
+    const oraclizeSubscriptions: Array<Scheme.OraclizeSubscription> = new Array(15);
+    const txHashSubscriptions: Array<Scheme.TransactionHashSubscription> = new Array(15);
+    const contractSubscriptions: Array<Scheme.EthereumContractSubscription> = new Array(15);
+    const addressSubscriptions: Array<Scheme.AddressSubscription> = new Array(15);
+
+    await createEntities(
+        new MongodbTransportConnectionDao(db),
+        generateTransportConnection,
+        transportConnections
+    );
+
+    await Promise.all([
+        createEntities(
+            new MongodbOraclizeSubscriptionDao(db),
+            () => {
+                const data = generateOraclize();
+                data.transportConnectionId = getRandomItem(transportConnections).id;
+                return data;
+            },
+            oraclizeSubscriptions
+        ),
+        createEntities(
+            new MongodbTransactionHashSubscriptionDao(db),
+            () => {
+                const data = generateTransactionSubscription();
+                data.transportConnectionId = getRandomItem(transportConnections).id;
+                return data;
+            },
+            txHashSubscriptions
+        ),
+        createEntities(
+            new MongodbEthereumContractSubscriptionDao(db),
+            () => {
+                const data = generateEthereumContractSubscription();
+                data.transportConnectionId = getRandomItem(transportConnections).id;
+                return data;
+            },
+            contractSubscriptions
+        ),
+        createEntities(
+            new MongodbAddressSubscriptionDao(db),
+            () => {
+                const data = generateAddressSubscription();
+                data.transportConnectionId = getRandomItem(transportConnections).id;
+                return data;
+            },
+            addressSubscriptions
+        ),
+    ]);
+
+    const transportConnectionSubscriptions: Array<Scheme.TransportConnectionSubscription> = [];
+    for (const transportConnection of transportConnections) {
+        const mergedData = transportConnection as Scheme.TransportConnectionSubscription;
+
+        mergedData.addressSubscriptions =
+            addressSubscriptions.filter((s) => s.transportConnectionId === mergedData.id);
+        mergedData.contractSubscriptions =
+            contractSubscriptions.filter((s) => s.transportConnectionId === mergedData.id);
+        mergedData.oraclizeSubscriptions =
+            oraclizeSubscriptions.filter((s) => s.transportConnectionId === mergedData.id);
+        mergedData.transactionHashSubscriptions =
+            txHashSubscriptions.filter((s) => s.transportConnectionId === mergedData.id);
+
+        transportConnectionSubscriptions.push(mergedData);
+    }
+
+    return transportConnectionSubscriptions;
+}
+
 export function convertTcsByStatus(
     tcs: Scheme.TransportConnectionSubscription,
     status: Scheme.TransportConnectionSubscriptionStatus

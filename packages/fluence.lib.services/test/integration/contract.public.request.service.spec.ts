@@ -2,175 +2,186 @@ import * as config from 'config';
 import { random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
 import { v1 as generateId } from 'uuid';
-import { ContractService, MongoContractDao } from '../../index';
 import { MongodbContractPublicRequestDao } from '../../src/dao/mongodb/contract.public.request.dao';
-import { ContractPublicRequestService } from '../../src/services/object/contract.public.request.service';
 import { Scheme } from '../../src/types';
-import { randomContract, randomContractPublicRequest } from '../helper';
+import { DaoCollectionNames, ContractPublicRequestService, MongoContractDao, ContractService } from '../../src';
+import {
+    clearCollections,
+    createEntities,
+    generateContractPublicRequest,
+    getRandomItem,
+    generateContract
+} from '../helpers';
+import 'jest-extended';
 
-describe('contract public request service', () => {
-    let connection: Db;
-    
-    let reqDao: MongodbContractPublicRequestDao;
-    const requests: Array<Scheme.ContractPublicRequest> = [];
-    const requestsCount = 15;
-    let request: Scheme.ContractPublicRequest;
-
-    let contractDao: MongoContractDao;
-    const contracts: Array<Scheme.ContractScheme> = [];
-    const contractsCount: number = 15;
-    let contract: Scheme.ContractScheme;
-
-    let contractPublicRequestService: ContractPublicRequestService;
-    let contractService: ContractService;
+describe('Contract Public Request Service (integration)', () => {
+    let mongoUrl: string;
+    let connection: MongoClient;
 
     beforeAll(async () => {
-        connection = await MongoClient.connect(
-            `${config.get('multivest.mongodb.urlWithDbPrefix')}-public-request-service`,
-            {}
-        );
-
-        contractDao = new MongoContractDao(connection);
-        reqDao = new MongodbContractPublicRequestDao(connection);
-
-        await contractDao.remove({});
-        await reqDao.remove({});
-
-        for (let i = 0; i < requestsCount; i++) {
-            contracts.push(await contractDao.create(randomContract()));
-        }
-
-        for (let i = 0; i < requestsCount; i++) {
-            const randomReq = randomContractPublicRequest();
-
-            randomReq.contractId = contracts[random(0, requestsCount - 1)].id;
-
-            requests.push(await reqDao.create(randomReq));
-        }
-
-        contractService = new ContractService(null);
-        (contractService as any).contractDao = contractDao;
-
-        contractPublicRequestService = new ContractPublicRequestService(null);
-        (contractPublicRequestService as any).contractPublicRequestDao = reqDao;
-        (contractPublicRequestService as any).contractService = contractService;
-    });
-
-    beforeEach(() => {
-        request = requests[random(0, requestsCount - 1)];
-        contract = contracts[random(0, contractsCount - 1)];
+        mongoUrl = config.get<string>('multivest.mongodb.url');
+        connection = await MongoClient.connect(mongoUrl);
     });
 
     afterAll(async () => {
-        await contractDao.remove({});
-        await reqDao.remove({});
-
         await connection.close();
     });
 
-    it('should get request by id', async () => {
-        const got = await contractPublicRequestService.getById(request.id);
+    describe('Read operations', () => {
+        let dbName: string;
+        let db: Db;
+        let service: ContractPublicRequestService;
 
-        expect(got).toEqual(request);
-    });
+        let requests: Array<Scheme.ContractPublicRequest>;
+        let request: Scheme.ContractPublicRequest;
 
-    it('should get all requests', async () => {
-        const got = await contractPublicRequestService.listAll();
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ContractPublicRequestServiceRead';
+            db = connection.db(dbName);
 
-        expect(got).toEqual(requests);
-    });
+            const contractDao = new MongoContractDao(db);
+            const contractService = new ContractService(null);
+            (contractService as any).contractDao = contractDao;
 
-    it('should get requests by client\'s id', async () => {
-        const got = await contractPublicRequestService.listByClient(request.clientId);
+            const dao = new MongodbContractPublicRequestDao(db);
+            service = new ContractPublicRequestService(null);
+            (service as any).contractPublicRequestDao = dao;
+            (service as any).contractService = contractService;
 
-        expect(got).toEqual([ request ]);
-    });
+            await clearCollections(db, [ DaoCollectionNames.ContractPublicRequest, DaoCollectionNames.Contract ]);
 
-    it('should get requests by status', async () => {
-        const filtered = requests.filter((req) => req.adminResolutionStatus === request.adminResolutionStatus);
-        const got = await contractPublicRequestService.listByStatus(request.adminResolutionStatus);
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should get requests by client id and status', async () => {
-        const filtered = requests.filter((req) =>
-            req.adminResolutionStatus === request.adminResolutionStatus
-            && req.clientId === request.clientId
-        );
-        const got = await contractPublicRequestService.listByClientIdAndStatus(
-            request.clientId,
-            request.adminResolutionStatus
-        );
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should get unresolved requests', async () => {
-        const filtered = requests.filter((req) => req.adminResolutionStatus === null);
-        const got = await contractPublicRequestService.listUnresolvedRequests();
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should create requests', async () => {
-        const randomReq = randomContractPublicRequest();
-        const notFabricContract = contracts.find((c) => !c.isFabric);
-
-        randomReq.contractId = notFabricContract.id;
-
-        notFabricContract.isFabric = !notFabricContract.isFabric;
-
-        const got = await contractPublicRequestService.createPublicContractRequest(
-            randomReq.clientId,
-            randomReq.contractId,
-            randomReq.description,
-            notFabricContract.isFabric
-        );
-
-        expect(got.clientId).toEqual(randomReq.clientId);
-        expect(got.contractId).toEqual(randomReq.contractId);
-        expect(got.description).toEqual(randomReq.description);
-        expect(got.adminId).toEqual(null);
-        expect(got.adminResolution).toEqual(null);
-        expect(got.adminResolutionStatus).toEqual(null);
-
-        const patchedContract = await contractService.getById(notFabricContract.id);
-
-        expect(patchedContract.isFabric).toBeTruthy();
-    });
-
-    it('should set admin\'s resolution', async () => {
-        const notPublicContracts = contracts.filter((c) => !c.isPublic);
-
-        // tslint:disable-next-line:no-shadowed-variable
-        const req = requests.find((req) => {
-            const relatedContract = contracts.find((c) => req.contractId === c.id);
-
-            return !relatedContract.isPublic;
+            requests = new Array(15);
+            await createEntities(dao, generateContractPublicRequest, requests);
         });
 
-        if (!req) {
-            return;
-        }
+        beforeEach(() => {
+            request = getRandomItem(requests);
+        });
 
-        req.adminId = generateId();
-        req.adminResolution = 'adminResolution';
-        req.adminResolutionStatus = Scheme.AdminResolutionStatus.APPROVE;
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
 
-        await contractPublicRequestService.setResolution(
-            req.id,
-            req.adminId,
-            req.adminResolution,
-            req.adminResolutionStatus
-        );
+        it('should get request by id', async () => {
+            const got = await service.getById(request.id);
+            expect(got).toEqual(request);
+        });
+    
+        it('should get all requests', async () => {
+            const got = await service.listAll();
+            expect(got).toEqual(requests);
+        });
+    
+        it('should get requests by client\'s id', async () => {
+            const filtered = requests.filter((item) => item.clientId === request.clientId);
+            const got = await service.listByClient(request.clientId);
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get requests by status', async () => {
+            const filtered = requests.filter((req) => req.adminResolutionStatus === request.adminResolutionStatus);
+            const got = await service.listByStatus(request.adminResolutionStatus);
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get requests by client id and status', async () => {
+            const filtered = requests.filter((req) =>
+                req.adminResolutionStatus === request.adminResolutionStatus
+                && req.clientId === request.clientId
+            );
+            const got = await service.listByClientIdAndStatus(request.clientId, request.adminResolutionStatus);
+    
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get unresolved requests', async () => {
+            const filtered = requests.filter((req) => req.adminResolutionStatus === null);
+            const got = await service.listUnresolvedRequests();
+            expect(got).toEqual(filtered);
+        });
+    });
 
-        const got = await contractPublicRequestService.getById(req.id);
+    describe('Create/Update operations', () => {
+        let dbName: string;
+        let db: Db;
+        let service: ContractPublicRequestService;
 
-        expect(got).toEqual(req);
+        let requests: Array<Scheme.ContractPublicRequest>;
+        let request: Scheme.ContractPublicRequest;
 
-        const publicContract = await contractService.getById(req.contractId);
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ContractPublicRequestServiceCreateUpdate';
+            db = connection.db(dbName);
 
-        expect(publicContract.isPublic).toBeTruthy();
+            const contractDao = new MongoContractDao(db);
+            const contractService = new ContractService(null);
+            (contractService as any).contractDao = contractDao;
+
+            const dao = new MongodbContractPublicRequestDao(db);
+            service = new ContractPublicRequestService(null);
+            (service as any).contractPublicRequestDao = dao;
+            (service as any).contractService = contractService;
+
+            await clearCollections(db, [ DaoCollectionNames.ContractPublicRequest, DaoCollectionNames.Contract ]);
+
+            const contracts = new Array(10);
+            await createEntities(contractDao, generateContract, contracts);
+
+            requests = new Array(15);
+            await createEntities(dao, () => {
+                const data = generateContractPublicRequest();
+                data.contractId = getRandomItem(contracts).id;
+                return data;
+            }, requests);
+        });
+
+        beforeEach(() => {
+            request = getRandomItem(requests);
+        });
+
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
+
+        it('should create requests', async () => {
+            const got = await service.createPublicContractRequest(
+                request.clientId,
+                request.contractId,
+                request.description,
+                false
+            );
+
+            expect(got.clientId).toEqual(request.clientId);
+            expect(got.contractId).toEqual(request.contractId);
+            expect(got.description).toEqual(request.description);
+            expect(got.adminId).toEqual(null);
+            expect(got.adminResolution).toEqual(null);
+            expect(got.adminResolutionStatus).toEqual(null);
+        });
+
+        it('should set admin\'s resolution', async () => {
+            request.adminId = generateId();
+            request.adminResolution = 'adminResolution';
+            request.adminResolutionStatus = random(0, 1)
+                ? Scheme.AdminResolutionStatus.APPROVE
+                : Scheme.AdminResolutionStatus.DISAPPROVE;
+
+            await service.setResolution(
+                request.id,
+                request.adminId,
+                request.adminResolution,
+                request.adminResolutionStatus
+            );
+
+            const got = await service.getById(request.id);
+
+            expect(got.adminId).toEqual(request.adminId);
+            expect(got.adminResolution).toEqual(request.adminResolution);
+            expect(got.adminResolutionStatus).toEqual(request.adminResolutionStatus);
+        });
     });
 });

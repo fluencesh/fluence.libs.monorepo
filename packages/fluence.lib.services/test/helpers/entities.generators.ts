@@ -1,18 +1,14 @@
-import { MongoDBDao } from '@applicature/synth.mongodb';
 import BigNumber from 'bignumber.js';
-import * as config from 'config';
 import { createHash } from 'crypto';
 import * as faker from 'faker';
 import { random, sample } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
 import { generate } from 'randomstring';
 import { v1 as generateId } from 'uuid';
-import { RandomStringPresets } from '../src/constants';
-import { Scheme } from './../src/types';
-import { Constructable, Dao } from '@applicature/synth.plugin-manager';
+import { RandomStringPresets } from '../../src/constants';
+import { Scheme } from '../../src/types';
 import TransactionStatus = Scheme.TransactionStatus;
 
-export function randomAddressSubscription(): Scheme.AddressSubscription {
+export function generateAddressSubscription(): Scheme.AddressSubscription {
     return {
         clientId: generateId(),
         projectId: generateId(),
@@ -26,7 +22,7 @@ export function randomAddressSubscription(): Scheme.AddressSubscription {
     } as Scheme.AddressSubscription;
 }
 
-export function randomTransactionSubscription(): Scheme.TransactionHashSubscription {
+export function generateTransactionSubscription(): Scheme.TransactionHashSubscription {
     return {
         clientId: generateId(),
         hash: `0x${generateId()}`,
@@ -39,7 +35,7 @@ export function randomTransactionSubscription(): Scheme.TransactionHashSubscript
     } as Scheme.TransactionHashSubscription;
 }
 
-export function randomClient(): Scheme.Client {
+export function generateClient(): Scheme.Client {
     return {
         email: faker.internet.email(),
         passwordHash: createHash('sha1').update(faker.internet.password()).digest('hex'),
@@ -50,7 +46,7 @@ export function randomClient(): Scheme.Client {
     } as Scheme.Client;
 }
 
-export function randomProject(): Scheme.Project {
+export function generateProject(): Scheme.Project {
     const salt = generate({ length: 64, charset: '1234567890abcdef' });
     const token = generate({ length: 64, charset: '1234567890abcdef' });
     const saltyToken = createHash('sha256')
@@ -82,7 +78,7 @@ export function randomProject(): Scheme.Project {
     } as Scheme.Project;
 }
 
-export function randomWebhookAction(): Scheme.WebhookActionItem {
+export function generateWebhookAction(): Scheme.WebhookActionItem {
     const failedCount = random(0, 5);
 
     const randomNumber = random(0, 1, true);
@@ -134,7 +130,7 @@ export function randomWebhookAction(): Scheme.WebhookActionItem {
     } as Scheme.WebhookActionItem;
 }
 
-export function randomTransportConnection() {
+export function generateTransportConnection() {
     const isFailing = random(0, 1, true) > .5;
 
     const status = random(0, 1, true) > .5
@@ -164,7 +160,7 @@ export function randomTransportConnection() {
     } as Scheme.TransportConnection;
 }
 
-export function randomEthereumContractSubscription(): Scheme.EthereumContractSubscription {
+export function generateEthereumContractSubscription(): Scheme.EthereumContractSubscription {
     const randomNumber = random(0, 1, true);
     let compatibleStandard;
     if (randomNumber < .33) {
@@ -175,7 +171,7 @@ export function randomEthereumContractSubscription(): Scheme.EthereumContractSub
         compatibleStandard = Scheme.EthereumContractCompatibleStandard.ERC721;
     }
 
-    const addressSubscription = randomAddressSubscription();
+    const addressSubscription = generateAddressSubscription();
     return Object.assign({
         compatibleStandard,
         abi: [],
@@ -185,7 +181,7 @@ export function randomEthereumContractSubscription(): Scheme.EthereumContractSub
     }, addressSubscription) as Scheme.EthereumContractSubscription;
 }
 
-export function randomEthereumEventLog(): Scheme.EthereumEventLog {
+export function generateEthereumEventLog(): Scheme.EthereumEventLog {
     return {
         id: generateId(),
 
@@ -209,7 +205,7 @@ export function randomEthereumEventLog(): Scheme.EthereumEventLog {
     } as Scheme.EthereumEventLog;
 }
 
-export function randomContract() {
+export function generateContract() {
     return {
         address: generateId(),
         abi: getRandomAbi(),
@@ -220,14 +216,14 @@ export function randomContract() {
 }
 
 // tslint:disable-next-line:no-var-requires
-const abi: Array<any> = require('./data/abi.json');
+const abi: Array<any> = require('../data/abi.json');
 const methodsCount = abi.length;
 
 export function getRandomAbi() {
     return [ abi[random(0, methodsCount - 1)] ];
 }
 
-export function randomContractPublicRequest(
+export function generateContractPublicRequest(
     clientId: string = generateId(),
     contractId: string = generateId(),
     adminId: string = null,
@@ -244,11 +240,11 @@ export function randomContractPublicRequest(
     } as Scheme.ContractPublicRequest;
 }
 
-export function randomScheduledTx() {
+export function generateScheduledTx() {
     return {
         id: generateId(),
         cronExpression: '* * * * * * *',
-        tx: randomTransactionScheme(),
+        tx: generateTransactionScheme(),
         projectId: generateId(),
         privateKey: generate(RandomStringPresets.Hash256),
         relatedJobId: generateId(),
@@ -256,7 +252,7 @@ export function randomScheduledTx() {
     } as Scheme.ScheduledTx;
 }
 
-export function randomTransactionScheme(): Scheme.BlockchainTransaction {
+export function generateTransactionScheme(): Scheme.BlockchainTransaction {
     return {
         id: '123',
         ref: '123',
@@ -277,7 +273,7 @@ export function randomTransactionScheme(): Scheme.BlockchainTransaction {
     } as Scheme.BlockchainTransaction;
 }
 
-export function randomSession(type?: Scheme.SessionType): Scheme.Session {
+export function generateSession(type?: Scheme.SessionType): Scheme.Session {
     type = type || random(0, 1) ? Scheme.SessionType.ProjectApiKey : Scheme.SessionType.UserSession;
 
     const expiredAt = type === Scheme.SessionType.UserSession ? new Date() : null;
@@ -295,7 +291,7 @@ export function randomSession(type?: Scheme.SessionType): Scheme.Session {
     } as Scheme.Session;
 }
 
-export function randomProjectBlockchainSetup(projectId?: string, privateTransportConnectionId?: string) {
+export function generateProjectBlockchainSetup(projectId?: string, privateTransportConnectionId?: string) {
     return {
         blockchainId: 'blockchainId',
         projectId: projectId || generateId(),
@@ -304,7 +300,7 @@ export function randomProjectBlockchainSetup(projectId?: string, privateTranspor
     } as Scheme.ProjectBlockchainSetup;
 }
 
-export function randomOraclize(projectId: string = generateId(), ) {
+export function generateOraclize(projectId: string = generateId(), ) {
     return {
         clientId: generateId(),
         projectId,
@@ -322,7 +318,7 @@ export function randomOraclize(projectId: string = generateId(), ) {
     } as Scheme.OraclizeSubscription;
 }
 
-export function randomSubscriptionBlockChecker() {
+export function generateSubscriptionBlockRecheck() {
     const typesKeys = Object.keys(Scheme.SubscriptionBlockRecheckType);
     const blockHeight = random(500000, 1000000);
 
@@ -334,11 +330,11 @@ export function randomSubscriptionBlockChecker() {
         blockHash: generateId(),
         blockHeight,
         invokeOnBlockHeight: blockHeight + 10,
-        webhookActionItem: randomWebhookAction()
+        webhookActionItem: generateWebhookAction()
     } as Scheme.SubscriptionBlockRecheck;
 }
 
-export function generateRandomPrometheusMetric(): Scheme.PrometheusMetric {
+export function generatePrometheusMetric(): Scheme.PrometheusMetric {
     return {
         id: generateId(),
         name: generate(),
@@ -346,48 +342,9 @@ export function generateRandomPrometheusMetric(): Scheme.PrometheusMetric {
     };
 }
 
-let db: Db;
-export async function createDao<T extends MongoDBDao<any>>(daoConstructor: Constructable<T>): Promise<T> {
-    if (!db) {
-        const connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
-        db = connection.db(config.get('multivest.mongodb.dbName'));
-    }
-
-    const dao = new daoConstructor(db);
-    return dao;
-}
-
-export async function clearDb(collections: Array<string>) {
-    if (!db) {
-        const connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
-        db = connection.db(config.get('multivest.mongodb.dbName'));
-    }
-
-    await Promise.all(
-        collections.map((collection) => db.collection(collection).remove({}))
-    );
-}
-
-export async function createEntities(
-    dao: Dao<any>,
-    entityGenerator: () => object,
-    target: Array<any>
-) {
-    await dao.remove({});
-
-    for (let i = 0; i < target.length; i++) {
-        const data = entityGenerator();
-        target[i] = await dao.create(data);
-    }
-}
-
-export function getRandomItem<T>(items: Array<T>): T {
-    return items[random(0, items.length - 1)];
-}
-
-export function randomJob(): Scheme.Job {
+export function generateJob(): Scheme.Job {
     const job: Scheme.Job = {
-        id: faker.lorem.word(),
+        id: generateId(),
         params: {
             processedBlockHeight: faker.random.number({
                 min: 100000,
@@ -398,7 +355,7 @@ export function randomJob(): Scheme.Job {
     return job;
 }
 
-export const randomTransactionRef = (): Scheme.BlockchainTransaction => {
+export const generateTransactionRef = (): Scheme.BlockchainTransaction => {
     return {
         blockHash: `0x${generateId()}`,
         blockHeight: Math.floor(Math.random() * 100000000),
@@ -425,13 +382,13 @@ const transactionStatuses = [
     Scheme.TransactionStatus.Sent,
 ];
 
-export const randomTransaction = (): Scheme.Transaction => {
+export function generateTransaction(): Scheme.Transaction {
     return {
         blockChainId: 'ETHEREUM',
         networkId: 'homestead',
         id: generateId(),
         uniqId: `ETHEREUM-${generateId()}`,
-        ref: randomTransactionRef(),
+        ref: generateTransactionRef(),
         status: sample(transactionStatuses)
     };
-};
+}

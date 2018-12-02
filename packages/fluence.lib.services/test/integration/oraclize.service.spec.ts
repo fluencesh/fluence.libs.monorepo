@@ -1,160 +1,191 @@
 import * as config from 'config';
-import { random, sortBy } from 'lodash';
-import {connect, Db, MongoClient} from 'mongodb';
-import { DaoCollectionNames, MongodbProjectDao, Scheme } from '../../src';
-import { OraclizeSubscriptionService } from '../../src';
+import { sortBy } from 'lodash';
+import { Db, MongoClient} from 'mongodb';
+import { DaoCollectionNames, Scheme, OraclizeSubscriptionService } from '../../src';
 import { MongodbOraclizeSubscriptionDao } from '../../src/dao/mongodb/oraclize.subscription.dao';
-import { clearDb, randomOraclize, randomProject } from '../helper';
+import { clearCollections, generateOraclize, createEntities, getRandomItem } from '../helpers';
+import 'jest-extended';
 
-describe('oraclize service', () => {
-    let dao: MongodbOraclizeSubscriptionDao;
-    let projectDao: MongodbProjectDao;
-    let db: Db;
-
-    let service: OraclizeSubscriptionService;
-
-    let oraclize: Scheme.OraclizeSubscription;
-    let oraclizes: Array<Scheme.OraclizeSubscription>;
-    const oraclizesCount: number = 10;
-
-    // let project: Scheme.Project;
-    let projects: Array<Scheme.Project>;
-    const projectsCount: number = 10;
-
-    function getRandomProject() {
-        return projects[random(0, projects.length - 1)];
-    }
+describe('Oraclize Service (integration)', () => {
+    let mongoUrl: string;
+    let connection: MongoClient;
 
     beforeAll(async () => {
-        db = await MongoClient.connect(
-            `${config.get('multivest.mongodb.urlWithDbPrefix')}-oraclize-service`,
-            {}
-        );
-
-        projectDao = new MongodbProjectDao(db);
-
-        await projectDao.remove({});
-
-        projects = await Promise.all(
-            Array.from(Array(projectsCount))
-                .map(() => projectDao.create(randomProject()))
-        );
-        
-        dao = new MongodbOraclizeSubscriptionDao(db);
-
-        await dao.remove({});
-
-        oraclizes = await Promise.all(
-            Array.from(Array(oraclizesCount))
-                .map(() => dao.create(randomOraclize(getRandomProject().id)))
-        );
-
-        service = new OraclizeSubscriptionService(null);
-        (service as any).dao = dao;
-    });
-
-    beforeEach(() => {
-        // project = randomProject();
-        oraclize = oraclizes[random(0, oraclizes.length - 1)];
+        mongoUrl = config.get<string>('multivest.mongodb.url');
+        connection = await MongoClient.connect(mongoUrl);
     });
 
     afterAll(async () => {
-        await projectDao.remove({});
-        await dao.remove({});
-
-        await db.close();
+        await connection.close();
     });
 
-    it('should get oraclize by ID', async () => {
-        const got = await service.getById(oraclize.id);
-        expect(got).toEqual(oraclize);
+    describe('Read operations', () => {
+        let dbName: string;
+        let db: Db;
+        let service: OraclizeSubscriptionService;
+
+        let subscriptions: Array<Scheme.OraclizeSubscription>;
+        let subscription: Scheme.OraclizeSubscription;
+
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'OraclizeServiceRead';
+            db = connection.db(dbName);
+
+            const dao = new MongodbOraclizeSubscriptionDao(db);
+            service = new OraclizeSubscriptionService(null);
+            (service as any).dao = dao;
+
+            await clearCollections(db, [ DaoCollectionNames.Oraclize ]);
+
+            subscriptions = new Array(15);
+            await createEntities(dao, generateOraclize, subscriptions);
+        });
+
+        beforeEach(() => {
+            subscription = getRandomItem(subscriptions);
+        });
+
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
+
+        it('should get oraclize by ID', async () => {
+            const got = await service.getById(subscription.id);
+            expect(got).toEqual(subscription);
+        });
+    
+        it('should get oraclize by ID and project ID', async () => {
+            const got = await service.getByIdAndProjectId(subscription.id, subscription.projectId);
+            expect(got).toEqual(subscription);
+        });
+    
+        it('should get list of oraclize by event hash', async () => {
+            const filtered = subscriptions.filter((s) => s.eventHash === subscription.eventHash);
+    
+            const got = await service.listByEventHash(subscription.eventHash);
+            expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
+        });
+    
+        it('should get list of oraclize by event hash and status', async () => {
+            const filtered = subscriptions.filter((s) =>
+                s.eventHash === subscription.eventHash
+                && s.subscribed === subscription.subscribed
+            );
+    
+            const got = await service.listByEventHashAndStatus(subscription.eventHash, subscription.subscribed);
+            expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
+        });
+    
+        it('should get list of oraclize by event hashes', async () => {
+            const filtered = subscriptions.filter((s) => s.eventHash === subscription.eventHash);
+    
+            const got = await service.listByEventHashes([ subscription.eventHash ]);
+            expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
+        });
+    
+        it('should get list of oraclize by eventHash and subscribed', async () => {
+            const filtered = subscriptions.filter((s) =>
+                s.eventHash === subscription.eventHash && s.subscribed === subscription.subscribed
+            );
+    
+            const got = await service.listByEventHashesAndStatus([ subscription.eventHash ], subscription.subscribed);
+            expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
+        });
+    
+        it('should get list of oraclize by project id', async () => {
+            const filtered = subscriptions.filter((s) => s.projectId === subscription.projectId);
+    
+            const got = await service.listByProjectId(subscription.projectId);
+            expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
+        });
+    
+        it('should get list of oraclize by subscribed', async () => {
+            const filtered = subscriptions.filter((s) => s.subscribed === subscription.subscribed);
+    
+            const got = await service.listByStatus(subscription.subscribed);
+            expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
+        });
+    
+        it('should get list of oraclize by subscribed and project id', async () => {
+            const filtered = subscriptions.filter((s) =>
+                s.subscribed === subscription.subscribed && s.projectId === subscription.projectId
+            );
+    
+            const got = await service.listByStatusAndProjectId(subscription.subscribed, subscription.projectId);
+            expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
+        });
     });
 
-    it('should get oraclize by ID and project ID', async () => {
-        const got = await service.getByIdAndProjectId(oraclize.id, oraclize.projectId);
-        expect(got).toEqual(oraclize);
-    });
+    describe('Create/Update operations', () => {
+        let dbName: string;
+        let db: Db;
+        let service: OraclizeSubscriptionService;
 
-    it('should get list of oraclize by event hash', async () => {
-        const filtered = oraclizes.filter((o) => o.eventHash === oraclize.eventHash);
+        let subscriptions: Array<Scheme.OraclizeSubscription>;
+        let subscription: Scheme.OraclizeSubscription;
 
-        const got = await service.listByEventHash(oraclize.eventHash);
-        expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
-    });
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'OraclizeServiceRead';
+            db = connection.db(dbName);
 
-    it('should get list of oraclize by event hash and status', async () => {
-        const filtered = oraclizes.filter((o) =>
-            o.eventHash === oraclize.eventHash
-            && o.subscribed === oraclize.subscribed
-        );
+            const dao = new MongodbOraclizeSubscriptionDao(db);
+            service = new OraclizeSubscriptionService(null);
+            (service as any).dao = dao;
 
-        const got = await service.listByEventHashAndStatus(oraclize.eventHash, oraclize.subscribed);
-        expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
-    });
+            await clearCollections(db, [ DaoCollectionNames.Oraclize ]);
 
-    it('should get list of oraclize by event hashes', async () => {
-        const filtered = oraclizes.filter((o) => o.eventHash === oraclize.eventHash);
+            subscriptions = new Array(15);
+            await createEntities(dao, generateOraclize, subscriptions);
+        });
 
-        const got = await service.listByEventHashes([ oraclize.eventHash ]);
-        expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
-    });
+        beforeEach(() => {
+            subscription = getRandomItem(subscriptions);
+        });
 
-    it('should get list of oraclize by eventHash and subscribed', async () => {
-        const filtered = oraclizes.filter((o) =>
-            o.eventHash === oraclize.eventHash && o.subscribed === oraclize.subscribed
-        );
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
 
-        const got = await service.listByEventHashesAndStatus([ oraclize.eventHash ], oraclize.subscribed);
-        expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
-    });
+        it('should create new oraclize', async () => {
+            const data = generateOraclize();
+    
+            const created = await service.createSubscription(
+                data.clientId,
+                data.projectId,
+                data.transportConnectionId,
+                data.minConfirmations,
+                data.eventName,
+                data.eventInputTypes,
+                data.webhookUrl
+            );
+    
+            expect(created.projectId).toEqual(data.projectId);
+            expect(created.clientId).toEqual(data.clientId);
+            expect(created.transportConnectionId).toEqual(data.transportConnectionId);
+            expect(created.minConfirmations).toEqual(data.minConfirmations);
+            expect(typeof created.eventHash).toEqual('string');
+            expect(created.eventName).toEqual(data.eventName);
+            expect(created.eventInputTypes).toEqual(data.eventInputTypes);
+            expect(created.webhookUrl).toEqual(data.webhookUrl);
 
-    it('should get list of oraclize by project id', async () => {
-        const filtered = oraclizes.filter((o) => o.projectId === oraclize.projectId);
+            const got = await service.getById(created.id);
 
-        const got = await service.listByProjectId(oraclize.projectId);
-        expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
-    });
+            expect(got).toBeObject();
+        });
+    
+        it('should set new subscribed', async () => {
+            const subscribed = !subscription.subscribed;
+    
+            await service.setSubscribed(subscription.id, subscribed);
+            const got = await service.getById(subscription.id);
+    
+            expect(got.subscribed).toEqual(subscribed);
 
-    it('should get list of oraclize by subscribed', async () => {
-        const filtered = oraclizes.filter((o) => o.subscribed === oraclize.subscribed);
-
-        const got = await service.listByStatus(oraclize.subscribed);
-        expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
-    });
-
-    it('should get list of oraclize by subscribed and project id', async () => {
-        const filtered = oraclizes.filter((o) =>
-            o.subscribed === oraclize.subscribed && o.projectId === oraclize.projectId
-        );
-
-        const got = await service.listByStatusAndProjectId(oraclize.subscribed, oraclize.projectId);
-        expect(sortBy(got, 'id')).toEqual(sortBy(filtered, 'id'));
-    });
-
-    it('should create new oraclize', async () => {
-        const randomOraclizeEntity = randomOraclize();
-
-        const got = await service.createSubscription(
-            randomOraclizeEntity.clientId,
-            randomOraclizeEntity.projectId,
-            randomOraclizeEntity.transportConnectionId,
-            randomOraclizeEntity.minConfirmations,
-            randomOraclizeEntity.eventName,
-            randomOraclizeEntity.eventInputTypes,
-            randomOraclizeEntity.webhookUrl
-        );
-
-        expect(got.projectId).toEqual(randomOraclizeEntity.projectId);
-        expect(typeof got.eventHash).toEqual('string');
-        expect(got.webhookUrl).toEqual(randomOraclizeEntity.webhookUrl);
-    });
-
-    it('should set new subscribed', async () => {
-        oraclize.subscribed = !oraclize.subscribed;
-
-        await service.setSubscribed(oraclize.id, oraclize.subscribed);
-        const got = await service.getById(oraclize.id);
-
-        expect(got).toEqual(oraclize);
+            subscription.subscribed = subscribed;
+        });
     });
 });

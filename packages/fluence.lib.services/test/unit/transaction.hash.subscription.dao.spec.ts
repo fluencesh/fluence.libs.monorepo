@@ -1,12 +1,8 @@
-import * as config from 'config';
-import { random } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
 import { MongodbTransactionHashSubscriptionDao } from '../../src/dao/mongodb/transaction.hash.subscription.dao';
-import { Scheme } from '../../src/types';
-import { randomTransactionSubscription } from '../helper';
+import { generateTransactionSubscription } from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('Address subscription dao', () => {
+describe('Transaction Hash Subscription DAO (unit)', () => {
     let dao: MongodbTransactionHashSubscriptionDao;
     let collection: any;
 
@@ -112,12 +108,11 @@ describe('Address subscription dao', () => {
     });
 
     it('createSubscription() transfers correct arguments', async () => {
-        const data = randomTransactionSubscription();
+        const data = generateTransactionSubscription();
         await dao.createSubscription(
             data.clientId,
             data.projectId,
-            data.blockchainId,
-            data.networkId,
+            data.transportConnectionId,
             data.hash,
             data.minConfirmations
         );

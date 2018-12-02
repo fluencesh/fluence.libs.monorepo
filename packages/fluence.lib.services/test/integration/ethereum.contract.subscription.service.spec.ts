@@ -1,170 +1,204 @@
-import { MultivestError } from '@applicature/synth.plugin-manager';
 import * as config from 'config';
-import { random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
 import { MongodbEthereumContractSubscriptionDao } from '../../src/dao/mongodb/ethereum.contract.subscription.dao';
-import { EthereumContractSubscriptionService } from '../../src/services/object/ethereum.contract.subscription.service';
 import { Scheme } from '../../src/types';
-import { randomEthereumContractSubscription } from '../helper';
+import { DaoCollectionNames, EthereumContractSubscriptionService } from '../../src';
+import { clearCollections, createEntities, generateEthereumContractSubscription, getRandomItem } from '../helpers';
+import 'jest-extended';
 
-describe('ethereum contract subscription service', () => {
-    let dao: MongodbEthereumContractSubscriptionDao;
-    const ethereumContractSubscriptions: Array<Scheme.EthereumContractSubscription> = [];
-    const ethereumContractSubscriptionsCount = 15;
-    let ethereumContractSubscription: Scheme.EthereumContractSubscription;
-    let connection: Db;
-    let service: EthereumContractSubscriptionService;
-
-    function getActiveSubscriptions() {
-        return ethereumContractSubscriptions.filter((subscription) =>
-            subscription.subscribed
-            && subscription.isClientActive
-            && subscription.isProjectActive
-        );
-    }
+describe('Contract Subscription Service (integration)', () => {
+    let mongoUrl: string;
+    let connection: MongoClient;
 
     beforeAll(async () => {
-        connection = await MongoClient.connect(
-            `${config.get('multivest.mongodb.urlWithDbPrefix')}-contract-subscription-service`,
-            {}
-        );
-
-        dao = new MongodbEthereumContractSubscriptionDao(connection);
-        await dao.remove({});
-
-        for (let i = 0; i < ethereumContractSubscriptionsCount; i++) {
-            ethereumContractSubscriptions.push(await dao.create(randomEthereumContractSubscription()));
-        }
-
-        service = new EthereumContractSubscriptionService(null);
-        (service as any).ethereumContractSubscriptionDao = dao;
-    });
-
-    beforeEach(() => {
-        ethereumContractSubscription = ethereumContractSubscriptions[random(0, ethereumContractSubscriptionsCount - 1)];
+        mongoUrl = config.get<string>('multivest.mongodb.url');
+        connection = await MongoClient.connect(mongoUrl);
     });
 
     afterAll(async () => {
-        await dao.remove({});
-
         await connection.close();
     });
 
-    it('should get by id', async () => {
-        const got = await service.getById(ethereumContractSubscription.id);
+    describe('Read operations', () => {
+        let dbName: string;
+        let db: Db;
+        let service: EthereumContractSubscriptionService;
 
-        expect(got).toEqual(ethereumContractSubscription);
+        let subscriptions: Array<Scheme.EthereumContractSubscription>;
+        let subscription: Scheme.EthereumContractSubscription;
+        let activeSubscription: Scheme.EthereumContractSubscription;
+
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ContractSubscriptionServiceRead';
+            db = connection.db(dbName);
+
+            const dao = new MongodbEthereumContractSubscriptionDao(db);
+            service = new EthereumContractSubscriptionService(null);
+            (service as any).ethereumContractSubscriptionDao = dao;
+
+            await clearCollections(db, [ DaoCollectionNames.EthereumContractSubscription ]);
+
+            subscriptions = new Array(15);
+            await createEntities(dao, generateEthereumContractSubscription, subscriptions);
+        });
+
+        beforeEach(() => {
+            subscription = getRandomItem(subscriptions);
+            activeSubscription = getRandomItem(
+                subscriptions,
+                (s) => s.subscribed && s.isClientActive && s.isProjectActive
+            );
+        });
+
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
+
+        it('should get by id', async () => {
+            const got = await service.getById(subscription.id);
+
+            expect(got).toEqual(subscription);
+        });
+
+        it('should get by id (active only)', async () => {
+            if (!activeSubscription) {
+                return;
+            }
+
+            const got = await service.getByIdActiveOnly(activeSubscription.id);
+
+            expect(got).toEqual(activeSubscription);
+        });
+
+        it('should get by project id', async () => {
+            const filtered = subscriptions
+                .filter((s) => s.projectId === subscription.projectId);
+            const got = await service.listByProjectId(subscription.projectId);
+
+            expect(got).toEqual(filtered);
+        });
+
+        it('should get by project id (active only)', async () => {
+            if (!activeSubscription) {
+                return;
+            }
+
+            const filtered = subscriptions
+                .filter((s) =>
+                    s.subscribed
+                    && s.isClientActive
+                    && s.isProjectActive
+                    && s.projectId === activeSubscription.projectId
+                );
+
+            const got = await service.listByProjectIdActiveOnly(activeSubscription.projectId);
+
+            expect(got).toEqual(filtered);
+        });
+
+        it('should get by client id', async () => {
+            const filtered = subscriptions
+                .filter((s) => s.clientId === subscription.clientId);
+            const got = await service.listByClientId(subscription.clientId);
+
+            expect(got).toEqual(filtered);
+        });
+
+        it('should get by client id (active only)', async () => {
+            if (!activeSubscription) {
+                return;
+            }
+
+            const filtered = subscriptions
+                .filter((s) =>
+                    s.subscribed
+                    && s.isClientActive
+                    && s.isProjectActive
+                    && s.clientId === activeSubscription.clientId
+                );
+
+            const got = await service.listByClientIdActiveOnly(activeSubscription.clientId);
+
+            expect(got).toEqual(filtered);
+        });
+
+        it('should get by id & project id & client id', async () => {
+            const filtered = subscriptions.filter((s) =>
+                s.address === subscription.address
+                && s.clientId === subscription.clientId
+                && s.projectId === subscription.projectId
+            );
+
+            const got = await service.listBySubscribedAddress(
+                subscription.address,
+                subscription.clientId,
+                subscription.projectId
+            );
+    
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get by id & project id & client id (active only)', async () => {
+            if (!activeSubscription) {
+                return;
+            }
+
+            const filtered = subscriptions.filter((s) =>
+                s.subscribed
+                && s.isClientActive
+                && s.isProjectActive
+                && s.address === activeSubscription.address
+                && s.clientId === activeSubscription.clientId
+                && s.projectId === activeSubscription.projectId
+            );
+    
+            const got = await service.listBySubscribedAddressActiveOnly(
+                activeSubscription.address,
+                activeSubscription.clientId,
+                activeSubscription.projectId
+            );
+    
+            expect(got).toEqual(filtered);
+        });
     });
 
-    it('should get by id (active only)', async () => {
-        const subscription = getActiveSubscriptions()[0];
+    describe('Create/Update operations', () => {
+        let dbName: string;
+        let db: Db;
+        let service: EthereumContractSubscriptionService;
 
-        if (!subscription) {
-            return;
-        }
+        let subscriptions: Array<Scheme.EthereumContractSubscription>;
+        let subscription: Scheme.EthereumContractSubscription;
 
-        const got = await service.getByIdActiveOnly(subscription.id);
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ContractSubscriptionServiceRead';
+            db = connection.db(dbName);
 
-        expect(got).toEqual(subscription);
-    });
+            const dao = new MongodbEthereumContractSubscriptionDao(db);
+            service = new EthereumContractSubscriptionService(null);
+            (service as any).ethereumContractSubscriptionDao = dao;
 
-    it('should get by project id', async () => {
-        const filtered = ethereumContractSubscriptions
-            .filter((ecs) => ecs.projectId === ethereumContractSubscription.projectId);
-        const got = await service.listByProjectId(ethereumContractSubscription.projectId);
+            await clearCollections(db, [ DaoCollectionNames.EthereumContractSubscription ]);
 
-        expect(got).toEqual(filtered);
-    });
+            subscriptions = new Array(15);
+            await createEntities(dao, generateEthereumContractSubscription, subscriptions);
+        });
 
-    it('should get by project id (active only)', async () => {
-        const filtered = getActiveSubscriptions()
-            .filter((sub, index, subs) => sub.projectId === subs[0].projectId);
+        beforeEach(() => {
+            subscription = getRandomItem(subscriptions);
+        });
 
-        if (filtered.length === 0) {
-            return;
-        }
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
 
-        const got = await service.listByProjectIdActiveOnly(filtered[0].projectId);
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should get by client id', async () => {
-        const filtered = ethereumContractSubscriptions
-            .filter((ecs) => ecs.clientId === ethereumContractSubscription.clientId);
-        const got = await service.listByClientId(ethereumContractSubscription.clientId);
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should get by client id (active only)', async () => {
-        const filtered = getActiveSubscriptions()
-            .filter((sub, index, subs) => sub.clientId === subs[0].clientId);
-
-        if (filtered.length === 0) {
-            return;
-        }
-
-        const got = await service.listByClientIdActiveOnly(filtered[0].clientId);
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should create new ethereum contract subscription', async () => {
-        const data = randomEthereumContractSubscription();
-        const created = await service.createSubscription(
-            data.clientId,
-            data.projectId,
-            data.compatibleStandard,
-            data.transportConnectionId,
-            data.address,
-            data.minConfirmations,
-            data.abi,
-            data.abiEvents,
-            data.subscribedEvents,
-            data.subscribeAllEvents
-        );
-
-        const got = (await service.listByProjectId(data.projectId))[0];
-
-        expect(created).toEqual(got);
-    });
-
-    it('should create new ethereum contract subscription if `subscribedEvents` is valid', async () => {
-        const data = randomEthereumContractSubscription();
-
-        data.abi = require('./../data/abi.json');
-        data.subscribedEvents = data.abi
-            .filter((method) => method.type === 'event')
-            .map((method) => method.name)
-            .filter((event, index) => !(index % 2));
-
-        const created = await service.createSubscription(
-            data.clientId,
-            data.projectId,
-            data.compatibleStandard,
-            data.transportConnectionId,
-            data.address,
-            data.minConfirmations,
-            data.abi,
-            data.abiEvents,
-            data.subscribedEvents,
-            data.subscribeAllEvents
-        );
-
-        const got = (await service.listByProjectId(data.projectId))[0];
-
-        expect(created).toEqual(got);
-    });
-
-    it('should not create new ethereum contract subscription if `subscribedEvents` is invalid', async () => {
-        const data = randomEthereumContractSubscription();
-
-        data.abi = require('./../data/abi.json');
-        data.subscribedEvents = ['randomName', 'asdasdwafsdasd'];
-
-        try {
-            await service.createSubscription(
+        it('should create new ethereum contract subscription', async () => {
+            const data = generateEthereumContractSubscription();
+            const created = await service.createSubscription(
                 data.clientId,
                 data.projectId,
                 data.compatibleStandard,
@@ -177,56 +211,38 @@ describe('ethereum contract subscription service', () => {
                 data.subscribeAllEvents
             );
 
-            expect(1).toEqual(0);
-        } catch (ex) {
-            expect(ex).toBeInstanceOf(MultivestError);
-        }
-        
-    });
+            expect(created.clientId).toEqual(data.clientId);
+            expect(created.projectId).toEqual(data.projectId);
+            expect(created.compatibleStandard).toEqual(data.compatibleStandard);
+            expect(created.transportConnectionId).toEqual(data.transportConnectionId);
+            expect(created.address).toEqual(data.address);
+            expect(created.minConfirmations).toEqual(data.minConfirmations);
+            expect(created.abi).toEqual(data.abi);
+            expect(created.abiEvents).toEqual(data.abiEvents);
+            expect(created.subscribedEvents).toEqual(data.subscribedEvents);
+            expect(created.subscribeAllEvents).toEqual(data.subscribeAllEvents);
 
-    it('should get by id & project id & client id', async () => {
-        const got = await service.listBySubscribedAddress(
-            ethereumContractSubscription.address,
-            ethereumContractSubscription.clientId,
-            ethereumContractSubscription.projectId
-        );
+            const got = await service.getById(created.id);
+            expect(got).toBeObject();
+        });
 
-        expect(got).toEqual([ethereumContractSubscription]);
-    });
+        it('should set subscribed all events status', async () => {
+            const subscribedEvents = ['data', 'exit'];
+            const subscribeAllEvents = !subscription.subscribeAllEvents;
 
-    it('should get by id & project id & client id (active only)', async () => {
-        const filtered = getActiveSubscriptions()
-            .filter((sub, index, subs) =>
-                sub.projectId === subs[0].projectId
-                && sub.clientId === subs[0].clientId
-                && sub.address === subs[0].address
+            await service.setSubscribedEventsAndAllEvents(
+                subscription.id,
+                subscribedEvents,
+                subscribeAllEvents
             );
 
-        if (filtered.length === 0) {
-            return;
-        }
+            const got = await service.getById(subscription.id);
 
-        const got = await service.listBySubscribedAddressActiveOnly(
-            filtered[0].address,
-            filtered[0].clientId,
-            filtered[0].projectId
-        );
+            expect(got.subscribedEvents).toEqual(subscribedEvents);
+            expect(got.subscribeAllEvents).toEqual(subscribeAllEvents);
 
-        expect(got).toEqual(filtered);
-    });
-
-    it('should set subscribed all events status', async () => {
-        ethereumContractSubscription.subscribedEvents = ['data', 'exit'];
-        ethereumContractSubscription.subscribeAllEvents = ethereumContractSubscription.subscribeAllEvents;
-
-        await service.setSubscribedEventsAndAllEvents(
-            ethereumContractSubscription.id,
-            ethereumContractSubscription.subscribedEvents,
-            ethereumContractSubscription.subscribeAllEvents
-        );
-
-        const got = await service.listByClientId(ethereumContractSubscription.clientId);
-
-        expect(got).toEqual([ ethereumContractSubscription ]);
+            subscription.subscribedEvents = subscribedEvents;
+            subscription.subscribeAllEvents = subscribeAllEvents;
+        });
     });
 });

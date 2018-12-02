@@ -6,5 +6,8 @@
       "dbName": "test-fluence-services",
       "options": null
     }
+  },
+  "tests": {
+    "dropDbAfterTest": true
   }
 }

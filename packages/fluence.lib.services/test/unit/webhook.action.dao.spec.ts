@@ -1,12 +1,9 @@
-import * as config from 'config';
-import { random } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
 import { MongodbWebhookActionDao } from '../../src/dao/mongodb/webhook.action.dao';
 import { Scheme } from '../../src/types';
-import { randomWebhookAction } from '../helper';
+import { generateWebhookAction } from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('exchange dao', () => {
+describe('Webhook DAO (unit)', () => {
     let dao: MongodbWebhookActionDao;
     let collection: any;
 
@@ -95,7 +92,7 @@ describe('exchange dao', () => {
     });
 
     it('createAction() transfers correct arguments', async () => {
-        const data = randomWebhookAction();
+        const data = generateWebhookAction();
 
         await dao.createAction(
             data.clientId,

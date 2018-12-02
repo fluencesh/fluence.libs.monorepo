@@ -1,8 +1,8 @@
 import { MongodbOraclizeSubscriptionDao } from '../../src/dao/mongodb/oraclize.subscription.dao';
-import { randomOraclize } from '../helper';
+import { generateOraclize } from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('oraclize dao', () => {
+describe('Oraclize DAO (unit)', () => {
     let dao: MongodbOraclizeSubscriptionDao;
     let collection: any;
 
@@ -99,13 +99,12 @@ describe('oraclize dao', () => {
     });
 
     it('createOraclize() transfers correct arguments', async () => {
-        const randomOraclizeEntity = randomOraclize();
+        const randomOraclizeEntity = generateOraclize();
 
         await dao.createSubscription(
             randomOraclizeEntity.clientId,
             randomOraclizeEntity.projectId,
-            randomOraclizeEntity.blockchainId,
-            randomOraclizeEntity.networkId,
+            randomOraclizeEntity.transportConnectionId,
             randomOraclizeEntity.minConfirmations,
             randomOraclizeEntity.eventHash,
             randomOraclizeEntity.eventName,

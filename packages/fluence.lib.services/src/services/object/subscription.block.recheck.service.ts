@@ -72,7 +72,7 @@ export class SubscriptionBlockRecheckService extends Service {
         );
     }
 
-    public async listByBlockHeightAndBlockchainInfoAndType(
+    public async listByBlockHeightAndTransportConnectionIdAndType(
         height: number,
         transportConnectionId: string,
         type: Scheme.SubscriptionBlockRecheckType

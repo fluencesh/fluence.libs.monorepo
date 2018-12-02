@@ -34,7 +34,7 @@ export class LitecoinBlockchainService extends BlockchainService<
     }
 
     public isValidNetwork(network: string) {
-        return AvailableNetwork.LITECOIN === network;
+        return AvailableNetwork.LITECOIN === network || AvailableNetwork.LITECOIN_TESTNET === network;
     }
 
     public async getHDAddress(index: number): Promise<string> {
@@ -46,7 +46,7 @@ export class LitecoinBlockchainService extends BlockchainService<
             throw new MultivestError(Errors.MASTER_PUBLIC_KEY_REQUIRED);
         }
 
-        const network = bitcoin.networks.testnet;
+        const network = this.getBitcoinCoreNetwork();
 
         const hdNode = bitcoin.HDNode.fromBase58(masterPubKey, network);
 
@@ -65,7 +65,7 @@ export class LitecoinBlockchainService extends BlockchainService<
     }
 
     public signTransaction(privateKey: Buffer, txData: LitecoinTransaction): string {
-        const network = bitcoin.networks.litecoin;
+        const network = this.getBitcoinCoreNetwork();
 
         const key = bitcoin.ECPair.fromWIF(privateKey.toString('utf8'), network);
         
@@ -78,7 +78,7 @@ export class LitecoinBlockchainService extends BlockchainService<
     }
 
     public signData(privateKey: Buffer, data: Buffer): Signature {
-        const network = bitcoin.networks.litecoin;
+        const network = this.getBitcoinCoreNetwork();
         const keyPair = bitcoin.ECPair.fromWIF(privateKey.toString('utf8'), network);
         const signature = keyPair.sign(data) as any;
 
@@ -94,5 +94,11 @@ export class LitecoinBlockchainService extends BlockchainService<
         const hex = Buffer.alloc(64, Buffer.concat([ signature.r, signature.s ])).toString('hex');
 
         return `0x${ hex }`;
+    }
+
+    private getBitcoinCoreNetwork() {
+        return this.getNetworkId() === AvailableNetwork.LITECOIN
+            ? bitcoin.networks.litecoin
+            : bitcoin.networks.testnet
     }
 }

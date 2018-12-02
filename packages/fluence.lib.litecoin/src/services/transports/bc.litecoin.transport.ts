@@ -58,7 +58,7 @@ export class BcLitecoinTransportService extends Service implements LitecoinTrans
             return new BigNumber(balance);
         } catch (ex) {
             logger.error(`Can't get balance of address [${ address }]. reason: ${ ex.message }`);
-            return null;
+            throw ex;
         }
     }
 
@@ -75,7 +75,7 @@ export class BcLitecoinTransportService extends Service implements LitecoinTrans
             return this.convertBlock(block);
         } catch (ex) {
             logger.error(`Can't get block [${ hash }]. reason: ${ ex.message }`);
-            return null;
+            throw ex;
         }
     }
     
@@ -92,7 +92,7 @@ export class BcLitecoinTransportService extends Service implements LitecoinTrans
             return blockCount;
         } catch (ex) {
             logger.error(`Can't get height of blocks. reason: ${ ex.message }`);
-            return null;
+            throw ex;
         }
     }
 
@@ -108,7 +108,7 @@ export class BcLitecoinTransportService extends Service implements LitecoinTrans
             }
         } catch (ex) {
             logger.error(`Can't get tx [${ txHash }]. reason: ${ ex.message }`);
-            return null;
+            throw ex;
         }
 
         const block = await this.getBlockByHash(tx.blockhash);
@@ -122,7 +122,7 @@ export class BcLitecoinTransportService extends Service implements LitecoinTrans
             hash = await this.client.sendRawTransaction(txHex);
         } catch (ex) {
             logger.error(`Sending of tx was failed. reason: ${ ex.message }`);
-            return null;
+            throw ex;
         }
 
         return this.getTransactionByHash(hash);

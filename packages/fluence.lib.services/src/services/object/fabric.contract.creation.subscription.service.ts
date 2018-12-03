@@ -4,7 +4,7 @@ import { FabricContractCreationSubscriptionDao } from '../../dao';
 import { DaoIds } from '../../constants';
 import { Scheme } from '../../types';
 
-export class FabricContractCreationService extends Service {
+export class FabricContractCreationSubscriptionService extends Service {
     private dao: FabricContractCreationSubscriptionDao;
 
     public getServiceId() {

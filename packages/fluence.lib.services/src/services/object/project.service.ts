@@ -1,8 +1,6 @@
-import { Plugin } from '@applicature/synth.mongodb';
-import { MultivestError, PluginManager, Service } from '@applicature/synth.plugin-manager';
-import * as config from 'config';
+import { Plugin as MongoPlugin } from '@applicature/synth.mongodb';
+import { MultivestError, Service } from '@applicature/synth.plugin-manager';
 import { createHash } from 'crypto';
-import * as jwt from 'jsonwebtoken';
 import { generate } from 'randomstring';
 import { DaoIds } from '../../constants';
 import { ProjectDao } from '../../dao/project.dao';
@@ -13,6 +11,7 @@ import { EthereumContractSubscriptionService } from './ethereum.contract.subscri
 import { OraclizeSubscriptionService } from './oraclize.subscription.service';
 import { ProjectBlockchainSetupService } from './project.blockchain.setup.service';
 import { TransactionHashSubscriptionService } from './transaction.hash.subscription.service';
+import { FabricContractCreationSubscriptionService } from './fabric.contract.creation.subscription.service';
 
 const generateRandomHash = () => generate({ charset: '0123456789abcdef', length: 64 });
 
@@ -28,28 +27,24 @@ export class ProjectService extends Service {
     protected transactionHashSubscriptionService: TransactionHashSubscriptionService;
     protected contractSubscriptionService: EthereumContractSubscriptionService;
     protected oraclizeSubscriptionService: OraclizeSubscriptionService;
+    protected fabricContractCreationService: FabricContractCreationSubscriptionService;
     protected projectBlockchainSetupService: ProjectBlockchainSetupService;
 
     public async init(): Promise<void> {
-        const mongodbPlugin = (this.pluginManager.get('mongodb') as any) as Plugin;
+        const mongodbPlugin = this.pluginManager.get('mongodb') as MongoPlugin;
 
-        this.projectDao = (await mongodbPlugin.getDao(DaoIds.Project)) as ProjectDao;
+        this.projectDao = await mongodbPlugin.getDao(DaoIds.Project) as ProjectDao;
 
-        this.addressSubscriptionService = this.pluginManager.getServiceByClass(
-            AddressSubscriptionService
-        ) as AddressSubscriptionService;
-        this.transactionHashSubscriptionService = this.pluginManager.getServiceByClass(
-            TransactionHashSubscriptionService
-        ) as TransactionHashSubscriptionService;
-        this.contractSubscriptionService = this.pluginManager.getServiceByClass(
-            EthereumContractSubscriptionService
-        ) as EthereumContractSubscriptionService;
-        this.oraclizeSubscriptionService = this.pluginManager.getServiceByClass(
-            OraclizeSubscriptionService
-        ) as OraclizeSubscriptionService;
-        this.projectBlockchainSetupService = this.pluginManager.getServiceByClass(
-            ProjectBlockchainSetupService
-        ) as ProjectBlockchainSetupService;
+        this.addressSubscriptionService = this.pluginManager.getServiceByClass(AddressSubscriptionService);
+        this.transactionHashSubscriptionService = this.pluginManager
+            .getServiceByClass(TransactionHashSubscriptionService);
+        this.contractSubscriptionService = this.pluginManager.getServiceByClass(EthereumContractSubscriptionService);
+        this.oraclizeSubscriptionService = this.pluginManager.getServiceByClass(OraclizeSubscriptionService);
+        this.fabricContractCreationService = this.pluginManager
+            .getServiceByClass(FabricContractCreationSubscriptionService);
+
+        this.projectBlockchainSetupService = this.pluginManager.getServiceByClass(ProjectBlockchainSetupService);
+        
     }
 
     public getServiceId(): string {
@@ -229,7 +224,8 @@ export class ProjectService extends Service {
             this.addressSubscriptionService.setProjectActive(projectId, isActive),
             this.transactionHashSubscriptionService.setProjectActive(projectId, isActive),
             this.contractSubscriptionService.setProjectActive(projectId, isActive),
-            this.oraclizeSubscriptionService.setProjectActive(projectId, isActive)
+            this.oraclizeSubscriptionService.setProjectActive(projectId, isActive),
+            this.fabricContractCreationService.setProjectActive(projectId, isActive),
         ]);
     }
 }

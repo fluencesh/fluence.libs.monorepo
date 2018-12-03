@@ -19,6 +19,7 @@ import {
     MongodbTransportConnectionDao,
     MongodbTransportConnectionSubscriptionDao,
     MongodbWebhookActionDao,
+    MongodbFabricContractCreationDao,
 } from './dao';
 import {
     AddressSubscriptionService,
@@ -41,6 +42,7 @@ import {
     TransportConnectionSubscriptionService,
     WebhookActionItemObjectService,
     WebhookCallerService,
+    FabricContractCreationSubscriptionService,
 } from './services';
 
 class BlockchainServicesPlugin extends Plugin<void> {
@@ -69,6 +71,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbSessionDao);
         mongoDbPlugin.addDao(MongodbSubscriptionBlockRecheckDao);
         mongoDbPlugin.addDao(MongodbTransportConnectionSubscriptionDao);
+        mongoDbPlugin.addDao(MongodbFabricContractCreationDao);
 
         this.registerService(AddressSubscriptionService);
         this.registerService(BlockchainRegistryService);
@@ -90,6 +93,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         this.registerService(SubscriptionBlockRecheckService);
         this.registerService(ScheduledTxService);
         this.registerService(TransportConnectionSubscriptionService);
+        this.registerService(FabricContractCreationSubscriptionService);
     }
 }
 

@@ -1,45 +1,24 @@
 language: node_js
 node_js:
 - '8'
-- '10'
-- '11'
-
 os:
-  - linux
-  - windows
-
-cache: 'npm'
-
+- linux
+cache: npm
 install:
 - npm install
 - npm install -g gulp
-
-script:
 - npm run bootstrap-deps
 - npm run build
-- npm run test:ci
-- npm run test:lint
-
-
-#- git config --global user.email "bitbucket-bot@applicature.com"
-#- git config --global user.name "Bitbucket Bot"
-
 jobs:
   include:
-  - stage: report
-    script: npm run test:sonar
   - stage: release-alpha
     if: branch != master
-    script: npm run lerna-publish -- "prerelease" "--yes" "-m '[skip ci] chore(alpha): publish %s'"
+    script: "./bin/release-patch.sh"
   - stage: release-patch
     if: branch = master
-    script: npm run lerna-publish -- "patch"  "--yes" "-m '[skip ci] chore(release): publish %s'"
-    script: npm run make-changelog
-
+    script: "./bin/release.sh"
 services:
 - mongodb
-
-before_install:
-  - pip install --user codecov
-after_success:
-  - codecov --file coverage/lcov.info --disable search
+env:
+  global:
+    secure: zVQ0W1iqEUu5fjUOHwt/fkMYuaRuta4BHG4PBC+18VKSZ2NMLfoqukDJSkycYmZCCnerg+UZ7MsnFlJRrRCWbNRTWe/bnqUjR9+5SvVFKR/guhCLsuqLAYNmh/3Gh6MkXUUbQEwdKjcyIQAxb9LKHc2kOZcSBb8jZ5OmtUjpIcQW4EO7hTuzo1fpncgQVe8PNSTYCiqAW/NdS3pfzeIaumfjFJMLyxdGo/u1zNSXW6No32qnGTsEFOGH1UgWRvlz/wS8hXEd5PnO1Ga7s8QJDg9JMysc/bIpq+NtWWY9LUe7ODBXfPNE6loXUtz4dNyqnA0I1BTBbdQX9zi08qgurYcz29iywY/8vOpf45NNgaRtGKtwrA1uyWSFXkqO9Q1jIBRZMVbWRWJfqMjTqKyYhF0e3nyARdRHBwOJYWug/XrqP4lSvNJS8iJDWauicWmTjssswuU2t8jpdes6IUFNFa/e0HxOsJM9f9y4fLsZVt7dCSWueQIkTCVRuSr5SMBMMBIvhNTNB3O4eigGH7TBq6b7x5f+++uI/BLy8mTTDs8/KXONDrl1QO9NQ1vyH3AgB3S0Bhgju8hQBquYNVVii8ELzrqYR5pltGdWSB6OHXJyJfIqJGlVz0MjJZ9IADFihv06rDrWrcv1Q//wV/4vWZ811IP2/rCpzb5AURhqoak=

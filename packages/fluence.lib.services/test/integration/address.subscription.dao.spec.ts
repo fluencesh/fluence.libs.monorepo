@@ -155,7 +155,7 @@ describe('Address Subscription DAO (integration)', () => {
         });
     });
 
-    describe('write-only', () => {
+    describe('Create/Update operations', () => {
         let dbName: string;
         let db: Db;
         let dao: MongodbAddressSubscriptionDao;
@@ -164,7 +164,7 @@ describe('Address Subscription DAO (integration)', () => {
         let addressSubscription: Scheme.AddressSubscription;
 
         beforeAll(async () => {
-            dbName = config.get('multivest.mongodb.dbName') + 'AddressSubscriptionsWrite';
+            dbName = config.get('multivest.mongodb.dbName') + 'AddressSubscriptionsCreateUpdate';
             db = connection.db(dbName);
             dao = new MongodbAddressSubscriptionDao(db);
 

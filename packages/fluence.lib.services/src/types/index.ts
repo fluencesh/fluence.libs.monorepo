@@ -269,7 +269,7 @@ export namespace Scheme {
         createdAt: Date;
     }
 
-    export interface FabricContractCreation extends Subscription {
+    export interface FabricContractCreationSubscription extends Subscription {
         methodName: string;
         inputTypes: Array<string>;
     }

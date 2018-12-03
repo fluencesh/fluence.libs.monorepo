@@ -24,7 +24,7 @@ export class FabricContractCreationSubscriptionService extends Service {
         methodName: string,
         inputTypes: Array<string>,
         minConfirmations: number
-    ): Promise<Scheme.FabricContractCreation> {
+    ): Promise<Scheme.FabricContractCreationSubscription> {
         return this.dao.createSubscription(
             clientId,
             projectId,
@@ -35,27 +35,29 @@ export class FabricContractCreationSubscriptionService extends Service {
         );
     }
 
-    public async getById(subscriptionId: string): Promise<Scheme.FabricContractCreation> {
+    public async getById(subscriptionId: string): Promise<Scheme.FabricContractCreationSubscription> {
         return this.dao.getById(subscriptionId);
     }
 
-    public async getByIdActiveOnly(subscriptionId: string): Promise<Scheme.FabricContractCreation> {
+    public async getByIdActiveOnly(subscriptionId: string): Promise<Scheme.FabricContractCreationSubscription> {
         return this.dao.getByIdActiveOnly(subscriptionId);
     }
 
-    public async listByProjectId(projectId: string): Promise<Array<Scheme.FabricContractCreation>> {
+    public async listByProjectId(projectId: string): Promise<Array<Scheme.FabricContractCreationSubscription>> {
         return this.dao.listByProjectId(projectId);
     }
 
-    public async listByProjectIdActiveOnly(projectId: string): Promise<Array<Scheme.FabricContractCreation>> {
+    public async listByProjectIdActiveOnly(
+        projectId: string
+    ): Promise<Array<Scheme.FabricContractCreationSubscription>> {
         return this.dao.listByProjectIdActiveOnly(projectId);
     }
 
-    public async listByClientId(clientId: string): Promise<Array<Scheme.FabricContractCreation>> {
+    public async listByClientId(clientId: string): Promise<Array<Scheme.FabricContractCreationSubscription>> {
         return this.dao.listByClientId(clientId);
     }
 
-    public async listByClientIdActiveOnly(clientId: string): Promise<Array<Scheme.FabricContractCreation>> {
+    public async listByClientIdActiveOnly(clientId: string): Promise<Array<Scheme.FabricContractCreationSubscription>> {
         return this.dao.listByClientIdActiveOnly(clientId);
     }
 

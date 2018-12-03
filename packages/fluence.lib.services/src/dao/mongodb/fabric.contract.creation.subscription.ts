@@ -4,7 +4,8 @@ import { FabricContractCreationSubscriptionDao } from '../fabric.contract.creati
 import { DaoIds, DaoCollectionNames } from '../../constants';
 import { MongodbSubscriptionDao } from './subscription.dao';
 
-export class MongodbFabricContractCreationDao extends MongodbSubscriptionDao<Scheme.FabricContractCreation>
+export class MongodbFabricContractCreationSubscriptionDao
+    extends MongodbSubscriptionDao<Scheme.FabricContractCreationSubscription>
     implements FabricContractCreationSubscriptionDao {
 
     public getDaoId() {
@@ -16,7 +17,7 @@ export class MongodbFabricContractCreationDao extends MongodbSubscriptionDao<Sch
     }
 
     public getDefaultValue() {
-        return {} as Scheme.FabricContractCreation;
+        return {} as Scheme.FabricContractCreationSubscription;
     }
 
     public createSubscription(
@@ -26,7 +27,7 @@ export class MongodbFabricContractCreationDao extends MongodbSubscriptionDao<Sch
         methodName: string,
         inputTypes: Array<string>,
         minConfirmations: number
-    ): Promise<Scheme.FabricContractCreation> {
+    ): Promise<Scheme.FabricContractCreationSubscription> {
         return this.create({
             clientId,
             projectId,

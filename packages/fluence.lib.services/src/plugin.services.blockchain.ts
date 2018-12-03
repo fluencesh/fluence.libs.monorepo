@@ -19,7 +19,7 @@ import {
     MongodbTransportConnectionDao,
     MongodbTransportConnectionSubscriptionDao,
     MongodbWebhookActionDao,
-    MongodbFabricContractCreationDao,
+    MongodbFabricContractCreationSubscriptionDao,
 } from './dao';
 import {
     AddressSubscriptionService,
@@ -71,7 +71,7 @@ class BlockchainServicesPlugin extends Plugin<void> {
         mongoDbPlugin.addDao(MongodbSessionDao);
         mongoDbPlugin.addDao(MongodbSubscriptionBlockRecheckDao);
         mongoDbPlugin.addDao(MongodbTransportConnectionSubscriptionDao);
-        mongoDbPlugin.addDao(MongodbFabricContractCreationDao);
+        mongoDbPlugin.addDao(MongodbFabricContractCreationSubscriptionDao);
 
         this.registerService(AddressSubscriptionService);
         this.registerService(BlockchainRegistryService);

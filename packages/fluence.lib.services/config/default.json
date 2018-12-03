@@ -14,13 +14,5 @@
             "enable": false,
             "type": "AWS"
         }
-    },
-    "fluence": {
-        "blockchain": {
-            "fabricMethod": {
-                "name": "ContractCreated",
-                "types": ["address", "string"]
-            }
-        }
     }
 }

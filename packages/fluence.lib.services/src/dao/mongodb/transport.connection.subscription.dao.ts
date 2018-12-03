@@ -11,6 +11,7 @@ import { Errors } from '../../errors';
 // - ethereumContractSubscriptions
 // - transactionHashSubscriptions
 // - oraclizeSubscriptions
+// - fabricContractCreationSubscriptions
 export class MongodbTransportConnectionSubscriptionDao extends MongoDBDao<Scheme.TransportConnectionSubscription>
     implements TransportConnectionSubscriptionDao
 {
@@ -167,6 +168,14 @@ export class MongodbTransportConnectionSubscriptionDao extends MongoDBDao<Scheme
                     as: 'oraclizeSubscriptions'
                 }
             },
+            {
+                $lookup: {
+                    from: DaoCollectionNames.FabricContractCreation,
+                    localField: 'id',
+                    foreignField: 'transportConnectionId',
+                    as: 'fabricContractCreationSubscriptions'
+                }
+            },
         ];
 
         pipeline.push({ $match: matchFilter });
@@ -191,6 +200,7 @@ export class MongodbTransportConnectionSubscriptionDao extends MongoDBDao<Scheme
                 { 'contractSubscriptions.subscribed': subscribed },
                 { 'transactionHashSubscriptions.subscribed': subscribed },
                 { 'oraclizeSubscriptions.subscribed': subscribed },
+                { 'fabricContractCreationSubscriptions.subscribed': subscribed },
             ];
 
             const filter = {
@@ -235,6 +245,13 @@ export class MongodbTransportConnectionSubscriptionDao extends MongoDBDao<Scheme
                             input: '$oraclizeSubscriptions',
                             as: 'oraclizeSubscription',
                             cond: { $eq: [ '$$oraclizeSubscription.subscribed', subscribed ] }
+                        }
+                    },
+                    fabricContractCreationSubscriptions: {
+                        $filter: {
+                            input: '$fabricContractCreationSubscriptions',
+                            as: 'fabricContractCreationSubscription',
+                            cond: { $eq: [ '$$fabricContractCreationSubscription.subscribed', subscribed ] }
                         }
                     }
                 }

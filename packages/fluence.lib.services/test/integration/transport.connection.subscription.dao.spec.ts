@@ -47,6 +47,7 @@ describe('Transport Connection Subscription DAO (integration)', () => {
                 DaoCollectionNames.TransactionHashSubscription,
                 DaoCollectionNames.EthereumContractSubscription,
                 DaoCollectionNames.Oraclize,
+                DaoCollectionNames.FabricContractCreation,
             ]);
 
             dao = new MongodbTransportConnectionSubscriptionDao(db);

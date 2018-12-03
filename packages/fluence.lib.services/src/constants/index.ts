@@ -18,6 +18,7 @@ export enum DaoIds {
     TransportConnectionSubscription = 'transport.connection.subscription',
     WebhookAction = 'webhook',
     Oraclize = 'oraclize',
+    FabricContractCreation = 'fabric.contract.creation',
 }
 
 export enum DaoCollectionNames {
@@ -39,6 +40,7 @@ export enum DaoCollectionNames {
     TransportConnection = 'transportConnections',
     WebhookAction = 'webhooks',
     Oraclize = 'oraclizeSubscriptions',
+    FabricContractCreation = 'fabricContractCreation',
 }
 
 export const RandomStringPresets = {

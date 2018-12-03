@@ -269,6 +269,11 @@ export namespace Scheme {
         createdAt: Date;
     }
 
+    export interface FabricContractCreation extends Subscription {
+        methodName: string;
+        inputTypes: Array<string>;
+    }
+
     export interface EthereumContractAbiItem {
         anonymous?: boolean;
         constant?: boolean;

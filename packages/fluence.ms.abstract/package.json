@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.ms.abstract",
-  "version": "2.0.15-alpha.0",
+  "version": "2.0.16",
   "private": false,
   "author": "Andrew Zubko <andrew@applicature.com>",
   "engines": {

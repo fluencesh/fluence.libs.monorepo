@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.lib.ethereum",
-  "version": "2.0.16",
+  "version": "2.0.17",
   "private": false,
   "description": "Ethereum Blockchain Plugin",
   "author": "Andrew Zubko <andrew@applicature.com>",

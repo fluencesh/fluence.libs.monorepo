@@ -3,6 +3,7 @@ export * from './anonymous.forbidden.middleware';
 export * from './auth.middleware';
 export * from './aws.auth.middleware';
 export * from './header.auth.middleware';
+export * from './http.auth.middleware';
 export * from './invalid.path.params.checker';
 export * from './project.required.middleware';
 export * from './request.metrics';

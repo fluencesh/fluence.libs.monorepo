@@ -1,5 +1,4 @@
 import { Hashtable } from '@applicature/synth.plugin-manager';
-// import { EthereumBlockchainService, EthereumBlock } from '@fluencesh/fluence.lib.ethereum';
 import {
     ScBlockchainService,
     Scheme,
@@ -9,8 +8,6 @@ import {
 import { set } from 'lodash';
 import { EventListenerHandler } from './event.listener.handler';
 
-// TODO: move to separate package
-// https://applicature.atlassian.net/browse/FLC-209
 export abstract class OraclizeSubscriptionHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,

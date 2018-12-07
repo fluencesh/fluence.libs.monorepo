@@ -8,8 +8,6 @@ import {
 import { set } from 'lodash';
 import { EventListenerHandler } from './event.listener.handler';
 
-// TODO: move to separate package
-// https://applicature.atlassian.net/browse/FLC-209
 export abstract class ContractEventSubscriptionHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,

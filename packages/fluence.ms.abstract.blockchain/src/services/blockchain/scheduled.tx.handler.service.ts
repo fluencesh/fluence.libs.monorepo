@@ -1,5 +1,4 @@
-import { PluginManager, Service } from '@applicature/synth.plugin-manager';
-import { Plugin as MongoPlugin } from '@applicature/synth.mongodb';
+import { Service } from '@applicature/synth.plugin-manager';
 import {
     BlockchainRegistryService,
     ClientService,
@@ -22,12 +21,6 @@ export class ScheduledTxHandlerService extends Service {
 
     private blockchainRegistry: BlockchainRegistryService;
 
-    constructor(pluginManager: PluginManager, blockchainRegistry: BlockchainRegistryService) {
-        super(pluginManager);
-
-        this.blockchainRegistry = blockchainRegistry;
-    }
-
     public getServiceId() {
         return 'scheduled.tx.handler.service';
     }
@@ -39,6 +32,7 @@ export class ScheduledTxHandlerService extends Service {
         this.webhookService = this.pluginManager.getServiceByClass(WebhookActionItemObjectService);
         this.txSubscriptionService = this.pluginManager.getServiceByClass(TransactionHashSubscriptionService);
         this.transportConnectionService = this.pluginManager.getServiceByClass(TransportConnectionService);
+        this.blockchainRegistry = this.pluginManager.getServiceByClass(BlockchainRegistryService);
     }
 
     public async handle(scheduledTxId: string): Promise<void> {

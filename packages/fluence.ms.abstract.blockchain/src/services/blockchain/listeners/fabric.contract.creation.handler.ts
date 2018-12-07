@@ -7,7 +7,7 @@ import {
     ScBlockchainService,
 } from '@fluencesh/fluence.lib.services';
 import { EventListenerHandler } from './event.listener.handler';
-import { CronjobMetricService } from '../services';
+import { CronjobMetricService } from '../../metrics';
 
 export abstract class FabricContractCreationHandler<
     Transaction extends Scheme.BlockchainTransaction,

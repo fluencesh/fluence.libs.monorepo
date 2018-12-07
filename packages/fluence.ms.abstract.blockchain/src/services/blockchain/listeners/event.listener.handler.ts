@@ -1,8 +1,6 @@
-import { Hashtable, PluginManager } from '@applicature/synth.plugin-manager';
+import { Hashtable } from '@applicature/synth.plugin-manager';
 import {
-    BlockchainTransportProvider,
     ScBlockchainService,
-    ManagedBlockchainTransport,
     Scheme,
     ScBlockchainTransportProvider,
     ManagedScBlockchainTransport
@@ -10,8 +8,6 @@ import {
 import { set } from 'lodash';
 import { BlockchainListenerHandler } from './blockchain.listener.handler';
 
-// TODO: move to separate package
-// https://applicature.atlassian.net/browse/FLC-209
 export abstract class EventListenerHandler<
     Transaction extends Scheme.BlockchainTransaction,
     Block extends Scheme.BlockchainBlock<Transaction>,

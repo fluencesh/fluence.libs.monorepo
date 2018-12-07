@@ -14,7 +14,7 @@ import {
 import { set } from 'lodash';
 import { v1 as generateId } from 'uuid';
 import * as logger from 'winston';
-import { CronjobMetricService } from '../services';
+import { CronjobMetricService } from '../../metrics';
 
 export abstract class BlockchainListenerHandler<
     Transaction extends Scheme.BlockchainTransaction,

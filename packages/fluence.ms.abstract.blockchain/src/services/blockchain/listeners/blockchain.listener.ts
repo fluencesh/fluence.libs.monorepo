@@ -9,7 +9,7 @@ import {
     ManagedBlockchainTransport,
 } from '@fluencesh/fluence.lib.services';
 import * as logger from 'winston';
-import { BlockchainListenerJob, HandlerData, BlockchainListenerJobMessage, TransportConnectionData } from '../types';
+import { BlockchainListenerJob, HandlerData } from '../../../types';
 import { BlockchainListenerHandler } from './blockchain.listener.handler';
 
 export class BlockchainListener<
@@ -62,7 +62,7 @@ export class BlockchainListener<
         return `${ this.getServiceId() }.${ transportConnectionSubscription.id }`;
     }
 
-    public async execute(message: BlockchainListenerJobMessage) {
+    public async execute(message: Scheme.TransportConnectionJobData) {
         let transportConnectionSubscription: Scheme.TransportConnectionSubscription;
         try {
             transportConnectionSubscription = await this.tcsService.getByIdAndStatus(

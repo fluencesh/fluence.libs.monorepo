@@ -24,7 +24,7 @@ export class BlockchainListener<
     private readonly tcsService: TransportConnectionSubscriptionService;
     private readonly jobService: JobService;
 
-    private readonly handlers: Array<BlockchainListenerHandler<
+    private handlers: Array<BlockchainListenerHandler<
         Transaction,
         Block,
         Provider,
@@ -41,7 +41,7 @@ export class BlockchainListener<
             Block,
             Provider,
             ManagedBlockchainTransportService
-        >>
+        >> = []
     ) {
         super(pluginManager);
 
@@ -56,6 +56,17 @@ export class BlockchainListener<
 
     public getServiceId() {
         return `blockchain.${ this.blockchainId }.listener`;
+    }
+
+    public setHandlers(
+        handlers: Array<BlockchainListenerHandler<
+            Transaction,
+            Block,
+            Provider,
+            ManagedBlockchainTransportService
+        >>
+    ) {
+        this.handlers = handlers;
     }
 
     public getJobId(transportConnectionSubscription: Scheme.TransportConnectionSubscription) {

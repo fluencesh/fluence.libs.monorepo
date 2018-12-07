@@ -3,8 +3,7 @@ import { Message } from '@applicature/synth.queues';
 import {
     Scheme,
     BlockchainTransportProvider,
-    ManagedBlockchainTransport,
-    BlockchainRegistryService
+    ManagedBlockchainTransport
 } from '@fluencesh/fluence.lib.services';
 import { BlockchainListenerHandler, BlockchainListener } from '../blockchain';
 import { PluginManager } from '@applicature/synth.plugin-manager';
@@ -15,39 +14,26 @@ export abstract class BlockchainQueueListenerJob<
     Provider extends BlockchainTransportProvider<Transaction, Block>,
     ManagedBlockchainTransportService extends ManagedBlockchainTransport<Transaction, Block, Provider>
 > extends QueueListenerJob {
-    private handlers: Array<BlockchainListenerHandler<
-        Transaction,
-        Block,
-        Provider,
-        ManagedBlockchainTransportService
-    >>;
     private blockchainId: string;
 
     private blockchainListener: BlockchainListener<Transaction, Block, Provider, ManagedBlockchainTransportService>;
 
     constructor(
         pluginManager: PluginManager,
-        blockchainId: string,
-        handlers: Array<BlockchainListenerHandler<
-            Transaction,
-            Block,
-            Provider,
-            ManagedBlockchainTransportService
-        >>
+        blockchainId: string
     ) {
         super(pluginManager);
 
         this.blockchainId = blockchainId;
-        this.handlers = handlers;
     }
 
     public async init() {
-        const blockchainRegistry = this.pluginManager.getServiceByClass(BlockchainRegistryService);
+        const handlers = this.prepareHandlers();
+
         this.blockchainListener = new BlockchainListener(
             this.pluginManager,
-            blockchainRegistry,
             this.blockchainId,
-            this.handlers
+            handlers
         );
     }
 
@@ -55,4 +41,11 @@ export abstract class BlockchainQueueListenerJob<
         const data = message.data as Scheme.TransportConnectionJobData;
         await this.blockchainListener.execute(data);
     }
+
+    protected abstract prepareHandlers(): Array<BlockchainListenerHandler<
+        Transaction,
+        Block,
+        Provider,
+        ManagedBlockchainTransportService
+    >>;
 }

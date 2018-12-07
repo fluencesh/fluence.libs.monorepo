@@ -1,2 +1,2 @@
 export * from './metrics';
-export * from './blockchain';
+export * from './scheduled.tx.handler.service';

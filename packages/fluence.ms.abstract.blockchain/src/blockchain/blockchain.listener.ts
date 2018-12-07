@@ -9,7 +9,7 @@ import {
     ManagedBlockchainTransport,
 } from '@fluencesh/fluence.lib.services';
 import * as logger from 'winston';
-import { BlockchainListenerJob, HandlerData } from '../../../types';
+import { BlockchainListenerJob, HandlerData } from '../types';
 import { BlockchainListenerHandler } from './blockchain.listener.handler';
 
 export class BlockchainListener<

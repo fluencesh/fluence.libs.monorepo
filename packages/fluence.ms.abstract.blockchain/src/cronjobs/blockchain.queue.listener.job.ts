@@ -6,7 +6,7 @@ import {
     ManagedBlockchainTransport,
     BlockchainRegistryService
 } from '@fluencesh/fluence.lib.services';
-import { BlockchainListenerHandler, BlockchainListener } from '../services';
+import { BlockchainListenerHandler, BlockchainListener } from '../blockchain';
 import { PluginManager } from '@applicature/synth.plugin-manager';
 
 export abstract class BlockchainQueueListenerJob<

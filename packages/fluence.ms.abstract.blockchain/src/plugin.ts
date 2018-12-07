@@ -1,5 +1,5 @@
 import { Plugin } from '@applicature/synth.plugin-manager';
-import { BlockchainMetricService } from './services';
+import { BlockchainMetricService, CronjobMetricService, ScheduledTxHandlerService } from './services';
 
 class FluenceBlockchainMs extends Plugin<void> {
     public getPluginId() {
@@ -8,6 +8,8 @@ class FluenceBlockchainMs extends Plugin<void> {
 
     public init(): void {
         this.registerService(BlockchainMetricService);
+        this.registerService(CronjobMetricService);
+        this.registerService(ScheduledTxHandlerService);
     }
 }
 

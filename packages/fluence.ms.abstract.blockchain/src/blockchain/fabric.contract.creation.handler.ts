@@ -7,7 +7,7 @@ import {
     ScBlockchainService,
 } from '@fluencesh/fluence.lib.services';
 import { EventListenerHandler } from './event.listener.handler';
-import { CronjobMetricService } from '../../metrics';
+import { CronjobMetricService } from '../services';
 
 export abstract class FabricContractCreationHandler<
     Transaction extends Scheme.BlockchainTransaction,
@@ -17,11 +17,8 @@ export abstract class FabricContractCreationHandler<
 > extends EventListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
     private contractService: ContractService;
 
-    constructor(
-        pluginManager: PluginManager,
-        metricService?: CronjobMetricService
-    ) {
-        super(pluginManager, metricService);
+    constructor(pluginManager: PluginManager) {
+        super(pluginManager);
 
         this.contractService =
             pluginManager.getServiceByClass(ContractService) as ContractService;

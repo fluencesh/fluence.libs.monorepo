@@ -1,7 +1,7 @@
 import { BlockchainRegistryService } from '@fluencesh/fluence.lib.services';
 import { NextFunction, Request, Response } from 'express';
 import * as logger from 'winston';
-import { BlockchainMetricService } from '../services/blockchain.metric.service';
+import { BlockchainMetricService } from '../services/';
 
 export class BlockchainMetrics {
     private metricService: BlockchainMetricService;

@@ -28,6 +28,8 @@ export abstract class BlockchainQueueListenerJob<
     }
 
     public async init() {
+        await super.init();
+
         const handlers = this.prepareHandlers();
 
         this.blockchainListener = new BlockchainListener(

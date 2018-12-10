@@ -7,6 +7,8 @@ export abstract class ScheduleTxQueueListenerJob extends QueueListenerJob {
     private handler: ScheduledTxHandlerService;
 
     public async init() {
+        await super.init();
+
         this.handler = this.pluginManager.getServiceByClass(ScheduledTxHandlerService);
     }
 

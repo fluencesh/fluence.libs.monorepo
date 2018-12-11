@@ -1,14 +1,14 @@
 {
-  "multivest": {
-    "blockchain": {
-      "litecoin": {
-        "providers": {
-          "native": {
-            "host": "LITECOIN_HOST",
-            "port": "LITECOIN_PORT"
-          }
+    "multivest": {
+        "blockchain": {
+            "litecoin": {
+                "providers": {
+                    "native": {
+                        "host": "LITECOIN_HOST",
+                        "port": "LITECOIN_PORT"
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }

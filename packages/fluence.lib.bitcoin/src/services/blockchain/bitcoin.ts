@@ -48,13 +48,17 @@ export class BitcoinBlockchainService extends BlockchainService<
             throw new MultivestError(Errors.MASTER_PUBLIC_KEY_REQUIRED);
         }
 
-        const network = this.getNetworkId() === AvailableNetwork.MAIN_NET
-            ? bitcoin.networks.bitcoin
-            : bitcoin.networks.testnet;
+        let hdNode: bitcoin.HDNode;
+        if (masterPubKey.startsWith('xpub') && this.getNetworkId() === AvailableNetwork.MAIN_NET) {
+            hdNode = bitcoin.HDNode.fromBase58(masterPubKey, this.getBitcoinLibNetwork());
+        } else if (masterPubKey.startsWith('tpub') && this.getNetworkId() === AvailableNetwork.TEST_NET) {
+            hdNode = bitcoin.HDNode.fromBase58(masterPubKey, this.getBitcoinLibNetwork());
+        } else {
+            throw new MultivestError(Errors.UNKNOWN_BITCOIN_FORMAT);
+        }
 
-        const hdNode = bitcoin.HDNode.fromBase58(masterPubKey, network);
-
-        return hdNode.derive(0).derive(index).getAddress().toString();
+        const address = hdNode.derive(0).derive(index).getAddress().toString()
+        return `0x${ address }`;
     }
 
     public isValidAddress(address: string): boolean {
@@ -72,13 +76,19 @@ export class BitcoinBlockchainService extends BlockchainService<
         const network = this.getBitcoinLibNetwork();
 
         const key = bitcoin.ECPair.fromWIF(privateKey.toString('utf8'), network);
+
+        const txHash = txData.hash;
+        const preparedTxHash = txHash.startsWith('0x') ? txHash.slice(2) : txHash;
+        const address = txData.to[0].address;
+        const preparedAddress = address.startsWith('0x') ? address.slice(2) : address;
         
-        const tx = new bitcoin.TransactionBuilder();
-        tx.addInput(txData.hash, 0);
-        tx.addOutput(txData.to[0].address, txData.to[0].amount.toNumber());
+        const tx = new bitcoin.TransactionBuilder(network);
+        tx.addInput(preparedTxHash, 0);
+        tx.addOutput(preparedAddress, txData.to[0].amount.toNumber());
         tx.sign(0, key);
 
-        return tx.build().toHex();
+        const hex = tx.build().toHex()
+        return `0x${ hex }`;
     }
 
     public signData(privateKey: Buffer, data: Buffer): Signature {

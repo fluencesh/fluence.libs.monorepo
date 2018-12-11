@@ -8,12 +8,14 @@ import { Errors } from '../../errors';
 import { LITECOIN } from '../../constants';
 import { LitecoinTransportProvider } from './interfaces';
 
+// tslint:disable-next-line:no-var-requires
 const Client = require('bitcoin-core');
 
 export class BcLitecoinTransportService extends Service implements LitecoinTransportProvider {
-    private client: any;
     protected networkId: string;
     protected transportConnection: Scheme.TransportConnection;
+
+    private client: any;
 
     constructor(pluginManager: PluginManager, transportConnection: Scheme.TransportConnection) {
         super(pluginManager);
@@ -35,10 +37,6 @@ export class BcLitecoinTransportService extends Service implements LitecoinTrans
 
     public getTransportConnection() {
         return this.transportConnection;
-    }
-
-    protected prepareHash(hash: string) {
-        return hash.indexOf('0x') === 0 ? hash.slice(2) : hash;
     }
 
     public getServiceId() {
@@ -132,6 +130,10 @@ export class BcLitecoinTransportService extends Service implements LitecoinTrans
         // NOTICE: no such method for bitcoin
         // https://en.bitcoin.it/wiki/Original_Bitcoin_client/API_calls_list
         throw new MultivestError(Errors.NOT_IMPLEMENTED);
+    }
+
+    protected prepareHash(hash: string) {
+        return hash.indexOf('0x') === 0 ? hash.slice(2) : hash;
     }
 
     private async getCoreTransactionByHash(txHash: string) {

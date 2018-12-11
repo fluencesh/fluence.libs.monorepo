@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.ms.abstract.blockchain",
-  "version": "2.0.17-alpha.6",
+  "version": "2.0.17-alpha.7",
   "private": false,
   "author": "Andrew Zubko <andrew@applicature.com>",
   "engines": {
@@ -35,7 +35,7 @@
     "@applicature/synth.web": "2.0.21",
     "@fluencesh/fluence.lib.ethereum": "^2.0.17-alpha.2",
     "@fluencesh/fluence.lib.services": "^2.0.17-alpha.2",
-    "@fluencesh/fluence.ms.abstract": "^2.0.17-alpha.6",
+    "@fluencesh/fluence.ms.abstract": "^2.0.17-alpha.7",
     "agenda": "^2.0.2",
     "bignumber.js": "^7.2.1",
     "config": "^1.30.0",

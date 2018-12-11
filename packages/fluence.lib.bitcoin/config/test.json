@@ -1,5 +1,10 @@
 {
     "multivest": {
+        "mongodb": {
+            "url": "mongodb://localhost",
+            "dbName": "test-fluence-bitcoin",
+            "options": {}
+        },
         "blockchainInfo": {
             "url": "https://testnet.blockchain.info/"
         }

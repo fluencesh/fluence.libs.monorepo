@@ -3,7 +3,7 @@ import { PluginManager, MultivestError } from '@applicature/synth.plugin-manager
 import { BlockchainService, Signature } from '@fluencesh/fluence.lib.services';
 import * as bitcoin from 'bitcoinjs-lib';
 import * as config from 'config';
-import { LITECOIN, AvailableNetwork } from '../../constants';
+import { LITECOIN, AvailableNetwork, LitecoinTestNetNetwork } from '../../constants';
 import {
     LitecoinTransaction,
     LitecoinBlock
@@ -38,19 +38,25 @@ export class LitecoinBlockchainService extends BlockchainService<
     }
 
     public async getHDAddress(index: number): Promise<string> {
-        const masterPubKey = config.has('multivest.blockchain.bitcoin.hd.masterPublicKey')
-            ? config.get<string>('multivest.blockchain.bitcoin.hd.masterPublicKey')
+        const masterPubKey = config.has('multivest.blockchain.litecoin.hd.masterPublicKey')
+            ? config.get<string>('multivest.blockchain.litecoin.hd.masterPublicKey')
             : null;
 
         if (!masterPubKey) {
             throw new MultivestError(Errors.MASTER_PUBLIC_KEY_REQUIRED);
         }
 
-        const network = this.getBitcoinCoreNetwork();
+        let hdNode: bitcoin.HDNode;
+        if (masterPubKey.startsWith('Ltub') && this.getNetworkId() === AvailableNetwork.LITECOIN) {
+            hdNode = bitcoin.HDNode.fromBase58(masterPubKey, this.getBitcoinCoreNetwork());
+        } else if (masterPubKey.startsWith('ttub') && this.getNetworkId() === AvailableNetwork.LITECOIN_TESTNET) {
+            hdNode = bitcoin.HDNode.fromBase58(masterPubKey, this.getBitcoinCoreNetwork());
+        } else {
+            throw new MultivestError(Errors.UNKNOWN_LITECOIN_FORMAT);
+        }
 
-        const hdNode = bitcoin.HDNode.fromBase58(masterPubKey, network);
-
-        return hdNode.derive(0).derive(index).getAddress().toString();
+        const address = hdNode.derive(0).derive(index).getAddress().toString();
+        return `0x${ address }`;
     }
 
     public isValidAddress(address: string): boolean {
@@ -68,13 +74,19 @@ export class LitecoinBlockchainService extends BlockchainService<
         const network = this.getBitcoinCoreNetwork();
 
         const key = bitcoin.ECPair.fromWIF(privateKey.toString('utf8'), network);
+
+        const txHash = txData.hash;
+        const preparedTxHash = txHash.startsWith('0x') ? txHash.slice(2) : txHash;
+        const address = txData.to[0].address;
+        const preparedAddress = address.startsWith('0x') ? address.slice(2) : address;
         
-        const tx = new bitcoin.TransactionBuilder();
-        tx.addInput(txData.hash, 0);
-        tx.addOutput(txData.to[0].address, txData.to[0].amount.toNumber());
+        const tx = new bitcoin.TransactionBuilder(network);
+        tx.addInput(preparedTxHash, 0);
+        tx.addOutput(preparedAddress, txData.to[0].amount.toNumber());
         tx.sign(0, key);
 
-        return tx.build().toHex();
+        const hex = tx.build().toHex();
+        return `0x${ hex }`;
     }
 
     public signData(privateKey: Buffer, data: Buffer): Signature {
@@ -99,6 +111,6 @@ export class LitecoinBlockchainService extends BlockchainService<
     private getBitcoinCoreNetwork() {
         return this.getNetworkId() === AvailableNetwork.LITECOIN
             ? bitcoin.networks.litecoin
-            : bitcoin.networks.testnet
+            : LitecoinTestNetNetwork;
     }
 }

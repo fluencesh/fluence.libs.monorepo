@@ -34,14 +34,16 @@
     "bignumber.js": "^7.2.1",
     "bitcoin-core": "^1.2.0",
     "bitcoinjs-lib": "^3.3.0",
-    "bitcoinjs-testnets": "^1.0.10",
     "bluebird": "^3.5.0",
     "config": "^1.30.0",
     "lodash": "^4.17.10",
+    "mongodb": "^3.1.10",
     "winston": "^2.4.2"
   },
   "devDependencies": {
+    "@applicature/synth.mongodb": "^2.1.2",
     "@types/agenda": "^1.0.3",
+    "@types/bignumber.js": "^5.0.0",
     "@types/bitcoinjs-lib": "^3.4.0",
     "@types/config": "0.0.33",
     "@types/jest": "^22.2.3",

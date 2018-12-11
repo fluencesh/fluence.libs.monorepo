@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.ms.abstract",
-  "version": "2.0.17-alpha.0",
+  "version": "2.0.17-alpha.1",
   "private": false,
   "author": "Andrew Zubko <andrew@applicature.com>",
   "engines": {
@@ -32,7 +32,7 @@
     "@applicature/synth.mongodb": "2.0.21",
     "@applicature/synth.plugin-manager": "2.0.21",
     "@applicature/synth.web": "2.0.21",
-    "@fluencesh/fluence.lib.services": "^2.0.17-alpha.0",
+    "@fluencesh/fluence.lib.services": "^2.0.17-alpha.1",
     "aws-sdk": "^2.316.0",
     "axios": "^0.18.0",
     "bignumber.js": "^7.2.1",

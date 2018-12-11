@@ -1,52 +1,10 @@
 import { Scheme } from '@fluencesh/fluence.lib.services';
 import { BigNumber } from 'bignumber.js';
 import { BiBitcoinTransportService, AvailableNetwork, BitcoinBlock, BitcoinTransaction } from '../../src';
+import { checkBlock, checkTx } from '../helpers';
 
 describe('bi bitcoin transport service ', () => {
     let transport: BiBitcoinTransportService;
-
-    function checkBlock(block: BitcoinBlock) {
-        expect(block.fee).toBeInstanceOf(BigNumber);
-        expect(typeof block.hash === 'string').toBeTruthy();
-        expect(typeof block.height === 'number').toBeTruthy();
-        expect(typeof block.network === 'string').toBeTruthy();
-        expect(typeof block.nonce === 'number').toBeTruthy();
-        expect(typeof block.parentHash === 'string').toBeTruthy();
-        expect(typeof block.size === 'number').toBeTruthy();
-        expect(typeof block.time === 'number').toBeTruthy();
-
-        expect(block.transactions).toBeInstanceOf(Array);
-        block.transactions.forEach((tx) => {
-            checkTx(tx);
-        });
-    }
-
-    function checkTx(tx: BitcoinTransaction) {
-        if (tx.hasOwnProperty('blockHash')) {
-            expect(typeof tx.blockHash === 'string').toBeTruthy();
-        }
-        if (tx.hasOwnProperty('blockHeight')) {
-            expect(typeof tx.blockHeight === 'number').toBeTruthy();
-        }
-        if (tx.hasOwnProperty('blockTime')) {
-            expect(typeof tx.blockTime === 'number').toBeTruthy();
-        }
-
-        expect(typeof tx.hash === 'string').toBeTruthy();
-
-        expect(tx.from).toBeInstanceOf(Array);
-        tx.from.forEach((sender) => {
-            if (sender.address) {
-                expect(typeof sender.address === 'string');
-            }
-        });
-
-        expect(tx.to).toBeInstanceOf(Array);
-        tx.to.forEach((recipient) => {
-            expect(typeof recipient.address === 'string');
-            expect(recipient.amount).toBeInstanceOf(BigNumber);
-        });
-    }
 
     beforeAll(async () => {
         const connection = {

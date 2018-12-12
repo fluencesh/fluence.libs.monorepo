@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.lib.bitcoin",
-  "version": "2.0.17-alpha.1",
+  "version": "2.0.17-alpha.2",
   "private": false,
   "description": "Bitcoin Blockchain Plugin",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -30,7 +30,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@applicature/synth.plugin-manager": "2.0.21",
-    "@fluencesh/fluence.lib.services": "^2.0.17-alpha.1",
+    "@fluencesh/fluence.lib.services": "^2.0.17-alpha.2",
     "agenda": "^1.0.3",
     "ajv": "^6.5.0",
     "bignumber.js": "^7.2.1",

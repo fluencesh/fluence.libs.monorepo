@@ -1,0 +1,21 @@
+{
+    "multivest": {
+        "mongodb": {
+            "url": "mongodb://localhost",
+            "dbName": "test-fluence-litecoin",
+            "options": {}
+        },
+        "blockchain": {
+            "litecoin": {
+                "providers": {
+                    "native": {
+                        "host": "127.0.0.1",
+                        "network": "testnet",
+                        "username": "test",
+                        "password": "test"
+                    }
+                }
+            }
+        }
+    }
+}

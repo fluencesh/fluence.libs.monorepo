@@ -29,7 +29,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@applicature/synth.plugin-manager": "^2.0.18",
+    "@applicature/synth.plugin-manager": "2.0.21",
     "@fluencesh/fluence.lib.services": "^2.0.17",
     "agenda": "^1.0.3",
     "ajv": "^6.5.0",
@@ -39,10 +39,12 @@
     "bluebird": "^3.5.0",
     "config": "^1.26.1",
     "lodash": "^4.17.10",
+    "mongodb": "^3.1.10",
     "request-promise": "^4.2.2",
     "winston": "^2.1.1"
   },
   "devDependencies": {
+    "@applicature/synth.mongodb": "^2.1.2",
     "@types/agenda": "^1.0.1",
     "@types/ajv": "^1.0.0",
     "@types/bitcoinjs-lib": "^3.3.1",
@@ -50,7 +52,7 @@
     "@types/config": "0.0.33",
     "@types/jest": "^22.1.1",
     "@types/lodash": "^4.14.108",
-    "@types/mongodb": "^2.2.18",
+    "@types/mongodb": "^3.1.17",
     "@types/node": "^8.5.2",
     "@types/request": "^2.47.0",
     "@types/request-promise": "^4.1.41",

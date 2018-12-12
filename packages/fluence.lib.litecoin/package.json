@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.lib.litecoin",
-  "version": "2.0.15-alpha.0",
+  "version": "2.0.17-alpha.1",
   "private": false,
   "description": "Litecoin Blockchain Plugin",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -30,7 +30,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@applicature/synth.plugin-manager": "^2.0.21",
-    "@fluencesh/fluence.lib.services": "^2.0.15-alpha.0",
+    "@fluencesh/fluence.lib.services": "^2.0.17-alpha.1",
     "bignumber.js": "^7.2.1",
     "bitcoin-core": "^1.2.0",
     "bitcoinjs-lib": "^3.3.0",

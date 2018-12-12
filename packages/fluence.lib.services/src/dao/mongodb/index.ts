@@ -4,6 +4,7 @@ export * from './contract.dao';
 export * from './contract.public.request.dao';
 export * from './ethereum.contract.subscription.dao';
 export * from './ethereum.event.log.dao';
+export * from './fabric.contract.creation.subscription';
 export * from './job.dao';
 export * from './oraclize.subscription.dao';
 export * from './project.blockchain.setup.dao';

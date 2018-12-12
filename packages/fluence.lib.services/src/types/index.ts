@@ -198,12 +198,12 @@ export namespace Scheme {
         transportConnectionId: string;
     }
 
-    // TODO: FabricSmartContractCreation
     export interface TransportConnectionSubscription extends TransportConnection {
         addressSubscriptions: Array<AddressSubscription>;
         contractSubscriptions: Array<EthereumContractSubscription>;
         transactionHashSubscriptions: Array<TransactionHashSubscription>;
         oraclizeSubscriptions: Array<OraclizeSubscription>;
+        fabricContractCreationSubscriptions: Array<FabricContractCreationSubscription>;
     }
 
     export enum TransportConnectionSubscriptionStatus {
@@ -267,6 +267,11 @@ export namespace Scheme {
         subscribeAllEvents: boolean;
 
         createdAt: Date;
+    }
+
+    export interface FabricContractCreationSubscription extends Subscription {
+        methodName: string;
+        inputTypes: Array<string>;
     }
 
     export interface EthereumContractAbiItem {

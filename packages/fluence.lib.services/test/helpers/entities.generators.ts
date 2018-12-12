@@ -35,6 +35,20 @@ export function generateTransactionSubscription(): Scheme.TransactionHashSubscri
     } as Scheme.TransactionHashSubscription;
 }
 
+export function generateFabricContractCreationSubscription(): Scheme.FabricContractCreationSubscription {
+    return {
+        clientId: generateId(),
+        methodName: generateId(),
+        inputTypes: [ 'uint256' ],
+        isClientActive: true,
+        isProjectActive: true,
+        minConfirmations: 0,
+        transportConnectionId: generateId(),
+        projectId: generateId(),
+        subscribed: true,
+    } as Scheme.FabricContractCreationSubscription;
+}
+
 export function generateClient(): Scheme.Client {
     return {
         email: faker.internet.email(),

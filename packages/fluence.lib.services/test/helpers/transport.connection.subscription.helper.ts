@@ -5,7 +5,8 @@ import {
     MongodbTransportConnectionDao,
     MongodbOraclizeSubscriptionDao,
     MongodbTransactionHashSubscriptionDao,
-    MongodbEthereumContractSubscriptionDao
+    MongodbEthereumContractSubscriptionDao,
+    MongodbFabricContractCreationSubscriptionDao
 } from '../../src';
 import { sortBy, omit } from 'lodash';
 import { createEntities, getRandomItem } from './db.helpers';
@@ -14,7 +15,8 @@ import {
     generateTransportConnection,
     generateOraclize,
     generateTransactionSubscription,
-    generateAddressSubscription
+    generateAddressSubscription,
+    generateFabricContractCreationSubscription
 } from './entities.generators';
 import { Db } from 'mongodb';
 
@@ -25,6 +27,7 @@ export async function initTransportConnectionSubscriptionsInDb(db: Db) {
     const txHashSubscriptions: Array<Scheme.TransactionHashSubscription> = new Array(15);
     const contractSubscriptions: Array<Scheme.EthereumContractSubscription> = new Array(15);
     const addressSubscriptions: Array<Scheme.AddressSubscription> = new Array(15);
+    const fabricContractCreationSubscriptions: Array<Scheme.FabricContractCreationSubscription> = new Array(15);
 
     await createEntities(
         new MongodbTransportConnectionDao(db),
@@ -69,6 +72,15 @@ export async function initTransportConnectionSubscriptionsInDb(db: Db) {
             },
             addressSubscriptions
         ),
+        createEntities(
+            new MongodbFabricContractCreationSubscriptionDao(db),
+            () => {
+                const data = generateFabricContractCreationSubscription();
+                data.transportConnectionId = getRandomItem(transportConnections).id;
+                return data;
+            },
+            fabricContractCreationSubscriptions
+        ),
     ]);
 
     const transportConnectionSubscriptions: Array<Scheme.TransportConnectionSubscription> = [];
@@ -83,6 +95,8 @@ export async function initTransportConnectionSubscriptionsInDb(db: Db) {
             oraclizeSubscriptions.filter((s) => s.transportConnectionId === mergedData.id);
         mergedData.transactionHashSubscriptions =
             txHashSubscriptions.filter((s) => s.transportConnectionId === mergedData.id);
+        mergedData.fabricContractCreationSubscriptions =
+            fabricContractCreationSubscriptions.filter((s) => s.transportConnectionId === mergedData.id);
 
         transportConnectionSubscriptions.push(mergedData);
     }
@@ -110,10 +124,13 @@ export function convertTcsByStatus(
         tcs.transactionHashSubscriptions.filter((s) => s.subscribed === subscribed);
     clone.oraclizeSubscriptions =
         tcs.oraclizeSubscriptions.filter((s) => s.subscribed === subscribed);
+    clone.fabricContractCreationSubscriptions =
+        tcs.fabricContractCreationSubscriptions.filter((s) => s.subscribed === subscribed);
 
     if (
         clone.addressSubscriptions.length || clone.contractSubscriptions.length
         || clone.transactionHashSubscriptions.length || clone.oraclizeSubscriptions.length
+        || clone.fabricContractCreationSubscriptions.length
     ) {
         return clone;
     } else {
@@ -146,21 +163,26 @@ export function compareTcs(
     sortBy(actual.oraclizeSubscriptions, 'id');
     sortBy(actual.transactionHashSubscriptions, 'id');
     sortBy(actual.contractSubscriptions, 'id');
+    sortBy(actual.fabricContractCreationSubscriptions, 'id');
 
     sortBy(expected.addressSubscriptions, 'id');
     sortBy(expected.oraclizeSubscriptions, 'id');
     sortBy(expected.transactionHashSubscriptions, 'id');
     sortBy(expected.contractSubscriptions, 'id');
+    sortBy(expected.fabricContractCreationSubscriptions, 'id');
 
     expect(actual.addressSubscriptions.length).toEqual(expected.addressSubscriptions.length);
     expect(actual.oraclizeSubscriptions.length).toEqual(expected.oraclizeSubscriptions.length);
     expect(actual.transactionHashSubscriptions.length).toEqual(expected.transactionHashSubscriptions.length);
     expect(actual.contractSubscriptions.length).toEqual(expected.contractSubscriptions.length);
+    expect(actual.fabricContractCreationSubscriptions.length)
+        .toEqual(expected.fabricContractCreationSubscriptions.length);
 
     expect(actual.addressSubscriptions).toEqual(expected.addressSubscriptions);
     expect(actual.oraclizeSubscriptions).toEqual(expected.oraclizeSubscriptions);
     expect(actual.transactionHashSubscriptions).toEqual(expected.transactionHashSubscriptions);
     expect(actual.contractSubscriptions).toEqual(expected.contractSubscriptions);
+    expect(actual.fabricContractCreationSubscriptions).toEqual(expected.fabricContractCreationSubscriptions);
 }
 
 export function compareTcsArrays(
@@ -220,6 +242,14 @@ export function generatePipeline(matchFilter: any = {}) {
                 as: 'oraclizeSubscriptions'
             }
         },
+        {
+            $lookup: {
+                from: DaoCollectionNames.FabricContractCreation,
+                localField: 'id',
+                foreignField: 'transportConnectionId',
+                as: 'fabricContractCreationSubscriptions'
+            }
+        },
     ];
 
     pipeline.push({ $match: matchFilter });
@@ -244,6 +274,7 @@ export function generatePipelineForStatusCheck(
             { 'contractSubscriptions.subscribed': subscribed },
             { 'transactionHashSubscriptions.subscribed': subscribed },
             { 'oraclizeSubscriptions.subscribed': subscribed },
+            { 'fabricContractCreationSubscriptions.subscribed': subscribed },
         ];
 
         const filter = {
@@ -288,6 +319,13 @@ export function generatePipelineForStatusCheck(
                         input: '$oraclizeSubscriptions',
                         as: 'oraclizeSubscription',
                         cond: { $eq: [ '$$oraclizeSubscription.subscribed', subscribed ] }
+                    }
+                },
+                fabricContractCreationSubscriptions: {
+                    $filter: {
+                        input: '$fabricContractCreationSubscriptions',
+                        as: 'fabricContractCreationSubscription',
+                        cond: { $eq: [ '$$fabricContractCreationSubscription.subscribed', subscribed ] }
                     }
                 }
             }

@@ -18,7 +18,7 @@ export class HttpAuthMiddleware extends AuthMiddleware {
 
     public async attachProjectAndClient(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
-            // NOTICE: do not use req.path, because it cuts in nested routers
+            // NOTICE: do not use req.path, because it is cut in nested routers
             const queryParamStartIndex = req.originalUrl.indexOf('?');
             const fullPath = queryParamStartIndex === -1
                 ? req.originalUrl

@@ -14,7 +14,7 @@ import { promisify } from 'util';
 import { BatchService } from '../../src/services/blockchain';
 import { EthereumBlockchainService } from '../../src/services/blockchain';
 import { ManagedEthereumTransportService } from '../../src/services/transports';
-import { clearDb } from '../helper';
+import { clearCollections } from '../helpers';
 
 describe.skip('batch service', () => {
     let blockchainService: EthereumBlockchainService;
@@ -111,8 +111,7 @@ describe.skip('batch service', () => {
 
     beforeAll(async () => {
         await initDb();
-        await clearDb([
-            ,
+        await clearCollections(db, [
             DaoCollectionNames.Contract,
         ]);
         await initPluginManager();

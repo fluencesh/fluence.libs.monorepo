@@ -1,9 +1,9 @@
 import { MongodbProjectBlockchainSetupDao } from '../../src/dao/mongodb';
 import { Scheme } from '../../src/types';
-import { randomProjectBlockchainSetup } from '../helper';
+import { generateProjectBlockchainSetup } from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('setup dao', () => {
+describe('Project Blockchain Setup DAO (unit)', () => {
     let dao: MongodbProjectBlockchainSetupDao;
     let collection: any;
 
@@ -62,7 +62,7 @@ describe('setup dao', () => {
     });
 
     it('createSetup() transfers correct arguments', async () => {
-        const data = randomProjectBlockchainSetup();
+        const data = generateProjectBlockchainSetup();
         await dao.createSetup(data.projectId, data.blockchainId, data.privateTransportConnectionId);
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);

@@ -1,8 +1,8 @@
 import { MongodbSubscriptionBlockRecheckDao } from '../../src';
-import { randomSubscriptionBlockChecker } from '../helper';
+import { generateSubscriptionBlockRecheck } from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('subscription block recheck dao', () => {
+describe('Subscription Block Recheck DAO (unit)', () => {
     let dao: MongodbSubscriptionBlockRecheckDao;
     let collection: any;
 
@@ -108,7 +108,7 @@ describe('subscription block recheck dao', () => {
     });
 
     it('createBlockRecheck() transfers correct arguments', async () => {
-        const data = randomSubscriptionBlockChecker();
+        const data = generateSubscriptionBlockRecheck();
         await dao.createBlockRecheck(
             data.subscriptionId,
             data.transportConnectionId,

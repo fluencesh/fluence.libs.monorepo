@@ -53,48 +53,6 @@ export abstract class MongodbSubscriptionDao<T extends Scheme.Subscription>
         });
     }
 
-    public async listBySubscribedAddresses(addresses: Array<string>): Promise<Array<T>> {
-        return this.listRaw({
-            address: { $in: addresses },
-        });
-    }
-
-    public async listBySubscribedAddressesActiveOnly(addresses: Array<string>): Promise<Array<T>> {
-        return this.listRaw({
-            address: { $in: addresses },
-            subscribed: true,
-            isProjectActive: true,
-            isClientActive: true,
-        });
-    }
-
-    public async listBySubscribedAddress(
-        address: string,
-        clientId: string,
-        projectId: string
-    ): Promise<Array<T>> {
-        return this.listRaw({
-            address,
-            clientId,
-            projectId
-        });
-    }
-
-    public async listBySubscribedAddressActiveOnly(
-        address: string,
-        clientId: string,
-        projectId: string
-    ): Promise<Array<T>> {
-        return this.listRaw({
-            address,
-            clientId,
-            projectId,
-            subscribed: true,
-            isProjectActive: true,
-            isClientActive: true,
-        });
-    }
-
     public async setSubscribed(
         id: string,
         subscribed: boolean

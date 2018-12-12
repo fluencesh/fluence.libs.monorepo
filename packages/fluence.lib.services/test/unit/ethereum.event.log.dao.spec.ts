@@ -1,11 +1,8 @@
-import * as config from 'config';
-import { random } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
 import { MongodbEthereumEventLogDao } from '../../src/dao/mongodb/ethereum.event.log.dao';
-import { randomEthereumEventLog } from '../helper';
+import { generateEthereumEventLog } from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('ethereum event log dao', () => {
+describe('Ethereum Event Log DAO (unit)', () => {
     let dao: MongodbEthereumEventLogDao;
     let collection: any;
 
@@ -36,7 +33,7 @@ describe('ethereum event log dao', () => {
     });
 
     it('createEvent() transfers correct arguments', async () => {
-        const data = randomEthereumEventLog();
+        const data = generateEthereumEventLog();
 
         await dao.createEvent(
             data.blockChainId,

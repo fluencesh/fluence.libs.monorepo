@@ -1,9 +1,8 @@
 import { MongodbScheduledTxDao } from '../../src/dao/mongodb/scheduled.tx.dao';
-import { randomTransactionScheme } from '../helper';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 import { Scheme } from '../../src/types';
 
-describe('address subscription dao', () => {
+describe('Scheduled TX DAO (unit)', () => {
     let dao: MongodbScheduledTxDao;
     let collection: any;
 

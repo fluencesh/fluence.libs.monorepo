@@ -1,103 +1,159 @@
 import * as config from 'config';
-import { random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
 import { MongodbScheduledTxDao } from '../../src/dao/mongodb/scheduled.tx.dao';
 import { Scheme } from '../../src/types';
-import { randomScheduledTx, randomTransactionScheme } from '../helper';
+import { DaoCollectionNames } from '../../src';
+import {
+    clearCollections,
+    createEntities,
+    getRandomItem,
+    generateScheduledTx,
+    generateTransactionScheme
+} from '../helpers';
+import 'jest-extended';
 
-describe('scheduled tx dao', () => {
-    let dao: MongodbScheduledTxDao;
-    const scheduledTxs: Array<Scheme.ScheduledTx> = [];
-    const scheduledTxsCount = 15;
-    let scheduledTx: Scheme.ScheduledTx;
-    let connection: Db;
+describe('Scheduled TX DAO (integration)', () => {
+    let mongoUrl: string;
+    let connection: MongoClient;
 
     beforeAll(async () => {
-        connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
-
-        dao = new MongodbScheduledTxDao(connection);
-        await dao.remove({});
-
-        for (let i = 0; i < scheduledTxsCount; i++) {
-            scheduledTxs.push(await dao.create(randomScheduledTx()));
-        }
-    });
-
-    beforeEach(() => {
-        scheduledTx = scheduledTxs[random(0, scheduledTxsCount - 1)];
+        mongoUrl = config.get<string>('multivest.mongodb.url');
+        connection = await MongoClient.connect(mongoUrl);
     });
 
     afterAll(async () => {
-        await dao.remove({});
-
         await connection.close();
     });
 
-    it('should get by id', async () => {
-        const got = await dao.getById(scheduledTx.id);
+    describe('Read operations', () => {
+        let dbName: string;
+        let db: Db;
+        let dao: MongodbScheduledTxDao;
 
-        expect(got).toEqual(scheduledTx);
+        let scheduledTxs: Array<Scheme.ScheduledTx>;
+        let scheduledTx: Scheme.ScheduledTx;
+
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ScheduledTxDaoRead';
+            db = connection.db(dbName);
+            dao = new MongodbScheduledTxDao(db);
+
+            await clearCollections(db, [ DaoCollectionNames.ScheduledTx ]);
+
+            scheduledTxs = new Array(15);
+            await createEntities(dao, generateScheduledTx, scheduledTxs);
+        });
+
+        beforeEach(() => {
+            scheduledTx = getRandomItem(scheduledTxs);
+        });
+
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
+
+        it('should get by id', async () => {
+            const got = await dao.getById(scheduledTx.id);
+
+            expect(got).toEqual(scheduledTx);
+        });
+
+        it('should get by id and project id', async () => {
+            const got = await dao.getByIdAndProjectId(scheduledTx.id, scheduledTx.projectId);
+
+            expect(got).toEqual(scheduledTx);
+        });
+
+        it('should get by project id', async () => {
+            const filtered = scheduledTxs.filter((stx) => stx.projectId === scheduledTx.projectId);
+            const got = await dao.listByProjectId(scheduledTx.projectId);
+
+            expect(got).toEqual(filtered);
+        });
     });
 
-    it('should get by id and project id', async () => {
-        const got = await dao.getByIdAndProjectId(scheduledTx.id, scheduledTx.projectId);
+    describe('Create/Update operations', () => {
+        let dbName: string;
+        let db: Db;
+        let dao: MongodbScheduledTxDao;
 
-        expect(got).toEqual(scheduledTx);
-    });
+        let scheduledTxs: Array<Scheme.ScheduledTx>;
+        let scheduledTx: Scheme.ScheduledTx;
 
-    it('should get by project id', async () => {
-        const filtered = scheduledTxs.filter((stx) => stx.projectId === scheduledTx.projectId);
-        const got = await dao.listByProjectId(scheduledTx.projectId);
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ScheduledTxDaoCreateUpdate';
+            db = connection.db(dbName);
+            dao = new MongodbScheduledTxDao(db);
 
-        expect(got).toEqual(filtered);
-    });
+            await clearCollections(db, [ DaoCollectionNames.ScheduledTx ]);
 
-    it('should create scheduled tx', async () => {
-        const created = randomScheduledTx();
-        const got = await dao.createScheduledTx(
-            created.projectId,
-            created.cronExpression,
-            created.tx,
-            created.privateKey,
-            created.transportConnectionId
-        );
+            scheduledTxs = new Array(15);
+            await createEntities(dao, generateScheduledTx, scheduledTxs);
+        });
 
-        expect(got.projectId).toEqual(created.projectId);
-        expect(got.cronExpression).toEqual(created.cronExpression);
-        expect(got.tx).toEqual(created.tx);
-        expect(got.privateKey).toEqual(created.privateKey);
-        expect(got.transportConnectionId).toEqual(created.transportConnectionId);
-    });
+        beforeEach(() => {
+            scheduledTx = getRandomItem(scheduledTxs);
+        });
 
-    it('should set new tx', async () => {
-        const randomTx = randomTransactionScheme();
-        scheduledTx.tx = randomTx;
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
 
-        await dao.setTransaction(scheduledTx.id, randomTx);
+        it('should create scheduled tx', async () => {
+            const data = generateScheduledTx();
+            const created = await dao.createScheduledTx(
+                data.projectId,
+                data.cronExpression,
+                data.tx,
+                data.privateKey,
+                data.transportConnectionId
+            );
+    
+            expect(created.projectId).toEqual(data.projectId);
+            expect(created.cronExpression).toEqual(data.cronExpression);
+            expect(created.tx).toEqual(data.tx);
+            expect(created.privateKey).toEqual(data.privateKey);
+            expect(created.transportConnectionId).toEqual(data.transportConnectionId);
 
-        const got = await dao.getById(scheduledTx.id);
+            const got = await dao.getById(created.id);
+            expect(got).toBeObject();
+        });
+    
+        it('should set new tx', async () => {
+            const randomTx = generateTransactionScheme();
+    
+            await dao.setTransaction(scheduledTx.id, randomTx);
+            const got = await dao.getById(scheduledTx.id);
+    
+            expect(got.tx).toEqual(randomTx);
 
-        expect(got.tx).toEqual(scheduledTx.tx);
-    });
+            scheduledTx.tx = randomTx;
+        });
+    
+        it('should set new cron expression', async () => {
+            const newCronExp = '* 1/1 * 1,2,3 *';
 
-    it('should set new cron expression', async () => {
-        const newCronExp = '* 1/1 * 1,2,3 *';
-        scheduledTx.cronExpression = newCronExp;
+            await dao.setCronExpression(scheduledTx.id, newCronExp);
+            const got = await dao.getById(scheduledTx.id);
 
-        await dao.setCronExpression(scheduledTx.id, newCronExp);
+            expect(got.cronExpression).toEqual(newCronExp);
 
-        const got = await dao.getById(scheduledTx.id);
+            scheduledTx.cronExpression = newCronExp;
+        });
+    
+        it('should set relatedJobId', async () => {
+            const relatedJobId = 'relatedJobId';
 
-        expect(got.cronExpression).toEqual(scheduledTx.cronExpression);
-    });
+            await dao.setRelatedJobId(scheduledTx.id, relatedJobId);
+            const got = await dao.getById(scheduledTx.id);
 
-    it('should set relatedJobId', async () => {
-        const relatedJobId = 'relatedJobId';
-        await dao.setRelatedJobId(scheduledTx.id, relatedJobId);
-
-        const got = await dao.getById(scheduledTx.id);
-        expect(got.relatedJobId).toEqual(relatedJobId);
-
-        scheduledTx.relatedJobId = relatedJobId;
+            expect(got.relatedJobId).toEqual(relatedJobId);
+    
+            scheduledTx.relatedJobId = relatedJobId;
+        });
     });
 });

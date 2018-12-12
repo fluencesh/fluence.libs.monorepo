@@ -106,6 +106,8 @@ export abstract class BlockchainListenerHandler<
                     subscriptionBlockRecheck.blockHeight
                 );
                 if (block.hash === subscriptionBlockRecheck.blockHash) {
+                    await this.processWebhookBeforeSave(subscriptionBlockRecheck.webhookActionItem);
+
                     await this.webhookService.createAction(
                         subscriptionBlockRecheck.webhookActionItem.clientId,
                         subscriptionBlockRecheck.webhookActionItem.projectId,
@@ -193,6 +195,13 @@ export abstract class BlockchainListenerHandler<
 
             createdAt: new Date()
         } as Scheme.WebhookActionItem;
+    }
+
+    /**
+     * Hook which executes before save webhook in DB. Webhook may be modified here
+     */
+    protected async processWebhookBeforeSave(webhook: Scheme.WebhookActionItem, extraData?: any): Promise<void> {
+        return Promise.resolve();
     }
 
     protected abstract getWebhookType(): Scheme.WebhookTriggerType;

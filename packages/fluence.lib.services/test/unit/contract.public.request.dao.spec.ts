@@ -1,13 +1,9 @@
-import * as config from 'config';
-import { omit, random } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
-import { v1 as generateId } from 'uuid';
+import { omit } from 'lodash';
 import { MongodbContractPublicRequestDao } from '../../src/dao/mongodb/contract.public.request.dao';
 import { Scheme } from '../../src/types';
-import { randomContractPublicRequest } from '../helper';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('contract public request dao', () => {
+describe('Contract Public Request DAO (unit)', () => {
     let dao: MongodbContractPublicRequestDao;
     let collection: any;
 
@@ -31,7 +27,7 @@ describe('contract public request dao', () => {
     });
 
     it('listAll() transfers correct arguments', async () => {
-        const got = await dao.listAll();
+        await dao.listAll();
         
         expect(collection.find).toHaveBeenCalledWith({});
         expect(collection.find).toHaveBeenCalledTimes(1);
@@ -40,7 +36,7 @@ describe('contract public request dao', () => {
     it('listByClient() transfers correct arguments', async () => {
         const clientId = 'clientId';
 
-        const got = await dao.listByClient(clientId);
+        await dao.listByClient(clientId);
         
         expect(collection.find).toHaveBeenCalledWith({ clientId });
         expect(collection.find).toHaveBeenCalledTimes(1);
@@ -49,7 +45,7 @@ describe('contract public request dao', () => {
     it('listByStatus() transfers correct arguments', async () => {
         const status = 'status' as any;
 
-        const got = await dao.listByStatus(status);
+        await dao.listByStatus(status);
         
         expect(collection.find).toHaveBeenCalledWith({ adminResolutionStatus: status });
         expect(collection.find).toHaveBeenCalledTimes(1);
@@ -59,7 +55,7 @@ describe('contract public request dao', () => {
         const status = 'status' as any;
         const clientId = 'clientId';
 
-        const got = await dao.listByClientIdAndStatus(clientId, status);
+        await dao.listByClientIdAndStatus(clientId, status);
         
         expect(collection.find).toHaveBeenCalledWith({
             clientId,
@@ -69,7 +65,7 @@ describe('contract public request dao', () => {
     });
 
     it('listUnresolvedRequests() transfers correct arguments', async () => {
-        const got = await dao.listUnresolvedRequests();
+        await dao.listUnresolvedRequests();
         
         expect(collection.find).toHaveBeenCalledWith({
             adminId: null,

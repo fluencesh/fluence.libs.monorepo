@@ -2,8 +2,6 @@
 
 set -xe
 
-export GITHUB_AUTH=$GH_TOKEN
-
 setup_npm() {
     printf "//`node -p \"require('url').parse(process.env.NPM_REGISTRY_URL || 'https://registry.npmjs.org').host\"`/:_authToken=${NPM_TOKEN}\nregistry=${NPM_REGISTRY_URL:-https://registry.npmjs.org}\n" >> ~/.npmrc
 }

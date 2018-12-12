@@ -1,11 +1,8 @@
-import * as config from 'config';
-import { random } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
 import { MongodbEthereumContractSubscriptionDao } from '../../src/dao/mongodb/ethereum.contract.subscription.dao';
-import { randomEthereumContractSubscription } from '../helper';
+import { generateEthereumContractSubscription } from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('ethereum contract subscription dao', () => {
+describe('Ethereum Contract Subscription DAO (unit)', () => {
     let dao: MongodbEthereumContractSubscriptionDao;
     let collection: any;
 
@@ -79,7 +76,7 @@ describe('ethereum contract subscription dao', () => {
     });
 
     it('listBySubscribedAddresses() transfers correct arguments', async () => {
-        const got = await dao.listBySubscribedAddresses([ 'address' ]);
+        await dao.listBySubscribedAddresses([ 'address' ]);
 
         expect(collection.find).toHaveBeenCalledWith(
             {
@@ -110,13 +107,12 @@ describe('ethereum contract subscription dao', () => {
     });
 
     it('createContractSubscription() transfers correct arguments', async () => {
-        const data = randomEthereumContractSubscription();
+        const data = generateEthereumContractSubscription();
         await dao.createSubscription(
             data.clientId,
             data.projectId,
             data.compatibleStandard,
-            data.blockchainId,
-            data.networkId,
+            data.transportConnectionId,
             data.address,
             data.minConfirmations,
             data.abi,

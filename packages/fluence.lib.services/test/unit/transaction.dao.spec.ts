@@ -2,7 +2,7 @@ import { MongodbTransactionDao } from '../../src/dao/mongodb/transaction.dao';
 import { Scheme } from '../../src/types';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('TransactionDao', () => {
+describe('Transaction DAO (unit)', () => {
     let dao: MongodbTransactionDao;
     let collection: any;
 

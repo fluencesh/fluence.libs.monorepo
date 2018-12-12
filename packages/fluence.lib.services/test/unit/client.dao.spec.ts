@@ -1,8 +1,8 @@
 import { MongodbClientDao } from '../../src/dao/mongodb/client.dao';
-import { randomClient } from '../helper';
+import { generateClient } from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('client dao', () => {
+describe('Client DAO (unit)', () => {
     let dao: MongodbClientDao;
     let collection: any;
 
@@ -83,7 +83,7 @@ describe('client dao', () => {
     });
 
     it('createClient() transfers correct arguments', async () => {
-        const data = randomClient();
+        const data = generateClient();
         await dao.createClient(data.email, data.passwordHash, data.isAdmin);
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);

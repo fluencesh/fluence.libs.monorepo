@@ -32,7 +32,7 @@ export abstract class SubscriptionDao<T> extends Dao<T> {
         clientActive: boolean
     ): Promise<void>;
     public abstract async setProjectActive(
-        clientId: string,
-        clientActive: boolean
+        projectId: string,
+        projectActive: boolean
     ): Promise<void>;
 }

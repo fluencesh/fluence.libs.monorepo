@@ -1,14 +1,8 @@
-import * as config from 'config';
-import { createHash } from 'crypto';
-import { random } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
 import { MongoContractDao } from '../../src/dao/mongodb/contract.dao';
-import { ContractService } from '../../src/services/object/contract.service';
-import { Scheme } from '../../src/types';
-import { getRandomAbi } from '../helper';
+import { getRandomAbi } from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('contract dao', () => {
+describe('Contract DAO (unit)', () => {
     let dao: MongoContractDao;
     let collection: any;
 

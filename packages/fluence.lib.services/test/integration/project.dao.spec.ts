@@ -3,238 +3,288 @@ import { omit, random } from 'lodash';
 import { Db, MongoClient } from 'mongodb';
 import { v1 as generateId } from 'uuid';
 import { MongodbProjectDao } from '../../src/dao/mongodb/project.dao';
-import { ProjectService } from '../../src/services/object/project.service';
 import { Scheme } from '../../src/types';
-import { randomProject } from '../helper';
+import {
+    clearCollections,
+    getRandomItem,
+    createEntities,
+    generateProject
+} from '../helpers';
+import { DaoCollectionNames } from '../../src';
+import 'jest-extended';
 
-describe('project dao', () => {
-    let dao: MongodbProjectDao;
-    const projects: Array<Scheme.Project> = [];
-    const projectsCount = 15;
-    let project: Scheme.Project;
-    let projectActive: Scheme.Project;
-    let connection: Db;
-
-    function getActiveProjects() {
-        // tslint:disable-next-line:no-shadowed-variable
-        return projects.filter(
-            (foundProject) =>
-                !foundProject.isRemoved &&
-                foundProject.status === Scheme.ProjectStatus.Active
-        );
-    }
+describe('Project DAO (integration)', () => {
+    let mongoUrl: string;
+    let connection: MongoClient;
 
     beforeAll(async () => {
-        connection = await MongoClient.connect(
-            config.get('multivest.mongodb.url'),
-            {}
-        );
-
-        dao = new MongodbProjectDao(connection);
-        await dao.remove({});
-
-        for (let i = 0; i < projectsCount; i++) {
-            const created = await dao.create(randomProject());
-
-            projects.push(created);
-        }
-    });
-
-    beforeEach(() => {
-        project = projects[random(0, projectsCount - 1)];
-
-        const activeProjects = getActiveProjects();
-        projectActive = activeProjects[random(0, activeProjects.length - 1)];
+        mongoUrl = config.get<string>('multivest.mongodb.url');
+        connection = await MongoClient.connect(mongoUrl);
     });
 
     afterAll(async () => {
-        await dao.remove({});
-
         await connection.close();
     });
 
-    it('should get by id', async () => {
-        const got = await dao.getById(project.id);
+    describe('Read operations', () => {
+        let dbName: string;
+        let db: Db;
+        let dao: MongodbProjectDao;
 
-        expect(got).toEqual(project);
-    });
+        let projects: Array<Scheme.Project>;
+        let project: Scheme.Project;
+        let activeProject: Scheme.Project;
 
-    it('should get by id (active only)', async () => {
-        const active = getActiveProjects()[0];
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ProjectDaoRead';
+            db = connection.db(dbName);
+            dao = new MongodbProjectDao(db);
 
-        if (!active) {
-            return;
-        }
+            await clearCollections(db, [ DaoCollectionNames.Project ]);
 
-        const got = await dao.getByIdActiveOnly(active.id);
+            projects = new Array(15);
+            await createEntities(dao, generateProject, projects);
+        });
 
-        expect(got).toEqual(active);
-    });
+        beforeEach(() => {
+            project = getRandomItem(projects);
+            activeProject = getRandomItem(projects, (p) => !p.isRemoved && p.status === Scheme.ProjectStatus.Active);
+        });
 
-    it('should get by id (exists only)', async () => {
-        const active = getActiveProjects()[0];
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
 
-        if (!active) {
-            return;
-        }
+        it('should get by id', async () => {
+            const got = await dao.getById(project.id);
+    
+            expect(got).toEqual(project);
+        });
+    
+        it('should get by id (active only)', async () => {
+            if (!activeProject) {
+                return;
+            }
+    
+            const got = await dao.getByIdActiveOnly(activeProject.id);
+    
+            expect(got).toEqual(activeProject);
+        });
+    
+        it('should get by id (exists only)', async () => {
+            if (!activeProject) {
+                return;
+            }
+    
+            const got = await dao.getByIdExistsOnly(activeProject.id);
+    
+            expect(got).toEqual(activeProject);
+        });
+    
+        it('should get by ids', async () => {
+            const filtered = projects.filter((p, index) => index < 3);
+            const got = await dao.listByIds(filtered.map((p) => p.id));
+    
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get by ids (active only)', async () => {
+            const filtered = projects.filter((p) => !p.isRemoved && p.status === Scheme.ProjectStatus.Active);
+    
+            if (filtered.length) {
+                return;
+            }
+    
+            const got = await dao.listByIds(filtered.map((p) => p.id));
+    
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get by client id', async () => {
+            const filtered = projects.filter((p) => p.clientId === project.clientId);
+    
+            const got = await dao.listByClientId(project.clientId);
+    
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get by filters', async () => {
+            const filtered = projects.filter(
+                (p) =>
+                    p.name === project.name &&
+                    p.webhookUrl === project.webhookUrl &&
+                    p.status === project.status &&
+                    p.sharedSecret === project.sharedSecret &&
+                    p.clientId === project.clientId
+            );
+    
+            const got = await dao.listByFilters(
+                project.name,
+                project.sharedSecret,
+                project.status,
+                project.webhookUrl,
+                project.clientId
+            );
+    
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get by client id (active only)', async () => {
+            if (!activeProject) {
+                return;
+            }
 
-        const got = await dao.getByIdExistsOnly(active.id);
+            const filtered = projects.filter((p) => p.clientId === activeProject.clientId);
+    
+            if (filtered.length) {
+                return;
+            }
+    
+            const got = await dao.listByClientId(activeProject.clientId);
+    
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get by filters (active only)', async () => {
+            if (!activeProject) {
+                return;
+            }
 
-        expect(got).toEqual(active);
-    });
-
-    it('should get by ids', async () => {
-        const filtered = projects.filter((p, index) => index < 3);
-        const got = await dao.listByIds(filtered.map((p) => p.id));
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should get by ids (active only)', async () => {
-        const filtered = getActiveProjects();
-
-        if (filtered.length) {
-            return;
-        }
-
-        const got = await dao.listByIds(filtered.map((p) => p.id));
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should get by client id', async () => {
-        const filtered = projects.filter(
-            (p) => p.clientId === project.clientId
-        );
-
-        const got = await dao.listByClientId(project.clientId);
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should get by filters', async () => {
-        const filtered = projects.filter(
-            (p) =>
-                p.name === project.name &&
-                p.webhookUrl === project.webhookUrl &&
-                p.status === project.status &&
-                p.sharedSecret === project.sharedSecret &&
-                p.clientId === project.clientId
-        );
-
-        const got = await dao.listByFilters(
-            project.name,
-            project.sharedSecret,
-            project.status,
-            project.webhookUrl,
-            project.clientId
-        );
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should get by client id (active only)', async () => {
-        const filtered = getActiveProjects().filter(
-            (proj, _, projs) => proj.clientId === projs[0].clientId
-        );
-
-        if (filtered.length) {
-            return;
-        }
-
-        const got = await dao.listByClientId(projectActive.clientId);
-
-        expect(got).toEqual(filtered);
-    });
-
-    it('should get by filters (active only)', async () => {
-        const filtered = getActiveProjects().filter(
-            (p) =>
-                p.name === projectActive.name &&
-                p.webhookUrl === projectActive.webhookUrl &&
-                p.status === projectActive.status &&
-                p.sharedSecret === projectActive.sharedSecret &&
+            const filtered = projects.filter((p) =>
+                !p.isRemoved &&
+                p.status === Scheme.ProjectStatus.Active &&
+                p.name === activeProject.name &&
+                p.webhookUrl === activeProject.webhookUrl &&
+                p.status === activeProject.status &&
+                p.sharedSecret === activeProject.sharedSecret &&
                 p.isRemoved === false
-        );
-
-        const got = await dao.listByFiltersActiveOnly(
-            projectActive.name,
-            projectActive.sharedSecret,
-            projectActive.status,
-            projectActive.webhookUrl
-        );
-
-        expect(got).toEqual(filtered);
+            );
+    
+            const got = await dao.listByFiltersActiveOnly(
+                activeProject.name,
+                activeProject.sharedSecret,
+                activeProject.status,
+                activeProject.webhookUrl
+            );
+    
+            expect(got).toEqual(filtered);
+        });
     });
 
-    it('should create project', async () => {
-        const data = randomProject();
+    describe('Create/Update operations', () => {
+        let dbName: string;
+        let db: Db;
+        let dao: MongodbProjectDao;
 
-        const created = await dao.createProject(
-            data.clientId,
-            data.name,
-            data.webhookUrl,
-            data.sharedSecret,
-            data.status,
-            data.txMinConfirmations,
-            data.saltyToken,
-            data.salt
-        );
+        let projects: Array<Scheme.Project>;
+        let project: Scheme.Project;
 
-        const got = await dao.getById(created.id);
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ProjectDaoCreateUpdate';
+            db = connection.db(dbName);
+            dao = new MongodbProjectDao(db);
 
-        expect(got).toEqual(omit(created, 'token'));
-    });
+            await clearCollections(db, [ DaoCollectionNames.Project ]);
 
-    it('should set new name, webhook url and status', async () => {
-        project.name = generateId();
-        project.webhookUrl = `https://www.${generateId()}.eu`;
-        project.status =
-            project.status === Scheme.ProjectStatus.Active
+            projects = new Array(15);
+            await createEntities(dao, generateProject, projects);
+        });
+
+        beforeEach(() => {
+            project = getRandomItem(projects);
+        });
+
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
+
+        it('should create project', async () => {
+            const data = generateProject();
+    
+            const created = await dao.createProject(
+                data.clientId,
+                data.name,
+                data.webhookUrl,
+                data.sharedSecret,
+                data.status,
+                data.txMinConfirmations,
+                data.saltyToken,
+                data.salt
+            );
+
+            expect(created.clientId).toEqual(data.clientId);
+            expect(created.name).toEqual(data.name);
+            expect(created.webhookUrl).toEqual(data.webhookUrl);
+            expect(created.sharedSecret).toEqual(data.sharedSecret);
+            expect(created.status).toEqual(data.status);
+            expect(created.txMinConfirmations).toEqual(data.txMinConfirmations);
+            expect(created.saltyToken).toEqual(data.saltyToken);
+            expect(created.salt).toEqual(data.salt);
+    
+            const got = await dao.getById(created.id);
+            expect(got).toBeObject();
+
+            projects.push(got);
+        });
+    
+        it('should set new name, webhook url and status', async () => {
+            const name = generateId();
+            const webhookUrl = `https://www.${generateId()}.eu`;
+            const status = project.status === Scheme.ProjectStatus.Active
                 ? Scheme.ProjectStatus.Inactive
                 : Scheme.ProjectStatus.Active;
+    
+            await dao.setNameAndWebhookUrlAndStatus(
+                project.id,
+                name,
+                webhookUrl,
+                status
+            );
+    
+            const got = await dao.getById(project.id);
+    
+            expect(got.name).toEqual(name);
+            expect(got.webhookUrl).toEqual(webhookUrl);
+            expect(got.status).toEqual(status);
 
-        await dao.setNameAndWebhookUrlAndStatus(
-            project.id,
-            project.name,
-            project.webhookUrl,
-            project.status
-        );
-
-        const got = await dao.getById(project.id);
-
-        expect(got).toEqual(project);
-    });
-
-    it('should set new status', async () => {
-        project.status =
-            project.status === Scheme.ProjectStatus.Active
+            project.name = name;
+            project.webhookUrl = webhookUrl;
+            project.status = status;
+        });
+    
+        it('should set new status', async () => {
+            const status = project.status === Scheme.ProjectStatus.Active
                 ? Scheme.ProjectStatus.Inactive
                 : Scheme.ProjectStatus.Active;
+    
+            await dao.setStatus(project.id, status);
+            const got = await dao.getById(project.id);
+    
+            expect(got.status).toEqual(status);
 
-        await dao.setStatus(project.id, project.status);
-
-        const got = await dao.getById(project.id);
-
-        expect(got).toEqual(project);
-    });
-
-    it('should set new token', async () => {
-        project.status =
-            project.status === Scheme.ProjectStatus.Active
+            project.status = status;
+        });
+    
+        it('should set new token', async () => {
+            project.status = project.status === Scheme.ProjectStatus.Active
                 ? Scheme.ProjectStatus.Inactive
                 : Scheme.ProjectStatus.Active;
-
-        const saltyToken = generateId();
-        const salt = generateId();
-        await dao.setToken(project.id, saltyToken, salt);
-
-        const got = await dao.getById(project.id);
-
-        expect(got.salt).toEqual(salt);
-        expect(got.saltyToken).toEqual(saltyToken);
-
-        project.salt = salt;
-        project.saltyToken = saltyToken;
+    
+            const saltyToken = generateId();
+            const salt = generateId();
+            await dao.setToken(project.id, saltyToken, salt);
+    
+            const got = await dao.getById(project.id);
+    
+            expect(got.salt).toEqual(salt);
+            expect(got.saltyToken).toEqual(saltyToken);
+    
+            project.salt = salt;
+            project.saltyToken = saltyToken;
+        });
     });
 });

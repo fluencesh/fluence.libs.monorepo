@@ -4,14 +4,15 @@ import { TransportConnectionDao } from '../../dao';
 import { ProjectBlockchainSetupDao } from '../../dao/project.blockchain.setup.dao';
 import { Errors } from '../../errors';
 import { Scheme } from '../../types';
+import { TransportConnectionService } from './transport.connection.service';
 
 export class ProjectBlockchainSetupService extends Service {
     private setupDao: ProjectBlockchainSetupDao;
-    private transportConnectionsDao: TransportConnectionDao;
+    private transportConnectionService: TransportConnectionService;
 
     public async init() {
         this.setupDao = this.pluginManager.getDao(DaoIds.ProjectBlockchainSetup) as ProjectBlockchainSetupDao;
-        this.transportConnectionsDao = this.pluginManager.getDao(DaoIds.TransportConnection) as TransportConnectionDao;
+        this.transportConnectionService = this.pluginManager.getServiceByClass(TransportConnectionService);
     }
 
     public getServiceId() {
@@ -79,7 +80,7 @@ export class ProjectBlockchainSetupService extends Service {
                 : Scheme.TransportConnectionStatus.Disabled;
 
             promises.push(
-                this.transportConnectionsDao.setStatus(
+                this.transportConnectionService.setStatus(
                     setup.privateTransportConnectionId,
                     transportConnectionStatus
                 )
@@ -109,7 +110,7 @@ export class ProjectBlockchainSetupService extends Service {
                 : Scheme.TransportConnectionStatus.Disabled;
 
             promises.push(
-                this.transportConnectionsDao.setStatusByIds(
+                this.transportConnectionService.setStatusByIds(
                     transportConIds,
                     transportConnectionStatus
                 )
@@ -127,7 +128,7 @@ export class ProjectBlockchainSetupService extends Service {
 
         const promises = [ this.setupDao.removeById(setupId) ];
         if (setup.privateTransportConnectionId) {
-            promises.push(this.transportConnectionsDao.removeById(setup.privateTransportConnectionId));
+            promises.push(this.transportConnectionService.removeById(setup.privateTransportConnectionId));
         }
 
         // FIXME: should be wrapped into transaction
@@ -145,7 +146,7 @@ export class ProjectBlockchainSetupService extends Service {
         const promises = [ this.setupDao.removeByProjectId(projectId) ];
         
         if (transportConIds.length) {
-            promises.push(this.transportConnectionsDao.removeByIds(transportConIds));
+            promises.push(this.transportConnectionService.removeByIds(transportConIds));
         }
 
         // FIXME: should be wrapped into transaction

@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.ms.abstract.blockchain",
-  "version": "2.0.17",
+  "version": "2.0.17-alpha.1",
   "private": false,
   "author": "Andrew Zubko <andrew@applicature.com>",
   "engines": {
@@ -13,7 +13,7 @@
     "lint": "tslint '{src/**/*.ts,test/**/*.ts}'",
     "precommit": "sh pipeline.emulation.sh",
     "test": "jest",
-    "test:ci": "jest --coverage --runInBand --forceExit",
+    "test:ci": "jest --coverage",
     "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN",
     "test:lint": "tslint --force --out ./test-reports/tslint.json -t json --project ./tsconfig.json 'src/**/*.{ts,tsx}'"
   },
@@ -32,9 +32,9 @@
     "@applicature/synth.mongodb": "2.0.21",
     "@applicature/synth.plugin-manager": "2.0.21",
     "@applicature/synth.web": "2.0.21",
-    "@fluencesh/fluence.lib.ethereum": "^2.0.17",
-    "@fluencesh/fluence.lib.services": "^2.0.17",
-    "@fluencesh/fluence.ms.abstract": "^2.0.17",
+    "@fluencesh/fluence.lib.ethereum": "^2.0.17-alpha.1",
+    "@fluencesh/fluence.lib.services": "^2.0.17-alpha.1",
+    "@fluencesh/fluence.ms.abstract": "^2.0.17-alpha.1",
     "bignumber.js": "^7.2.1",
     "config": "^1.30.0",
     "ethereumjs-abi": "^0.6.5",

@@ -4,6 +4,7 @@ export * from './contract.public.request.service';
 export * from './contract.service';
 export * from './ethereum.contract.subscription.service';
 export * from './ethereum.event.log.service';
+export * from './fabric.contract.creation.subscription.service';
 export * from './job.service';
 export * from './oraclize.subscription.service';
 export * from './project.blockchain.setup.service';

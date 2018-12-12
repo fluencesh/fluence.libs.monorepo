@@ -1,10 +1,7 @@
-import * as config from 'config';
-import { random } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
 import { MongodbJobDao } from '../../src/dao/mongodb/job.dao';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('exchange dao', () => {
+describe('Job DAO (unit)', () => {
     let dao: MongodbJobDao;
     let collection: any;
 

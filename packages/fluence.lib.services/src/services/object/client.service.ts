@@ -1,4 +1,4 @@
-import { Plugin } from '@applicature/synth.mongodb';
+import { Plugin as MongoPlugin } from '@applicature/synth.mongodb';
 import { MultivestError, Service } from '@applicature/synth.plugin-manager';
 import * as config from 'config';
 import { createHash } from 'crypto';
@@ -11,6 +11,7 @@ import { AddressSubscriptionService } from './address.subscription.service';
 import { EthereumContractSubscriptionService } from './ethereum.contract.subscription.service';
 import { OraclizeSubscriptionService } from './oraclize.subscription.service';
 import { TransactionHashSubscriptionService } from './transaction.hash.subscription.service';
+import { FabricContractCreationSubscriptionService } from './fabric.contract.creation.subscription.service';
 
 export class ClientService extends Service {
     protected clientDao: ClientDao;
@@ -18,24 +19,27 @@ export class ClientService extends Service {
     protected transactionHashSubscriptionService: TransactionHashSubscriptionService;
     protected contractSubscriptionService: EthereumContractSubscriptionService;
     protected oraclizeSubscriptionService: OraclizeSubscriptionService;
+    protected fabricContractCreationService: FabricContractCreationSubscriptionService;
     
     private jwtExpiresInMs: number;
     private jwtSecret: string;
     private mayProcessJwt: boolean;
 
     public async init(): Promise<void> {
-        const mongodbPlugin = this.pluginManager.get('mongodb') as any as Plugin;
+        const mongodbPlugin = this.pluginManager.get('mongodb') as MongoPlugin;
 
         this.clientDao = await mongodbPlugin.getDao(DaoIds.Client) as ClientDao;
 
         this.addressSubscriptionService = this.pluginManager
-            .getServiceByClass(AddressSubscriptionService) as AddressSubscriptionService;
+            .getServiceByClass(AddressSubscriptionService);
         this.transactionHashSubscriptionService = this.pluginManager
-            .getServiceByClass(TransactionHashSubscriptionService) as TransactionHashSubscriptionService;
+            .getServiceByClass(TransactionHashSubscriptionService);
         this.contractSubscriptionService = this.pluginManager
-            .getServiceByClass(EthereumContractSubscriptionService) as EthereumContractSubscriptionService;
+            .getServiceByClass(EthereumContractSubscriptionService);
         this.oraclizeSubscriptionService = this.pluginManager
-            .getServiceByClass(OraclizeSubscriptionService) as OraclizeSubscriptionService;
+            .getServiceByClass(OraclizeSubscriptionService);
+        this.fabricContractCreationService = this.pluginManager
+            .getServiceByClass(FabricContractCreationSubscriptionService);
    
         if (
             config.has('multivest.clientVerification.jwt.expiresInMs')
@@ -138,6 +142,7 @@ export class ClientService extends Service {
             this.transactionHashSubscriptionService.setClientActive(clientId, isActive),
             this.contractSubscriptionService.setClientActive(clientId, isActive),
             this.oraclizeSubscriptionService.setClientActive(clientId, isActive),
+            this.fabricContractCreationService.setProjectActive(clientId, isActive),
         ]);
     }
 

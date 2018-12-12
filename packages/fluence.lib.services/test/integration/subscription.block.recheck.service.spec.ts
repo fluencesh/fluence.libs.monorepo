@@ -1,180 +1,290 @@
 import { random } from 'lodash';
-import { MongodbSubscriptionBlockRecheckDao, Scheme, SubscriptionBlockRecheckService } from '../../src';
-import { createDao, createEntities, getRandomItem, randomSubscriptionBlockChecker } from '../helper';
+import {
+    MongodbSubscriptionBlockRecheckDao,
+    Scheme,
+    DaoCollectionNames,
+    SubscriptionBlockRecheckService
+} from '../../src';
+import * as config from 'config';
+import 'jest-extended';
+import {
+    clearCollections,
+    createEntities,
+    getRandomItem,
+    generateSubscriptionBlockRecheck,
+    initSubscriptionBlockRecheckService
+} from '../helpers';
+import { Db, MongoClient } from 'mongodb';
 
-describe('subscription block recheck service', () => {
-    let service: SubscriptionBlockRecheckService;
-
-    const subscriptionBlockRechecks: Array<Scheme.SubscriptionBlockRecheck> = new Array(15);
-    let subscriptionBlockRecheck: Scheme.SubscriptionBlockRecheck = null;
+describe('Subscription Block Recheck Service (integration)', () => {
+    let mongoUrl: string;
+    let connection: MongoClient;
 
     beforeAll(async () => {
-        const dao = await createDao(MongodbSubscriptionBlockRecheckDao);
-        await createEntities(dao, randomSubscriptionBlockChecker, subscriptionBlockRechecks);
-
-        service = new SubscriptionBlockRecheckService(null);
-        (service as any).dao = dao;
+        mongoUrl = config.get<string>('multivest.mongodb.url');
+        connection = await MongoClient.connect(mongoUrl);
     });
 
-    beforeEach(() => {
-        subscriptionBlockRecheck = getRandomItem(subscriptionBlockRechecks);
+    afterAll(async () => {
+        await connection.close();
     });
 
-    it('should get by id', async () => {
-        const got = await service.getById(subscriptionBlockRecheck.id);
-        expect(got).toEqual(subscriptionBlockRecheck);
+    describe('Read operations', () => {
+        let dbName: string;
+        let db: Db;
+        let service: SubscriptionBlockRecheckService;
+
+        let rechecks: Array<Scheme.SubscriptionBlockRecheck>;
+        let recheck: Scheme.SubscriptionBlockRecheck;
+
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'SubscriptionBlockRecheckServiceRead';
+            db = connection.db(dbName);
+            service = initSubscriptionBlockRecheckService(db);
+
+            await clearCollections(db, [ DaoCollectionNames.SubscriptionBlockRecheck ]);
+
+            rechecks = new Array(15);
+            await createEntities(
+                new MongodbSubscriptionBlockRecheckDao(db),
+                generateSubscriptionBlockRecheck,
+                rechecks
+            );
+        });
+
+        beforeEach(() => {
+            recheck = getRandomItem(rechecks);
+        });
+
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
+
+        it('should get by id', async () => {
+            const got = await service.getById(recheck.id);
+            expect(got).toEqual(recheck);
+        });
+    
+        it('should get by unique info', async () => {
+            const got = await service.getByUniqueInfo(
+                recheck.subscriptionId,
+                recheck.transportConnectionId,
+                recheck.type,
+                recheck.blockHash,
+                recheck.blockHeight
+            );
+            expect(got).toEqual(recheck);
+        });
+    
+        it('should get by block height', async () => {
+            const filtered =
+                rechecks.filter((r) => r.blockHeight === recheck.blockHeight);
+    
+            const got = await service.listByBlockHeight(recheck.blockHeight);
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get by block height and transportConnectionId', async () => {
+            const filtered = rechecks.filter((r) =>
+                r.blockHeight === recheck.blockHeight
+                && r.transportConnectionId === recheck.transportConnectionId
+            );
+    
+            const got = await service.listByBlockHeightAndTransportConnectionId(
+                recheck.blockHeight,
+                recheck.transportConnectionId
+            );
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get by block height and blockchainId and networkId', async () => {
+            const filtered = rechecks.filter((r) =>
+                r.blockHeight === recheck.blockHeight
+                && r.transportConnectionId === recheck.transportConnectionId
+                && r.type === recheck.type
+            );
+    
+            const got = await service.listByBlockHeightAndTransportConnectionIdAndType(
+                recheck.blockHeight,
+                recheck.transportConnectionId,
+                recheck.type
+            );
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get by invokeOnBlockHeight and transportConnectionId and type', async () => {
+            const filtered = rechecks.filter((r) =>
+                r.invokeOnBlockHeight <= recheck.invokeOnBlockHeight
+                && r.transportConnectionId === recheck.transportConnectionId
+                && r.type === recheck.type
+            );
+    
+            const got = await service.listOnBlockByTransportAndType(
+                recheck.invokeOnBlockHeight,
+                recheck.transportConnectionId,
+                recheck.type
+            );
+            expect(got).toEqual(filtered);
+        });
     });
 
-    it('should get by unique info', async () => {
-        const got = await service.getByUniqueInfo(
-            subscriptionBlockRecheck.subscriptionId,
-            subscriptionBlockRecheck.transportConnectionId,
-            subscriptionBlockRecheck.type,
-            subscriptionBlockRecheck.blockHash,
-            subscriptionBlockRecheck.blockHeight
-        );
-        expect(got).toEqual(subscriptionBlockRecheck);
+    describe('Create/Update operations', () => {
+        let dbName: string;
+        let db: Db;
+        let service: SubscriptionBlockRecheckService;
+
+        let rechecks: Array<Scheme.SubscriptionBlockRecheck>;
+        let recheck: Scheme.SubscriptionBlockRecheck;
+
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'SubscriptionBlockRecheckServiceRead';
+            db = connection.db(dbName);
+            service = initSubscriptionBlockRecheckService(db);
+
+            await clearCollections(db, [ DaoCollectionNames.SubscriptionBlockRecheck ]);
+
+            rechecks = new Array(15);
+            await createEntities(
+                new MongodbSubscriptionBlockRecheckDao(db),
+                generateSubscriptionBlockRecheck,
+                rechecks
+            );
+        });
+
+        beforeEach(() => {
+            recheck = getRandomItem(rechecks);
+        });
+
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
+
+        it('should create new entity', async () => {
+            const data = generateSubscriptionBlockRecheck();
+            const created = await service.createBlockRecheck(
+                data.subscriptionId,
+                data.transportConnectionId,
+                data.type,
+                data.blockHash,
+                data.blockHeight,
+                data.invokeOnBlockHeight,
+                data.webhookActionItem
+            );
+            
+            expect(created.subscriptionId).toEqual(data.subscriptionId);
+            expect(created.transportConnectionId).toEqual(data.transportConnectionId);
+            expect(created.type).toEqual(data.type);
+            expect(created.blockHash).toEqual(data.blockHash);
+            expect(created.blockHeight).toEqual(data.blockHeight);
+            expect(created.invokeOnBlockHeight).toEqual(data.invokeOnBlockHeight);
+            expect(created.webhookActionItem).toEqual(data.webhookActionItem);
+
+            const got = await service.getById(created.id);
+            expect(got).toBeObject();
+        });
+    
+        it('should increment `invokeOnBlockHeight` by id', async () => {
+            await service.incInvokeOnBlockHeightById(recheck.id);
+    
+            const got = await service.getById(recheck.id);
+            expect(got.invokeOnBlockHeight).toEqual(recheck.invokeOnBlockHeight + 1);
+    
+            recheck.invokeOnBlockHeight++;
+        });
+    
+        it('should increment `invokeOnBlockHeight` by id (another one)', async () => {
+            const incrementOn = random(2, 10);
+            await service.incInvokeOnBlockHeightById(recheck.id, incrementOn);
+    
+            const got = await service.getById(recheck.id);
+            expect(got.invokeOnBlockHeight).toEqual(recheck.invokeOnBlockHeight + incrementOn);
+    
+            recheck.invokeOnBlockHeight += incrementOn;
+        });
+    
+        it('should increment `invokeOnBlockHeight` by ids', async () => {
+            await service.incInvokeOnBlockHeightByIds([ recheck.id ]);
+    
+            const got = await service.getById(recheck.id);
+            expect(got.invokeOnBlockHeight).toEqual(recheck.invokeOnBlockHeight + 1);
+    
+            recheck.invokeOnBlockHeight++;
+        });
+    
+        it('should increment `invokeOnBlockHeight` by ids (another one)', async () => {
+            const incrementOn = random(2, 10);
+            await service.incInvokeOnBlockHeightByIds([ recheck.id ], incrementOn);
+    
+            const got = await service.getById(recheck.id);
+            expect(got.invokeOnBlockHeight).toEqual(recheck.invokeOnBlockHeight + incrementOn);
+    
+            recheck.invokeOnBlockHeight += incrementOn;
+        });
+    
+        it('should set new `invokeOnBlockHeight` by id', async () => {
+            const invokeOnBlockHeight = random(500000, 1000000);
+            await service.setInvokeOnBlockHeightById(recheck.id, invokeOnBlockHeight);
+    
+            const got = await service.getById(recheck.id);
+            expect(got.invokeOnBlockHeight).toEqual(invokeOnBlockHeight);
+    
+            recheck.invokeOnBlockHeight = invokeOnBlockHeight;
+        });
     });
 
-    it('should get by block height', async () => {
-        const filtered =
-            subscriptionBlockRechecks.filter((sbr) => sbr.blockHeight === subscriptionBlockRecheck.blockHeight);
+    describe('Delete operations', () => {
+        let dbName: string;
+        let db: Db;
+        let service: SubscriptionBlockRecheckService;
 
-        const got = await service.listByBlockHeight(subscriptionBlockRecheck.blockHeight);
-        expect(got).toEqual(filtered);
-    });
+        let rechecks: Array<Scheme.SubscriptionBlockRecheck>;
+        let recheck: Scheme.SubscriptionBlockRecheck;
 
-    it('should get by block height and blockchainId and networkId', async () => {
-        const filtered = subscriptionBlockRechecks.filter((sbr) =>
-            sbr.blockHeight === subscriptionBlockRecheck.blockHeight
-            && sbr.transportConnectionId === subscriptionBlockRecheck.transportConnectionId
-        );
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'SubscriptionBlockRecheckServiceRead';
+            db = connection.db(dbName);
+            service = initSubscriptionBlockRecheckService(db);
 
-        const got = await service.listByBlockHeightAndTransportConnectionId(
-            subscriptionBlockRecheck.blockHeight,
-            subscriptionBlockRecheck.transportConnectionId
-        );
-        expect(got).toEqual(filtered);
-    });
+            await clearCollections(db, [ DaoCollectionNames.SubscriptionBlockRecheck ]);
 
-    it('should get by block height and blockchainId and networkId', async () => {
-        const filtered = subscriptionBlockRechecks.filter((sbr) =>
-            sbr.blockHeight === subscriptionBlockRecheck.blockHeight
-            && sbr.transportConnectionId === subscriptionBlockRecheck.transportConnectionId
-            && sbr.type === subscriptionBlockRecheck.type
-        );
+            rechecks = new Array(15);
+            await createEntities(
+                new MongodbSubscriptionBlockRecheckDao(db),
+                generateSubscriptionBlockRecheck,
+                rechecks
+            );
+        });
 
-        const got = await service.listByBlockHeightAndBlockchainInfoAndType(
-            subscriptionBlockRecheck.blockHeight,
-            subscriptionBlockRecheck.transportConnectionId,
-            subscriptionBlockRecheck.type
-        );
-        expect(got).toEqual(filtered);
-    });
+        beforeEach(() => {
+            recheck = getRandomItem(rechecks);
+        });
 
-    it('should get by invokeOnBlockHeight and transportConnectionId and type', async () => {
-        const filtered = subscriptionBlockRechecks.filter((sbr) =>
-            sbr.invokeOnBlockHeight <= subscriptionBlockRecheck.invokeOnBlockHeight
-            && sbr.transportConnectionId === subscriptionBlockRecheck.transportConnectionId
-            && sbr.type === subscriptionBlockRecheck.type
-        );
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
 
-        const got = await service.listOnBlockByTransportAndType(
-            subscriptionBlockRecheck.invokeOnBlockHeight,
-            subscriptionBlockRecheck.transportConnectionId,
-            subscriptionBlockRecheck.type
-        );
-        expect(got).toEqual(filtered);
-    });
+        it('should remove by id', async () => {
+            await service.removeById(recheck.id);
 
-    it('should create new entity', async () => {
-        const data = randomSubscriptionBlockChecker();
-        const got = await service.createBlockRecheck(
-            data.subscriptionId,
-            data.transportConnectionId,
-            data.type,
-            data.blockHash,
-            data.blockHeight,
-            data.invokeOnBlockHeight,
-            data.webhookActionItem
-        );
-        
-        expect(got.subscriptionId).toEqual(data.subscriptionId);
-        expect(got.transportConnectionId).toEqual(data.transportConnectionId);
-        expect(got.type).toEqual(data.type);
-        expect(got.blockHash).toEqual(data.blockHash);
-        expect(got.blockHeight).toEqual(data.blockHeight);
-        expect(got.invokeOnBlockHeight).toEqual(data.invokeOnBlockHeight);
-        expect(got.webhookActionItem).toEqual(data.webhookActionItem);
-    });
+            const got = await service.getById(recheck.id);
+            expect(got).toBeNull();
 
-    it('should increment `invokeOnBlockHeight` by id', async () => {
-        await service.incInvokeOnBlockHeightById(subscriptionBlockRecheck.id);
+            rechecks.splice(rechecks.indexOf(recheck), 1);
+        });
 
-        const got = await service.getById(subscriptionBlockRecheck.id);
-        expect(got.invokeOnBlockHeight).toEqual(subscriptionBlockRecheck.invokeOnBlockHeight + 1);
+        it('should remove by ids', async () => {
+            await service.removeByIds([ recheck.id ]);
 
-        subscriptionBlockRecheck.invokeOnBlockHeight += 1;
-    });
+            const got = await service.getById(recheck.id);
+            expect(got).toBeNull();
 
-    it('should increment `invokeOnBlockHeight` by id (another one)', async () => {
-        const incrementOn = random(2, 10);
-        await service.incInvokeOnBlockHeightById(subscriptionBlockRecheck.id, incrementOn);
-
-        const got = await service.getById(subscriptionBlockRecheck.id);
-        expect(got.invokeOnBlockHeight).toEqual(subscriptionBlockRecheck.invokeOnBlockHeight + incrementOn);
-
-        subscriptionBlockRecheck.invokeOnBlockHeight += incrementOn;
-    });
-
-    it('should increment `invokeOnBlockHeight` by ids', async () => {
-        await service.incInvokeOnBlockHeightByIds([ subscriptionBlockRecheck.id ]);
-
-        const got = await service.getById(subscriptionBlockRecheck.id);
-        expect(got.invokeOnBlockHeight).toEqual(subscriptionBlockRecheck.invokeOnBlockHeight + 1);
-
-        subscriptionBlockRecheck.invokeOnBlockHeight += 1;
-    });
-
-    it('should increment `invokeOnBlockHeight` by ids (another one)', async () => {
-        const incrementOn = random(2, 10);
-        await service.incInvokeOnBlockHeightByIds([ subscriptionBlockRecheck.id ], incrementOn);
-
-        const got = await service.getById(subscriptionBlockRecheck.id);
-        expect(got.invokeOnBlockHeight).toEqual(subscriptionBlockRecheck.invokeOnBlockHeight + incrementOn);
-
-        subscriptionBlockRecheck.invokeOnBlockHeight += incrementOn;
-    });
-
-    it('should set new `invokeOnBlockHeight` by id', async () => {
-        const invokeOnBlockHeight = random(500000, 1000000);
-        await service.setInvokeOnBlockHeightById(subscriptionBlockRecheck.id, invokeOnBlockHeight);
-
-        const got = await service.getById(subscriptionBlockRecheck.id);
-        expect(got.invokeOnBlockHeight).toEqual(invokeOnBlockHeight);
-
-        subscriptionBlockRecheck.invokeOnBlockHeight = invokeOnBlockHeight;
-    });
-
-    it('should remove by id', async () => {
-        await service.removeById(subscriptionBlockRecheck.id);
-
-        const got = await service.getById(subscriptionBlockRecheck.id);
-        expect(got).toBeNull();
-
-        subscriptionBlockRechecks.splice(
-            subscriptionBlockRechecks.indexOf(subscriptionBlockRecheck), 1
-        );
-    });
-
-    it('should remove by ids', async () => {
-        await service.removeByIds([ subscriptionBlockRecheck.id ]);
-
-        const got = await service.getById(subscriptionBlockRecheck.id);
-        expect(got).toBeNull();
-
-        subscriptionBlockRechecks.splice(
-            subscriptionBlockRechecks.indexOf(subscriptionBlockRecheck), 1
-        );
+            rechecks.splice(rechecks.indexOf(recheck), 1);
+        });
     });
 });

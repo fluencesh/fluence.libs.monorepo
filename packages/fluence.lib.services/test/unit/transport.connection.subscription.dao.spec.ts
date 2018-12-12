@@ -5,10 +5,10 @@ import {
 import {
     generatePipeline,
     generatePipelineForStatusCheck
-} from '../transport.connection.subscription.helper';
+} from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('transport connection subscription dao spec', () => {
+describe('Transport Connection Subscription DAO (unit)', () => {
     let dao: MongodbTransportConnectionSubscriptionDao;
     let collection: any;
 

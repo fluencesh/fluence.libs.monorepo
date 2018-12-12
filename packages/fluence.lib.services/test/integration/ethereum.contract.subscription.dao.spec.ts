@@ -2,170 +2,246 @@ import * as config from 'config';
 import { Db, MongoClient } from 'mongodb';
 import { MongodbEthereumContractSubscriptionDao } from '../../src/dao/mongodb/ethereum.contract.subscription.dao';
 import { Scheme } from '../../src/types';
+import { DaoCollectionNames } from '../../src';
+import { clearCollections, createEntities, generateEthereumContractSubscription, getRandomItem } from '../helpers';
+import 'jest-extended';
 
-import { omit, random } from 'lodash';
-import { v1 as generateId } from 'uuid';
-
-import { randomEthereumContractSubscription } from '../helper';
-
-describe('ethereum contract subscription dao', () => {
-    let dao: MongodbEthereumContractSubscriptionDao;
-    const ethereumContractSubscriptions: Array<Scheme.EthereumContractSubscription> = [];
-    const ethereumContractSubscriptionsCount = 15;
-    let ethereumContractSubscription: Scheme.EthereumContractSubscription;
-    let connection: Db;
-
-    function getActiveSubscriptions() {
-        return ethereumContractSubscriptions.filter((subscription) =>
-            subscription.subscribed
-            && subscription.isClientActive
-            && subscription.isProjectActive
-        );
-    }
+describe('Contract Subscription DAO (integration)', () => {
+    let mongoUrl: string;
+    let connection: MongoClient;
 
     beforeAll(async () => {
-        connection = await MongoClient.connect(config.get('multivest.mongodb.url'), {});
-        dao = new MongodbEthereumContractSubscriptionDao(connection);
-        await dao.remove({});
-
-        for (let i = 0; i < ethereumContractSubscriptionsCount; i++) {
-            ethereumContractSubscriptions.push(await dao.create(randomEthereumContractSubscription()));
-        }
-    });
-
-    beforeEach(() => {
-        ethereumContractSubscription = ethereumContractSubscriptions[random(0, ethereumContractSubscriptionsCount - 1)];
+        mongoUrl = config.get<string>('multivest.mongodb.url');
+        connection = await MongoClient.connect(mongoUrl);
     });
 
     afterAll(async () => {
-        await dao.remove({});
-
         await connection.close();
     });
 
-    it('should get by id', async () => {
-        const got = await dao.getById(ethereumContractSubscription.id);
+    describe('Read operations', () => {
+        let dbName: string;
+        let db: Db;
+        let dao: MongodbEthereumContractSubscriptionDao;
 
-        expect(got).toEqual(ethereumContractSubscription);
-    });
+        let subscriptions: Array<Scheme.EthereumContractSubscription>;
+        let subscription: Scheme.EthereumContractSubscription;
+        let activeSubscription: Scheme.EthereumContractSubscription;
 
-    it('should get by id (active only)', async () => {
-        const subscription = getActiveSubscriptions()[0];
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ContractSubscriptionDaoRead';
+            db = connection.db(dbName);
+            dao = new MongodbEthereumContractSubscriptionDao(db);
 
-        if (!subscription) {
-            return;
-        }
+            await clearCollections(db, [ DaoCollectionNames.EthereumContractSubscription ]);
 
-        const got = await dao.getByIdActiveOnly(subscription.id);
+            subscriptions = new Array(15);
+            await createEntities(dao, generateEthereumContractSubscription, subscriptions);
+        });
 
-        expect(got).toEqual(subscription);
-    });
+        beforeEach(() => {
+            subscription = getRandomItem(subscriptions);
+            activeSubscription = getRandomItem(
+                subscriptions,
+                (s) => s.subscribed && s.isClientActive && s.isProjectActive
+            );
+        });
 
-    it('should get by project id', async () => {
-        const filtered = ethereumContractSubscriptions
-            .filter((ecs) => ecs.projectId === ethereumContractSubscription.projectId);
-        const got = await dao.listByProjectId(ethereumContractSubscription.projectId);
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
 
-        expect(got).toEqual(filtered);
-    });
+        it('should get by id', async () => {
+            const got = await dao.getById(subscription.id);
 
-    it('should get by project id (active only)', async () => {
-        const filtered = getActiveSubscriptions()
-            .filter((sub, index, subs) => sub.projectId === subs[0].projectId);
+            expect(got).toEqual(subscription);
+        });
 
-        if (filtered.length === 0) {
-            return;
-        }
+        it('should get by id (active only)', async () => {
+            if (!activeSubscription) {
+                return;
+            }
 
-        const got = await dao.listByProjectIdActiveOnly(filtered[0].projectId);
+            const got = await dao.getByIdActiveOnly(activeSubscription.id);
 
-        expect(got).toEqual(filtered);
-    });
+            expect(got).toEqual(activeSubscription);
+        });
 
-    it('should get by client id', async () => {
-        const filtered = ethereumContractSubscriptions
-            .filter((ecs) => ecs.clientId === ethereumContractSubscription.clientId);
-        const got = await dao.listByClientId(ethereumContractSubscription.clientId);
+        it('should get by project id', async () => {
+            const filtered = subscriptions
+                .filter((s) => s.projectId === subscription.projectId);
+            const got = await dao.listByProjectId(subscription.projectId);
 
-        expect(got).toEqual(filtered);
-    });
+            expect(got).toEqual(filtered);
+        });
 
-    it('should get by client id (active only)', async () => {
-        const filtered = getActiveSubscriptions()
-            .filter((sub, index, subs) => sub.clientId === subs[0].clientId);
+        it('should get by project id (active only)', async () => {
+            if (!activeSubscription) {
+                return;
+            }
 
-        if (filtered.length === 0) {
-            return;
-        }
+            const filtered = subscriptions
+                .filter((s) =>
+                    s.subscribed
+                    && s.isClientActive
+                    && s.isProjectActive
+                    && s.projectId === activeSubscription.projectId
+                );
 
-        const got = await dao.listByClientIdActiveOnly(filtered[0].clientId);
+            const got = await dao.listByProjectIdActiveOnly(activeSubscription.projectId);
 
-        expect(got).toEqual(filtered);
-    });
+            expect(got).toEqual(filtered);
+        });
 
-    it('should create new ethereum contract subscription', async () => {
-        const data = randomEthereumContractSubscription();
-        const created = await dao.createSubscription(
-            data.clientId,
-            data.projectId,
-            data.compatibleStandard,
-            data.transportConnectionId,
-            data.address,
-            data.minConfirmations,
-            data.abi,
-            data.abiEvents,
-            data.subscribedEvents,
-            data.subscribeAllEvents
-        );
+        it('should get by client id', async () => {
+            const filtered = subscriptions
+                .filter((s) => s.clientId === subscription.clientId);
+            const got = await dao.listByClientId(subscription.clientId);
 
-        const got = (await dao.listByProjectId(data.projectId))[0];
+            expect(got).toEqual(filtered);
+        });
 
-        expect(created).toEqual(got);
-    });
+        it('should get by client id (active only)', async () => {
+            if (!activeSubscription) {
+                return;
+            }
 
-    it('should get by id & project id & client id', async () => {
-        const got = await dao.listBySubscribedAddress(
-            ethereumContractSubscription.address,
-            ethereumContractSubscription.clientId,
-            ethereumContractSubscription.projectId
-        );
+            const filtered = subscriptions
+                .filter((s) =>
+                    s.subscribed
+                    && s.isClientActive
+                    && s.isProjectActive
+                    && s.clientId === activeSubscription.clientId
+                );
 
-        expect(got).toEqual([ethereumContractSubscription]);
-    });
+            const got = await dao.listByClientIdActiveOnly(activeSubscription.clientId);
 
-    it('should get by id & project id & client id (active only)', async () => {
-        const filtered = getActiveSubscriptions()
-            .filter((sub, index, subs) =>
-                sub.projectId === subs[0].projectId
-                && sub.clientId === subs[0].clientId
-                && sub.address === subs[0].address
+            expect(got).toEqual(filtered);
+        });
+
+        it('should get by id & project id & client id', async () => {
+            const filtered = subscriptions.filter((s) =>
+                s.address === subscription.address
+                && s.clientId === subscription.clientId
+                && s.projectId === subscription.projectId
             );
 
-        if (filtered.length === 0) {
-            return;
-        }
+            const got = await dao.listBySubscribedAddress(
+                subscription.address,
+                subscription.clientId,
+                subscription.projectId
+            );
+    
+            expect(got).toEqual(filtered);
+        });
+    
+        it('should get by id & project id & client id (active only)', async () => {
+            if (!activeSubscription) {
+                return;
+            }
 
-        const got = await dao.listBySubscribedAddressActiveOnly(
-            filtered[0].address,
-            filtered[0].clientId,
-            filtered[0].projectId
-        );
-
-        expect(got).toEqual(filtered);
+            const filtered = subscriptions.filter((s) =>
+                s.subscribed
+                && s.isClientActive
+                && s.isProjectActive
+                && s.address === activeSubscription.address
+                && s.clientId === activeSubscription.clientId
+                && s.projectId === activeSubscription.projectId
+            );
+    
+            const got = await dao.listBySubscribedAddressActiveOnly(
+                activeSubscription.address,
+                activeSubscription.clientId,
+                activeSubscription.projectId
+            );
+    
+            expect(got).toEqual(filtered);
+        });
     });
 
-    it('should set subscribed all events status', async () => {
-        ethereumContractSubscription.subscribedEvents = ['data', 'exit'];
-        ethereumContractSubscription.subscribeAllEvents = ethereumContractSubscription.subscribeAllEvents;
+    describe('Create/Update operations', () => {
+        let dbName: string;
+        let db: Db;
+        let dao: MongodbEthereumContractSubscriptionDao;
 
-        await dao.setSubscribedEventsAndAllEvents(
-            ethereumContractSubscription.id,
-            ethereumContractSubscription.subscribedEvents,
-            ethereumContractSubscription.subscribeAllEvents
-        );
+        let subscriptions: Array<Scheme.EthereumContractSubscription>;
+        let subscription: Scheme.EthereumContractSubscription;
+        let activeSubscription: Scheme.EthereumContractSubscription;
 
-        const got = await dao.listByClientId(ethereumContractSubscription.clientId);
+        beforeAll(async () => {
+            dbName = config.get('multivest.mongodb.dbName') + 'ContractSubscriptionDaoCreateUpdate';
+            db = connection.db(dbName);
+            dao = new MongodbEthereumContractSubscriptionDao(db);
 
-        expect(got).toEqual([ ethereumContractSubscription ]);
+            await clearCollections(db, [ DaoCollectionNames.EthereumContractSubscription ]);
+
+            subscriptions = new Array(15);
+            await createEntities(dao, generateEthereumContractSubscription, subscriptions);
+        });
+
+        beforeEach(() => {
+            subscription = getRandomItem(subscriptions);
+            activeSubscription = getRandomItem(
+                subscriptions,
+                (s) => s.subscribed && s.isClientActive && s.isProjectActive
+            );
+        });
+
+        afterAll(async () => {
+            if (config.has('tests.dropDbAfterTest') && config.get('tests.dropDbAfterTest')) {
+                await db.dropDatabase();
+            }
+        });
+
+        it('should create new ethereum contract subscription', async () => {
+            const data = generateEthereumContractSubscription();
+            const created = await dao.createSubscription(
+                data.clientId,
+                data.projectId,
+                data.compatibleStandard,
+                data.transportConnectionId,
+                data.address,
+                data.minConfirmations,
+                data.abi,
+                data.abiEvents,
+                data.subscribedEvents,
+                data.subscribeAllEvents
+            );
+
+            expect(created.clientId).toEqual(data.clientId);
+            expect(created.projectId).toEqual(data.projectId);
+            expect(created.compatibleStandard).toEqual(data.compatibleStandard);
+            expect(created.transportConnectionId).toEqual(data.transportConnectionId);
+            expect(created.address).toEqual(data.address);
+            expect(created.minConfirmations).toEqual(data.minConfirmations);
+            expect(created.abi).toEqual(data.abi);
+            expect(created.abiEvents).toEqual(data.abiEvents);
+            expect(created.subscribedEvents).toEqual(data.subscribedEvents);
+            expect(created.subscribeAllEvents).toEqual(data.subscribeAllEvents);
+
+            const got = await dao.getById(created.id);
+            expect(got).toBeObject();
+        });
+
+        it('should set subscribed all events status', async () => {
+            const subscribedEvents = ['data', 'exit'];
+            const subscribeAllEvents = !subscription.subscribeAllEvents;
+
+            await dao.setSubscribedEventsAndAllEvents(
+                subscription.id,
+                subscribedEvents,
+                subscribeAllEvents
+            );
+
+            const got = await dao.getById(subscription.id);
+
+            expect(got.subscribedEvents).toEqual(subscribedEvents);
+            expect(got.subscribeAllEvents).toEqual(subscribeAllEvents);
+
+            subscription.subscribedEvents = subscribedEvents;
+            subscription.subscribeAllEvents = subscribeAllEvents;
+        });
     });
 });

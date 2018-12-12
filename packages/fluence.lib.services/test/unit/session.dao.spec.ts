@@ -1,12 +1,9 @@
-import * as config from 'config';
-import { random } from 'lodash';
-import { Db, MongoClient } from 'mongodb';
 import { MongodbSessionDao } from '../../src/dao/mongodb/session.dao';
 import { Scheme } from '../../src/types';
-import { randomClient, randomSession } from '../helper';
+import { generateSession } from '../helpers';
 import { CollectionMock, DbMock } from '../mock/db.mock';
 
-describe('session dao', () => {
+describe('Session DAO (unit)', () => {
     let dao: MongodbSessionDao;
     let collection: any;
 
@@ -103,21 +100,21 @@ describe('session dao', () => {
     });
 
     it('createUserSession() transfers correct arguments', async () => {
-        const data = randomSession();
+        const data = generateSession();
         await dao.createUserSession(data.clientId, data.expiredAt);
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);
     });
 
     it('createUserSession() transfers correct arguments', async () => {
-        const data = randomSession();
+        const data = generateSession();
         await dao.createUserApiKey(data.clientId);
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);
     });
 
     it('createProjectApiKey() transfers correct arguments', async () => {
-        const data = randomSession();
+        const data = generateSession();
         await dao.createProjectApiKey(data.clientId, data.projectId);
 
         expect(collection.insertOne).toHaveBeenCalledTimes(1);

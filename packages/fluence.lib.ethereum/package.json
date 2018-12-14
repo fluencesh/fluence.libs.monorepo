@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.lib.ethereum",
-  "version": "2.0.17-alpha.2",
+  "version": "2.0.17-alpha.1",
   "private": false,
   "description": "Ethereum Blockchain Plugin",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -31,7 +31,7 @@
   "dependencies": {
     "@applicature/synth.mongodb": "2.0.21",
     "@applicature/synth.plugin-manager": "2.0.21",
-    "@fluencesh/fluence.lib.services": "^2.0.17-alpha.2",
+    "@fluencesh/fluence.lib.services": "^2.0.17-alpha.1",
     "axios": "^0.18.0",
     "bignumber.js": "^7.2.1",
     "config": "^1.30.0",

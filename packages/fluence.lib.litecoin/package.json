@@ -1,6 +1,6 @@
 {
   "name": "@fluencesh/fluence.lib.litecoin",
-  "version": "2.0.17-alpha.2",
+  "version": "2.0.17-alpha.1",
   "private": false,
   "description": "Litecoin Blockchain Plugin",
   "author": "Andrew Zubko <andrew@applicature.com>",
@@ -16,7 +16,7 @@
     "lint": "tslint '{index.ts,src/**/*.ts,test/**/*.ts}'",
     "precommit": "npm run lint ; npm run test:integration",
     "test": "jest",
-    "test:ci": "jest --coverage --forceExit",
+    "test:ci": "jest --coverage",
     "test:lint": "tslint --force -t json --project ./tsconfig.json '{index.ts,src/**/*.ts,test/**/*.ts}'",
     "test:sonar": "sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONARCLOUD_TOKEN"
   },
@@ -30,7 +30,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@applicature/synth.plugin-manager": "^2.0.21",
-    "@fluencesh/fluence.lib.services": "^2.0.17-alpha.2",
+    "@fluencesh/fluence.lib.services": "^2.0.17-alpha.1",
     "bignumber.js": "^7.2.1",
     "bitcoin-core": "^1.2.0",
     "bitcoinjs-lib": "^3.3.0",

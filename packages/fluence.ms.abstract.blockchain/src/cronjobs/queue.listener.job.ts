@@ -11,7 +11,7 @@ export abstract class QueueListenerJob extends Job {
     }
 
     public async execute(job: AgendaJob) {
-        const queueName = job.attrs.data.queueName;
+        const queueName = this.getQueueName();
         const queueUniqueTag = await this.queueService.getUniqueTag(queueName);
 
         let message: Message = await this.queueService.receiveMessage(queueUniqueTag);
@@ -22,4 +22,5 @@ export abstract class QueueListenerJob extends Job {
     }
 
     protected abstract processMessage(message: Message): Promise<void>;
+    protected abstract getQueueName(): string;
 }

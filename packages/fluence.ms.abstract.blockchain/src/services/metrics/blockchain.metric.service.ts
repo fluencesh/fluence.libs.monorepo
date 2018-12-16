@@ -1,5 +1,5 @@
 import { MetricService } from '@applicature/synth.metrics';
-import { BlockchainNodeMetricType, TransactionSendStatusMetricType } from '../types';
+import { BlockchainNodeMetricType, TransactionSendStatusMetricType } from '../../types';
 
 export class BlockchainMetricService extends MetricService {
     public getServiceId(): string {

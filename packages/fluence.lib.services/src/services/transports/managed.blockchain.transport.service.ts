@@ -64,7 +64,15 @@ export abstract class ManagedBlockchainTransportService<
 
         this.transportServices = this.prepareTransportServices(connections);
         this.publicTransportServices = this.transportServices.filter((ts) => !ts.getTransportConnection().isPrivate);
-        this.reference = this.publicTransportServices[0];
+
+        try {
+            this.reference = await this.getActiveTransport();
+        } catch (ex) {
+            logger.warn(
+                `blockchain manager has no active transport connections. blockchain id - ${ this.getBlockchainId() } `
+                + `networkId - ${ this.getNetworkId() }`
+            );
+        }
     }
 
     public getTransportConnection(): Scheme.TransportConnection {
@@ -153,11 +161,7 @@ export abstract class ManagedBlockchainTransportService<
 
         let referenceBlockHeight;
         try {
-            referenceBlockHeight = await this.reference.getBlockHeight();
-
-            if (referenceBlockHeight === null) {
-                throw new MultivestError('Invalid response');
-            }
+            referenceBlockHeight = await this.getReferenceBlockHeight();
         } catch (ex) {
             throw new MultivestError(`Can not update transports' status. Original message: ${ex.message}`);
         }
@@ -241,14 +245,14 @@ export abstract class ManagedBlockchainTransportService<
     }
 
     protected async loadNewTransportConnections(): Promise<void> {
-        const today = new Date();
+        const now = new Date();
 
         const newTransportConnections = await this.transportConnectionService
             .listByBlockchainAndNetworkAndStatusAndCreatedAt(
                 this.getBlockchainId(),
                 this.getNetworkId(),
                 Scheme.TransportConnectionStatus.Enabled,
-                today,
+                this.lastTransportConnectionsSearchAt,
                 Scheme.ComparisonOperators.Gt
             );
 
@@ -257,6 +261,48 @@ export abstract class ManagedBlockchainTransportService<
             ...this.transportServices.filter((ts) => !ts.getTransportConnection().isPrivate)
         );
 
-        this.lastTransportConnectionsSearchAt = today;
+        this.lastTransportConnectionsSearchAt = now;
+    }
+
+    protected async getActiveTransport(): Promise<Provider> {
+        for (const transport of this.publicTransportServices) {
+            try {
+                const height = await transport.getBlockHeight();
+    
+                if (height === null) {
+                    continue;
+                }
+
+                return transport;
+            } catch (ex) {
+                continue;
+            }
+        }
+
+        throw new MultivestError(Errors.ALL_NODES_ARE_INACTIVE);
+    }
+
+    protected async getReferenceBlockHeight(): Promise<number> {
+        if (!this.reference) {
+            this.reference = await this.getActiveTransport();
+        }
+
+        let referenceBlockHeight: number;
+        try {
+            referenceBlockHeight = await this.reference.getBlockHeight();
+        } catch (ex) {
+            logger.warn(
+                `reference is inactive. blockchainId - ${ this.getBlockchainId() } networkId - ${ this.getNetworkId() }`
+            );
+
+            this.reference = await this.getActiveTransport();
+            referenceBlockHeight = await this.reference.getBlockHeight();
+        }
+
+        if (referenceBlockHeight === null) {
+            throw new MultivestError('Invalid response');
+        }
+
+        return referenceBlockHeight;
     }
 }

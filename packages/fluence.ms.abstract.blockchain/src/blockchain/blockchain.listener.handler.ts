@@ -30,10 +30,7 @@ export abstract class BlockchainListenerHandler<
 
     protected readonly metricService: CronjobMetricService;
 
-    constructor(
-        pluginManager: PluginManager,
-        metricService?: CronjobMetricService
-    ) {
+    constructor(pluginManager: PluginManager) {
         this.pluginManager = pluginManager;
 
         this.projectService = pluginManager.getServiceByClass(ProjectService);
@@ -42,7 +39,7 @@ export abstract class BlockchainListenerHandler<
         this.subscriptionBlockRecheckService =
             pluginManager.getServiceByClass(SubscriptionBlockRecheckService);
 
-        this.metricService = metricService;
+        this.metricService = pluginManager.getServiceByClass(CronjobMetricService);
     }
 
     public async execute(

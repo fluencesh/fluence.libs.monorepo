@@ -166,3 +166,25 @@ export enum HttpRequestExecutionStatusMetricType {
     Success = 'SUCCESS',
     Fail = 'FAIL',
 }
+
+export interface AuthPolicy {
+    principalId: string;
+    policyDocument: AuthPolicyDocument;
+    context: any;
+}
+
+export interface AuthPolicyDocument {
+    Statement: Array<AuthPolicyStatement>;
+    Version: string;
+}
+
+export interface AuthPolicyStatement {
+    Action: string;
+    Effect: AuthPolicyEffect;
+    Resource: string | Array<string>;
+}
+
+export enum AuthPolicyEffect {
+    Allow = 'Allow',
+    Deny = 'Deny',
+}

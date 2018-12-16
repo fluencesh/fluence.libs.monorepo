@@ -17,11 +17,8 @@ export abstract class FabricContractCreationHandler<
 > extends EventListenerHandler<Transaction, Block, Provider, ManagedBlockchainTransportService> {
     private contractService: ContractService;
 
-    constructor(
-        pluginManager: PluginManager,
-        metricService?: CronjobMetricService
-    ) {
-        super(pluginManager, metricService);
+    constructor(pluginManager: PluginManager) {
+        super(pluginManager);
 
         this.contractService =
             pluginManager.getServiceByClass(ContractService) as ContractService;

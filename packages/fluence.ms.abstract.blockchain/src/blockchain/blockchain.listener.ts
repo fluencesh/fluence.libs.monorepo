@@ -9,7 +9,7 @@ import {
     ManagedBlockchainTransport,
 } from '@fluencesh/fluence.lib.services';
 import * as logger from 'winston';
-import { BlockchainListenerJob, HandlerData, BlockchainListenerJobMessage, TransportConnectionData } from '../types';
+import { BlockchainListenerJob, HandlerData } from '../types';
 import { BlockchainListenerHandler } from './blockchain.listener.handler';
 
 export class BlockchainListener<
@@ -33,7 +33,6 @@ export class BlockchainListener<
 
     constructor(
         pluginManager: PluginManager,
-        blockchainRegistry: BlockchainRegistryService,
         blockchainId: string,
 
         handlers: Array<BlockchainListenerHandler<
@@ -46,10 +45,9 @@ export class BlockchainListener<
         super(pluginManager);
 
         this.blockchainId = blockchainId;
-        this.blockchainRegistry = blockchainRegistry;
-
         this.handlers = handlers;
 
+        this.blockchainRegistry = this.pluginManager.getServiceByClass(BlockchainRegistryService);
         this.tcsService = this.pluginManager.getServiceByClass(TransportConnectionSubscriptionService);
         this.jobService = this.pluginManager.getServiceByClass(JobService);
     }
@@ -58,11 +56,7 @@ export class BlockchainListener<
         return `blockchain.${ this.blockchainId }.listener`;
     }
 
-    public getJobId(transportConnectionSubscription: Scheme.TransportConnectionSubscription) {
-        return `${ this.getServiceId() }.${ transportConnectionSubscription.id }`;
-    }
-
-    public async execute(message: BlockchainListenerJobMessage) {
+    public async execute(message: Scheme.TransportConnectionJobData) {
         let transportConnectionSubscription: Scheme.TransportConnectionSubscription;
         try {
             transportConnectionSubscription = await this.tcsService.getByIdAndStatus(
@@ -120,9 +114,9 @@ export class BlockchainListener<
         }
 
         try {
-            lastBlockHeight = await blockchainService.getBlockHeight(transportConnectionSubscription.id);
+            this.initJobData(job, lastBlockHeight);
         } catch (ex) {
-            logger.error(`cant get last block height. Reason: ${ ex.message }`);
+            logger.error(`cant init job data. Reason: ${ ex.message }`);
             return;
         }
 
@@ -151,7 +145,7 @@ export class BlockchainListener<
     private async getJobSafely(
         transportConnectionSubscription: Scheme.TransportConnectionSubscription
     ): Promise<BlockchainListenerJob> {
-        const jobId = this.getJobId(transportConnectionSubscription);
+        const jobId = this.getAgendaJobId(transportConnectionSubscription);
 
         logger.info(`tying to get job [${ jobId }]...`);
 
@@ -397,5 +391,9 @@ export class BlockchainListener<
         if (!lastProcessedBlockHeight && lastProcessedBlockHeight !== 0) {
             job.params.lastProcessedBlock = lastBlockHeight - 1;
         }
+    }
+
+    private getAgendaJobId(transportConnectionSubscription: Scheme.TransportConnectionSubscription) {
+        return `${ this.getServiceId() }.${ transportConnectionSubscription.id }`;
     }
 }

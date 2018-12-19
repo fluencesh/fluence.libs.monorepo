@@ -7,16 +7,14 @@ export namespace TransactionValidation {
             hex: Joi.string()
         },
         query: {
-            clientId: Joi.string().required(),
-            projectId: Joi.string().required(),
+            projectId: Joi.string().optional(),
             transportConnectionId: Joi.string().required(),
         }
     };
 
     export const GetByHash = {
         query: {
-            clientId: Joi.string().required(),
-            projectId: Joi.string().required(),
+            projectId: Joi.string().optional(),
             transportConnectionId: Joi.string().required(),
         }
     };
